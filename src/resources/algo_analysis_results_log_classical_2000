@@ -1,0 +1,1288 @@
+
+[2019-09-10 14:48:07] - Starting basic analysis: number of maps = 30, number of algorithms = 7
+
+[2019-09-10 14:48:07] - 0. A*
+[2019-09-10 14:48:09] - Rate of success: 93.33%, (A*: 93.33%), (Improvement: 0%)
+[2019-09-10 14:48:09] - Average total steps: 71.36, (A*: 71.36), (Improvement: 0%)
+[2019-09-10 14:48:09] - Average total distance: 39.55, (A*: 39.55), (Improvement: 0%)
+[2019-09-10 14:48:09] - Average time: 0.0256 seconds, (A*: 0.0256 seconds), (Improvement: 0%)
+[2019-09-10 14:48:09] - Average distance from goal: 2.36, (A*: 2.36), (Improvement: 0%) (Average original distance from goal: 34.47)
+[2019-09-10 14:48:09] - Average search space (no fringe): 6.61%
+[2019-09-10 14:48:09] - Average fringe: 2.86%
+[2019-09-10 14:48:09] - Average total search space: 9.47%
+
+
+[2019-09-10 14:48:09] - 1. RT
+[2019-09-10 14:48:21] - Rate of success: 10.0%, (A*: 93.33%), (Improvement: -89.29%)
+[2019-09-10 14:48:21] - Average total steps: 35.33, (A*: 34.67), (Improvement: -1.9%)
+[2019-09-10 14:48:21] - Average total distance: 30.94, (A*: 20.89), (Improvement: -48.11%)
+[2019-09-10 14:48:21] - Average time: 0.1489 seconds, (A*: 0.0128 seconds), (Improvement: -1063.28%)
+[2019-09-10 14:48:21] - Average distance from goal: 32.46, (A*: 2.36), (Improvement: -1275.42%) (Average original distance from goal: 34.47)
+
+
+[2019-09-10 14:48:21] - 2. RRT
+[2019-09-10 14:48:43] - Rate of success: 23.33%, (A*: 93.33%), (Improvement: -75.0%)
+[2019-09-10 14:48:43] - Average total steps: 50.71, (A*: 57.43), (Improvement: 11.7%)
+[2019-09-10 14:48:43] - Average total distance: 43.72, (A*: 31.62), (Improvement: -38.27%)
+[2019-09-10 14:48:43] - Average time: 0.2973 seconds, (A*: 0.0136 seconds), (Improvement: -2086.03%)
+[2019-09-10 14:48:43] - Average distance from goal: 27.77, (A*: 2.36), (Improvement: -1076.69%) (Average original distance from goal: 34.47)
+
+
+[2019-09-10 14:48:43] - 3. RRT*
+[2019-09-10 14:52:17] - Rate of success: 20.0%, (A*: 93.33%), (Improvement: -78.57%)
+[2019-09-10 14:52:17] - Average total steps: 41.83, (A*: 58.67), (Improvement: 28.7%)
+[2019-09-10 14:52:17] - Average total distance: 36.28, (A*: 31.51), (Improvement: -15.14%)
+[2019-09-10 14:52:17] - Average time: 3.847 seconds, (A*: 0.0139 seconds), (Improvement: -27576.26%)
+[2019-09-10 14:52:17] - Average distance from goal: 28.8, (A*: 2.36), (Improvement: -1120.34%) (Average original distance from goal: 34.47)
+
+
+[2019-09-10 14:52:17] - 4. RRT-Connect
+[2019-09-10 14:52:22] - Rate of success: 80.0%, (A*: 93.33%), (Improvement: -14.28%)
+[2019-09-10 14:52:22] - Average total steps: 72.75, (A*: 70.67), (Improvement: -2.94%)
+[2019-09-10 14:52:22] - Average total distance: 63.73, (A*: 38.94), (Improvement: -63.66%)
+[2019-09-10 14:52:22] - Average time: 0.0788 seconds, (A*: 0.0247 seconds), (Improvement: -219.03%)
+[2019-09-10 14:52:22] - Average distance from goal: 7.66, (A*: 2.36), (Improvement: -224.58%) (Average original distance from goal: 34.47)
+
+
+[2019-09-10 14:52:22] - 5. Wave-front
+[2019-09-10 14:52:23] - Rate of success: 93.33%, (A*: 93.33%), (Improvement: 0%)
+[2019-09-10 14:52:23] - Average total steps: 71.36, (A*: 71.36), (Improvement: 0%)
+[2019-09-10 14:52:23] - Average total distance: 43.36, (A*: 39.55), (Improvement: -9.63%)
+[2019-09-10 14:52:23] - Average time: 0.0347 seconds, (A*: 0.0256 seconds), (Improvement: -35.55%)
+[2019-09-10 14:52:23] - Average distance from goal: 2.36, (A*: 2.36), (Improvement: 0%) (Average original distance from goal: 34.47)
+
+
+[2019-09-10 14:52:23] - 6. Dijkstra
+[2019-09-10 14:52:25] - Rate of success: 93.33%, (A*: 93.33%), (Improvement: 0%)
+[2019-09-10 14:52:25] - Average total steps: 71.36, (A*: 71.36), (Improvement: 0%)
+[2019-09-10 14:52:25] - Average total distance: 39.55, (A*: 39.55), (Improvement: 0%)
+[2019-09-10 14:52:25] - Average time: 0.0402 seconds, (A*: 0.0256 seconds), (Improvement: -57.03%)
+[2019-09-10 14:52:25] - Average distance from goal: 2.36, (A*: 2.36), (Improvement: 0%) (Average original distance from goal: 34.47)
+[2019-09-10 14:52:25] - Average search space (no fringe): 44.52%
+[2019-09-10 14:52:25] - Average fringe: 2.26%
+[2019-09-10 14:52:25] - Average total search space: 46.78%
+
+
+\begin{table}[] 
+\footnotesize 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Algorithm Type} & \textbf{Training Data}\\
+\hline
+0 & AStar & n/a\\
+\hline
+1 & RT & n/a\\
+\hline
+2 & RRT & n/a\\
+\hline
+3 & RRT\_Star & n/a\\
+\hline
+4 & RRT\_Connect & n/a\\
+\hline
+5 & Wavefront & n/a\\
+\hline
+6 & Dijkstra & n/a\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Success Rate} & \textbf{Distance} & \textbf{Time} & \textbf{Distance Left}\\
+\hline
+0 & 93.33\% (I: 0\%) & 39.55 (A*: 39.55) (I: 0\%) & 0.0256s & 2.36\\
+\hline
+1 & 10.0\% (I: -89.29\%) & 30.94 (A*: 20.89) (I: -48.11\%) & 0.1489s & 32.46\\
+\hline
+2 & 23.33\% (I: -75.0\%) & 43.72 (A*: 31.62) (I: -38.27\%) & 0.2973s & 27.77\\
+\hline
+3 & 20.0\% (I: -78.57\%) & 36.28 (A*: 31.51) (I: -15.14\%) & 3.847s & 28.8\\
+\hline
+4 & 80.0\% (I: -14.28\%) & 63.73 (A*: 38.94) (I: -63.66\%) & 0.0788s & 7.66\\
+\hline
+5 & 93.33\% (I: 0\%) & 43.36 (A*: 39.55) (I: -9.63\%) & 0.0347s & 2.36\\
+\hline
+6 & 93.33\% (I: 0\%) & 39.55 (A*: 39.55) (I: 0\%) & 0.0402s & 2.36\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Pick Ratio}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{GK Improvement} & \textbf{GK Distance} & \textbf{GK Distance Left} & \textbf{WP} & \textbf{WP In-Between Distance}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Total Search} & \textbf{Total Fringe} & \textbf{Session Search} & \textbf{Session Fringe}\\
+\hline
+0 & 9.47\% & 2.86\% & 9.47\% & 2.86\%\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
+
+
+[2019-09-10 14:52:25] - Starting complex analysis: number of maps = 6, number of algorithms = 7
+
+[2019-09-10 14:52:25] - Analysis on map: 0. uniform_random_fill_10/0 with random samples: 50
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+██    ████  ██████                      ██                      ██    ████    ████        ██    ██          ██      ████      ██  ██
+██  ██  ██  ██              ██      ██        ██  ██    ██      ██████      ██████  ██    ████    ████    ██                ████  ██
+██        ██  ██    ██  ██      ██                ████          ██    ██  ██                      ██            ██████      ██    ██
+██            ██      ██        ██  ██      ██    ██      ██                  ██          ████  ██  ██        ██            ██    ██
+██  ██    ██    ██                ██    ██████    ██  ████        ██      ██            ██                  ██  ██  ████          ██
+██        ████                ████  ██  ████                  ██  ████  ████        ██          ██      ████  ████    ████  ██    ██
+██    ██        ██████  ██      ██  ██            ██    ██                  ██                    ██  ██  ██            ██        ██
+██          ██    ██  ██      ██████  ██            ████  ██  ██          ████    ██          ██  ██  ██  ██                      ██
+██            ██  ██  ██      ██                  ██  ██  ██              ██        ██        ██          ██  ██    ██        ██  ██
+██  ██        ██  ████            ██                    ██      ████    ██      ██  ██      ██                  ██████      ██    ██
+██              ████                    ██████████  ██    ████            ██                            ██    ██            ████  ██
+██    ██████          ██    ██        ██        ██                ████  ██  ██        ██      ████  ██        ██            ██    ██
+██  ████                  ██    ██              ██  ██    ██    ██    ██          ██      ████  ████          ██        ██  ██  ████
+██████  ██    ██                  ██      ██    ██  ██  ██████        ██████    ██        ██  ██  ████                            ██
+██  ██          ██      ██    ██    ██        ████        ██                ████              ██      ████              ██    ██  ██
+████  ██                      ██          ██        ██            ██  ██                ██  ████                        ██        ██
+██    ████    ██  ██      ██          ██      ██  ████████  ██  ██  ██        ██████                  ██        ██            ██████
+██          ████      ██  ██          ██  ██              ██          ████    ██          ████                    ██              ██
+████    ██              ██                ██    ██                      ██  ██          ██      ██    ████      ██  ██        ██  ██
+██  ████  ██    ██        ██      ██  ██                ██                      ██            ████        ██                      ██
+██            ██      ██    ████            ██    ████    ██  ██      ██  ██                  ██    ██      ██          ████    ████
+██    ██████          ████              ██        ████                            ██  ██      ██      ██  ████  ██  ██        ██████
+██    ██  ██          ████  ██    ██                    ██  ████████████  ██                        ████  ██  ██      ██    ██    ██
+██  ████        ████  ██    ████████    ██                      ██████    ████  ██      ██████        ██  ████    ██        ██  ████
+████  ██      ████      ██    ██    ██      ████            ██    ████    ██        ██    ██      ████████        ██            ████
+████      ██      ████  ██  ██  ██████      ██████        ██            ██    ██                ██    ████        ██  ██          ██
+██      ██      ██    ██      ██            ██                  ██            ████                                    ██      ██  ██
+██                    ██  ██  ██    ██████████  ██  ██  ██        ████                  ██        ████      ██████  ████        ████
+██      ██    ████    ██  ██  ████                ██  ██  ████      ██    ██  ██              ██████  ████                  ██    ██
+████    ██                    ██    ████████              ██████    ████            ██                ██  ██    ██      ██  ██  ████
+██        ██            ██████████              ██    ██    ██                ████  ██        ██        ██              ██        ██
+██  ████    ██      ██    ██        ██  ██          ██          ██    ██    ██  ████      ████      ██                    ████    ██
+████  ████        ████          ████    ██        ██    ██  ██  ████  ██████    ████                  ██        ████    ██  ██  ████
+██        ██    ████    ██    ██            ██        ██          ██    ██████  ██    ██████████    ██      ██      ██      ██  ████
+██      ██████  ████                  ██        ██████        ████    ████████  ██████    ██        ██                ██    ██    ██
+██                      ██        ██████████          ██  ██            ████        ██  ██    ██          ██    ██  ██        ██  ██
+██    ██  ████                                ██    ██    ██    ██    ██    ██        ██            ████████  ██        ████████  ██
+██        ██      ██                                  ██  ████    ██████████  ██████                        ██    ██    ████      ██
+██    ██        ████    ██  ██    ██  ██  ██      ██        ██  ██          ██    ████            ██    ██    ██    ████  ██  ██  ██
+████  ████        ██  ██    ██████  ██            ██  ██      ██                      ████          ████  ██                ██    ██
+██        ██          ██  ██                    ██  ██                ██  ██        ██    ██  ████    ██            ██  ████  ██  ██
+██                    ██                            ██                ██        ██        ██              ████        ██      ██  ██
+██        ██      ██      ██  ██            ██      ██    ██    ██        ██                ██          ██  ██            ████  ████
+████                ██                        ████                        ██        ████████              ██        ██████████    ██
+██  ██      ██      ████  ██                      ████    ██            ██  ████  ████            ██████              ████        ██
+████              ██      ██        ██████  ████    ████    ██      ██                                    ██          ████    ██  ██
+████  ██  ██    ██      ██          ██      ████    ██  ██████    ██    ██            ████        ██  ██    ████  ████    ██████  ██
+████            ██                ██  ██████        ██        ██  ██  ██              ██              ██    ████              ██  ██
+████████        ██      ██    ██      ████    ██  ██  ██  ██  ██  ██  ██████    ████          ██        ██  ██  ██    ████  ██  ████
+██          ██  ████    ██  ██      ██                      ██  ██    ████                        ██                ██  ██        ██
+████  ██              ██                            ██          ████      ████████  ██              ████          ██  ██  ████    ██
+██        ██  ██    ████  ██                ██                  ████████        ██          ██    ████            ████      ██    ██
+████████    ██  ██      ██    ████                  ██    ██                            ████████          ████    ████      ██    ██
+██████  ██      ████  ██      ████      ██  ██  ██  ██████              ████            ██            ██    ██        ██          ██
+██  ██    ████    ██          ████          ██████  ████  ████        ██    ██      ██  ██    ██            ██    ██████          ██
+██    ██████        ██    ██    ██                ██        ██  ██            ██                        ██████        ██          ██
+████          ██        ██      ██    ██    ████    ████                      ██        ████  ████                    ████████    ██
+████            ██  ████            ██████  ██      ████      ██            ██            ██          ██    ██        ████████  ████
+██    ██████  ██      ██  ██          ██      ██      ██        ██        ██                          ████      ██    ████        ██
+██  ██        ██  ██          ██  ██            ████    ████        ████  ██    ██    ████          ██  ██          ██  ██      ████
+██              ██                ██  ██                            ████  ██        ██  ████    ████    ██              ██  ████  ██
+██      ████        ██  ██    ██  ████        ██      ██████    ████            ██      ██      ████                        ██    ██
+████                              ██                ██    ██        ██████            ██      ██      ████    ████████  ██      ████
+██  ████        ██    ██    ██      ██        ████      ████████  ██  ████      ██  ██      ████      ████      ██      ██        ██
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+
+[2019-09-10 14:52:25] - 0. A*
+[2019-09-10 14:52:27] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 14:52:27] - Average total steps: 67.24, (A*: 67.24), (Improvement: 0%)
+[2019-09-10 14:52:27] - Average total distance: 38.1, (A*: 38.1), (Improvement: 0%)
+[2019-09-10 14:52:27] - Average time: 0.0276 seconds, (A*: 0.0276 seconds), (Improvement: 0%)
+[2019-09-10 14:52:27] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 34.48)
+[2019-09-10 14:52:27] - Average search space (no fringe): 5.66%
+[2019-09-10 14:52:27] - Average fringe: 2.33%
+[2019-09-10 14:52:27] - Average total search space: 7.99%
+
+
+[2019-09-10 14:52:27] - 1. RT
+[2019-09-10 14:52:41] - Rate of success: 0.0%, (A*: 100.0%), (Improvement: -100.0%)
+[2019-09-10 14:52:41] - Average total steps: 0, (A*: 0), (Improvement: 0%)
+[2019-09-10 14:52:41] - Average total distance: 0, (A*: 0), (Improvement: 0%)
+[2019-09-10 14:52:41] - Average time: 0 seconds, (A*: 0 seconds), (Improvement: 0%)
+[2019-09-10 14:52:41] - Average distance from goal: 34.48, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 34.48)
+
+
+[2019-09-10 14:52:41] - 2. RRT
+[2019-09-10 14:53:05] - Rate of success: 12.0%, (A*: 100.0%), (Improvement: -88.0%)
+[2019-09-10 14:53:05] - Average total steps: 38.83, (A*: 33.0), (Improvement: -17.67%)
+[2019-09-10 14:53:05] - Average total distance: 31.39, (A*: 18.12), (Improvement: -73.23%)
+[2019-09-10 14:53:05] - Average time: 0.2558 seconds, (A*: 0.0109 seconds), (Improvement: -2246.79%)
+[2019-09-10 14:53:05] - Average distance from goal: 32.52, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 34.48)
+
+
+[2019-09-10 14:53:05] - 3. RRT*
+[2019-09-10 14:53:44] - Rate of success: 10.0%, (A*: 100.0%), (Improvement: -90.0%)
+[2019-09-10 14:53:44] - Average total steps: 23.0, (A*: 21.2), (Improvement: -8.49%)
+[2019-09-10 14:53:44] - Average total distance: 17.78, (A*: 11.84), (Improvement: -50.17%)
+[2019-09-10 14:53:44] - Average time: 0.2097 seconds, (A*: 0.0064 seconds), (Improvement: -3176.56%)
+[2019-09-10 14:53:44] - Average distance from goal: 33.4, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 34.48)
+
+
+[2019-09-10 14:53:44] - 4. RRT-Connect
+[2019-09-10 14:54:02] - Rate of success: 22.0%, (A*: 100.0%), (Improvement: -78.0%)
+[2019-09-10 14:54:02] - Average total steps: 40.82, (A*: 31.45), (Improvement: -29.79%)
+[2019-09-10 14:54:02] - Average total distance: 32.23, (A*: 17.93), (Improvement: -79.75%)
+[2019-09-10 14:54:02] - Average time: 0.1281 seconds, (A*: 0.0105 seconds), (Improvement: -1120.0%)
+[2019-09-10 14:54:02] - Average distance from goal: 30.88, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 34.48)
+
+
+[2019-09-10 14:54:02] - 5. Wave-front
+[2019-09-10 14:54:05] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 14:54:05] - Average total steps: 67.12, (A*: 67.24), (Improvement: 0.18%)
+[2019-09-10 14:54:05] - Average total distance: 42.28, (A*: 38.1), (Improvement: -10.97%)
+[2019-09-10 14:54:05] - Average time: 0.0408 seconds, (A*: 0.0276 seconds), (Improvement: -47.83%)
+[2019-09-10 14:54:05] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 34.48)
+
+
+[2019-09-10 14:54:05] - 6. Dijkstra
+[2019-09-10 14:54:07] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 14:54:07] - Average total steps: 67.24, (A*: 67.24), (Improvement: 0%)
+[2019-09-10 14:54:07] - Average total distance: 38.1, (A*: 38.1), (Improvement: 0%)
+[2019-09-10 14:54:07] - Average time: 0.0411 seconds, (A*: 0.0276 seconds), (Improvement: -48.91%)
+[2019-09-10 14:54:07] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 34.48)
+[2019-09-10 14:54:07] - Average search space (no fringe): 37.61%
+[2019-09-10 14:54:07] - Average fringe: 1.69%
+[2019-09-10 14:54:07] - Average total search space: 39.3%
+
+
+\begin{table}[] 
+\footnotesize 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Success Rate} & \textbf{Distance} & \textbf{Time} & \textbf{Distance Left}\\
+\hline
+0 & 100.0\% (I: 0\%) & 38.1 (A*: 38.1) (I: 0\%) & 0.0276s & 0.0\\
+\hline
+1 & 0.0\% (I: -100.0\%) & 0 (A*: 0) (I: 0\%) & 0s & 34.48\\
+\hline
+2 & 12.0\% (I: -88.0\%) & 31.39 (A*: 18.12) (I: -73.23\%) & 0.2558s & 32.52\\
+\hline
+3 & 10.0\% (I: -90.0\%) & 17.78 (A*: 11.84) (I: -50.17\%) & 0.2097s & 33.4\\
+\hline
+4 & 22.0\% (I: -78.0\%) & 32.23 (A*: 17.93) (I: -79.75\%) & 0.1281s & 30.88\\
+\hline
+5 & 100.0\% (I: 0\%) & 42.28 (A*: 38.1) (I: -10.97\%) & 0.0408s & 0.0\\
+\hline
+6 & 100.0\% (I: 0\%) & 38.1 (A*: 38.1) (I: 0\%) & 0.0411s & 0.0\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Pick Ratio}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{GK Improvement} & \textbf{GK Distance} & \textbf{GK Distance Left} & \textbf{WP} & \textbf{WP In-Between Distance}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Total Search} & \textbf{Total Fringe} & \textbf{Session Search} & \textbf{Session Fringe}\\
+\hline
+0 & 7.99\% & 2.33\% & 7.99\% & 2.33\%\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
+[2019-09-10 14:54:07] - Analysis on map: 1. block_map_10/6 with random samples: 50
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+
+[2019-09-10 14:54:07] - 0. A*
+[2019-09-10 14:54:10] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 14:54:10] - Average total steps: 76.96, (A*: 76.96), (Improvement: 0%)
+[2019-09-10 14:54:10] - Average total distance: 41.62, (A*: 41.62), (Improvement: 0%)
+[2019-09-10 14:54:10] - Average time: 0.041 seconds, (A*: 0.041 seconds), (Improvement: 0%)
+[2019-09-10 14:54:10] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 31.33)
+[2019-09-10 14:54:10] - Average search space (no fringe): 10.52%
+[2019-09-10 14:54:10] - Average fringe: 2.98%
+[2019-09-10 14:54:10] - Average total search space: 13.5%
+
+
+[2019-09-10 14:54:10] - 1. RT
+[2019-09-10 14:54:32] - Rate of success: 32.0%, (A*: 100.0%), (Improvement: -68.0%)
+[2019-09-10 14:54:32] - Average total steps: 30.94, (A*: 30.62), (Improvement: -1.05%)
+[2019-09-10 14:54:32] - Average total distance: 26.92, (A*: 16.59), (Improvement: -62.27%)
+[2019-09-10 14:54:32] - Average time: 0.1492 seconds, (A*: 0.0112 seconds), (Improvement: -1232.14%)
+[2019-09-10 14:54:32] - Average distance from goal: 26.33, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 31.33)
+
+
+[2019-09-10 14:54:32] - 2. RRT
+[2019-09-10 14:55:27] - Rate of success: 0.0%, (A*: 100.0%), (Improvement: -100.0%)
+[2019-09-10 14:55:27] - Average total steps: 0, (A*: 0), (Improvement: 0%)
+[2019-09-10 14:55:27] - Average total distance: 0, (A*: 0), (Improvement: 0%)
+[2019-09-10 14:55:27] - Average time: 0 seconds, (A*: 0 seconds), (Improvement: 0%)
+[2019-09-10 14:55:27] - Average distance from goal: 31.33, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 31.33)
+
+
+[2019-09-10 14:55:27] - 3. RRT*
+[2019-09-10 15:13:22] - Rate of success: 4.0%, (A*: 100.0%), (Improvement: -96.0%)
+[2019-09-10 15:13:22] - Average total steps: 71.5, (A*: 102.0), (Improvement: 29.9%)
+[2019-09-10 15:13:22] - Average total distance: 60.0, (A*: 54.14), (Improvement: -10.82%)
+[2019-09-10 15:13:22] - Average time: 13.8248 seconds, (A*: 0.0509 seconds), (Improvement: -27060.71%)
+[2019-09-10 15:13:22] - Average distance from goal: 29.62, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 31.33)
+
+
+[2019-09-10 15:13:22] - 4. RRT-Connect
+[2019-09-10 15:13:24] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 15:13:24] - Average total steps: 71.14, (A*: 76.96), (Improvement: 7.56%)
+[2019-09-10 15:13:24] - Average total distance: 62.62, (A*: 41.62), (Improvement: -50.46%)
+[2019-09-10 15:13:24] - Average time: 0.0316 seconds, (A*: 0.041 seconds), (Improvement: 22.93%)
+[2019-09-10 15:13:24] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 31.33)
+
+
+[2019-09-10 15:13:24] - 5. Wave-front
+[2019-09-10 15:13:27] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 15:13:27] - Average total steps: 76.96, (A*: 76.96), (Improvement: 0%)
+[2019-09-10 15:13:27] - Average total distance: 46.86, (A*: 41.62), (Improvement: -12.59%)
+[2019-09-10 15:13:27] - Average time: 0.0432 seconds, (A*: 0.041 seconds), (Improvement: -5.37%)
+[2019-09-10 15:13:27] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 31.33)
+
+
+[2019-09-10 15:13:27] - 6. Dijkstra
+[2019-09-10 15:13:30] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 15:13:30] - Average total steps: 76.96, (A*: 76.96), (Improvement: 0%)
+[2019-09-10 15:13:30] - Average total distance: 41.62, (A*: 41.62), (Improvement: 0%)
+[2019-09-10 15:13:30] - Average time: 0.0444 seconds, (A*: 0.041 seconds), (Improvement: -8.29%)
+[2019-09-10 15:13:30] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 31.33)
+[2019-09-10 15:13:30] - Average search space (no fringe): 33.78%
+[2019-09-10 15:13:30] - Average fringe: 1.54%
+[2019-09-10 15:13:30] - Average total search space: 35.32%
+
+
+\begin{table}[] 
+\footnotesize 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Success Rate} & \textbf{Distance} & \textbf{Time} & \textbf{Distance Left}\\
+\hline
+0 & 100.0\% (I: 0\%) & 41.62 (A*: 41.62) (I: 0\%) & 0.041s & 0.0\\
+\hline
+1 & 32.0\% (I: -68.0\%) & 26.92 (A*: 16.59) (I: -62.27\%) & 0.1492s & 26.33\\
+\hline
+2 & 0.0\% (I: -100.0\%) & 0 (A*: 0) (I: 0\%) & 0s & 31.33\\
+\hline
+3 & 4.0\% (I: -96.0\%) & 60.0 (A*: 54.14) (I: -10.82\%) & 13.8248s & 29.62\\
+\hline
+4 & 100.0\% (I: 0\%) & 62.62 (A*: 41.62) (I: -50.46\%) & 0.0316s & 0.0\\
+\hline
+5 & 100.0\% (I: 0\%) & 46.86 (A*: 41.62) (I: -12.59\%) & 0.0432s & 0.0\\
+\hline
+6 & 100.0\% (I: 0\%) & 41.62 (A*: 41.62) (I: 0\%) & 0.0444s & 0.0\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Pick Ratio}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{GK Improvement} & \textbf{GK Distance} & \textbf{GK Distance Left} & \textbf{WP} & \textbf{WP In-Between Distance}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Total Search} & \textbf{Total Fringe} & \textbf{Session Search} & \textbf{Session Fringe}\\
+\hline
+0 & 13.5\% & 2.98\% & 13.5\% & 2.98\%\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
+[2019-09-10 15:13:30] - Analysis on map: 2. house_10/6 with random samples: 50
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+██                ██                ██                                            ██                ██                            ██
+██                ██                ██                                            ██                ██                            ██
+██                ██                ██                      ██                                      ██                            ██
+██                ██                ██                      ██                                      ██                            ██
+██                                  ██                      ██                    ██                                              ██
+██                                  ██                      ██                    ██                                              ██
+██                ██                ██                      ██                    ██                ██                            ██
+██                ██                ██                      ██                    ██                ██                            ██
+██                ██                ██                      ██                    ██                ██                            ██
+██                ██                ██                      ██                    ██                ██                            ██
+██                ██                ██                      ██                    ██                ██                            ██
+██                ██                ██                      ██                    ██                ██                            ██
+██                ██                ████████████    ████████    ████████████████████████    ████████████████████████████    ████████
+██                ██████████    ██████                            ██                                                              ██
+██                ██                ██                            ██                                                              ██
+██                ██                ██                            ██                                                              ██
+██                ██                ██                            ██                                                              ██
+██                ██                ██                            ██                                                              ██
+██                ██                ██                            ██                                                              ██
+██                ██                ██                            ██                                                              ██
+██                                  ██                                                                                            ██
+██                                                                                                                                ██
+██                ██                                              ██                                                              ██
+██                ██                ██                            ██                                                              ██
+██                ██                ██████████    ████████████████████████████████    ██████████████████    ████████████    ████████
+██                ██                ██                              ██                                        ██                  ██
+██                ██                ██                              ██                                        ██                  ██
+██                ██                ██                              ██                  ██                    ██                  ██
+██                ██                ██                              ██                  ██                    ██                  ██
+██                  ████████    ██████                              ██                  ██                    ██                  ██
+██                                  ██                              ██                  ██                    ██                  ██
+████    ████████████                ██                                                  ██                    ██                  ██
+██                ██                ██                                                  ██                    ██                  ██
+██                ██                ██                              ██                  ██                    ██                  ██
+██                ██                                                ██                  ██                                        ██
+██                ██                                                ██                  ██                                        ██
+██                ██                ██    ██████████████████████████████████████    ██████████    ██████████    ████████████████████
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                                  ██                                                          ██                                ██
+██                                  ██                                                          ██                                ██
+██                ██                                                                            ██                                ██
+████████████████████                                                                            ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██████████████    ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                                  ██                                                          ████████████████████████████████████
+██                                  ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                                                                            ██                                ██
+██                ██                                                                            ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+
+[2019-09-10 15:13:30] - 0. A*
+[2019-09-10 15:13:32] - Rate of success: 94.0%, (A*: 94.0%), (Improvement: 0%)
+[2019-09-10 15:13:32] - Average total steps: 75.45, (A*: 75.45), (Improvement: 0%)
+[2019-09-10 15:13:32] - Average total distance: 43.97, (A*: 43.97), (Improvement: 0%)
+[2019-09-10 15:13:32] - Average time: 0.0358 seconds, (A*: 0.0358 seconds), (Improvement: 0%)
+[2019-09-10 15:13:32] - Average distance from goal: 3.49, (A*: 3.49), (Improvement: 0%) (Average original distance from goal: 39.55)
+[2019-09-10 15:13:32] - Average search space (no fringe): 9.0%
+[2019-09-10 15:13:32] - Average fringe: 4.01%
+[2019-09-10 15:13:32] - Average total search space: 13.0%
+
+
+[2019-09-10 15:13:32] - 1. RT
+[2019-09-10 15:13:56] - Rate of success: 0.0%, (A*: 94.0%), (Improvement: -100.0%)
+[2019-09-10 15:13:56] - Average total steps: 0, (A*: 0), (Improvement: 0%)
+[2019-09-10 15:13:56] - Average total distance: 0, (A*: 0), (Improvement: 0%)
+[2019-09-10 15:13:56] - Average time: 0 seconds, (A*: 0 seconds), (Improvement: 0%)
+[2019-09-10 15:13:56] - Average distance from goal: 39.55, (A*: 3.49), (Improvement: -1033.24%) (Average original distance from goal: 39.55)
+
+
+[2019-09-10 15:13:56] - 2. RRT
+[2019-09-10 15:14:31] - Rate of success: 16.0%, (A*: 94.0%), (Improvement: -82.98%)
+[2019-09-10 15:14:31] - Average total steps: 42.38, (A*: 36.25), (Improvement: -16.91%)
+[2019-09-10 15:14:31] - Average total distance: 36.22, (A*: 20.34), (Improvement: -78.07%)
+[2019-09-10 15:14:31] - Average time: 0.0797 seconds, (A*: 0.0071 seconds), (Improvement: -1022.54%)
+[2019-09-10 15:14:31] - Average distance from goal: 36.52, (A*: 3.49), (Improvement: -946.42%) (Average original distance from goal: 39.55)
+
+
+[2019-09-10 15:14:31] - 3. RRT*
+[2019-09-10 15:18:19] - Rate of success: 16.0%, (A*: 94.0%), (Improvement: -82.98%)
+[2019-09-10 15:18:19] - Average total steps: 30.25, (A*: 33.5), (Improvement: 9.7%)
+[2019-09-10 15:18:19] - Average total distance: 26.29, (A*: 18.8), (Improvement: -39.84%)
+[2019-09-10 15:18:19] - Average time: 0.1934 seconds, (A*: 0.0068 seconds), (Improvement: -2744.12%)
+[2019-09-10 15:18:19] - Average distance from goal: 36.91, (A*: 3.49), (Improvement: -957.59%) (Average original distance from goal: 39.55)
+
+
+[2019-09-10 15:18:19] - 4. RRT-Connect
+[2019-09-10 15:18:31] - Rate of success: 80.0%, (A*: 94.0%), (Improvement: -14.89%)
+[2019-09-10 15:18:31] - Average total steps: 82.75, (A*: 71.6), (Improvement: -15.57%)
+[2019-09-10 15:18:31] - Average total distance: 72.21, (A*: 41.53), (Improvement: -73.87%)
+[2019-09-10 15:18:31] - Average time: 0.144 seconds, (A*: 0.0359 seconds), (Improvement: -301.11%)
+[2019-09-10 15:18:31] - Average distance from goal: 10.04, (A*: 3.49), (Improvement: -187.68%) (Average original distance from goal: 39.55)
+
+
+[2019-09-10 15:18:31] - 5. Wave-front
+[2019-09-10 15:18:33] - Rate of success: 94.0%, (A*: 94.0%), (Improvement: 0%)
+[2019-09-10 15:18:33] - Average total steps: 75.45, (A*: 75.45), (Improvement: 0%)
+[2019-09-10 15:18:33] - Average total distance: 47.95, (A*: 43.97), (Improvement: -9.05%)
+[2019-09-10 15:18:33] - Average time: 0.0278 seconds, (A*: 0.0358 seconds), (Improvement: 22.35%)
+[2019-09-10 15:18:33] - Average distance from goal: 3.49, (A*: 3.49), (Improvement: 0%) (Average original distance from goal: 39.55)
+
+
+[2019-09-10 15:18:33] - 6. Dijkstra
+[2019-09-10 15:18:35] - Rate of success: 94.0%, (A*: 94.0%), (Improvement: 0%)
+[2019-09-10 15:18:35] - Average total steps: 75.45, (A*: 75.45), (Improvement: 0%)
+[2019-09-10 15:18:35] - Average total distance: 43.97, (A*: 43.97), (Improvement: 0%)
+[2019-09-10 15:18:35] - Average time: 0.0424 seconds, (A*: 0.0358 seconds), (Improvement: -18.44%)
+[2019-09-10 15:18:35] - Average distance from goal: 3.49, (A*: 3.49), (Improvement: 0%) (Average original distance from goal: 39.55)
+[2019-09-10 15:18:35] - Average search space (no fringe): 54.67%
+[2019-09-10 15:18:35] - Average fringe: 2.01%
+[2019-09-10 15:18:35] - Average total search space: 56.67%
+
+
+\begin{table}[] 
+\footnotesize 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Success Rate} & \textbf{Distance} & \textbf{Time} & \textbf{Distance Left}\\
+\hline
+0 & 94.0\% (I: 0\%) & 43.97 (A*: 43.97) (I: 0\%) & 0.0358s & 3.49\\
+\hline
+1 & 0.0\% (I: -100.0\%) & 0 (A*: 0) (I: 0\%) & 0s & 39.55\\
+\hline
+2 & 16.0\% (I: -82.98\%) & 36.22 (A*: 20.34) (I: -78.07\%) & 0.0797s & 36.52\\
+\hline
+3 & 16.0\% (I: -82.98\%) & 26.29 (A*: 18.8) (I: -39.84\%) & 0.1934s & 36.91\\
+\hline
+4 & 80.0\% (I: -14.89\%) & 72.21 (A*: 41.53) (I: -73.87\%) & 0.144s & 10.04\\
+\hline
+5 & 94.0\% (I: 0\%) & 47.95 (A*: 43.97) (I: -9.05\%) & 0.0278s & 3.49\\
+\hline
+6 & 94.0\% (I: 0\%) & 43.97 (A*: 43.97) (I: 0\%) & 0.0424s & 3.49\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Pick Ratio}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{GK Improvement} & \textbf{GK Distance} & \textbf{GK Distance Left} & \textbf{WP} & \textbf{WP In-Between Distance}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Total Search} & \textbf{Total Fringe} & \textbf{Session Search} & \textbf{Session Fringe}\\
+\hline
+0 & 13.0\% & 4.01\% & 13.0\% & 4.01\%\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
+[2019-09-10 15:18:35] - Analysis on map: 3. Maps.grid_map_labyrinth with random samples: 50
+████████████████████████████████████████████
+██                                        ██
+██          ██                            ██
+██          ██                            ██
+██          ██                            ██
+██          ██                            ██
+██          ██                            ██
+██          ██                            ██
+██          ██                            ██
+██          ██████████████████████        ██
+██          ██                  ██        ██
+██          ██                  ██        ██
+██          ██                  ██        ██
+██          ██                  ██        ██
+██          ██                  ██        ██
+██          ██                  ██        ██
+██          ██  ██████████████████        ██
+██          ██                            ██
+██          ██                            ██
+██                                        ██
+████████████████████████████████████████████
+
+[2019-09-10 15:18:35] - 0. A*
+[2019-09-10 15:18:36] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 15:18:36] - Average total steps: 36.96, (A*: 36.96), (Improvement: 0%)
+[2019-09-10 15:18:36] - Average total distance: 18.77, (A*: 18.77), (Improvement: 0%)
+[2019-09-10 15:18:36] - Average time: 0.0053 seconds, (A*: 0.0053 seconds), (Improvement: 0%)
+[2019-09-10 15:18:36] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 8.57)
+[2019-09-10 15:18:36] - Average search space (no fringe): 29.47%
+[2019-09-10 15:18:36] - Average fringe: 6.68%
+[2019-09-10 15:18:36] - Average total search space: 36.15%
+
+
+[2019-09-10 15:18:36] - 1. RT
+[2019-09-10 15:18:53] - Rate of success: 20.0%, (A*: 100.0%), (Improvement: -80.0%)
+[2019-09-10 15:18:53] - Average total steps: 15.1, (A*: 13.0), (Improvement: -16.15%)
+[2019-09-10 15:18:53] - Average total distance: 11.08, (A*: 5.96), (Improvement: -85.91%)
+[2019-09-10 15:18:53] - Average time: 0.0309 seconds, (A*: 0.0007 seconds), (Improvement: -4314.29%)
+[2019-09-10 15:18:53] - Average distance from goal: 7.48, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 8.57)
+
+
+[2019-09-10 15:18:53] - 2. RRT
+[2019-09-10 15:19:17] - Rate of success: 38.0%, (A*: 100.0%), (Improvement: -62.0%)
+[2019-09-10 15:19:17] - Average total steps: 16.26, (A*: 18.21), (Improvement: 10.71%)
+[2019-09-10 15:19:17] - Average total distance: 11.0, (A*: 8.78), (Improvement: -25.28%)
+[2019-09-10 15:19:17] - Average time: 0.1298 seconds, (A*: 0.0011 seconds), (Improvement: -11700.0%)
+[2019-09-10 15:19:17] - Average distance from goal: 5.69, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 8.57)
+
+
+[2019-09-10 15:19:17] - 3. RRT*
+[2019-09-10 15:24:45] - Rate of success: 38.0%, (A*: 100.0%), (Improvement: -62.0%)
+[2019-09-10 15:24:45] - Average total steps: 13.84, (A*: 18.42), (Improvement: 24.86%)
+[2019-09-10 15:24:45] - Average total distance: 9.7, (A*: 8.86), (Improvement: -9.48%)
+[2019-09-10 15:24:45] - Average time: 1.6105 seconds, (A*: 0.0011 seconds), (Improvement: -146309.09%)
+[2019-09-10 15:24:45] - Average distance from goal: 5.67, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 8.57)
+
+
+[2019-09-10 15:24:45] - 4. RRT-Connect
+[2019-09-10 15:24:55] - Rate of success: 78.0%, (A*: 100.0%), (Improvement: -22.0%)
+[2019-09-10 15:24:55] - Average total steps: 34.64, (A*: 31.13), (Improvement: -11.28%)
+[2019-09-10 15:24:55] - Average total distance: 25.6, (A*: 15.76), (Improvement: -62.44%)
+[2019-09-10 15:24:55] - Average time: 0.0265 seconds, (A*: 0.004 seconds), (Improvement: -562.5%)
+[2019-09-10 15:24:55] - Average distance from goal: 2.22, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 8.57)
+
+
+[2019-09-10 15:24:55] - 5. Wave-front
+[2019-09-10 15:24:55] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 15:24:55] - Average total steps: 36.96, (A*: 36.96), (Improvement: 0%)
+[2019-09-10 15:24:55] - Average total distance: 21.54, (A*: 18.77), (Improvement: -14.76%)
+[2019-09-10 15:24:55] - Average time: 0.0027 seconds, (A*: 0.0053 seconds), (Improvement: 49.06%)
+[2019-09-10 15:24:55] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 8.57)
+
+
+[2019-09-10 15:24:55] - 6. Dijkstra
+[2019-09-10 15:24:55] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 15:24:55] - Average total steps: 36.96, (A*: 36.96), (Improvement: 0%)
+[2019-09-10 15:24:55] - Average total distance: 18.77, (A*: 18.77), (Improvement: 0%)
+[2019-09-10 15:24:55] - Average time: 0.0037 seconds, (A*: 0.0053 seconds), (Improvement: 30.19%)
+[2019-09-10 15:24:55] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 8.57)
+[2019-09-10 15:24:55] - Average search space (no fringe): 49.66%
+[2019-09-10 15:24:55] - Average fringe: 5.62%
+[2019-09-10 15:24:55] - Average total search space: 55.27%
+
+
+\begin{table}[] 
+\footnotesize 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Success Rate} & \textbf{Distance} & \textbf{Time} & \textbf{Distance Left}\\
+\hline
+0 & 100.0\% (I: 0\%) & 18.77 (A*: 18.77) (I: 0\%) & 0.0053s & 0.0\\
+\hline
+1 & 20.0\% (I: -80.0\%) & 11.08 (A*: 5.96) (I: -85.91\%) & 0.0309s & 7.48\\
+\hline
+2 & 38.0\% (I: -62.0\%) & 11.0 (A*: 8.78) (I: -25.28\%) & 0.1298s & 5.69\\
+\hline
+3 & 38.0\% (I: -62.0\%) & 9.7 (A*: 8.86) (I: -9.48\%) & 1.6105s & 5.67\\
+\hline
+4 & 78.0\% (I: -22.0\%) & 25.6 (A*: 15.76) (I: -62.44\%) & 0.0265s & 2.22\\
+\hline
+5 & 100.0\% (I: 0\%) & 21.54 (A*: 18.77) (I: -14.76\%) & 0.0027s & 0.0\\
+\hline
+6 & 100.0\% (I: 0\%) & 18.77 (A*: 18.77) (I: 0\%) & 0.0037s & 0.0\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Pick Ratio}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{GK Improvement} & \textbf{GK Distance} & \textbf{GK Distance Left} & \textbf{WP} & \textbf{WP In-Between Distance}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Total Search} & \textbf{Total Fringe} & \textbf{Session Search} & \textbf{Session Fringe}\\
+\hline
+0 & 36.15\% & 6.68\% & 36.15\% & 6.68\%\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
+[2019-09-10 15:24:55] - Analysis on map: 4. Maps.grid_map_labyrinth2 with random samples: 50
+████████████████████████████████████████████
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+████████████████████████████████████      ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+████████████████████████████████████████████
+
+[2019-09-10 15:24:55] - 0. A*
+[2019-09-10 15:24:56] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 15:24:56] - Average total steps: 22.8, (A*: 22.8), (Improvement: 0%)
+[2019-09-10 15:24:56] - Average total distance: 12.08, (A*: 12.08), (Improvement: 0%)
+[2019-09-10 15:24:56] - Average time: 0.0022 seconds, (A*: 0.0022 seconds), (Improvement: 0%)
+[2019-09-10 15:24:56] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 9.92)
+[2019-09-10 15:24:56] - Average search space (no fringe): 10.23%
+[2019-09-10 15:24:56] - Average fringe: 9.68%
+[2019-09-10 15:24:56] - Average total search space: 19.91%
+
+
+[2019-09-10 15:24:56] - 1. RT
+[2019-09-10 15:25:03] - Rate of success: 80.0%, (A*: 100.0%), (Improvement: -20.0%)
+[2019-09-10 15:25:03] - Average total steps: 27.32, (A*: 19.7), (Improvement: -38.68%)
+[2019-09-10 15:25:03] - Average total distance: 23.37, (A*: 10.34), (Improvement: -126.02%)
+[2019-09-10 15:25:03] - Average time: 0.0717 seconds, (A*: 0.0018 seconds), (Improvement: -3883.33%)
+[2019-09-10 15:25:03] - Average distance from goal: 2.54, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 9.92)
+
+
+[2019-09-10 15:25:03] - 2. RRT
+[2019-09-10 15:25:13] - Rate of success: 78.0%, (A*: 100.0%), (Improvement: -22.0%)
+[2019-09-10 15:25:13] - Average total steps: 22.08, (A*: 18.26), (Improvement: -20.92%)
+[2019-09-10 15:25:13] - Average total distance: 16.66, (A*: 9.53), (Improvement: -74.82%)
+[2019-09-10 15:25:13] - Average time: 0.0718 seconds, (A*: 0.0015 seconds), (Improvement: -4686.67%)
+[2019-09-10 15:25:13] - Average distance from goal: 3.01, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 9.92)
+
+
+[2019-09-10 15:25:13] - 3. RRT*
+[2019-09-10 15:26:50] - Rate of success: 90.0%, (A*: 100.0%), (Improvement: -10.0%)
+[2019-09-10 15:26:50] - Average total steps: 16.38, (A*: 20.62), (Improvement: 20.56%)
+[2019-09-10 15:26:50] - Average total distance: 12.84, (A*: 10.88), (Improvement: -18.01%)
+[2019-09-10 15:26:50] - Average time: 1.0685 seconds, (A*: 0.0019 seconds), (Improvement: -56136.84%)
+[2019-09-10 15:26:50] - Average distance from goal: 1.48, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 9.92)
+
+
+[2019-09-10 15:26:50] - 4. RRT-Connect
+[2019-09-10 15:26:50] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 15:26:50] - Average total steps: 28.78, (A*: 22.8), (Improvement: -26.23%)
+[2019-09-10 15:26:50] - Average total distance: 22.41, (A*: 12.08), (Improvement: -85.51%)
+[2019-09-10 15:26:50] - Average time: 0.0019 seconds, (A*: 0.0022 seconds), (Improvement: 13.64%)
+[2019-09-10 15:26:50] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 9.92)
+
+
+[2019-09-10 15:26:50] - 5. Wave-front
+[2019-09-10 15:26:50] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 15:26:50] - Average total steps: 22.8, (A*: 22.8), (Improvement: 0%)
+[2019-09-10 15:26:50] - Average total distance: 12.76, (A*: 12.08), (Improvement: -5.63%)
+[2019-09-10 15:26:50] - Average time: 0.0029 seconds, (A*: 0.0022 seconds), (Improvement: -31.82%)
+[2019-09-10 15:26:50] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 9.92)
+
+
+[2019-09-10 15:26:50] - 6. Dijkstra
+[2019-09-10 15:26:50] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 15:26:50] - Average total steps: 22.8, (A*: 22.8), (Improvement: 0%)
+[2019-09-10 15:26:50] - Average total distance: 12.08, (A*: 12.08), (Improvement: 0%)
+[2019-09-10 15:26:50] - Average time: 0.0026 seconds, (A*: 0.0022 seconds), (Improvement: -18.18%)
+[2019-09-10 15:26:50] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 9.92)
+[2019-09-10 15:26:50] - Average search space (no fringe): 36.22%
+[2019-09-10 15:26:50] - Average fringe: 7.05%
+[2019-09-10 15:26:50] - Average total search space: 43.27%
+
+
+\begin{table}[] 
+\footnotesize 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Success Rate} & \textbf{Distance} & \textbf{Time} & \textbf{Distance Left}\\
+\hline
+0 & 100.0\% (I: 0\%) & 12.08 (A*: 12.08) (I: 0\%) & 0.0022s & 0.0\\
+\hline
+1 & 80.0\% (I: -20.0\%) & 23.37 (A*: 10.34) (I: -126.02\%) & 0.0717s & 2.54\\
+\hline
+2 & 78.0\% (I: -22.0\%) & 16.66 (A*: 9.53) (I: -74.82\%) & 0.0718s & 3.01\\
+\hline
+3 & 90.0\% (I: -10.0\%) & 12.84 (A*: 10.88) (I: -18.01\%) & 1.0685s & 1.48\\
+\hline
+4 & 100.0\% (I: 0\%) & 22.41 (A*: 12.08) (I: -85.51\%) & 0.0019s & 0.0\\
+\hline
+5 & 100.0\% (I: 0\%) & 12.76 (A*: 12.08) (I: -5.63\%) & 0.0029s & 0.0\\
+\hline
+6 & 100.0\% (I: 0\%) & 12.08 (A*: 12.08) (I: 0\%) & 0.0026s & 0.0\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Pick Ratio}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{GK Improvement} & \textbf{GK Distance} & \textbf{GK Distance Left} & \textbf{WP} & \textbf{WP In-Between Distance}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Total Search} & \textbf{Total Fringe} & \textbf{Session Search} & \textbf{Session Fringe}\\
+\hline
+0 & 19.91\% & 9.68\% & 19.91\% & 9.68\%\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
+[2019-09-10 15:26:50] - Analysis on map: 5. Maps.grid_map_one_obstacle.convert_to_dense_map() with random samples: 50
+████████████████████████████████████████████████████████████████████
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                              ██                                ██
+██                        ██████████████                          ██
+██                      ██████████████████                        ██
+██                      ██████████████████                        ██
+██                      ██████████████████                        ██
+██                    ██████████████████████                      ██
+██                      ██████████████████                        ██
+██                      ██████████████████                        ██
+██                      ██████████████████                        ██
+██                        ██████████████                          ██
+██                              ██                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+████████████████████████████████████████████████████████████████████
+
+[2019-09-10 15:26:50] - 0. A*
+[2019-09-10 15:26:51] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 15:26:51] - Average total steps: 38.92, (A*: 38.92), (Improvement: 0%)
+[2019-09-10 15:26:51] - Average total distance: 21.75, (A*: 21.75), (Improvement: 0%)
+[2019-09-10 15:26:51] - Average time: 0.0056 seconds, (A*: 0.0056 seconds), (Improvement: 0%)
+[2019-09-10 15:26:51] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 20.23)
+[2019-09-10 15:26:51] - Average search space (no fringe): 9.61%
+[2019-09-10 15:26:51] - Average fringe: 8.45%
+[2019-09-10 15:26:51] - Average total search space: 18.06%
+
+
+[2019-09-10 15:26:51] - 1. RT
+[2019-09-10 15:27:13] - Rate of success: 34.0%, (A*: 100.0%), (Improvement: -66.0%)
+[2019-09-10 15:27:13] - Average total steps: 29.29, (A*: 25.18), (Improvement: -16.32%)
+[2019-09-10 15:27:13] - Average total distance: 25.22, (A*: 13.73), (Improvement: -83.69%)
+[2019-09-10 15:27:13] - Average time: 0.1847 seconds, (A*: 0.0028 seconds), (Improvement: -6496.43%)
+[2019-09-10 15:27:13] - Average distance from goal: 15.83, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 20.23)
+
+
+[2019-09-10 15:27:13] - 2. RRT
+[2019-09-10 15:27:27] - Rate of success: 88.0%, (A*: 100.0%), (Improvement: -12.0%)
+[2019-09-10 15:27:27] - Average total steps: 44.14, (A*: 36.64), (Improvement: -20.47%)
+[2019-09-10 15:27:27] - Average total distance: 36.07, (A*: 20.54), (Improvement: -75.61%)
+[2019-09-10 15:27:27] - Average time: 0.2003 seconds, (A*: 0.0051 seconds), (Improvement: -3827.45%)
+[2019-09-10 15:27:27] - Average distance from goal: 3.33, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 20.23)
+
+
+[2019-09-10 15:27:27] - 3. RRT*
+[2019-09-10 15:32:51] - Rate of success: 88.0%, (A*: 100.0%), (Improvement: -12.0%)
+[2019-09-10 15:32:51] - Average total steps: 29.0, (A*: 36.18), (Improvement: 19.85%)
+[2019-09-10 15:32:51] - Average total distance: 24.3, (A*: 20.39), (Improvement: -19.18%)
+[2019-09-10 15:32:51] - Average time: 3.0977 seconds, (A*: 0.0051 seconds), (Improvement: -60639.22%)
+[2019-09-10 15:32:51] - Average distance from goal: 3.46, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 20.23)
+
+
+[2019-09-10 15:32:51] - 4. RRT-Connect
+[2019-09-10 15:32:51] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 15:32:51] - Average total steps: 40.28, (A*: 38.92), (Improvement: -3.49%)
+[2019-09-10 15:32:51] - Average total distance: 33.82, (A*: 21.75), (Improvement: -55.49%)
+[2019-09-10 15:32:51] - Average time: 0.0019 seconds, (A*: 0.0056 seconds), (Improvement: 66.07%)
+[2019-09-10 15:32:51] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 20.23)
+
+
+[2019-09-10 15:32:51] - 5. Wave-front
+[2019-09-10 15:32:52] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 15:32:52] - Average total steps: 38.92, (A*: 38.92), (Improvement: 0%)
+[2019-09-10 15:32:52] - Average total distance: 22.15, (A*: 21.75), (Improvement: -1.84%)
+[2019-09-10 15:32:52] - Average time: 0.0076 seconds, (A*: 0.0056 seconds), (Improvement: -35.71%)
+[2019-09-10 15:32:52] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 20.23)
+
+
+[2019-09-10 15:32:52] - 6. Dijkstra
+[2019-09-10 15:32:52] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2019-09-10 15:32:52] - Average total steps: 38.92, (A*: 38.92), (Improvement: 0%)
+[2019-09-10 15:32:52] - Average total distance: 21.75, (A*: 21.75), (Improvement: 0%)
+[2019-09-10 15:32:52] - Average time: 0.0106 seconds, (A*: 0.0056 seconds), (Improvement: -89.29%)
+[2019-09-10 15:32:52] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 20.23)
+[2019-09-10 15:32:52] - Average search space (no fringe): 56.65%
+[2019-09-10 15:32:52] - Average fringe: 4.02%
+[2019-09-10 15:32:52] - Average total search space: 60.67%
+
+
+\begin{table}[] 
+\footnotesize 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Success Rate} & \textbf{Distance} & \textbf{Time} & \textbf{Distance Left}\\
+\hline
+0 & 100.0\% (I: 0\%) & 21.75 (A*: 21.75) (I: 0\%) & 0.0056s & 0.0\\
+\hline
+1 & 34.0\% (I: -66.0\%) & 25.22 (A*: 13.73) (I: -83.69\%) & 0.1847s & 15.83\\
+\hline
+2 & 88.0\% (I: -12.0\%) & 36.07 (A*: 20.54) (I: -75.61\%) & 0.2003s & 3.33\\
+\hline
+3 & 88.0\% (I: -12.0\%) & 24.3 (A*: 20.39) (I: -19.18\%) & 3.0977s & 3.46\\
+\hline
+4 & 100.0\% (I: 0\%) & 33.82 (A*: 21.75) (I: -55.49\%) & 0.0019s & 0.0\\
+\hline
+5 & 100.0\% (I: 0\%) & 22.15 (A*: 21.75) (I: -1.84\%) & 0.0076s & 0.0\\
+\hline
+6 & 100.0\% (I: 0\%) & 21.75 (A*: 21.75) (I: 0\%) & 0.0106s & 0.0\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Pick Ratio}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{GK Improvement} & \textbf{GK Distance} & \textbf{GK Distance Left} & \textbf{WP} & \textbf{WP In-Between Distance}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Total Search} & \textbf{Total Fringe} & \textbf{Session Search} & \textbf{Session Fringe}\\
+\hline
+0 & 18.06\% & 8.45\% & 18.06\% & 8.45\%\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
+
+
+[2019-09-10 15:32:52] - Complex analysis overall results: 
+
+[2019-09-10 15:32:52] - 0. A*
+[2019-09-10 15:32:52] - Rate of success: 99.0%, (A*: 99.0%), (Improvement: 0%)
+[2019-09-10 15:32:52] - Average total steps: 52.83, (A*: 52.83), (Improvement: 0%)
+[2019-09-10 15:32:52] - Average total distance: 29.24, (A*: 29.24), (Improvement: 0%)
+[2019-09-10 15:32:52] - Average time: 0.0194 seconds, (A*: 0.0194 seconds), (Improvement: 0%)
+[2019-09-10 15:32:52] - Average distance from goal: 0.58, (A*: 0.58), (Improvement: 0%) (Average original distance from goal: 24.01)
+[2019-09-10 15:32:52] - Average search space (no fringe): 12.45%
+[2019-09-10 15:32:52] - Average fringe: 5.7%
+[2019-09-10 15:32:52] - Average total search space: 18.15%
+
+
+[2019-09-10 15:32:52] - 1. RT
+[2019-09-10 15:32:52] - Rate of success: 27.67%, (A*: 99.0%), (Improvement: -72.05%)
+[2019-09-10 15:32:52] - Average total steps: 26.95, (A*: 22.12), (Improvement: -21.84%)
+[2019-09-10 15:32:52] - Average total distance: 22.95, (A*: 11.71), (Improvement: -95.99%)
+[2019-09-10 15:32:52] - Average time: 0.1049 seconds, (A*: 0.0037 seconds), (Improvement: -2735.14%)
+[2019-09-10 15:32:52] - Average distance from goal: 21.03, (A*: 0.58), (Improvement: -3525.86%) (Average original distance from goal: 24.01)
+
+
+[2019-09-10 15:32:52] - 2. RRT
+[2019-09-10 15:32:52] - Rate of success: 38.67%, (A*: 99.0%), (Improvement: -60.94%)
+[2019-09-10 15:32:52] - Average total steps: 31.76, (A*: 27.22), (Improvement: -16.68%)
+[2019-09-10 15:32:52] - Average total distance: 25.21, (A*: 14.77), (Improvement: -70.68%)
+[2019-09-10 15:32:52] - Average time: 0.1401 seconds, (A*: 0.0037 seconds), (Improvement: -3686.49%)
+[2019-09-10 15:32:52] - Average distance from goal: 18.73, (A*: 0.58), (Improvement: -3129.31%) (Average original distance from goal: 24.01)
+
+
+[2019-09-10 15:32:52] - 3. RRT*
+[2019-09-10 15:32:52] - Rate of success: 41.0%, (A*: 99.0%), (Improvement: -58.59%)
+[2019-09-10 15:32:52] - Average total steps: 22.57, (A*: 28.03), (Improvement: 19.48%)
+[2019-09-10 15:32:52] - Average total distance: 18.3, (A*: 15.23), (Improvement: -20.16%)
+[2019-09-10 15:32:52] - Average time: 1.9937 seconds, (A*: 0.0042 seconds), (Improvement: -47369.05%)
+[2019-09-10 15:32:52] - Average distance from goal: 18.42, (A*: 0.58), (Improvement: -3075.86%) (Average original distance from goal: 24.01)
+
+
+[2019-09-10 15:32:52] - 4. RRT-Connect
+[2019-09-10 15:32:52] - Rate of success: 80.0%, (A*: 99.0%), (Improvement: -19.19%)
+[2019-09-10 15:32:52] - Average total steps: 50.5, (A*: 47.33), (Improvement: -6.7%)
+[2019-09-10 15:32:52] - Average total distance: 42.44, (A*: 26.02), (Improvement: -63.11%)
+[2019-09-10 15:32:52] - Average time: 0.0416 seconds, (A*: 0.0173 seconds), (Improvement: -140.46%)
+[2019-09-10 15:32:52] - Average distance from goal: 7.19, (A*: 0.58), (Improvement: -1139.66%) (Average original distance from goal: 24.01)
+
+
+[2019-09-10 15:32:52] - 5. Wave-front
+[2019-09-10 15:32:52] - Rate of success: 99.0%, (A*: 99.0%), (Improvement: 0%)
+[2019-09-10 15:32:52] - Average total steps: 52.81, (A*: 52.83), (Improvement: 0.04%)
+[2019-09-10 15:32:52] - Average total distance: 32.1, (A*: 29.24), (Improvement: -9.78%)
+[2019-09-10 15:32:52] - Average time: 0.0208 seconds, (A*: 0.0194 seconds), (Improvement: -7.22%)
+[2019-09-10 15:32:52] - Average distance from goal: 0.58, (A*: 0.58), (Improvement: 0%) (Average original distance from goal: 24.01)
+
+
+[2019-09-10 15:32:52] - 6. Dijkstra
+[2019-09-10 15:32:52] - Rate of success: 99.0%, (A*: 99.0%), (Improvement: 0%)
+[2019-09-10 15:32:52] - Average total steps: 52.83, (A*: 52.83), (Improvement: 0%)
+[2019-09-10 15:32:52] - Average total distance: 29.24, (A*: 29.24), (Improvement: 0%)
+[2019-09-10 15:32:52] - Average time: 0.024 seconds, (A*: 0.0194 seconds), (Improvement: -23.71%)
+[2019-09-10 15:32:52] - Average distance from goal: 0.58, (A*: 0.58), (Improvement: 0%) (Average original distance from goal: 24.01)
+[2019-09-10 15:32:52] - Average search space (no fringe): 44.66%
+[2019-09-10 15:32:52] - Average fringe: 3.67%
+[2019-09-10 15:32:52] - Average total search space: 48.33%
+
+
+\begin{table}[] 
+\footnotesize 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Success Rate} & \textbf{Distance} & \textbf{Time} & \textbf{Distance Left}\\
+\hline
+0 & 99.0\% (I: 0\%) & 29.24 (A*: 29.24) (I: 0\%) & 0.0194s & 0.58\\
+\hline
+1 & 27.67\% (I: -72.05\%) & 22.95 (A*: 11.71) (I: -95.99\%) & 0.1049s & 21.03\\
+\hline
+2 & 38.67\% (I: -60.94\%) & 25.21 (A*: 14.77) (I: -70.68\%) & 0.1401s & 18.73\\
+\hline
+3 & 41.0\% (I: -58.59\%) & 18.3 (A*: 15.23) (I: -20.16\%) & 1.9937s & 18.42\\
+\hline
+4 & 80.0\% (I: -19.19\%) & 42.44 (A*: 26.02) (I: -63.11\%) & 0.0416s & 7.19\\
+\hline
+5 & 99.0\% (I: 0\%) & 32.1 (A*: 29.24) (I: -9.78\%) & 0.0208s & 0.58\\
+\hline
+6 & 99.0\% (I: 0\%) & 29.24 (A*: 29.24) (I: 0\%) & 0.024s & 0.58\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Pick Ratio}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{GK Improvement} & \textbf{GK Distance} & \textbf{GK Distance Left} & \textbf{WP} & \textbf{WP In-Between Distance}\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Nr.} & \textbf{Total Search} & \textbf{Total Fringe} & \textbf{Session Search} & \textbf{Session Fringe}\\
+\hline
+0 & 18.15\% & 5.7\% & 18.15\% & 5.7\%\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+

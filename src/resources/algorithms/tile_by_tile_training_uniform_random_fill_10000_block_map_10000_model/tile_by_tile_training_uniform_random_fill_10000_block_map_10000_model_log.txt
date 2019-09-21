@@ -1,0 +1,348 @@
+[2019-06-02 16:59:52] - Starting holdout training: {
+	data_features: ['distance_to_goal_normalized', 'raycast_8_normalized', 'direction_to_goal_normalized', 'agent_goal_angle'],
+	data_labels: ['next_position_index'],
+	data_single_features: [],
+	data_single_labels: [],
+	epochs: 100,
+	loss: CrossEntropyLoss(),
+	optimizer: <function f.<locals>.<lambda> at 0x7f0b1d496bf8>,
+	validation_ratio: 0.2,
+	test_ratio: 0.2,
+	save_name: tile_by_tile,
+	training_data: ['training_uniform_random_fill_10000_block_map_10000'],
+	batch_size: 50,
+	num_layers: 2,
+	lstm_input_size: 12,
+	lstm_output_size: 8,
+}
+
+[2019-06-02 16:59:52] - Starting data pre processing
+[2019-06-02 16:59:53] - Cache hit, training data loaded from cache
+[2019-06-02 16:59:53] - Finished data pre processing 
+
+[2019-06-02 16:59:53] - Training: <class 'algorithms.lstm.LSTM_tile_by_tile.BasicLSTMModule'>
+[2019-06-02 16:59:58] - Training 	 Epoch: 0 	 Loss: 0.103063 	 Accuracy 0.82 	 Precision: 0.81 	 Recall: 0.82 	 F1: 0.81
+[2019-06-02 16:59:59] - Validation 	 Epoch: 0 	 Loss: 0.289072 	 Accuracy 0.84 	 Precision: 0.84 	 Recall: 0.81 	 F1: 0.82
+
+[2019-06-02 17:00:04] - Training 	 Epoch: 1 	 Loss: 0.081519 	 Accuracy 0.85 	 Precision: 0.85 	 Recall: 0.85 	 F1: 0.84
+[2019-06-02 17:00:05] - Validation 	 Epoch: 1 	 Loss: 0.232620 	 Accuracy 0.87 	 Precision: 0.88 	 Recall: 0.84 	 F1: 0.85
+
+[2019-06-02 17:00:10] - Training 	 Epoch: 2 	 Loss: 0.072463 	 Accuracy 0.86 	 Precision: 0.86 	 Recall: 0.87 	 F1: 0.86
+[2019-06-02 17:00:11] - Validation 	 Epoch: 2 	 Loss: 0.204709 	 Accuracy 0.88 	 Precision: 0.89 	 Recall: 0.86 	 F1: 0.86
+
+[2019-06-02 17:00:16] - Training 	 Epoch: 3 	 Loss: 0.069639 	 Accuracy 0.88 	 Precision: 0.87 	 Recall: 0.88 	 F1: 0.87
+[2019-06-02 17:00:17] - Validation 	 Epoch: 3 	 Loss: 0.196438 	 Accuracy 0.88 	 Precision: 0.89 	 Recall: 0.86 	 F1: 0.87
+
+[2019-06-02 17:00:22] - Training 	 Epoch: 4 	 Loss: 0.067133 	 Accuracy 0.88 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+[2019-06-02 17:00:23] - Validation 	 Epoch: 4 	 Loss: 0.184421 	 Accuracy 0.89 	 Precision: 0.90 	 Recall: 0.87 	 F1: 0.88
+
+[2019-06-02 17:00:28] - Training 	 Epoch: 5 	 Loss: 0.065531 	 Accuracy 0.88 	 Precision: 0.87 	 Recall: 0.88 	 F1: 0.87
+[2019-06-02 17:00:29] - Validation 	 Epoch: 5 	 Loss: 0.170670 	 Accuracy 0.90 	 Precision: 0.91 	 Recall: 0.88 	 F1: 0.89
+
+[2019-06-02 17:00:34] - Training 	 Epoch: 6 	 Loss: 0.063465 	 Accuracy 0.88 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+[2019-06-02 17:00:35] - Validation 	 Epoch: 6 	 Loss: 0.157631 	 Accuracy 0.92 	 Precision: 0.92 	 Recall: 0.90 	 F1: 0.90
+
+[2019-06-02 17:00:40] - Training 	 Epoch: 7 	 Loss: 0.059387 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+[2019-06-02 17:00:41] - Validation 	 Epoch: 7 	 Loss: 0.146840 	 Accuracy 0.92 	 Precision: 0.93 	 Recall: 0.91 	 F1: 0.91
+
+[2019-06-02 17:00:46] - Training 	 Epoch: 8 	 Loss: 0.055291 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.91 	 F1: 0.90
+[2019-06-02 17:00:47] - Validation 	 Epoch: 8 	 Loss: 0.138911 	 Accuracy 0.92 	 Precision: 0.93 	 Recall: 0.91 	 F1: 0.91
+
+[2019-06-02 17:00:52] - Training 	 Epoch: 9 	 Loss: 0.051595 	 Accuracy 0.91 	 Precision: 0.90 	 Recall: 0.91 	 F1: 0.90
+[2019-06-02 17:00:53] - Validation 	 Epoch: 9 	 Loss: 0.133093 	 Accuracy 0.92 	 Precision: 0.93 	 Recall: 0.91 	 F1: 0.91
+
+[2019-06-02 17:00:58] - Training 	 Epoch: 10 	 Loss: 0.048658 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.92 	 F1: 0.91
+[2019-06-02 17:00:59] - Validation 	 Epoch: 10 	 Loss: 0.129035 	 Accuracy 0.92 	 Precision: 0.93 	 Recall: 0.91 	 F1: 0.92
+
+[2019-06-02 17:01:04] - Training 	 Epoch: 11 	 Loss: 0.045540 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.92 	 F1: 0.91
+[2019-06-02 17:01:06] - Validation 	 Epoch: 11 	 Loss: 0.124356 	 Accuracy 0.93 	 Precision: 0.93 	 Recall: 0.91 	 F1: 0.92
+
+[2019-06-02 17:01:10] - Training 	 Epoch: 12 	 Loss: 0.042201 	 Accuracy 0.92 	 Precision: 0.92 	 Recall: 0.93 	 F1: 0.92
+[2019-06-02 17:01:12] - Validation 	 Epoch: 12 	 Loss: 0.120050 	 Accuracy 0.93 	 Precision: 0.94 	 Recall: 0.92 	 F1: 0.92
+
+[2019-06-02 17:01:16] - Training 	 Epoch: 13 	 Loss: 0.039357 	 Accuracy 0.93 	 Precision: 0.92 	 Recall: 0.93 	 F1: 0.92
+[2019-06-02 17:01:18] - Validation 	 Epoch: 13 	 Loss: 0.118017 	 Accuracy 0.93 	 Precision: 0.94 	 Recall: 0.92 	 F1: 0.93
+
+[2019-06-02 17:01:23] - Training 	 Epoch: 14 	 Loss: 0.038034 	 Accuracy 0.93 	 Precision: 0.92 	 Recall: 0.93 	 F1: 0.93
+[2019-06-02 17:01:24] - Validation 	 Epoch: 14 	 Loss: 0.116398 	 Accuracy 0.93 	 Precision: 0.94 	 Recall: 0.92 	 F1: 0.93
+
+[2019-06-02 17:01:29] - Training 	 Epoch: 15 	 Loss: 0.037290 	 Accuracy 0.93 	 Precision: 0.92 	 Recall: 0.93 	 F1: 0.93
+[2019-06-02 17:01:30] - Validation 	 Epoch: 15 	 Loss: 0.115108 	 Accuracy 0.93 	 Precision: 0.93 	 Recall: 0.92 	 F1: 0.93
+
+[2019-06-02 17:01:35] - Training 	 Epoch: 16 	 Loss: 0.036641 	 Accuracy 0.93 	 Precision: 0.92 	 Recall: 0.93 	 F1: 0.93
+[2019-06-02 17:01:36] - Validation 	 Epoch: 16 	 Loss: 0.112214 	 Accuracy 0.94 	 Precision: 0.94 	 Recall: 0.93 	 F1: 0.93
+
+[2019-06-02 17:01:41] - Training 	 Epoch: 17 	 Loss: 0.036092 	 Accuracy 0.94 	 Precision: 0.93 	 Recall: 0.94 	 F1: 0.93
+[2019-06-02 17:01:42] - Validation 	 Epoch: 17 	 Loss: 0.110174 	 Accuracy 0.94 	 Precision: 0.94 	 Recall: 0.93 	 F1: 0.94
+
+[2019-06-02 17:01:47] - Training 	 Epoch: 18 	 Loss: 0.035129 	 Accuracy 0.94 	 Precision: 0.93 	 Recall: 0.94 	 F1: 0.94
+[2019-06-02 17:01:48] - Validation 	 Epoch: 18 	 Loss: 0.107884 	 Accuracy 0.94 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:01:53] - Training 	 Epoch: 19 	 Loss: 0.034640 	 Accuracy 0.94 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:01:54] - Validation 	 Epoch: 19 	 Loss: 0.107646 	 Accuracy 0.94 	 Precision: 0.95 	 Recall: 0.93 	 F1: 0.94
+
+[2019-06-02 17:01:59] - Training 	 Epoch: 20 	 Loss: 0.034273 	 Accuracy 0.94 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:02:00] - Validation 	 Epoch: 20 	 Loss: 0.105418 	 Accuracy 0.94 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:02:05] - Training 	 Epoch: 21 	 Loss: 0.033498 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:02:06] - Validation 	 Epoch: 21 	 Loss: 0.103522 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:02:10] - Training 	 Epoch: 22 	 Loss: 0.033029 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:02:12] - Validation 	 Epoch: 22 	 Loss: 0.102655 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:02:16] - Training 	 Epoch: 23 	 Loss: 0.032700 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:02:18] - Validation 	 Epoch: 23 	 Loss: 0.101694 	 Accuracy 0.94 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:02:22] - Training 	 Epoch: 24 	 Loss: 0.032663 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:02:24] - Validation 	 Epoch: 24 	 Loss: 0.100456 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:02:28] - Training 	 Epoch: 25 	 Loss: 0.032592 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:02:30] - Validation 	 Epoch: 25 	 Loss: 0.100304 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:02:34] - Training 	 Epoch: 26 	 Loss: 0.032220 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:02:36] - Validation 	 Epoch: 26 	 Loss: 0.098469 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:02:40] - Training 	 Epoch: 27 	 Loss: 0.032113 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:02:42] - Validation 	 Epoch: 27 	 Loss: 0.098038 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:02:46] - Training 	 Epoch: 28 	 Loss: 0.031907 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:02:48] - Validation 	 Epoch: 28 	 Loss: 0.096472 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:02:52] - Training 	 Epoch: 29 	 Loss: 0.031795 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:02:54] - Validation 	 Epoch: 29 	 Loss: 0.095513 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:02:58] - Training 	 Epoch: 30 	 Loss: 0.031492 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:02:59] - Validation 	 Epoch: 30 	 Loss: 0.095043 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:03:04] - Training 	 Epoch: 31 	 Loss: 0.031119 	 Accuracy 0.96 	 Precision: 0.95 	 Recall: 0.96 	 F1: 0.95
+[2019-06-02 17:03:05] - Validation 	 Epoch: 31 	 Loss: 0.094419 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:03:10] - Training 	 Epoch: 32 	 Loss: 0.030943 	 Accuracy 0.96 	 Precision: 0.95 	 Recall: 0.96 	 F1: 0.95
+[2019-06-02 17:03:11] - Validation 	 Epoch: 32 	 Loss: 0.094141 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:03:16] - Training 	 Epoch: 33 	 Loss: 0.030630 	 Accuracy 0.96 	 Precision: 0.95 	 Recall: 0.96 	 F1: 0.95
+[2019-06-02 17:03:17] - Validation 	 Epoch: 33 	 Loss: 0.093995 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:03:22] - Training 	 Epoch: 34 	 Loss: 0.030509 	 Accuracy 0.96 	 Precision: 0.95 	 Recall: 0.96 	 F1: 0.96
+[2019-06-02 17:03:23] - Validation 	 Epoch: 34 	 Loss: 0.093533 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:03:28] - Training 	 Epoch: 35 	 Loss: 0.030246 	 Accuracy 0.96 	 Precision: 0.95 	 Recall: 0.96 	 F1: 0.95
+[2019-06-02 17:03:29] - Validation 	 Epoch: 35 	 Loss: 0.093814 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.95
+
+[2019-06-02 17:03:34] - Training 	 Epoch: 36 	 Loss: 0.030471 	 Accuracy 0.96 	 Precision: 0.95 	 Recall: 0.96 	 F1: 0.95
+[2019-06-02 17:03:35] - Validation 	 Epoch: 36 	 Loss: 0.094071 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:03:40] - Training 	 Epoch: 37 	 Loss: 0.030101 	 Accuracy 0.96 	 Precision: 0.95 	 Recall: 0.96 	 F1: 0.95
+[2019-06-02 17:03:41] - Validation 	 Epoch: 37 	 Loss: 0.094133 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:03:46] - Training 	 Epoch: 38 	 Loss: 0.030768 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.96 	 F1: 0.95
+[2019-06-02 17:03:47] - Validation 	 Epoch: 38 	 Loss: 0.095938 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:03:52] - Training 	 Epoch: 39 	 Loss: 0.029990 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:03:53] - Validation 	 Epoch: 39 	 Loss: 0.095394 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:03:58] - Training 	 Epoch: 40 	 Loss: 0.029833 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:04:00] - Validation 	 Epoch: 40 	 Loss: 0.092652 	 Accuracy 0.95 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:04:04] - Training 	 Epoch: 41 	 Loss: 0.029761 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:04:06] - Validation 	 Epoch: 41 	 Loss: 0.093431 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.95
+
+[2019-06-02 17:04:10] - Training 	 Epoch: 42 	 Loss: 0.029865 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.96 	 F1: 0.95
+[2019-06-02 17:04:12] - Validation 	 Epoch: 42 	 Loss: 0.093874 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.95
+
+[2019-06-02 17:04:16] - Training 	 Epoch: 43 	 Loss: 0.029918 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:04:18] - Validation 	 Epoch: 43 	 Loss: 0.094483 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:04:22] - Training 	 Epoch: 44 	 Loss: 0.029646 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:04:24] - Validation 	 Epoch: 44 	 Loss: 0.095119 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:04:28] - Training 	 Epoch: 45 	 Loss: 0.029562 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:04:30] - Validation 	 Epoch: 45 	 Loss: 0.095572 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:04:34] - Training 	 Epoch: 46 	 Loss: 0.029446 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:04:36] - Validation 	 Epoch: 46 	 Loss: 0.096106 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:04:41] - Training 	 Epoch: 47 	 Loss: 0.029604 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:04:42] - Validation 	 Epoch: 47 	 Loss: 0.096265 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:04:47] - Training 	 Epoch: 48 	 Loss: 0.029622 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:04:48] - Validation 	 Epoch: 48 	 Loss: 0.097001 	 Accuracy 0.94 	 Precision: 0.94 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:04:53] - Training 	 Epoch: 49 	 Loss: 0.029666 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:04:54] - Validation 	 Epoch: 49 	 Loss: 0.096895 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:04:59] - Training 	 Epoch: 50 	 Loss: 0.029832 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:05:00] - Validation 	 Epoch: 50 	 Loss: 0.097151 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:05:05] - Training 	 Epoch: 51 	 Loss: 0.029854 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:05:06] - Validation 	 Epoch: 51 	 Loss: 0.096625 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:05:11] - Training 	 Epoch: 52 	 Loss: 0.030036 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:05:12] - Validation 	 Epoch: 52 	 Loss: 0.096914 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:05:17] - Training 	 Epoch: 53 	 Loss: 0.030131 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:05:18] - Validation 	 Epoch: 53 	 Loss: 0.096682 	 Accuracy 0.94 	 Precision: 0.94 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:05:23] - Training 	 Epoch: 54 	 Loss: 0.030146 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:05:24] - Validation 	 Epoch: 54 	 Loss: 0.096470 	 Accuracy 0.94 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:05:29] - Training 	 Epoch: 55 	 Loss: 0.030352 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:05:30] - Validation 	 Epoch: 55 	 Loss: 0.096784 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:05:35] - Training 	 Epoch: 56 	 Loss: 0.030375 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:05:37] - Validation 	 Epoch: 56 	 Loss: 0.096869 	 Accuracy 0.94 	 Precision: 0.94 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:05:41] - Training 	 Epoch: 57 	 Loss: 0.030386 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:05:43] - Validation 	 Epoch: 57 	 Loss: 0.096685 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:05:47] - Training 	 Epoch: 58 	 Loss: 0.030395 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:05:49] - Validation 	 Epoch: 58 	 Loss: 0.096830 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:05:53] - Training 	 Epoch: 59 	 Loss: 0.030348 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:05:55] - Validation 	 Epoch: 59 	 Loss: 0.096560 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:05:59] - Training 	 Epoch: 60 	 Loss: 0.030331 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:06:01] - Validation 	 Epoch: 60 	 Loss: 0.096792 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:06:05] - Training 	 Epoch: 61 	 Loss: 0.030204 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:06:07] - Validation 	 Epoch: 61 	 Loss: 0.096399 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:06:11] - Training 	 Epoch: 62 	 Loss: 0.030305 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:06:13] - Validation 	 Epoch: 62 	 Loss: 0.096329 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:06:17] - Training 	 Epoch: 63 	 Loss: 0.030299 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:06:19] - Validation 	 Epoch: 63 	 Loss: 0.096444 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:06:23] - Training 	 Epoch: 64 	 Loss: 0.030381 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:06:25] - Validation 	 Epoch: 64 	 Loss: 0.096485 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:06:29] - Training 	 Epoch: 65 	 Loss: 0.030424 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:06:31] - Validation 	 Epoch: 65 	 Loss: 0.096879 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:06:36] - Training 	 Epoch: 66 	 Loss: 0.030495 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:06:37] - Validation 	 Epoch: 66 	 Loss: 0.096707 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:06:42] - Training 	 Epoch: 67 	 Loss: 0.030638 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:06:43] - Validation 	 Epoch: 67 	 Loss: 0.096662 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:06:48] - Training 	 Epoch: 68 	 Loss: 0.030538 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:06:49] - Validation 	 Epoch: 68 	 Loss: 0.096720 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:06:54] - Training 	 Epoch: 69 	 Loss: 0.030554 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:06:55] - Validation 	 Epoch: 69 	 Loss: 0.096585 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:07:00] - Training 	 Epoch: 70 	 Loss: 0.030598 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:07:01] - Validation 	 Epoch: 70 	 Loss: 0.096654 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.95
+
+[2019-06-02 17:07:06] - Training 	 Epoch: 71 	 Loss: 0.030706 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:07:07] - Validation 	 Epoch: 71 	 Loss: 0.096364 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.94
+
+[2019-06-02 17:07:12] - Training 	 Epoch: 72 	 Loss: 0.030707 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:07:13] - Validation 	 Epoch: 72 	 Loss: 0.096138 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.95
+
+[2019-06-02 17:07:18] - Training 	 Epoch: 73 	 Loss: 0.030741 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:07:19] - Validation 	 Epoch: 73 	 Loss: 0.095769 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.95
+
+[2019-06-02 17:07:24] - Training 	 Epoch: 74 	 Loss: 0.030727 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:07:25] - Validation 	 Epoch: 74 	 Loss: 0.095092 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.95
+
+[2019-06-02 17:07:29] - Training 	 Epoch: 75 	 Loss: 0.030844 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:07:31] - Validation 	 Epoch: 75 	 Loss: 0.094837 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.95
+
+[2019-06-02 17:07:35] - Training 	 Epoch: 76 	 Loss: 0.030921 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:07:37] - Validation 	 Epoch: 76 	 Loss: 0.094773 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.95
+
+[2019-06-02 17:07:41] - Training 	 Epoch: 77 	 Loss: 0.030981 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:07:43] - Validation 	 Epoch: 77 	 Loss: 0.094610 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.95
+
+[2019-06-02 17:07:47] - Training 	 Epoch: 78 	 Loss: 0.031248 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:07:48] - Validation 	 Epoch: 78 	 Loss: 0.095060 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.95
+
+[2019-06-02 17:07:53] - Training 	 Epoch: 79 	 Loss: 0.030875 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:07:54] - Validation 	 Epoch: 79 	 Loss: 0.093876 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:07:59] - Training 	 Epoch: 80 	 Loss: 0.030866 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:08:00] - Validation 	 Epoch: 80 	 Loss: 0.094602 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:08:05] - Training 	 Epoch: 81 	 Loss: 0.030925 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:08:06] - Validation 	 Epoch: 81 	 Loss: 0.093534 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.94 	 F1: 0.95
+
+[2019-06-02 17:08:11] - Training 	 Epoch: 82 	 Loss: 0.031389 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:08:12] - Validation 	 Epoch: 82 	 Loss: 0.093069 	 Accuracy 0.95 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:08:17] - Training 	 Epoch: 83 	 Loss: 0.030837 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:08:18] - Validation 	 Epoch: 83 	 Loss: 0.093287 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:08:23] - Training 	 Epoch: 84 	 Loss: 0.031615 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:08:24] - Validation 	 Epoch: 84 	 Loss: 0.093033 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:08:29] - Training 	 Epoch: 85 	 Loss: 0.031088 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.94
+[2019-06-02 17:08:30] - Validation 	 Epoch: 85 	 Loss: 0.093673 	 Accuracy 0.96 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:08:35] - Training 	 Epoch: 86 	 Loss: 0.031557 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:08:36] - Validation 	 Epoch: 86 	 Loss: 0.093235 	 Accuracy 0.95 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:08:40] - Training 	 Epoch: 87 	 Loss: 0.031095 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:08:42] - Validation 	 Epoch: 87 	 Loss: 0.093355 	 Accuracy 0.95 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:08:46] - Training 	 Epoch: 88 	 Loss: 0.031987 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:08:48] - Validation 	 Epoch: 88 	 Loss: 0.092377 	 Accuracy 0.95 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:08:53] - Training 	 Epoch: 89 	 Loss: 0.031045 	 Accuracy 0.95 	 Precision: 0.94 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:08:54] - Validation 	 Epoch: 89 	 Loss: 0.091826 	 Accuracy 0.96 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:08:58] - Training 	 Epoch: 90 	 Loss: 0.028799 	 Accuracy 0.96 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:09:00] - Validation 	 Epoch: 90 	 Loss: 0.091826 	 Accuracy 0.96 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:09:04] - Training 	 Epoch: 91 	 Loss: 0.030023 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:09:06] - Validation 	 Epoch: 91 	 Loss: 0.090858 	 Accuracy 0.95 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:09:10] - Training 	 Epoch: 92 	 Loss: 0.029967 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:09:12] - Validation 	 Epoch: 92 	 Loss: 0.090191 	 Accuracy 0.96 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:09:16] - Training 	 Epoch: 93 	 Loss: 0.030765 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:09:18] - Validation 	 Epoch: 93 	 Loss: 0.089495 	 Accuracy 0.96 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:09:22] - Training 	 Epoch: 94 	 Loss: 0.029933 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:09:24] - Validation 	 Epoch: 94 	 Loss: 0.088943 	 Accuracy 0.96 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:09:28] - Training 	 Epoch: 95 	 Loss: 0.029844 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:09:30] - Validation 	 Epoch: 95 	 Loss: 0.089819 	 Accuracy 0.96 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:09:34] - Training 	 Epoch: 96 	 Loss: 0.030331 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:09:35] - Validation 	 Epoch: 96 	 Loss: 0.090378 	 Accuracy 0.96 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:09:40] - Training 	 Epoch: 97 	 Loss: 0.029623 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:09:41] - Validation 	 Epoch: 97 	 Loss: 0.090272 	 Accuracy 0.96 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:09:46] - Training 	 Epoch: 98 	 Loss: 0.030123 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:09:48] - Validation 	 Epoch: 98 	 Loss: 0.090901 	 Accuracy 0.95 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+[2019-06-02 17:09:52] - Training 	 Epoch: 99 	 Loss: 0.029944 	 Accuracy 0.95 	 Precision: 0.95 	 Recall: 0.95 	 F1: 0.95
+[2019-06-02 17:09:54] - Validation 	 Epoch: 99 	 Loss: 0.090220 	 Accuracy 0.96 	 Precision: 0.96 	 Recall: 0.95 	 F1: 0.95
+
+
+[2019-06-02 17:09:54] - Evaluation: <class 'algorithms.lstm.LSTM_tile_by_tile.BasicLSTMModule'>
+[2019-06-02 17:09:55] - Evaluation 	 Epoch: 0 	 Loss: 0.071301 	 Accuracy 0.97 	 Precision: 0.97 	 Recall: 0.97 	 F1: 0.97
+
+[2019-06-02 17:09:55] - Saved model as tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model
+[2019-06-02 17:09:55] - Model: BasicLSTMModule(
+  (_normalisation_layer1): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (_lstm_layer): LSTM(12, 8, num_layers=2, batch_first=True)
+  (_normalisation_layer2): BatchNorm1d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (_fc): Linear(in_features=8, out_features=8, bias=True)
+)
+[2019-06-02 17:09:55] - Model loss: 0.07130139321088791
+[2019-06-02 17:09:55] - Model accuracy: 0.9703622392974753
+[2019-06-02 17:09:55] - Model precision: 0.9729338770810048
+[2019-06-02 17:09:55] - Model recall: 0.9708289219581008
+[2019-06-02 17:09:55] - Model f1: 0.9717928151775413
+[2019-06-02 17:09:55] - Model confusion matrix: 
+[[339   1   5   1   0   0   1   2]
+ [  9 277   2   1   0   0   0   1]
+ [  0   5 313   0   1   0   0   0]
+ [  2   0   4 173   1   0   0   0]
+ [  0   0   2   0 114   2   0   0]
+ [  0   0   0   0   1 184   0   0]
+ [  0   0   0   0   1   0 162   1]
+ [  0   6   2   0   0   2   1 206]]

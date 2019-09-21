@@ -1,0 +1,1944 @@
+
+[2019-05-25 23:12:42] - Starting basic analysis: number of maps = 30, number of algorithms = 15
+
+[2019-05-25 23:12:42] - 0. A*
+[2019-05-25 23:12:44] - Goal found: 93.33%, (A*: 93.33%)
+[2019-05-25 23:12:44] - Average total steps: 34.75, (A*: 34.75)
+[2019-05-25 23:12:44] - Average time: 0.0193 seconds, (A*: 0.0193 seconds)
+[2019-05-25 23:12:44] - Average distance from goal: 2.36, (A*: 2.36) (Average original distance from goal: 34.47)
+
+
+[2019-05-25 23:12:44] - 1. CAE Online LSTM on uniform_random_fill_10000
+[2019-05-25 23:12:47] - Goal found: 43.33%, (A*: 93.33%)
+[2019-05-25 23:12:47] - Average total steps: 25.92, (A*: 24.77)
+[2019-05-25 23:12:47] - Average time: 0.0825 seconds, (A*: 0.0081 seconds)
+[2019-05-25 23:12:47] - Average distance from goal: 14.87, (A*: 2.36) (Average original distance from goal: 34.47)
+
+
+[2019-05-25 23:12:47] - 2. CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:12:50] - Goal found: 40.0%, (A*: 93.33%)
+[2019-05-25 23:12:50] - Average total steps: 34.08, (A*: 31.17)
+[2019-05-25 23:12:50] - Average time: 0.091 seconds, (A*: 0.0197 seconds)
+[2019-05-25 23:12:50] - Average distance from goal: 13.96, (A*: 2.36) (Average original distance from goal: 34.47)
+
+
+[2019-05-25 23:12:50] - 3. CAE Online LSTM on house_10000
+[2019-05-25 23:12:53] - Goal found: 40.0%, (A*: 93.33%)
+[2019-05-25 23:12:53] - Average total steps: 41.17, (A*: 32.58)
+[2019-05-25 23:12:53] - Average time: 0.1043 seconds, (A*: 0.0195 seconds)
+[2019-05-25 23:12:53] - Average distance from goal: 16.31, (A*: 2.36) (Average original distance from goal: 34.47)
+
+
+[2019-05-25 23:12:53] - 4. CAE Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:12:57] - Goal found: 53.33%, (A*: 93.33%)
+[2019-05-25 23:12:57] - Average total steps: 34.31, (A*: 33.44)
+[2019-05-25 23:12:57] - Average time: 0.1221 seconds, (A*: 0.014 seconds)
+[2019-05-25 23:12:57] - Average distance from goal: 7.47, (A*: 2.36) (Average original distance from goal: 34.47)
+
+
+[2019-05-25 23:12:57] - 5. CAE Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:13:01] - Goal found: 56.67%, (A*: 93.33%)
+[2019-05-25 23:13:01] - Average total steps: 35.24, (A*: 32.29)
+[2019-05-25 23:13:01] - Average time: 0.1012 seconds, (A*: 0.0179 seconds)
+[2019-05-25 23:13:01] - Average distance from goal: 8.57, (A*: 2.36) (Average original distance from goal: 34.47)
+
+
+[2019-05-25 23:13:01] - 6. Online LSTM on uniform_random_fill_10000 (paper solution)
+[2019-05-25 23:13:02] - Goal found: 46.67%, (A*: 93.33%)
+[2019-05-25 23:13:02] - Average total steps: 29.64, (A*: 29.64)
+[2019-05-25 23:13:02] - Average time: 0.0453 seconds, (A*: 0.0092 seconds)
+[2019-05-25 23:13:02] - Average distance from goal: 9.93, (A*: 2.36) (Average original distance from goal: 34.47)
+
+
+[2019-05-25 23:13:02] - 7. Online LSTM on block_map_10000
+[2019-05-25 23:13:04] - Goal found: 46.67%, (A*: 93.33%)
+[2019-05-25 23:13:04] - Average total steps: 38.79, (A*: 32.93)
+[2019-05-25 23:13:04] - Average time: 0.0612 seconds, (A*: 0.0216 seconds)
+[2019-05-25 23:13:04] - Average distance from goal: 12.52, (A*: 2.36) (Average original distance from goal: 34.47)
+
+
+[2019-05-25 23:13:04] - 8. Online LSTM on house_10000
+[2019-05-25 23:13:07] - Goal found: 60.0%, (A*: 93.33%)
+[2019-05-25 23:13:07] - Average total steps: 38.22, (A*: 34.56)
+[2019-05-25 23:13:07] - Average time: 0.0593 seconds, (A*: 0.0198 seconds)
+[2019-05-25 23:13:07] - Average distance from goal: 6.29, (A*: 2.36) (Average original distance from goal: 34.47)
+
+
+[2019-05-25 23:13:07] - 9. Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:13:08] - Goal found: 50.0%, (A*: 93.33%)
+[2019-05-25 23:13:08] - Average total steps: 32.6, (A*: 31.2)
+[2019-05-25 23:13:08] - Average time: 0.0504 seconds, (A*: 0.0127 seconds)
+[2019-05-25 23:13:08] - Average distance from goal: 9.45, (A*: 2.36) (Average original distance from goal: 34.47)
+
+
+[2019-05-25 23:13:08] - 10. Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:13:11] - Goal found: 70.0%, (A*: 93.33%)
+[2019-05-25 23:13:11] - Average total steps: 37.52, (A*: 33.62)
+[2019-05-25 23:13:11] - Average time: 0.0589 seconds, (A*: 0.0199 seconds)
+[2019-05-25 23:13:11] - Average distance from goal: 6.47, (A*: 2.36) (Average original distance from goal: 34.47)
+
+
+[2019-05-25 23:13:11] - 11. Combined Online LSTM (proposed solution)
+[2019-05-25 23:13:47] - Goal found: 83.33%, (A*: 93.33%)
+[2019-05-25 23:13:47] - Average total steps: 89.96, (A*: 35.56)
+[2019-05-25 23:13:47] - Average time: 1.2291 seconds, (A*: 0.0205 seconds)
+[2019-05-25 23:13:47] - Average distance from goal: 1.63, (A*: 2.36) (Average original distance from goal: 34.47)
+[2019-05-25 23:13:47] - Kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']
+[2019-05-25 23:13:47] - Kernels pick percentages: ['23.33%', '23.33%', '6.67%', '10.0%', '6.67%', '3.33%', '3.33%', '13.33%', '3.33%', '6.67%']
+
+
+[2019-05-25 23:13:47] - 12. WayPointNavigation with local kernel: A* and global kernel: CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:13:56] - Goal found: 93.33%, (A*: 93.33%)
+[2019-05-25 23:13:56] - Average total steps: 37.11, (A*: 34.75)
+[2019-05-25 23:13:56] - Average time: 0.2407 seconds, (A*: 0.0193 seconds)
+[2019-05-25 23:13:56] - Average distance from goal: 0.85, (A*: 2.36) (Average original distance from goal: 34.47)
+[2019-05-25 23:13:56] - Average number of way points: 5.1
+[2019-05-25 23:13:56] - Average number of global kernel steps: 24.1
+[2019-05-25 23:13:56] - Average last way point distance to goal: 10.21
+[2019-05-25 23:13:56] - Average number of global kernel calls: 4.1
+[2019-05-25 23:13:56] - Average global kernel improvement: 67.68%
+[2019-05-25 23:13:56] - Average way point in-between distance: 9.24
+
+
+[2019-05-25 23:13:56] - 13. WayPointNavigation with local kernel: A* and global kernel: Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000 (paper solution)
+[2019-05-25 23:14:01] - Goal found: 93.33%, (A*: 93.33%)
+[2019-05-25 23:14:01] - Average total steps: 43.25, (A*: 34.75)
+[2019-05-25 23:14:01] - Average time: 0.1251 seconds, (A*: 0.0193 seconds)
+[2019-05-25 23:14:01] - Average distance from goal: 0.62, (A*: 2.36) (Average original distance from goal: 34.47)
+[2019-05-25 23:14:01] - Average number of way points: 4.3
+[2019-05-25 23:14:01] - Average number of global kernel steps: 38.77
+[2019-05-25 23:14:01] - Average last way point distance to goal: 5.51
+[2019-05-25 23:14:01] - Average number of global kernel calls: 3.3
+[2019-05-25 23:14:01] - Average global kernel improvement: 83.27%
+[2019-05-25 23:14:01] - Average way point in-between distance: 14.14
+
+
+[2019-05-25 23:14:01] - 14. WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)
+[2019-05-25 23:15:09] - Goal found: 93.33%, (A*: 93.33%)
+[2019-05-25 23:15:09] - Average total steps: 36.43, (A*: 34.75)
+[2019-05-25 23:15:09] - Average time: 1.9247 seconds, (A*: 0.0193 seconds)
+[2019-05-25 23:15:09] - Average distance from goal: 0.42, (A*: 2.36) (Average original distance from goal: 34.47)
+[2019-05-25 23:15:09] - Average number of way points: 4.1
+[2019-05-25 23:15:09] - Average number of global kernel steps: 39.47
+[2019-05-25 23:15:09] - Average last way point distance to goal: 1.75
+[2019-05-25 23:15:09] - Average number of global kernel calls: 3.1
+[2019-05-25 23:15:09] - Average global kernel improvement: 94.53%
+[2019-05-25 23:15:09] - Average way point in-between distance: 15.37
+[2019-05-25 23:15:09] - Global kernel kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']%
+[2019-05-25 23:15:09] - Global kernel kernel calls percentages: ['0.53%', '0.19%', '0.1%', '0.05%', '0.06%', '0.0%', '0.04%', '0.02%', '0.0%', '0.01%']%
+
+
+\begin{table}[] 
+\small 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|}
+\hline
+Nr. & Algorithm Type & Training Data\\
+\hline
+1 & AStar & n/a\\
+\hline
+2 & OnlineLSTM & uniform\_random\_fill\_10000\\
+\hline
+3 & OnlineLSTM & block\_map\_10000\\
+\hline
+4 & OnlineLSTM & house\_10000\\
+\hline
+5 & OnlineLSTM & uniform\_random\_fill\_10000\_block\_map\_10000\\
+\hline
+6 & OnlineLSTM & uniform\_random\_fill\_10000\_block\_map\_10000\_house\_10000\\
+\hline
+7 & OnlineLSTM & uniform\_random\_fill\_10000\\
+\hline
+8 & OnlineLSTM & block\_map\_10000\\
+\hline
+9 & OnlineLSTM & house\_10000\\
+\hline
+10 & OnlineLSTM & uniform\_random\_fill\_10000\_block\_map\_10000\\
+\hline
+11 & OnlineLSTM & uniform\_random\_fill\_10000\_block\_map\_10000\_house\_10000\\
+\hline
+12 & CombinedOnlineLSTM & n/a\\
+\hline
+13 & WayPointNavigation ker: OnlineLSTM & block\_map\_10000\\
+\hline
+14 & WayPointNavigation ker: OnlineLSTM & uniform\_random\_fill\_10000\_block\_map\_10000\_house\_10000\\
+\hline
+15 & WayPointNavigation ker: CombinedOnlineLSTM & n/a\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Nr. & Success Rate & Steps & Time & Distance Left\\
+\hline
+1 & 93.33\% & 34.75 & 0.0193s & 2.36\\
+\hline
+2 & 43.33\% & 25.92 & 0.0825s & 14.87\\
+\hline
+3 & 40.0\% & 34.08 & 0.091s & 13.96\\
+\hline
+4 & 40.0\% & 41.17 & 0.1043s & 16.31\\
+\hline
+5 & 53.33\% & 34.31 & 0.1221s & 7.47\\
+\hline
+6 & 56.67\% & 35.24 & 0.1012s & 8.57\\
+\hline
+7 & 46.67\% & 29.64 & 0.0453s & 9.93\\
+\hline
+8 & 46.67\% & 38.79 & 0.0612s & 12.52\\
+\hline
+9 & 60.0\% & 38.22 & 0.0593s & 6.29\\
+\hline
+10 & 50.0\% & 32.6 & 0.0504s & 9.45\\
+\hline
+11 & 70.0\% & 37.52 & 0.0589s & 6.47\\
+\hline
+12 & 83.33\% & 89.96 & 1.2291s & 1.63\\
+\hline
+13 & 93.33\% & 37.11 & 0.2407s & 0.85\\
+\hline
+14 & 93.33\% & 43.25 & 0.1251s & 0.62\\
+\hline
+15 & 93.33\% & 36.43 & 1.9247s & 0.42\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+Nr. & Pick Ratio\\
+\hline
+12 & [23.33, 23.33, 6.67, 10.0, 6.67, 3.33, 3.33, 13.33, 3.33, 6.67]\\
+\hline
+15 & [0.53, 0.19, 0.1, 0.05, 0.06, 0.0, 0.04, 0.02, 0.0, 0.01]\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Nr. & WP & GK Steps & GK Distance Left & GK Improvement & WP In-Between Distance\\
+\hline
+13 & 5.1 & 24.1 & 10.21 & 67.68 & 9.24\\
+\hline
+14 & 4.3 & 38.77 & 5.51 & 83.27 & 14.14\\
+\hline
+15 & 4.1 & 39.47 & 1.75 & 94.53 & 15.37\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
+
+
+[2019-05-25 23:15:09] - Starting complex analysis: number of maps = 6, number of algorithms = 15
+
+[2019-05-25 23:15:09] - Analysis on map: 0. uniform_random_fill_10/0 with random samples: 50
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+██    ████  ██████                      ██                      ██    ████    ████        ██    ██          ██      ████      ██  ██
+██  ██  ██  ██              ██      ██        ██  ██    ██      ██████      ██████  ██    ████    ████    ██                ████  ██
+██        ██  ██    ██  ██      ██                ████          ██    ██  ██                      ██            ██████      ██    ██
+██            ██      ██        ██  ██      ██    ██      ██                  ██          ████  ██  ██        ██            ██    ██
+██  ██    ██    ██                ██    ██████    ██  ████        ██      ██            ██                  ██  ██  ████          ██
+██        ████                ████  ██  ████                  ██  ████  ████        ██          ██      ████  ████    ████  ██    ██
+██    ██        ██████  ██      ██  ██            ██    ██                  ██                    ██  ██  ██            ██        ██
+██          ██    ██  ██      ██████  ██            ████  ██  ██          ████    ██          ██  ██  ██  ██                      ██
+██            ██  ██  ██      ██                  ██  ██  ██              ██        ██        ██          ██  ██    ██        ██  ██
+██  ██        ██  ████            ██                    ██      ████    ██      ██  ██      ██                  ██████      ██    ██
+██              ████                    ██████████  ██    ████            ██                            ██    ██            ████  ██
+██    ██████          ██    ██        ██        ██                ████  ██  ██        ██      ████  ██        ██            ██    ██
+██  ████                  ██    ██              ██  ██    ██    ██    ██          ██      ████  ████          ██        ██  ██  ████
+██████  ██    ██                  ██      ██    ██  ██  ██████        ██████    ██        ██  ██  ████                            ██
+██  ██          ██      ██    ██    ██        ████        ██                ████              ██      ████              ██    ██  ██
+████  ██                      ██          ██        ██            ██  ██                ██  ████                        ██        ██
+██    ████    ██  ██      ██          ██      ██  ████████  ██  ██  ██        ██████                  ██        ██            ██████
+██          ████      ██  ██          ██  ██              ██          ████    ██          ████                    ██              ██
+████    ██              ██                ██    ██                      ██  ██          ██      ██    ████      ██  ██        ██  ██
+██  ████  ██    ██        ██      ██  ██                ██                      ██            ████        ██                      ██
+██            ██      ██    ████            ██    ████    ██  ██      ██  ██                  ██    ██      ██          ████    ████
+██    ██████          ████              ██        ████                            ██  ██      ██      ██  ████  ██  ██        ██████
+██    ██  ██          ████  ██    ██                    ██  ████████████  ██                        ████  ██  ██      ██    ██    ██
+██  ████        ████  ██    ████████    ██                      ██████    ████  ██      ██████        ██  ████    ██        ██  ████
+████  ██      ████      ██    ██    ██      ████            ██    ████    ██        ██    ██      ████████        ██            ████
+████      ██      ████  ██  ██  ██████      ██████        ██            ██    ██                ██    ████        ██  ██          ██
+██      ██      ██    ██      ██            ██                  ██            ████                                    ██      ██  ██
+██                    ██  ██  ██    ██████████  ██  ██  ██        ████                  ██        ████      ██████  ████        ████
+██      ██    ████    ██  ██  ████                ██  ██  ████      ██    ██  ██              ██████  ████                  ██    ██
+████    ██                    ██    ████████              ██████    ████            ██                ██  ██    ██      ██  ██  ████
+██        ██            ██████████              ██    ██    ██                ████  ██        ██        ██              ██        ██
+██  ████    ██      ██    ██        ██  ██          ██          ██    ██    ██  ████      ████      ██                    ████    ██
+████  ████        ████          ████    ██        ██    ██  ██  ████  ██████    ████                  ██        ████    ██  ██  ████
+██        ██    ████    ██    ██            ██        ██          ██    ██████  ██    ██████████    ██      ██      ██      ██  ████
+██      ██████  ████                  ██        ██████        ████    ████████  ██████    ██        ██                ██    ██    ██
+██                      ██        ██████████          ██  ██            ████        ██  ██    ██          ██    ██  ██        ██  ██
+██    ██  ████                                ██    ██    ██    ██    ██    ██        ██            ████████  ██        ████████  ██
+██        ██      ██                                  ██  ████    ██████████  ██████                        ██    ██    ████      ██
+██    ██        ████    ██  ██    ██  ██  ██      ██        ██  ██          ██    ████            ██    ██    ██    ████  ██  ██  ██
+████  ████        ██  ██    ██████  ██            ██  ██      ██                      ████          ████  ██                ██    ██
+██        ██          ██  ██                    ██  ██                ██  ██        ██    ██  ████    ██            ██  ████  ██  ██
+██                    ██                            ██                ██        ██        ██              ████        ██      ██  ██
+██        ██      ██      ██  ██            ██      ██    ██    ██        ██                ██          ██  ██            ████  ████
+████                ██                        ████                        ██        ████████              ██        ██████████    ██
+██  ██      ██      ████  ██                      ████    ██            ██  ████  ████            ██████              ████        ██
+████              ██      ██        ██████  ████    ████    ██      ██                                    ██          ████    ██  ██
+████  ██  ██    ██      ██          ██      ████    ██  ██████    ██    ██            ████        ██  ██    ████  ████    ██████  ██
+████            ██                ██  ██████        ██        ██  ██  ██              ██              ██    ████              ██  ██
+████████        ██      ██    ██      ████    ██  ██  ██  ██  ██  ██  ██████    ████          ██        ██  ██  ██    ████  ██  ████
+██          ██  ████    ██  ██      ██                      ██  ██    ████                        ██                ██  ██        ██
+████  ██              ██                            ██          ████      ████████  ██              ████          ██  ██  ████    ██
+██        ██  ██    ████  ██                ██                  ████████        ██          ██    ████            ████      ██    ██
+████████    ██  ██      ██    ████                  ██    ██                            ████████          ████    ████      ██    ██
+██████  ██      ████  ██      ████      ██  ██  ██  ██████              ████            ██            ██    ██        ██          ██
+██  ██    ████    ██          ████          ██████  ████  ████        ██    ██      ██  ██    ██            ██    ██████          ██
+██    ██████        ██    ██    ██                ██        ██  ██            ██                        ██████        ██          ██
+████          ██        ██      ██    ██    ████    ████                      ██        ████  ████                    ████████    ██
+████            ██  ████            ██████  ██      ████      ██            ██            ██          ██    ██        ████████  ████
+██    ██████  ██      ██  ██          ██      ██      ██        ██        ██                          ████      ██    ████        ██
+██  ██        ██  ██          ██  ██            ████    ████        ████  ██    ██    ████          ██  ██          ██  ██      ████
+██              ██                ██  ██                            ████  ██        ██  ████    ████    ██              ██  ████  ██
+██      ████        ██  ██    ██  ████        ██      ██████    ████            ██      ██      ████                        ██    ██
+████                              ██                ██    ██        ██████            ██      ██      ████    ████████  ██      ████
+██  ████        ██    ██    ██      ██        ████      ████████  ██  ████      ██  ██      ████      ████      ██      ██        ██
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+
+[2019-05-25 23:15:09] - 0. A*
+[2019-05-25 23:15:11] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:15:11] - Average total steps: 26.74, (A*: 26.74)
+[2019-05-25 23:15:11] - Average time: 0.009 seconds, (A*: 0.009 seconds)
+[2019-05-25 23:15:11] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 28.87)
+
+
+[2019-05-25 23:15:11] - 1. CAE Online LSTM on uniform_random_fill_10000
+[2019-05-25 23:15:16] - Goal found: 50.0%, (A*: 100.0%)
+[2019-05-25 23:15:16] - Average total steps: 17.92, (A*: 17.56)
+[2019-05-25 23:15:16] - Average time: 0.0634 seconds, (A*: 0.0051 seconds)
+[2019-05-25 23:15:16] - Average distance from goal: 8.77, (A*: 0.0) (Average original distance from goal: 28.87)
+
+
+[2019-05-25 23:15:16] - 2. CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:15:20] - Goal found: 8.0%, (A*: 100.0%)
+[2019-05-25 23:15:20] - Average total steps: 11.75, (A*: 11.25)
+[2019-05-25 23:15:20] - Average time: 0.0425 seconds, (A*: 0.003 seconds)
+[2019-05-25 23:15:20] - Average distance from goal: 20.2, (A*: 0.0) (Average original distance from goal: 28.87)
+
+
+[2019-05-25 23:15:20] - 3. CAE Online LSTM on house_10000
+[2019-05-25 23:15:24] - Goal found: 24.0%, (A*: 100.0%)
+[2019-05-25 23:15:24] - Average total steps: 18.75, (A*: 16.5)
+[2019-05-25 23:15:24] - Average time: 0.0579 seconds, (A*: 0.0052 seconds)
+[2019-05-25 23:15:24] - Average distance from goal: 18.72, (A*: 0.0) (Average original distance from goal: 28.87)
+
+
+[2019-05-25 23:15:24] - 4. CAE Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:15:28] - Goal found: 28.0%, (A*: 100.0%)
+[2019-05-25 23:15:28] - Average total steps: 22.07, (A*: 21.14)
+[2019-05-25 23:15:28] - Average time: 0.0643 seconds, (A*: 0.0083 seconds)
+[2019-05-25 23:15:28] - Average distance from goal: 11.46, (A*: 0.0) (Average original distance from goal: 28.87)
+
+
+[2019-05-25 23:15:28] - 5. CAE Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:15:33] - Goal found: 60.0%, (A*: 100.0%)
+[2019-05-25 23:15:33] - Average total steps: 23.57, (A*: 22.37)
+[2019-05-25 23:15:33] - Average time: 0.0626 seconds, (A*: 0.0075 seconds)
+[2019-05-25 23:15:33] - Average distance from goal: 5.65, (A*: 0.0) (Average original distance from goal: 28.87)
+
+
+[2019-05-25 23:15:33] - 6. Online LSTM on uniform_random_fill_10000 (paper solution)
+[2019-05-25 23:15:35] - Goal found: 44.0%, (A*: 100.0%)
+[2019-05-25 23:15:35] - Average total steps: 15.05, (A*: 14.73)
+[2019-05-25 23:15:35] - Average time: 0.0236 seconds, (A*: 0.0048 seconds)
+[2019-05-25 23:15:35] - Average distance from goal: 12.16, (A*: 0.0) (Average original distance from goal: 28.87)
+
+
+[2019-05-25 23:15:35] - 7. Online LSTM on block_map_10000
+[2019-05-25 23:15:38] - Goal found: 14.0%, (A*: 100.0%)
+[2019-05-25 23:15:38] - Average total steps: 13.14, (A*: 11.57)
+[2019-05-25 23:15:38] - Average time: 0.0218 seconds, (A*: 0.0038 seconds)
+[2019-05-25 23:15:38] - Average distance from goal: 18.02, (A*: 0.0) (Average original distance from goal: 28.87)
+
+
+[2019-05-25 23:15:38] - 8. Online LSTM on house_10000
+[2019-05-25 23:15:42] - Goal found: 26.0%, (A*: 100.0%)
+[2019-05-25 23:15:42] - Average total steps: 20.23, (A*: 17.62)
+[2019-05-25 23:15:42] - Average time: 0.0332 seconds, (A*: 0.0091 seconds)
+[2019-05-25 23:15:42] - Average distance from goal: 12.37, (A*: 0.0) (Average original distance from goal: 28.87)
+
+
+[2019-05-25 23:15:42] - 9. Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:15:45] - Goal found: 48.0%, (A*: 100.0%)
+[2019-05-25 23:15:45] - Average total steps: 17.75, (A*: 17.67)
+[2019-05-25 23:15:45] - Average time: 0.0252 seconds, (A*: 0.0054 seconds)
+[2019-05-25 23:15:45] - Average distance from goal: 7.34, (A*: 0.0) (Average original distance from goal: 28.87)
+
+
+[2019-05-25 23:15:45] - 10. Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:15:47] - Goal found: 52.0%, (A*: 100.0%)
+[2019-05-25 23:15:47] - Average total steps: 19.38, (A*: 18.46)
+[2019-05-25 23:15:47] - Average time: 0.0262 seconds, (A*: 0.0056 seconds)
+[2019-05-25 23:15:47] - Average distance from goal: 11.65, (A*: 0.0) (Average original distance from goal: 28.87)
+
+
+[2019-05-25 23:15:47] - 11. Combined Online LSTM (proposed solution)
+[2019-05-25 23:16:28] - Goal found: 80.0%, (A*: 100.0%)
+[2019-05-25 23:16:28] - Average total steps: 56.02, (A*: 24.12)
+[2019-05-25 23:16:28] - Average time: 0.7967 seconds, (A*: 0.0085 seconds)
+[2019-05-25 23:16:28] - Average distance from goal: 1.81, (A*: 0.0) (Average original distance from goal: 28.87)
+[2019-05-25 23:16:28] - Kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']
+[2019-05-25 23:16:28] - Kernels pick percentages: ['6.0%', '38.0%', '2.0%', '16.0%', '10.0%', '0.0%', '4.0%', '14.0%', '8.0%', '2.0%']
+
+
+[2019-05-25 23:16:28] - 12. WayPointNavigation with local kernel: A* and global kernel: CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:16:41] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:16:41] - Average total steps: 27.68, (A*: 26.74)
+[2019-05-25 23:16:41] - Average time: 0.213 seconds, (A*: 0.009 seconds)
+[2019-05-25 23:16:41] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 28.87)
+[2019-05-25 23:16:41] - Average number of way points: 5.72
+[2019-05-25 23:16:41] - Average number of global kernel steps: 6.58
+[2019-05-25 23:16:41] - Average last way point distance to goal: 18.73
+[2019-05-25 23:16:41] - Average number of global kernel calls: 4.72
+[2019-05-25 23:16:41] - Average global kernel improvement: 28.25%
+[2019-05-25 23:16:41] - Average way point in-between distance: 3.1
+
+
+[2019-05-25 23:16:41] - 13. WayPointNavigation with local kernel: A* and global kernel: Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000 (paper solution)
+[2019-05-25 23:16:47] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:16:47] - Average total steps: 27.32, (A*: 26.74)
+[2019-05-25 23:16:47] - Average time: 0.1032 seconds, (A*: 0.009 seconds)
+[2019-05-25 23:16:47] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 28.87)
+[2019-05-25 23:16:47] - Average number of way points: 4.38
+[2019-05-25 23:16:47] - Average number of global kernel steps: 14.52
+[2019-05-25 23:16:47] - Average last way point distance to goal: 10.77
+[2019-05-25 23:16:47] - Average number of global kernel calls: 3.38
+[2019-05-25 23:16:47] - Average global kernel improvement: 64.15%
+[2019-05-25 23:16:47] - Average way point in-between distance: 8.26
+
+
+[2019-05-25 23:16:47] - 14. WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)
+[2019-05-25 23:18:08] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:18:08] - Average total steps: 27.8, (A*: 26.74)
+[2019-05-25 23:18:08] - Average time: 1.5823 seconds, (A*: 0.009 seconds)
+[2019-05-25 23:18:08] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 28.87)
+[2019-05-25 23:18:08] - Average number of way points: 3.18
+[2019-05-25 23:18:08] - Average number of global kernel steps: 27.04
+[2019-05-25 23:18:08] - Average last way point distance to goal: 0.69
+[2019-05-25 23:18:08] - Average number of global kernel calls: 2.18
+[2019-05-25 23:18:08] - Average global kernel improvement: 98.28%
+[2019-05-25 23:18:08] - Average way point in-between distance: 14.78
+[2019-05-25 23:18:08] - Global kernel kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']%
+[2019-05-25 23:18:08] - Global kernel kernel calls percentages: ['0.18%', '0.52%', '0.13%', '0.08%', '0.05%', '0.0%', '0.02%', '0.02%', '0.0%', '0.0%']%
+
+
+\begin{table}[] 
+\small 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Nr. & Success Rate & Steps & Time & Distance Left\\
+\hline
+1 & 100.0\% & 26.74 & 0.009s & 0.0\\
+\hline
+2 & 50.0\% & 17.92 & 0.0634s & 8.77\\
+\hline
+3 & 8.0\% & 11.75 & 0.0425s & 20.2\\
+\hline
+4 & 24.0\% & 18.75 & 0.0579s & 18.72\\
+\hline
+5 & 28.0\% & 22.07 & 0.0643s & 11.46\\
+\hline
+6 & 60.0\% & 23.57 & 0.0626s & 5.65\\
+\hline
+7 & 44.0\% & 15.05 & 0.0236s & 12.16\\
+\hline
+8 & 14.0\% & 13.14 & 0.0218s & 18.02\\
+\hline
+9 & 26.0\% & 20.23 & 0.0332s & 12.37\\
+\hline
+10 & 48.0\% & 17.75 & 0.0252s & 7.34\\
+\hline
+11 & 52.0\% & 19.38 & 0.0262s & 11.65\\
+\hline
+12 & 80.0\% & 56.02 & 0.7967s & 1.81\\
+\hline
+13 & 100.0\% & 27.68 & 0.213s & 0.0\\
+\hline
+14 & 100.0\% & 27.32 & 0.1032s & 0.0\\
+\hline
+15 & 100.0\% & 27.8 & 1.5823s & 0.0\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+Nr. & Pick Ratio\\
+\hline
+12 & [6.0, 38.0, 2.0, 16.0, 10.0, 0.0, 4.0, 14.0, 8.0, 2.0]\\
+\hline
+15 & [0.18, 0.52, 0.13, 0.08, 0.05, 0.0, 0.02, 0.02, 0.0, 0.0]\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Nr. & WP & GK Steps & GK Distance Left & GK Improvement & WP In-Between Distance\\
+\hline
+13 & 5.72 & 6.58 & 18.73 & 28.25 & 3.1\\
+\hline
+14 & 4.38 & 14.52 & 10.77 & 64.15 & 8.26\\
+\hline
+15 & 3.18 & 27.04 & 0.69 & 98.28 & 14.78\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
+[2019-05-25 23:18:08] - Analysis on map: 1. block_map_10/6 with random samples: 50
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                          ████████████████████████████████████████████████████                                  ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+██                                                                                                                                ██
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+
+[2019-05-25 23:18:08] - 0. A*
+[2019-05-25 23:18:10] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:18:10] - Average total steps: 31.16, (A*: 31.16)
+[2019-05-25 23:18:10] - Average time: 0.0171 seconds, (A*: 0.0171 seconds)
+[2019-05-25 23:18:10] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 27.5)
+
+
+[2019-05-25 23:18:10] - 1. CAE Online LSTM on uniform_random_fill_10000
+[2019-05-25 23:18:14] - Goal found: 66.0%, (A*: 100.0%)
+[2019-05-25 23:18:14] - Average total steps: 19.3, (A*: 19.0)
+[2019-05-25 23:18:14] - Average time: 0.0569 seconds, (A*: 0.0048 seconds)
+[2019-05-25 23:18:14] - Average distance from goal: 10.13, (A*: 0.0) (Average original distance from goal: 27.5)
+
+
+[2019-05-25 23:18:14] - 2. CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:18:19] - Goal found: 88.0%, (A*: 100.0%)
+[2019-05-25 23:18:19] - Average total steps: 29.11, (A*: 27.57)
+[2019-05-25 23:18:19] - Average time: 0.0735 seconds, (A*: 0.014 seconds)
+[2019-05-25 23:18:19] - Average distance from goal: 4.69, (A*: 0.0) (Average original distance from goal: 27.5)
+
+
+[2019-05-25 23:18:19] - 3. CAE Online LSTM on house_10000
+[2019-05-25 23:18:24] - Goal found: 92.0%, (A*: 100.0%)
+[2019-05-25 23:18:24] - Average total steps: 37.13, (A*: 28.87)
+[2019-05-25 23:18:24] - Average time: 0.0881 seconds, (A*: 0.0154 seconds)
+[2019-05-25 23:18:24] - Average distance from goal: 3.1, (A*: 0.0) (Average original distance from goal: 27.5)
+
+
+[2019-05-25 23:18:24] - 4. CAE Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:18:30] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:18:30] - Average total steps: 35.88, (A*: 31.16)
+[2019-05-25 23:18:30] - Average time: 0.0852 seconds, (A*: 0.0171 seconds)
+[2019-05-25 23:18:30] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 27.5)
+
+
+[2019-05-25 23:18:30] - 5. CAE Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:18:35] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:18:35] - Average total steps: 35.88, (A*: 31.16)
+[2019-05-25 23:18:35] - Average time: 0.0854 seconds, (A*: 0.0171 seconds)
+[2019-05-25 23:18:35] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 27.5)
+
+
+[2019-05-25 23:18:35] - 6. Online LSTM on uniform_random_fill_10000 (paper solution)
+[2019-05-25 23:18:38] - Goal found: 66.0%, (A*: 100.0%)
+[2019-05-25 23:18:38] - Average total steps: 21.64, (A*: 21.61)
+[2019-05-25 23:18:38] - Average time: 0.0359 seconds, (A*: 0.0066 seconds)
+[2019-05-25 23:18:38] - Average distance from goal: 10.67, (A*: 0.0) (Average original distance from goal: 27.5)
+
+
+[2019-05-25 23:18:38] - 7. Online LSTM on block_map_10000
+[2019-05-25 23:18:43] - Goal found: 98.0%, (A*: 100.0%)
+[2019-05-25 23:18:43] - Average total steps: 35.9, (A*: 30.67)
+[2019-05-25 23:18:43] - Average time: 0.057 seconds, (A*: 0.0168 seconds)
+[2019-05-25 23:18:43] - Average distance from goal: 0.78, (A*: 0.0) (Average original distance from goal: 27.5)
+
+
+[2019-05-25 23:18:43] - 8. Online LSTM on house_10000
+[2019-05-25 23:18:47] - Goal found: 98.0%, (A*: 100.0%)
+[2019-05-25 23:18:47] - Average total steps: 36.02, (A*: 30.67)
+[2019-05-25 23:18:47] - Average time: 0.0581 seconds, (A*: 0.0168 seconds)
+[2019-05-25 23:18:47] - Average distance from goal: 0.78, (A*: 0.0) (Average original distance from goal: 27.5)
+
+
+[2019-05-25 23:18:47] - 9. Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:18:51] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:18:51] - Average total steps: 35.14, (A*: 31.16)
+[2019-05-25 23:18:51] - Average time: 0.0564 seconds, (A*: 0.0171 seconds)
+[2019-05-25 23:18:51] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 27.5)
+
+
+[2019-05-25 23:18:51] - 10. Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:18:55] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:18:55] - Average total steps: 36.96, (A*: 31.16)
+[2019-05-25 23:18:55] - Average time: 0.059 seconds, (A*: 0.0171 seconds)
+[2019-05-25 23:18:55] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 27.5)
+
+
+[2019-05-25 23:18:55] - 11. Combined Online LSTM (proposed solution)
+[2019-05-25 23:19:58] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:19:58] - Average total steps: 83.2, (A*: 31.16)
+[2019-05-25 23:19:58] - Average time: 1.2416 seconds, (A*: 0.0171 seconds)
+[2019-05-25 23:19:58] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 27.5)
+[2019-05-25 23:19:58] - Kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']
+[2019-05-25 23:19:58] - Kernels pick percentages: ['84.0%', '0.0%', '4.0%', '6.0%', '4.0%', '0.0%', '2.0%', '0.0%', '0.0%', '0.0%']
+
+
+[2019-05-25 23:19:58] - 12. WayPointNavigation with local kernel: A* and global kernel: CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:20:11] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:20:11] - Average total steps: 32.16, (A*: 31.16)
+[2019-05-25 23:20:11] - Average time: 0.2342 seconds, (A*: 0.0171 seconds)
+[2019-05-25 23:20:11] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 27.5)
+[2019-05-25 23:20:11] - Average number of way points: 3.36
+[2019-05-25 23:20:11] - Average number of global kernel steps: 25.86
+[2019-05-25 23:20:11] - Average last way point distance to goal: 4.69
+[2019-05-25 23:20:11] - Average number of global kernel calls: 2.36
+[2019-05-25 23:20:11] - Average global kernel improvement: 88.99%
+[2019-05-25 23:20:11] - Average way point in-between distance: 12.98
+
+
+[2019-05-25 23:20:11] - 13. WayPointNavigation with local kernel: A* and global kernel: Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000 (paper solution)
+[2019-05-25 23:20:22] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:20:22] - Average total steps: 71.38, (A*: 31.16)
+[2019-05-25 23:20:22] - Average time: 0.1962 seconds, (A*: 0.0171 seconds)
+[2019-05-25 23:20:22] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 27.5)
+[2019-05-25 23:20:22] - Average number of way points: 4.38
+[2019-05-25 23:20:22] - Average number of global kernel steps: 58.08
+[2019-05-25 23:20:22] - Average last way point distance to goal: 7.35
+[2019-05-25 23:20:22] - Average number of global kernel calls: 3.38
+[2019-05-25 23:20:22] - Average global kernel improvement: 94.54%
+[2019-05-25 23:20:22] - Average way point in-between distance: 15.46
+
+
+[2019-05-25 23:20:22] - 14. WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)
+[2019-05-25 23:21:54] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:21:54] - Average total steps: 34.02, (A*: 31.16)
+[2019-05-25 23:21:54] - Average time: 1.8221 seconds, (A*: 0.0171 seconds)
+[2019-05-25 23:21:54] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 27.5)
+[2019-05-25 23:21:54] - Average number of way points: 3.26
+[2019-05-25 23:21:54] - Average number of global kernel steps: 34.02
+[2019-05-25 23:21:54] - Average last way point distance to goal: 0.0
+[2019-05-25 23:21:54] - Average number of global kernel calls: 2.26
+[2019-05-25 23:21:54] - Average global kernel improvement: 100.0%
+[2019-05-25 23:21:54] - Average way point in-between distance: 14.81
+[2019-05-25 23:21:54] - Global kernel kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']%
+[2019-05-25 23:21:54] - Global kernel kernel calls percentages: ['0.97%', '0.03%', '0.0%', '0.0%', '0.0%', '0.0%', '0.0%', '0.0%', '0.0%', '0.0%']%
+
+
+\begin{table}[] 
+\small 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Nr. & Success Rate & Steps & Time & Distance Left\\
+\hline
+1 & 100.0\% & 31.16 & 0.0171s & 0.0\\
+\hline
+2 & 66.0\% & 19.3 & 0.0569s & 10.13\\
+\hline
+3 & 88.0\% & 29.11 & 0.0735s & 4.69\\
+\hline
+4 & 92.0\% & 37.13 & 0.0881s & 3.1\\
+\hline
+5 & 100.0\% & 35.88 & 0.0852s & 0.0\\
+\hline
+6 & 100.0\% & 35.88 & 0.0854s & 0.0\\
+\hline
+7 & 66.0\% & 21.64 & 0.0359s & 10.67\\
+\hline
+8 & 98.0\% & 35.9 & 0.057s & 0.78\\
+\hline
+9 & 98.0\% & 36.02 & 0.0581s & 0.78\\
+\hline
+10 & 100.0\% & 35.14 & 0.0564s & 0.0\\
+\hline
+11 & 100.0\% & 36.96 & 0.059s & 0.0\\
+\hline
+12 & 100.0\% & 83.2 & 1.2416s & 0.0\\
+\hline
+13 & 100.0\% & 32.16 & 0.2342s & 0.0\\
+\hline
+14 & 100.0\% & 71.38 & 0.1962s & 0.0\\
+\hline
+15 & 100.0\% & 34.02 & 1.8221s & 0.0\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+Nr. & Pick Ratio\\
+\hline
+12 & [84.0, 0.0, 4.0, 6.0, 4.0, 0.0, 2.0, 0.0, 0.0, 0.0]\\
+\hline
+15 & [0.97, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Nr. & WP & GK Steps & GK Distance Left & GK Improvement & WP In-Between Distance\\
+\hline
+13 & 3.36 & 25.86 & 4.69 & 88.99 & 12.98\\
+\hline
+14 & 4.38 & 58.08 & 7.35 & 94.54 & 15.46\\
+\hline
+15 & 3.26 & 34.02 & 0.0 & 100.0 & 14.81\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
+[2019-05-25 23:21:54] - Analysis on map: 2. house_10/6 with random samples: 50
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+██                ██                ██                                            ██                ██                            ██
+██                ██                ██                                            ██                ██                            ██
+██                ██                ██                      ██                                      ██                            ██
+██                ██                ██                      ██                                      ██                            ██
+██                                  ██                      ██                    ██                                              ██
+██                                  ██                      ██                    ██                                              ██
+██                ██                ██                      ██                    ██                ██                            ██
+██                ██                ██                      ██                    ██                ██                            ██
+██                ██                ██                      ██                    ██                ██                            ██
+██                ██                ██                      ██                    ██                ██                            ██
+██                ██                ██                      ██                    ██                ██                            ██
+██                ██                ██                      ██                    ██                ██                            ██
+██                ██                ████████████    ████████    ████████████████████████    ████████████████████████████    ████████
+██                ██████████    ██████                            ██                                                              ██
+██                ██                ██                            ██                                                              ██
+██                ██                ██                            ██                                                              ██
+██                ██                ██                            ██                                                              ██
+██                ██                ██                            ██                                                              ██
+██                ██                ██                            ██                                                              ██
+██                ██                ██                            ██                                                              ██
+██                                  ██                                                                                            ██
+██                                                                                                                                ██
+██                ██                                              ██                                                              ██
+██                ██                ██                            ██                                                              ██
+██                ██                ██████████    ████████████████████████████████    ██████████████████    ████████████    ████████
+██                ██                ██                              ██                                        ██                  ██
+██                ██                ██                              ██                                        ██                  ██
+██                ██                ██                              ██                  ██                    ██                  ██
+██                ██                ██                              ██                  ██                    ██                  ██
+██                  ████████    ██████                              ██                  ██                    ██                  ██
+██                                  ██                              ██                  ██                    ██                  ██
+████    ████████████                ██                                                  ██                    ██                  ██
+██                ██                ██                                                  ██                    ██                  ██
+██                ██                ██                              ██                  ██                    ██                  ██
+██                ██                                                ██                  ██                                        ██
+██                ██                                                ██                  ██                                        ██
+██                ██                ██    ██████████████████████████████████████    ██████████    ██████████    ████████████████████
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                                  ██                                                          ██                                ██
+██                                  ██                                                          ██                                ██
+██                ██                                                                            ██                                ██
+████████████████████                                                                            ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██████████████    ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                                  ██                                                          ████████████████████████████████████
+██                                  ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                                                                            ██                                ██
+██                ██                                                                            ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+██                ██                ██                                                          ██                                ██
+████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████
+
+[2019-05-25 23:21:54] - 0. A*
+[2019-05-25 23:21:56] - Goal found: 96.0%, (A*: 96.0%)
+[2019-05-25 23:21:56] - Average total steps: 41.04, (A*: 41.04)
+[2019-05-25 23:21:56] - Average time: 0.0199 seconds, (A*: 0.0199 seconds)
+[2019-05-25 23:21:56] - Average distance from goal: 2.41, (A*: 2.41) (Average original distance from goal: 43.29)
+
+
+[2019-05-25 23:21:56] - 1. CAE Online LSTM on uniform_random_fill_10000
+[2019-05-25 23:22:00] - Goal found: 14.0%, (A*: 96.0%)
+[2019-05-25 23:22:00] - Average total steps: 9.71, (A*: 9.71)
+[2019-05-25 23:22:00] - Average time: 0.0513 seconds, (A*: 0.0034 seconds)
+[2019-05-25 23:22:00] - Average distance from goal: 28.68, (A*: 2.41) (Average original distance from goal: 43.29)
+
+
+[2019-05-25 23:22:00] - 2. CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:22:05] - Goal found: 16.0%, (A*: 96.0%)
+[2019-05-25 23:22:05] - Average total steps: 14.75, (A*: 14.12)
+[2019-05-25 23:22:05] - Average time: 0.0482 seconds, (A*: 0.006 seconds)
+[2019-05-25 23:22:05] - Average distance from goal: 23.62, (A*: 2.41) (Average original distance from goal: 43.29)
+
+
+[2019-05-25 23:22:05] - 3. CAE Online LSTM on house_10000
+[2019-05-25 23:22:10] - Goal found: 52.0%, (A*: 96.0%)
+[2019-05-25 23:22:10] - Average total steps: 40.27, (A*: 37.69)
+[2019-05-25 23:22:10] - Average time: 0.1189 seconds, (A*: 0.018 seconds)
+[2019-05-25 23:22:10] - Average distance from goal: 16.91, (A*: 2.41) (Average original distance from goal: 43.29)
+
+
+[2019-05-25 23:22:10] - 4. CAE Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:22:15] - Goal found: 18.0%, (A*: 96.0%)
+[2019-05-25 23:22:15] - Average total steps: 20.11, (A*: 18.0)
+[2019-05-25 23:22:15] - Average time: 0.0735 seconds, (A*: 0.0065 seconds)
+[2019-05-25 23:22:15] - Average distance from goal: 19.13, (A*: 2.41) (Average original distance from goal: 43.29)
+
+
+[2019-05-25 23:22:15] - 5. CAE Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:22:21] - Goal found: 50.0%, (A*: 96.0%)
+[2019-05-25 23:22:21] - Average total steps: 46.08, (A*: 39.56)
+[2019-05-25 23:22:21] - Average time: 0.1512 seconds, (A*: 0.0195 seconds)
+[2019-05-25 23:22:21] - Average distance from goal: 15.61, (A*: 2.41) (Average original distance from goal: 43.29)
+
+
+[2019-05-25 23:22:21] - 6. Online LSTM on uniform_random_fill_10000 (paper solution)
+[2019-05-25 23:22:23] - Goal found: 12.0%, (A*: 96.0%)
+[2019-05-25 23:22:23] - Average total steps: 9.33, (A*: 9.33)
+[2019-05-25 23:22:23] - Average time: 0.0149 seconds, (A*: 0.0033 seconds)
+[2019-05-25 23:22:23] - Average distance from goal: 24.89, (A*: 2.41) (Average original distance from goal: 43.29)
+
+
+[2019-05-25 23:22:23] - 7. Online LSTM on block_map_10000
+[2019-05-25 23:22:26] - Goal found: 12.0%, (A*: 96.0%)
+[2019-05-25 23:22:26] - Average total steps: 9.33, (A*: 9.0)
+[2019-05-25 23:22:26] - Average time: 0.0147 seconds, (A*: 0.0033 seconds)
+[2019-05-25 23:22:26] - Average distance from goal: 20.79, (A*: 2.41) (Average original distance from goal: 43.29)
+
+
+[2019-05-25 23:22:26] - 8. Online LSTM on house_10000
+[2019-05-25 23:22:29] - Goal found: 56.0%, (A*: 96.0%)
+[2019-05-25 23:22:29] - Average total steps: 39.14, (A*: 36.25)
+[2019-05-25 23:22:29] - Average time: 0.0579 seconds, (A*: 0.0181 seconds)
+[2019-05-25 23:22:29] - Average distance from goal: 16.93, (A*: 2.41) (Average original distance from goal: 43.29)
+
+
+[2019-05-25 23:22:29] - 9. Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:22:32] - Goal found: 12.0%, (A*: 96.0%)
+[2019-05-25 23:22:32] - Average total steps: 9.33, (A*: 9.33)
+[2019-05-25 23:22:32] - Average time: 0.0155 seconds, (A*: 0.0033 seconds)
+[2019-05-25 23:22:32] - Average distance from goal: 21.27, (A*: 2.41) (Average original distance from goal: 43.29)
+
+
+[2019-05-25 23:22:32] - 10. Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:22:35] - Goal found: 30.0%, (A*: 96.0%)
+[2019-05-25 23:22:35] - Average total steps: 39.33, (A*: 34.33)
+[2019-05-25 23:22:35] - Average time: 0.0582 seconds, (A*: 0.0181 seconds)
+[2019-05-25 23:22:35] - Average distance from goal: 20.98, (A*: 2.41) (Average original distance from goal: 43.29)
+
+
+[2019-05-25 23:22:35] - 11. Combined Online LSTM (proposed solution)
+[2019-05-25 23:23:21] - Goal found: 62.0%, (A*: 96.0%)
+[2019-05-25 23:23:21] - Average total steps: 82.06, (A*: 33.35)
+[2019-05-25 23:23:21] - Average time: 0.917 seconds, (A*: 0.0163 seconds)
+[2019-05-25 23:23:21] - Average distance from goal: 8.99, (A*: 2.41) (Average original distance from goal: 43.29)
+[2019-05-25 23:23:21] - Kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']
+[2019-05-25 23:23:21] - Kernels pick percentages: ['16.0%', '2.0%', '30.0%', '10.0%', '2.0%', '2.0%', '10.0%', '28.0%', '0.0%', '0.0%']
+
+
+[2019-05-25 23:23:21] - 12. WayPointNavigation with local kernel: A* and global kernel: CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:23:37] - Goal found: 96.0%, (A*: 96.0%)
+[2019-05-25 23:23:38] - Average total steps: 45.71, (A*: 41.04)
+[2019-05-25 23:23:38] - Average time: 0.3125 seconds, (A*: 0.0199 seconds)
+[2019-05-25 23:23:38] - Average distance from goal: 2.16, (A*: 2.41) (Average original distance from goal: 43.29)
+[2019-05-25 23:23:38] - Average number of way points: 6.16
+[2019-05-25 23:23:38] - Average number of global kernel steps: 16.28
+[2019-05-25 23:23:38] - Average last way point distance to goal: 23.16
+[2019-05-25 23:23:38] - Average number of global kernel calls: 5.16
+[2019-05-25 23:23:38] - Average global kernel improvement: 39.27%
+[2019-05-25 23:23:38] - Average way point in-between distance: 4.69
+
+
+[2019-05-25 23:23:38] - 13. WayPointNavigation with local kernel: A* and global kernel: Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000 (paper solution)
+[2019-05-25 23:23:46] - Goal found: 96.0%, (A*: 96.0%)
+[2019-05-25 23:23:46] - Average total steps: 46.44, (A*: 41.04)
+[2019-05-25 23:23:46] - Average time: 0.1507 seconds, (A*: 0.0199 seconds)
+[2019-05-25 23:23:46] - Average distance from goal: 2.2, (A*: 2.41) (Average original distance from goal: 43.29)
+[2019-05-25 23:23:46] - Average number of way points: 5.36
+[2019-05-25 23:23:46] - Average number of global kernel steps: 23.7
+[2019-05-25 23:23:46] - Average last way point distance to goal: 18.73
+[2019-05-25 23:23:46] - Average number of global kernel calls: 4.36
+[2019-05-25 23:23:46] - Average global kernel improvement: 58.2%
+[2019-05-25 23:23:46] - Average way point in-between distance: 7.25
+
+
+[2019-05-25 23:23:46] - 14. WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)
+[2019-05-25 23:25:41] - Goal found: 96.0%, (A*: 96.0%)
+[2019-05-25 23:25:41] - Average total steps: 53.67, (A*: 41.04)
+[2019-05-25 23:25:41] - Average time: 2.1551 seconds, (A*: 0.0199 seconds)
+[2019-05-25 23:25:41] - Average distance from goal: 2.2, (A*: 2.41) (Average original distance from goal: 43.29)
+[2019-05-25 23:25:41] - Average number of way points: 4.68
+[2019-05-25 23:25:41] - Average number of global kernel steps: 51.32
+[2019-05-25 23:25:41] - Average last way point distance to goal: 5.2
+[2019-05-25 23:25:41] - Average number of global kernel calls: 3.68
+[2019-05-25 23:25:41] - Average global kernel improvement: 97.53%
+[2019-05-25 23:25:41] - Average way point in-between distance: 15.03
+[2019-05-25 23:25:41] - Global kernel kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']%
+[2019-05-25 23:25:41] - Global kernel kernel calls percentages: ['0.5%', '0.04%', '0.25%', '0.06%', '0.08%', '0.0%', '0.04%', '0.02%', '0.0%', '0.0%']%
+
+
+\begin{table}[] 
+\small 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Nr. & Success Rate & Steps & Time & Distance Left\\
+\hline
+1 & 96.0\% & 41.04 & 0.0199s & 2.41\\
+\hline
+2 & 14.0\% & 9.71 & 0.0513s & 28.68\\
+\hline
+3 & 16.0\% & 14.75 & 0.0482s & 23.62\\
+\hline
+4 & 52.0\% & 40.27 & 0.1189s & 16.91\\
+\hline
+5 & 18.0\% & 20.11 & 0.0735s & 19.13\\
+\hline
+6 & 50.0\% & 46.08 & 0.1512s & 15.61\\
+\hline
+7 & 12.0\% & 9.33 & 0.0149s & 24.89\\
+\hline
+8 & 12.0\% & 9.33 & 0.0147s & 20.79\\
+\hline
+9 & 56.0\% & 39.14 & 0.0579s & 16.93\\
+\hline
+10 & 12.0\% & 9.33 & 0.0155s & 21.27\\
+\hline
+11 & 30.0\% & 39.33 & 0.0582s & 20.98\\
+\hline
+12 & 62.0\% & 82.06 & 0.917s & 8.99\\
+\hline
+13 & 96.0\% & 45.71 & 0.3125s & 2.16\\
+\hline
+14 & 96.0\% & 46.44 & 0.1507s & 2.2\\
+\hline
+15 & 96.0\% & 53.67 & 2.1551s & 2.2\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+Nr. & Pick Ratio\\
+\hline
+12 & [16.0, 2.0, 30.0, 10.0, 2.0, 2.0, 10.0, 28.0, 0.0, 0.0]\\
+\hline
+15 & [0.5, 0.04, 0.25, 0.06, 0.08, 0.0, 0.04, 0.02, 0.0, 0.0]\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Nr. & WP & GK Steps & GK Distance Left & GK Improvement & WP In-Between Distance\\
+\hline
+13 & 6.16 & 16.28 & 23.16 & 39.27 & 4.69\\
+\hline
+14 & 5.36 & 23.7 & 18.73 & 58.2 & 7.25\\
+\hline
+15 & 4.68 & 51.32 & 5.2 & 97.53 & 15.03\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
+[2019-05-25 23:25:41] - Analysis on map: 3. Maps.grid_map_labyrinth with random samples: 50
+████████████████████████████████████████████
+██                                        ██
+██          ██                            ██
+██          ██                            ██
+██          ██                            ██
+██          ██                            ██
+██          ██                            ██
+██          ██                            ██
+██          ██                            ██
+██          ██████████████████████        ██
+██          ██                  ██        ██
+██          ██                  ██        ██
+██          ██                  ██        ██
+██          ██                  ██        ██
+██          ██                  ██        ██
+██          ██                  ██        ██
+██          ██  ██████████████████        ██
+██          ██                            ██
+██          ██                            ██
+██                                        ██
+████████████████████████████████████████████
+
+[2019-05-25 23:25:41] - 0. A*
+[2019-05-25 23:25:42] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:25:42] - Average total steps: 18.08, (A*: 18.08)
+[2019-05-25 23:25:42] - Average time: 0.0091 seconds, (A*: 0.0091 seconds)
+[2019-05-25 23:25:42] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 8.32)
+
+
+[2019-05-25 23:25:42] - 1. CAE Online LSTM on uniform_random_fill_10000
+[2019-05-25 23:25:44] - Goal found: 20.0%, (A*: 100.0%)
+[2019-05-25 23:25:44] - Average total steps: 5.2, (A*: 5.0)
+[2019-05-25 23:25:44] - Average time: 0.0268 seconds, (A*: 0.0012 seconds)
+[2019-05-25 23:25:44] - Average distance from goal: 3.72, (A*: 0.0) (Average original distance from goal: 8.32)
+
+
+[2019-05-25 23:25:44] - 2. CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:25:45] - Goal found: 34.0%, (A*: 100.0%)
+[2019-05-25 23:25:45] - Average total steps: 8.65, (A*: 8.18)
+[2019-05-25 23:25:45] - Average time: 0.0319 seconds, (A*: 0.0023 seconds)
+[2019-05-25 23:25:45] - Average distance from goal: 1.78, (A*: 0.0) (Average original distance from goal: 8.32)
+
+
+[2019-05-25 23:25:45] - 3. CAE Online LSTM on house_10000
+[2019-05-25 23:25:48] - Goal found: 36.0%, (A*: 100.0%)
+[2019-05-25 23:25:48] - Average total steps: 9.39, (A*: 9.0)
+[2019-05-25 23:25:48] - Average time: 0.0333 seconds, (A*: 0.0029 seconds)
+[2019-05-25 23:25:48] - Average distance from goal: 2.61, (A*: 0.0) (Average original distance from goal: 8.32)
+
+
+[2019-05-25 23:25:48] - 4. CAE Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:25:50] - Goal found: 34.0%, (A*: 100.0%)
+[2019-05-25 23:25:50] - Average total steps: 8.41, (A*: 8.41)
+[2019-05-25 23:25:50] - Average time: 0.0315 seconds, (A*: 0.0024 seconds)
+[2019-05-25 23:25:50] - Average distance from goal: 2.92, (A*: 0.0) (Average original distance from goal: 8.32)
+
+
+[2019-05-25 23:25:50] - 5. CAE Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:25:52] - Goal found: 44.0%, (A*: 100.0%)
+[2019-05-25 23:25:52] - Average total steps: 13.45, (A*: 12.82)
+[2019-05-25 23:25:52] - Average time: 0.0389 seconds, (A*: 0.0053 seconds)
+[2019-05-25 23:25:52] - Average distance from goal: 2.16, (A*: 0.0) (Average original distance from goal: 8.32)
+
+
+[2019-05-25 23:25:52] - 6. Online LSTM on uniform_random_fill_10000 (paper solution)
+[2019-05-25 23:25:53] - Goal found: 22.0%, (A*: 100.0%)
+[2019-05-25 23:25:53] - Average total steps: 5.36, (A*: 5.36)
+[2019-05-25 23:25:53] - Average time: 0.0092 seconds, (A*: 0.0013 seconds)
+[2019-05-25 23:25:53] - Average distance from goal: 2.29, (A*: 0.0) (Average original distance from goal: 8.32)
+
+
+[2019-05-25 23:25:53] - 7. Online LSTM on block_map_10000
+[2019-05-25 23:25:54] - Goal found: 42.0%, (A*: 100.0%)
+[2019-05-25 23:25:54] - Average total steps: 12.19, (A*: 10.0)
+[2019-05-25 23:25:54] - Average time: 0.0175 seconds, (A*: 0.0035 seconds)
+[2019-05-25 23:25:54] - Average distance from goal: 3.04, (A*: 0.0) (Average original distance from goal: 8.32)
+
+
+[2019-05-25 23:25:54] - 8. Online LSTM on house_10000
+[2019-05-25 23:25:55] - Goal found: 48.0%, (A*: 100.0%)
+[2019-05-25 23:25:55] - Average total steps: 15.21, (A*: 14.71)
+[2019-05-25 23:25:55] - Average time: 0.0217 seconds, (A*: 0.0066 seconds)
+[2019-05-25 23:25:55] - Average distance from goal: 2.23, (A*: 0.0) (Average original distance from goal: 8.32)
+
+
+[2019-05-25 23:25:55] - 9. Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:25:56] - Goal found: 46.0%, (A*: 100.0%)
+[2019-05-25 23:25:56] - Average total steps: 12.61, (A*: 11.22)
+[2019-05-25 23:25:56] - Average time: 0.0183 seconds, (A*: 0.0044 seconds)
+[2019-05-25 23:25:56] - Average distance from goal: 1.08, (A*: 0.0) (Average original distance from goal: 8.32)
+
+
+[2019-05-25 23:25:56] - 10. Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:25:57] - Goal found: 54.0%, (A*: 100.0%)
+[2019-05-25 23:25:57] - Average total steps: 15.33, (A*: 13.81)
+[2019-05-25 23:25:57] - Average time: 0.0215 seconds, (A*: 0.006 seconds)
+[2019-05-25 23:25:57] - Average distance from goal: 1.5, (A*: 0.0) (Average original distance from goal: 8.32)
+
+
+[2019-05-25 23:25:57] - 11. Combined Online LSTM (proposed solution)
+[2019-05-25 23:26:20] - Goal found: 70.0%, (A*: 100.0%)
+[2019-05-25 23:26:20] - Average total steps: 41.17, (A*: 14.97)
+[2019-05-25 23:26:20] - Average time: 0.4208 seconds, (A*: 0.0068 seconds)
+[2019-05-25 23:26:20] - Average distance from goal: 0.6, (A*: 0.0) (Average original distance from goal: 8.32)
+[2019-05-25 23:26:20] - Kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']
+[2019-05-25 23:26:20] - Kernels pick percentages: ['22.0%', '8.0%', '20.0%', '10.0%', '2.0%', '0.0%', '2.0%', '22.0%', '14.0%', '0.0%']
+
+
+[2019-05-25 23:26:20] - 12. WayPointNavigation with local kernel: A* and global kernel: CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:26:28] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:26:28] - Average total steps: 24.08, (A*: 18.08)
+[2019-05-25 23:26:28] - Average time: 0.1436 seconds, (A*: 0.0091 seconds)
+[2019-05-25 23:26:28] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 8.32)
+[2019-05-25 23:26:28] - Average number of way points: 4.64
+[2019-05-25 23:26:28] - Average number of global kernel steps: 4.88
+[2019-05-25 23:26:28] - Average last way point distance to goal: 1.78
+[2019-05-25 23:26:28] - Average number of global kernel calls: 3.64
+[2019-05-25 23:26:28] - Average global kernel improvement: 38.56%
+[2019-05-25 23:26:28] - Average way point in-between distance: 3.5
+
+
+[2019-05-25 23:26:28] - 13. WayPointNavigation with local kernel: A* and global kernel: Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000 (paper solution)
+[2019-05-25 23:26:33] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:26:33] - Average total steps: 45.52, (A*: 18.08)
+[2019-05-25 23:26:33] - Average time: 0.1048 seconds, (A*: 0.0091 seconds)
+[2019-05-25 23:26:33] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 8.32)
+[2019-05-25 23:26:33] - Average number of way points: 5.44
+[2019-05-25 23:26:33] - Average number of global kernel steps: 32.98
+[2019-05-25 23:26:33] - Average last way point distance to goal: 0.76
+[2019-05-25 23:26:33] - Average number of global kernel calls: 4.44
+[2019-05-25 23:26:33] - Average global kernel improvement: 86.15%
+[2019-05-25 23:26:33] - Average way point in-between distance: 7.49
+
+
+[2019-05-25 23:26:33] - 14. WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)
+[2019-05-25 23:27:29] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:27:29] - Average total steps: 29.14, (A*: 18.08)
+[2019-05-25 23:27:29] - Average time: 1.1235 seconds, (A*: 0.0091 seconds)
+[2019-05-25 23:27:29] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 8.32)
+[2019-05-25 23:27:29] - Average number of way points: 4.08
+[2019-05-25 23:27:29] - Average number of global kernel steps: 14.38
+[2019-05-25 23:27:29] - Average last way point distance to goal: 0.81
+[2019-05-25 23:27:29] - Average number of global kernel calls: 3.08
+[2019-05-25 23:27:29] - Average global kernel improvement: 66.74%
+[2019-05-25 23:27:29] - Average way point in-between distance: 6.03
+[2019-05-25 23:27:29] - Global kernel kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']%
+[2019-05-25 23:27:29] - Global kernel kernel calls percentages: ['0.3%', '0.04%', '0.1%', '0.08%', '0.11%', '0.0%', '0.02%', '0.31%', '0.04%', '0.01%']%
+
+
+\begin{table}[] 
+\small 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Nr. & Success Rate & Steps & Time & Distance Left\\
+\hline
+1 & 100.0\% & 18.08 & 0.0091s & 0.0\\
+\hline
+2 & 20.0\% & 5.2 & 0.0268s & 3.72\\
+\hline
+3 & 34.0\% & 8.65 & 0.0319s & 1.78\\
+\hline
+4 & 36.0\% & 9.39 & 0.0333s & 2.61\\
+\hline
+5 & 34.0\% & 8.41 & 0.0315s & 2.92\\
+\hline
+6 & 44.0\% & 13.45 & 0.0389s & 2.16\\
+\hline
+7 & 22.0\% & 5.36 & 0.0092s & 2.29\\
+\hline
+8 & 42.0\% & 12.19 & 0.0175s & 3.04\\
+\hline
+9 & 48.0\% & 15.21 & 0.0217s & 2.23\\
+\hline
+10 & 46.0\% & 12.61 & 0.0183s & 1.08\\
+\hline
+11 & 54.0\% & 15.33 & 0.0215s & 1.5\\
+\hline
+12 & 70.0\% & 41.17 & 0.4208s & 0.6\\
+\hline
+13 & 100.0\% & 24.08 & 0.1436s & 0.0\\
+\hline
+14 & 100.0\% & 45.52 & 0.1048s & 0.0\\
+\hline
+15 & 100.0\% & 29.14 & 1.1235s & 0.0\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+Nr. & Pick Ratio\\
+\hline
+12 & [22.0, 8.0, 20.0, 10.0, 2.0, 0.0, 2.0, 22.0, 14.0, 0.0]\\
+\hline
+15 & [0.3, 0.04, 0.1, 0.08, 0.11, 0.0, 0.02, 0.31, 0.04, 0.01]\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Nr. & WP & GK Steps & GK Distance Left & GK Improvement & WP In-Between Distance\\
+\hline
+13 & 4.64 & 4.88 & 1.78 & 38.56 & 3.5\\
+\hline
+14 & 5.44 & 32.98 & 0.76 & 86.15 & 7.49\\
+\hline
+15 & 4.08 & 14.38 & 0.81 & 66.74 & 6.03\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
+[2019-05-25 23:27:29] - Analysis on map: 4. Maps.grid_map_labyrinth2 with random samples: 50
+████████████████████████████████████████████
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+████████████████████████████████████      ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+██                                        ██
+████████████████████████████████████████████
+
+[2019-05-25 23:27:29] - 0. A*
+[2019-05-25 23:27:30] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:27:30] - Average total steps: 8.62, (A*: 8.62)
+[2019-05-25 23:27:30] - Average time: 0.0027 seconds, (A*: 0.0027 seconds)
+[2019-05-25 23:27:30] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 8.4)
+
+
+[2019-05-25 23:27:30] - 1. CAE Online LSTM on uniform_random_fill_10000
+[2019-05-25 23:27:31] - Goal found: 82.0%, (A*: 100.0%)
+[2019-05-25 23:27:31] - Average total steps: 6.93, (A*: 6.93)
+[2019-05-25 23:27:31] - Average time: 0.0306 seconds, (A*: 0.002 seconds)
+[2019-05-25 23:27:31] - Average distance from goal: 1.55, (A*: 0.0) (Average original distance from goal: 8.4)
+
+
+[2019-05-25 23:27:31] - 2. CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:27:33] - Goal found: 98.0%, (A*: 100.0%)
+[2019-05-25 23:27:33] - Average total steps: 9.0, (A*: 8.59)
+[2019-05-25 23:27:33] - Average time: 0.0339 seconds, (A*: 0.0027 seconds)
+[2019-05-25 23:27:33] - Average distance from goal: 0.16, (A*: 0.0) (Average original distance from goal: 8.4)
+
+
+[2019-05-25 23:27:33] - 3. CAE Online LSTM on house_10000
+[2019-05-25 23:27:35] - Goal found: 88.0%, (A*: 100.0%)
+[2019-05-25 23:27:35] - Average total steps: 7.93, (A*: 7.93)
+[2019-05-25 23:27:35] - Average time: 0.032 seconds, (A*: 0.0024 seconds)
+[2019-05-25 23:27:35] - Average distance from goal: 1.14, (A*: 0.0) (Average original distance from goal: 8.4)
+
+
+[2019-05-25 23:27:35] - 4. CAE Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:27:37] - Goal found: 80.0%, (A*: 100.0%)
+[2019-05-25 23:27:37] - Average total steps: 6.85, (A*: 6.85)
+[2019-05-25 23:27:37] - Average time: 0.0299 seconds, (A*: 0.0019 seconds)
+[2019-05-25 23:27:37] - Average distance from goal: 1.6, (A*: 0.0) (Average original distance from goal: 8.4)
+
+
+[2019-05-25 23:27:37] - 5. CAE Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:27:38] - Goal found: 94.0%, (A*: 100.0%)
+[2019-05-25 23:27:38] - Average total steps: 8.49, (A*: 8.49)
+[2019-05-25 23:27:38] - Average time: 0.0324 seconds, (A*: 0.0027 seconds)
+[2019-05-25 23:27:38] - Average distance from goal: 0.97, (A*: 0.0) (Average original distance from goal: 8.4)
+
+
+[2019-05-25 23:27:38] - 6. Online LSTM on uniform_random_fill_10000 (paper solution)
+[2019-05-25 23:27:39] - Goal found: 80.0%, (A*: 100.0%)
+[2019-05-25 23:27:39] - Average total steps: 6.85, (A*: 6.85)
+[2019-05-25 23:27:39] - Average time: 0.0114 seconds, (A*: 0.0019 seconds)
+[2019-05-25 23:27:39] - Average distance from goal: 1.84, (A*: 0.0) (Average original distance from goal: 8.4)
+
+
+[2019-05-25 23:27:39] - 7. Online LSTM on block_map_10000
+[2019-05-25 23:27:40] - Goal found: 78.0%, (A*: 100.0%)
+[2019-05-25 23:27:40] - Average total steps: 6.85, (A*: 6.74)
+[2019-05-25 23:27:40] - Average time: 0.0116 seconds, (A*: 0.0019 seconds)
+[2019-05-25 23:27:40] - Average distance from goal: 2.19, (A*: 0.0) (Average original distance from goal: 8.4)
+
+
+[2019-05-25 23:27:40] - 8. Online LSTM on house_10000
+[2019-05-25 23:27:41] - Goal found: 98.0%, (A*: 100.0%)
+[2019-05-25 23:27:41] - Average total steps: 8.59, (A*: 8.59)
+[2019-05-25 23:27:41] - Average time: 0.0137 seconds, (A*: 0.0027 seconds)
+[2019-05-25 23:27:41] - Average distance from goal: 0.32, (A*: 0.0) (Average original distance from goal: 8.4)
+
+
+[2019-05-25 23:27:41] - 9. Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:27:41] - Goal found: 78.0%, (A*: 100.0%)
+[2019-05-25 23:27:41] - Average total steps: 6.74, (A*: 6.74)
+[2019-05-25 23:27:41] - Average time: 0.0113 seconds, (A*: 0.0019 seconds)
+[2019-05-25 23:27:41] - Average distance from goal: 1.78, (A*: 0.0) (Average original distance from goal: 8.4)
+
+
+[2019-05-25 23:27:41] - 10. Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:27:42] - Goal found: 96.0%, (A*: 100.0%)
+[2019-05-25 23:27:42] - Average total steps: 8.58, (A*: 8.54)
+[2019-05-25 23:27:42] - Average time: 0.0137 seconds, (A*: 0.0027 seconds)
+[2019-05-25 23:27:42] - Average distance from goal: 0.64, (A*: 0.0) (Average original distance from goal: 8.4)
+
+
+[2019-05-25 23:27:42] - 11. Combined Online LSTM (proposed solution)
+[2019-05-25 23:27:59] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:27:59] - Average total steps: 25.06, (A*: 8.62)
+[2019-05-25 23:27:59] - Average time: 0.3389 seconds, (A*: 0.0027 seconds)
+[2019-05-25 23:27:59] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 8.4)
+[2019-05-25 23:27:59] - Kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']
+[2019-05-25 23:27:59] - Kernels pick percentages: ['84.0%', '6.0%', '2.0%', '0.0%', '8.0%', '0.0%', '0.0%', '0.0%', '0.0%', '0.0%']
+
+
+[2019-05-25 23:27:59] - 12. WayPointNavigation with local kernel: A* and global kernel: CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:28:02] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:28:02] - Average total steps: 8.68, (A*: 8.62)
+[2019-05-25 23:28:02] - Average time: 0.0425 seconds, (A*: 0.0027 seconds)
+[2019-05-25 23:28:02] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 8.4)
+[2019-05-25 23:28:02] - Average number of way points: 2.04
+[2019-05-25 23:28:02] - Average number of global kernel steps: 8.68
+[2019-05-25 23:28:02] - Average last way point distance to goal: 0.0
+[2019-05-25 23:28:02] - Average number of global kernel calls: 1.04
+[2019-05-25 23:28:02] - Average global kernel improvement: 100.0%
+[2019-05-25 23:28:02] - Average way point in-between distance: 8.16
+
+
+[2019-05-25 23:28:02] - 13. WayPointNavigation with local kernel: A* and global kernel: Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000 (paper solution)
+[2019-05-25 23:28:03] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:28:03] - Average total steps: 9.84, (A*: 8.62)
+[2019-05-25 23:28:03] - Average time: 0.0267 seconds, (A*: 0.0027 seconds)
+[2019-05-25 23:28:03] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 8.4)
+[2019-05-25 23:28:03] - Average number of way points: 2.1
+[2019-05-25 23:28:03] - Average number of global kernel steps: 9.84
+[2019-05-25 23:28:03] - Average last way point distance to goal: 0.0
+[2019-05-25 23:28:03] - Average number of global kernel calls: 1.1
+[2019-05-25 23:28:03] - Average global kernel improvement: 100.0%
+[2019-05-25 23:28:03] - Average way point in-between distance: 8.28
+
+
+[2019-05-25 23:28:03] - 14. WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)
+[2019-05-25 23:28:21] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:28:21] - Average total steps: 8.62, (A*: 8.62)
+[2019-05-25 23:28:21] - Average time: 0.3661 seconds, (A*: 0.0027 seconds)
+[2019-05-25 23:28:21] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 8.4)
+[2019-05-25 23:28:21] - Average number of way points: 2.02
+[2019-05-25 23:28:21] - Average number of global kernel steps: 8.62
+[2019-05-25 23:28:21] - Average last way point distance to goal: 0.0
+[2019-05-25 23:28:21] - Average number of global kernel calls: 1.02
+[2019-05-25 23:28:21] - Average global kernel improvement: 100.0%
+[2019-05-25 23:28:21] - Average way point in-between distance: 8.25
+[2019-05-25 23:28:21] - Global kernel kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']%
+[2019-05-25 23:28:21] - Global kernel kernel calls percentages: ['0.86%', '0.06%', '0.0%', '0.0%', '0.08%', '0.0%', '0.0%', '0.0%', '0.0%', '0.0%']%
+
+
+\begin{table}[] 
+\small 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Nr. & Success Rate & Steps & Time & Distance Left\\
+\hline
+1 & 100.0\% & 8.62 & 0.0027s & 0.0\\
+\hline
+2 & 82.0\% & 6.93 & 0.0306s & 1.55\\
+\hline
+3 & 98.0\% & 9.0 & 0.0339s & 0.16\\
+\hline
+4 & 88.0\% & 7.93 & 0.032s & 1.14\\
+\hline
+5 & 80.0\% & 6.85 & 0.0299s & 1.6\\
+\hline
+6 & 94.0\% & 8.49 & 0.0324s & 0.97\\
+\hline
+7 & 80.0\% & 6.85 & 0.0114s & 1.84\\
+\hline
+8 & 78.0\% & 6.85 & 0.0116s & 2.19\\
+\hline
+9 & 98.0\% & 8.59 & 0.0137s & 0.32\\
+\hline
+10 & 78.0\% & 6.74 & 0.0113s & 1.78\\
+\hline
+11 & 96.0\% & 8.58 & 0.0137s & 0.64\\
+\hline
+12 & 100.0\% & 25.06 & 0.3389s & 0.0\\
+\hline
+13 & 100.0\% & 8.68 & 0.0425s & 0.0\\
+\hline
+14 & 100.0\% & 9.84 & 0.0267s & 0.0\\
+\hline
+15 & 100.0\% & 8.62 & 0.3661s & 0.0\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+Nr. & Pick Ratio\\
+\hline
+12 & [84.0, 6.0, 2.0, 0.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0]\\
+\hline
+15 & [0.86, 0.06, 0.0, 0.0, 0.08, 0.0, 0.0, 0.0, 0.0, 0.0]\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Nr. & WP & GK Steps & GK Distance Left & GK Improvement & WP In-Between Distance\\
+\hline
+13 & 2.04 & 8.68 & 0.0 & 100.0 & 8.16\\
+\hline
+14 & 2.1 & 9.84 & 0.0 & 100.0 & 8.28\\
+\hline
+15 & 2.02 & 8.62 & 0.0 & 100.0 & 8.25\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
+[2019-05-25 23:28:21] - Analysis on map: 5. Maps.grid_map_one_obstacle.convert_to_dense_map() with random samples: 50
+████████████████████████████████████████████████████████████████████
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                              ██                                ██
+██                        ██████████████                          ██
+██                      ██████████████████                        ██
+██                      ██████████████████                        ██
+██                      ██████████████████                        ██
+██                    ██████████████████████                      ██
+██                      ██████████████████                        ██
+██                      ██████████████████                        ██
+██                      ██████████████████                        ██
+██                        ██████████████                          ██
+██                              ██                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+██                                                                ██
+████████████████████████████████████████████████████████████████████
+
+[2019-05-25 23:28:21] - 0. A*
+[2019-05-25 23:28:22] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:28:22] - Average total steps: 17.4, (A*: 17.4)
+[2019-05-25 23:28:22] - Average time: 0.0046 seconds, (A*: 0.0046 seconds)
+[2019-05-25 23:28:22] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 18.89)
+
+
+[2019-05-25 23:28:22] - 1. CAE Online LSTM on uniform_random_fill_10000
+[2019-05-25 23:28:24] - Goal found: 64.0%, (A*: 100.0%)
+[2019-05-25 23:28:24] - Average total steps: 14.44, (A*: 13.78)
+[2019-05-25 23:28:24] - Average time: 0.0424 seconds, (A*: 0.0035 seconds)
+[2019-05-25 23:28:24] - Average distance from goal: 6.55, (A*: 0.0) (Average original distance from goal: 18.89)
+
+
+[2019-05-25 23:28:24] - 2. CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:28:27] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:28:27] - Average total steps: 17.72, (A*: 17.4)
+[2019-05-25 23:28:27] - Average time: 0.0475 seconds, (A*: 0.0046 seconds)
+[2019-05-25 23:28:27] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 18.89)
+
+
+[2019-05-25 23:28:27] - 3. CAE Online LSTM on house_10000
+[2019-05-25 23:28:29] - Goal found: 88.0%, (A*: 100.0%)
+[2019-05-25 23:28:29] - Average total steps: 18.91, (A*: 17.75)
+[2019-05-25 23:28:29] - Average time: 0.0499 seconds, (A*: 0.0048 seconds)
+[2019-05-25 23:28:29] - Average distance from goal: 2.05, (A*: 0.0) (Average original distance from goal: 18.89)
+
+
+[2019-05-25 23:28:29] - 4. CAE Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:28:32] - Goal found: 66.0%, (A*: 100.0%)
+[2019-05-25 23:28:32] - Average total steps: 13.36, (A*: 13.03)
+[2019-05-25 23:28:32] - Average time: 0.0419 seconds, (A*: 0.0033 seconds)
+[2019-05-25 23:28:32] - Average distance from goal: 6.64, (A*: 0.0) (Average original distance from goal: 18.89)
+
+
+[2019-05-25 23:28:32] - 5. CAE Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:28:34] - Goal found: 92.0%, (A*: 100.0%)
+[2019-05-25 23:28:34] - Average total steps: 16.67, (A*: 16.43)
+[2019-05-25 23:28:34] - Average time: 0.0466 seconds, (A*: 0.0043 seconds)
+[2019-05-25 23:28:34] - Average distance from goal: 1.68, (A*: 0.0) (Average original distance from goal: 18.89)
+
+
+[2019-05-25 23:28:34] - 6. Online LSTM on uniform_random_fill_10000 (paper solution)
+[2019-05-25 23:28:35] - Goal found: 80.0%, (A*: 100.0%)
+[2019-05-25 23:28:35] - Average total steps: 15.32, (A*: 15.32)
+[2019-05-25 23:28:35] - Average time: 0.0239 seconds, (A*: 0.0038 seconds)
+[2019-05-25 23:28:35] - Average distance from goal: 4.01, (A*: 0.0) (Average original distance from goal: 18.89)
+
+
+[2019-05-25 23:28:35] - 7. Online LSTM on block_map_10000
+[2019-05-25 23:28:37] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:28:37] - Average total steps: 19.74, (A*: 17.4)
+[2019-05-25 23:28:37] - Average time: 0.0299 seconds, (A*: 0.0046 seconds)
+[2019-05-25 23:28:37] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 18.89)
+
+
+[2019-05-25 23:28:37] - 8. Online LSTM on house_10000
+[2019-05-25 23:28:39] - Goal found: 72.0%, (A*: 100.0%)
+[2019-05-25 23:28:39] - Average total steps: 16.19, (A*: 14.58)
+[2019-05-25 23:28:39] - Average time: 0.0253 seconds, (A*: 0.0041 seconds)
+[2019-05-25 23:28:39] - Average distance from goal: 5.84, (A*: 0.0) (Average original distance from goal: 18.89)
+
+
+[2019-05-25 23:28:39] - 9. Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:28:40] - Goal found: 86.0%, (A*: 100.0%)
+[2019-05-25 23:28:40] - Average total steps: 15.86, (A*: 15.86)
+[2019-05-25 23:28:40] - Average time: 0.0248 seconds, (A*: 0.004 seconds)
+[2019-05-25 23:28:40] - Average distance from goal: 2.94, (A*: 0.0) (Average original distance from goal: 18.89)
+
+
+[2019-05-25 23:28:40] - 10. Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:28:42] - Goal found: 98.0%, (A*: 100.0%)
+[2019-05-25 23:28:42] - Average total steps: 17.39, (A*: 17.29)
+[2019-05-25 23:28:42] - Average time: 0.0268 seconds, (A*: 0.0046 seconds)
+[2019-05-25 23:28:42] - Average distance from goal: 0.42, (A*: 0.0) (Average original distance from goal: 18.89)
+
+
+[2019-05-25 23:28:42] - 11. Combined Online LSTM (proposed solution)
+[2019-05-25 23:29:08] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:29:08] - Average total steps: 49.1, (A*: 17.4)
+[2019-05-25 23:29:08] - Average time: 0.5211 seconds, (A*: 0.0046 seconds)
+[2019-05-25 23:29:08] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 18.89)
+[2019-05-25 23:29:08] - Kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']
+[2019-05-25 23:29:08] - Kernels pick percentages: ['86.0%', '0.0%', '4.0%', '0.0%', '8.0%', '0.0%', '0.0%', '2.0%', '0.0%', '0.0%']
+
+
+[2019-05-25 23:29:08] - 12. WayPointNavigation with local kernel: A* and global kernel: CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:29:12] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:29:12] - Average total steps: 17.4, (A*: 17.4)
+[2019-05-25 23:29:12] - Average time: 0.0711 seconds, (A*: 0.0046 seconds)
+[2019-05-25 23:29:12] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 18.89)
+[2019-05-25 23:29:12] - Average number of way points: 2.42
+[2019-05-25 23:29:12] - Average number of global kernel steps: 17.4
+[2019-05-25 23:29:12] - Average last way point distance to goal: 0.0
+[2019-05-25 23:29:12] - Average number of global kernel calls: 1.42
+[2019-05-25 23:29:12] - Average global kernel improvement: 100.0%
+[2019-05-25 23:29:12] - Average way point in-between distance: 13.31
+
+
+[2019-05-25 23:29:12] - 13. WayPointNavigation with local kernel: A* and global kernel: Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000 (paper solution)
+[2019-05-25 23:29:14] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:29:14] - Average total steps: 17.42, (A*: 17.4)
+[2019-05-25 23:29:14] - Average time: 0.0426 seconds, (A*: 0.0046 seconds)
+[2019-05-25 23:29:14] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 18.89)
+[2019-05-25 23:29:14] - Average number of way points: 2.44
+[2019-05-25 23:29:14] - Average number of global kernel steps: 16.88
+[2019-05-25 23:29:14] - Average last way point distance to goal: 0.42
+[2019-05-25 23:29:14] - Average number of global kernel calls: 1.44
+[2019-05-25 23:29:14] - Average global kernel improvement: 97.75%
+[2019-05-25 23:29:14] - Average way point in-between distance: 13.48
+
+
+[2019-05-25 23:29:14] - 14. WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)
+[2019-05-25 23:29:50] - Goal found: 100.0%, (A*: 100.0%)
+[2019-05-25 23:29:50] - Average total steps: 17.4, (A*: 17.4)
+[2019-05-25 23:29:50] - Average time: 0.7195 seconds, (A*: 0.0046 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 0.0, (A*: 0.0) (Average original distance from goal: 18.89)
+[2019-05-25 23:29:50] - Average number of way points: 2.38
+[2019-05-25 23:29:50] - Average number of global kernel steps: 17.4
+[2019-05-25 23:29:50] - Average last way point distance to goal: 0.0
+[2019-05-25 23:29:50] - Average number of global kernel calls: 1.38
+[2019-05-25 23:29:50] - Average global kernel improvement: 100.0%
+[2019-05-25 23:29:50] - Average way point in-between distance: 13.72
+[2019-05-25 23:29:50] - Global kernel kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']%
+[2019-05-25 23:29:50] - Global kernel kernel calls percentages: ['0.96%', '0.0%', '0.0%', '0.0%', '0.04%', '0.0%', '0.0%', '0.0%', '0.0%', '0.0%']%
+
+
+\begin{table}[] 
+\small 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Nr. & Success Rate & Steps & Time & Distance Left\\
+\hline
+1 & 100.0\% & 17.4 & 0.0046s & 0.0\\
+\hline
+2 & 64.0\% & 14.44 & 0.0424s & 6.55\\
+\hline
+3 & 100.0\% & 17.72 & 0.0475s & 0.0\\
+\hline
+4 & 88.0\% & 18.91 & 0.0499s & 2.05\\
+\hline
+5 & 66.0\% & 13.36 & 0.0419s & 6.64\\
+\hline
+6 & 92.0\% & 16.67 & 0.0466s & 1.68\\
+\hline
+7 & 80.0\% & 15.32 & 0.0239s & 4.01\\
+\hline
+8 & 100.0\% & 19.74 & 0.0299s & 0.0\\
+\hline
+9 & 72.0\% & 16.19 & 0.0253s & 5.84\\
+\hline
+10 & 86.0\% & 15.86 & 0.0248s & 2.94\\
+\hline
+11 & 98.0\% & 17.39 & 0.0268s & 0.42\\
+\hline
+12 & 100.0\% & 49.1 & 0.5211s & 0.0\\
+\hline
+13 & 100.0\% & 17.4 & 0.0711s & 0.0\\
+\hline
+14 & 100.0\% & 17.42 & 0.0426s & 0.0\\
+\hline
+15 & 100.0\% & 17.4 & 0.7195s & 0.0\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+Nr. & Pick Ratio\\
+\hline
+12 & [86.0, 0.0, 4.0, 0.0, 8.0, 0.0, 0.0, 2.0, 0.0, 0.0]\\
+\hline
+15 & [0.96, 0.0, 0.0, 0.0, 0.04, 0.0, 0.0, 0.0, 0.0, 0.0]\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Nr. & WP & GK Steps & GK Distance Left & GK Improvement & WP In-Between Distance\\
+\hline
+13 & 2.42 & 17.4 & 0.0 & 100.0 & 13.31\\
+\hline
+14 & 2.44 & 16.88 & 0.42 & 97.75 & 13.48\\
+\hline
+15 & 2.38 & 17.4 & 0.0 & 100.0 & 13.72\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
+
+
+[2019-05-25 23:29:50] - Complex analysis overall results: 
+
+[2019-05-25 23:29:50] - 0. A*
+[2019-05-25 23:29:50] - Goal found: 99.33%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 23.72, (A*: 23.72)
+[2019-05-25 23:29:50] - Average time: 0.0103 seconds, (A*: 0.0103 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 0.4, (A*: 0.4) (Average original distance from goal: 22.54)
+
+
+[2019-05-25 23:29:50] - 1. CAE Online LSTM on uniform_random_fill_10000
+[2019-05-25 23:29:50] - Goal found: 49.33%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 13.18, (A*: 12.9)
+[2019-05-25 23:29:50] - Average time: 0.0453 seconds, (A*: 0.0035 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 9.9, (A*: 0.4) (Average original distance from goal: 22.54)
+
+
+[2019-05-25 23:29:50] - 2. CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:29:50] - Goal found: 57.33%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 16.98, (A*: 16.28)
+[2019-05-25 23:29:50] - Average time: 0.0486 seconds, (A*: 0.0063 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 8.41, (A*: 0.4) (Average original distance from goal: 22.54)
+
+
+[2019-05-25 23:29:50] - 3. CAE Online LSTM on house_10000
+[2019-05-25 23:29:50] - Goal found: 63.33%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 22.79, (A*: 19.99)
+[2019-05-25 23:29:50] - Average time: 0.0634 seconds, (A*: 0.0085 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 7.42, (A*: 0.4) (Average original distance from goal: 22.54)
+
+
+[2019-05-25 23:29:50] - 4. CAE Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:29:50] - Goal found: 54.33%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 19.28, (A*: 17.56)
+[2019-05-25 23:29:50] - Average time: 0.0548 seconds, (A*: 0.0077 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 6.96, (A*: 0.4) (Average original distance from goal: 22.54)
+
+
+[2019-05-25 23:29:50] - 5. CAE Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:29:50] - Goal found: 73.33%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 23.25, (A*: 21.16)
+[2019-05-25 23:29:50] - Average time: 0.0657 seconds, (A*: 0.0091 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 4.35, (A*: 0.4) (Average original distance from goal: 22.54)
+
+
+[2019-05-25 23:29:50] - 6. Online LSTM on uniform_random_fill_10000 (paper solution)
+[2019-05-25 23:29:50] - Goal found: 50.67%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 13.47, (A*: 13.41)
+[2019-05-25 23:29:50] - Average time: 0.0217 seconds, (A*: 0.0039 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 9.31, (A*: 0.4) (Average original distance from goal: 22.54)
+
+
+[2019-05-25 23:29:50] - 7. Online LSTM on block_map_10000
+[2019-05-25 23:29:50] - Goal found: 57.33%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 19.87, (A*: 17.33)
+[2019-05-25 23:29:50] - Average time: 0.0311 seconds, (A*: 0.0073 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 7.47, (A*: 0.4) (Average original distance from goal: 22.54)
+
+
+[2019-05-25 23:29:50] - 8. Online LSTM on house_10000
+[2019-05-25 23:29:50] - Goal found: 66.33%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 22.58, (A*: 20.33)
+[2019-05-25 23:29:50] - Average time: 0.0352 seconds, (A*: 0.0095 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 6.41, (A*: 0.4) (Average original distance from goal: 22.54)
+
+
+[2019-05-25 23:29:50] - 9. Online LSTM on uniform_random_fill_10000_block_map_10000
+[2019-05-25 23:29:50] - Goal found: 61.67%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 18.78, (A*: 17.52)
+[2019-05-25 23:29:50] - Average time: 0.0294 seconds, (A*: 0.0073 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 5.74, (A*: 0.4) (Average original distance from goal: 22.54)
+
+
+[2019-05-25 23:29:50] - 10. Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000
+[2019-05-25 23:29:50] - Goal found: 71.67%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 21.49, (A*: 19.46)
+[2019-05-25 23:29:50] - Average time: 0.0328 seconds, (A*: 0.0083 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 5.87, (A*: 0.4) (Average original distance from goal: 22.54)
+
+
+[2019-05-25 23:29:50] - 11. Combined Online LSTM (proposed solution)
+[2019-05-25 23:29:50] - Goal found: 85.33%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 55.05, (A*: 21.02)
+[2019-05-25 23:29:50] - Average time: 0.7035 seconds, (A*: 0.009 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 1.9, (A*: 0.4) (Average original distance from goal: 22.54)
+[2019-05-25 23:29:50] - Kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']
+[2019-05-25 23:29:50] - Kernels pick percentages: ['49.67%', '9.0%', '10.33%', '7.0%', '5.67%', '0.33%', '3.0%', '11.0%', '3.67%', '0.33%']
+
+
+[2019-05-25 23:29:50] - 12. WayPointNavigation with local kernel: A* and global kernel: CAE Online LSTM on block_map_10000 (paper solution)
+[2019-05-25 23:29:50] - Goal found: 99.33%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 25.82, (A*: 23.72)
+[2019-05-25 23:29:50] - Average time: 0.1685 seconds, (A*: 0.0103 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 0.36, (A*: 0.4) (Average original distance from goal: 22.54)
+[2019-05-25 23:29:50] - Average number of way points: 4.06
+[2019-05-25 23:29:50] - Average number of global kernel steps: 13.28
+[2019-05-25 23:29:50] - Average last way point distance to goal: 8.06
+[2019-05-25 23:29:50] - Average number of global kernel calls: 3.06
+[2019-05-25 23:29:50] - Average global kernel improvement: 65.84%
+[2019-05-25 23:29:50] - Average way point in-between distance: 7.62
+
+
+[2019-05-25 23:29:50] - 13. WayPointNavigation with local kernel: A* and global kernel: Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000 (paper solution)
+[2019-05-25 23:29:50] - Goal found: 99.33%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 36.25, (A*: 23.72)
+[2019-05-25 23:29:50] - Average time: 0.1037 seconds, (A*: 0.0103 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 0.37, (A*: 0.4) (Average original distance from goal: 22.54)
+[2019-05-25 23:29:50] - Average number of way points: 4.02
+[2019-05-25 23:29:50] - Average number of global kernel steps: 26.0
+[2019-05-25 23:29:50] - Average last way point distance to goal: 6.34
+[2019-05-25 23:29:50] - Average number of global kernel calls: 3.02
+[2019-05-25 23:29:50] - Average global kernel improvement: 83.47%
+[2019-05-25 23:29:50] - Average way point in-between distance: 10.04
+
+
+[2019-05-25 23:29:50] - 14. WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)
+[2019-05-25 23:29:50] - Goal found: 99.33%, (A*: 99.33%)
+[2019-05-25 23:29:50] - Average total steps: 28.27, (A*: 23.72)
+[2019-05-25 23:29:50] - Average time: 1.289 seconds, (A*: 0.0103 seconds)
+[2019-05-25 23:29:50] - Average distance from goal: 0.37, (A*: 0.4) (Average original distance from goal: 22.54)
+[2019-05-25 23:29:50] - Average number of way points: 3.27
+[2019-05-25 23:29:50] - Average number of global kernel steps: 25.46
+[2019-05-25 23:29:50] - Average last way point distance to goal: 1.12
+[2019-05-25 23:29:50] - Average number of global kernel calls: 2.27
+[2019-05-25 23:29:50] - Average global kernel improvement: 93.76%
+[2019-05-25 23:29:50] - Average way point in-between distance: 12.1
+[2019-05-25 23:29:50] - Global kernel kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']%
+[2019-05-25 23:29:50] - Global kernel kernel calls percentages: ['0.63%', '0.11%', '0.08%', '0.04%', '0.06%', '0.0%', '0.01%', '0.06%', '0.01%', '0.0%']%
+
+
+\begin{table}[] 
+\small 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Nr. & Success Rate & Steps & Time & Distance Left\\
+\hline
+1 & 99.33\% & 23.72 & 0.0103s & 0.4\\
+\hline
+2 & 49.33\% & 13.18 & 0.0453s & 9.9\\
+\hline
+3 & 57.33\% & 16.98 & 0.0486s & 8.41\\
+\hline
+4 & 63.33\% & 22.79 & 0.0634s & 7.42\\
+\hline
+5 & 54.33\% & 19.28 & 0.0548s & 6.96\\
+\hline
+6 & 73.33\% & 23.25 & 0.0657s & 4.35\\
+\hline
+7 & 50.67\% & 13.47 & 0.0217s & 9.31\\
+\hline
+8 & 57.33\% & 19.87 & 0.0311s & 7.47\\
+\hline
+9 & 66.33\% & 22.58 & 0.0352s & 6.41\\
+\hline
+10 & 61.67\% & 18.78 & 0.0294s & 5.74\\
+\hline
+11 & 71.67\% & 21.49 & 0.0328s & 5.87\\
+\hline
+12 & 85.33\% & 55.05 & 0.7035s & 1.9\\
+\hline
+13 & 99.33\% & 25.82 & 0.1685s & 0.36\\
+\hline
+14 & 99.33\% & 36.25 & 0.1037s & 0.37\\
+\hline
+15 & 99.33\% & 28.27 & 1.289s & 0.37\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|}
+\hline
+Nr. & Pick Ratio\\
+\hline
+12 & [49.67, 9.0, 10.33, 7.0, 5.67, 0.33, 3.0, 11.0, 3.67, 0.33]\\
+\hline
+15 & [0.63, 0.11, 0.08, 0.04, 0.06, 0.0, 0.01, 0.06, 0.01, 0.0]\\
+\hline
+\end{tabular}
+
+
+\bigskip
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Nr. & WP & GK Steps & GK Distance Left & GK Improvement & WP In-Between Distance\\
+\hline
+13 & 4.06 & 13.28 & 8.06 & 65.84 & 7.62\\
+\hline
+14 & 4.02 & 26.0 & 6.34 & 83.47 & 10.04\\
+\hline
+15 & 3.27 & 25.46 & 1.12 & 93.76 & 12.1\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+

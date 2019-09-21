@@ -1,0 +1,91 @@
+
+
+[2019-06-02 16:01:07] - Starting training set analysis: number of training sets = 3
+
+[2019-06-02 16:01:07] - Loading training set: training_uniform_random_fill_10000
+[2019-06-02 16:13:19] - Finished loading
+
+[2019-06-02 16:13:20] - Training set: uniform_random_fill_10000
+{
+	map_obstacles_percentage: 19.95%,
+	goal_found: 99.97%,
+	distance_to_goal: 0.01,
+	original_distance_to_goal: 33.55,
+	trace: [<algorithms.configuration.entities.trace.Trace object at 0x119243198>, <algorithms.configuration.entities.trace.Trace object at 0x11923add8>, <algorithms.configuration.entities.trace.Trace object at 0x119243208>, <algorithms.configuration.entities.trace.Trace object at 0x119243240>, <algorithms.configuration.entities.trace.Trace object at 0x119243278>, <algorithms.configuration.entities.trace.Trace object at 0x1192432b0>, <algorithms.configuration.entities.trace.Trace object at 0x1192432e8>, <algorithms.configuration.entities.trace.Trace object at 0x119243320>, <algorithms.configuration.entities.trace.Trace object at 0x119243358>, <algorithms.configuration.entities.trace.Trace object at 0x119243390>, <algorithms.configuration.entities.trace.Trace object at 0x1192433c8>, <algorithms.configuration.entities.trace.Trace object at 0x119243400>, <algorithms.configuration.entities.trace.Trace object at 0x119243438>, <algorithms.configuration.entities.trace.Trace object at 0x119243470>, <algorithms.configuration.entities.trace.Trace object at 0x1192434a8>, <algorithms.configuration.entities.trace.Trace object at 0x1192434e0>, <algorithms.configuration.entities.trace.Trace object at 0x119243518>, <algorithms.configuration.entities.trace.Trace object at 0x119243550>, <algorithms.configuration.entities.trace.Trace object at 0x119243588>, <algorithms.configuration.entities.trace.Trace object at 0x1192435c0>, <algorithms.configuration.entities.trace.Trace object at 0x1192435f8>, <algorithms.configuration.entities.trace.Trace object at 0x119243630>, <algorithms.configuration.entities.trace.Trace object at 0x119243668>, <algorithms.configuration.entities.trace.Trace object at 0x1192436a0>, <algorithms.configuration.entities.trace.Trace object at 0x1192436d8>, <algorithms.configuration.entities.trace.Trace object at 0x119243710>, <algorithms.configuration.entities.trace.Trace object at 0x119243748>, <algorithms.configuration.entities.trace.Trace object at 0x119243780>, <algorithms.configuration.entities.trace.Trace object at 0x1192437b8>, <algorithms.configuration.entities.trace.Trace object at 0x1192437f0>, <algorithms.configuration.entities.trace.Trace object at 0x119243828>, <algorithms.configuration.entities.trace.Trace object at 0x119243860>, <algorithms.configuration.entities.trace.Trace object at 0x119243898>, <algorithms.configuration.entities.trace.Trace object at 0x1192438d0>, <algorithms.configuration.entities.trace.Trace object at 0x119243908>, <algorithms.configuration.entities.trace.Trace object at 0x119243940>, <algorithms.configuration.entities.trace.Trace object at 0x119243978>, <algorithms.configuration.entities.trace.Trace object at 0x1192439b0>, <algorithms.configuration.entities.trace.Trace object at 0x1192439e8>, <algorithms.configuration.entities.trace.Trace object at 0x119243a20>, <algorithms.configuration.entities.trace.Trace object at 0x119243a58>, <algorithms.configuration.entities.trace.Trace object at 0x119243a90>, <algorithms.configuration.entities.trace.Trace object at 0x119243ac8>, <algorithms.configuration.entities.trace.Trace object at 0x119243b00>, <algorithms.configuration.entities.trace.Trace object at 0x119243b38>, <algorithms.configuration.entities.trace.Trace object at 0x119243b70>, <algorithms.configuration.entities.trace.Trace object at 0x119243ba8>, <algorithms.configuration.entities.trace.Trace object at 0x119243be0>, <algorithms.configuration.entities.trace.Trace object at 0x119243c18>, <algorithms.configuration.entities.trace.Trace object at 0x119243c50>, <algorithms.configuration.entities.trace.Trace object at 0x119243c88>],
+	total_steps: 37.39,
+	total_distance: 36.07,
+	total_time: 0.02,
+	algorithm_type: <class 'algorithms.classic.a_star.AStar'>,
+	fringe: 2.76%,
+	search_space: 5.28%,
+	features: dict_keys(['agent_position', 'direction_to_goal', 'distance_to_goal', 'raycast_8', 'agent_goal_angle', 'valid_moves', 'direction_to_goal_normalized', 'distance_to_goal_normalized', 'raycast_8_normalized']),
+	labels: dict_keys(['next_position', 'next_position_index']),
+	single_features: dict_keys(['global_map']),
+	single_labels: dict_keys(['global_map']),
+}
+[2019-06-02 16:13:20] - Loading training set: training_block_map_10000
+[2019-06-02 16:36:07] - Finished loading
+
+[2019-06-02 16:36:11] - Training set: block_map_10000
+{
+	map_obstacles_percentage: 18.68%,
+	goal_found: 99.99%,
+	distance_to_goal: 0.0,
+	original_distance_to_goal: 34.35,
+	trace: [<algorithms.configuration.entities.trace.Trace object at 0x119243160>, <algorithms.configuration.entities.trace.Trace object at 0x1192431d0>, <algorithms.configuration.entities.trace.Trace object at 0x119243f60>, <algorithms.configuration.entities.trace.Trace object at 0x119243e48>, <algorithms.configuration.entities.trace.Trace object at 0x119243fd0>, <algorithms.configuration.entities.trace.Trace object at 0x119243f98>, <algorithms.configuration.entities.trace.Trace object at 0x119243e10>, <algorithms.configuration.entities.trace.Trace object at 0x119243d30>, <algorithms.configuration.entities.trace.Trace object at 0x119243f28>, <algorithms.configuration.entities.trace.Trace object at 0x1192a5128>, <algorithms.configuration.entities.trace.Trace object at 0x1192a5080>, <algorithms.configuration.entities.trace.Trace object at 0x1192a5198>, <algorithms.configuration.entities.trace.Trace object at 0x1192a5160>, <algorithms.configuration.entities.trace.Trace object at 0x1192a5208>, <algorithms.configuration.entities.trace.Trace object at 0x1192a5240>, <algorithms.configuration.entities.trace.Trace object at 0x1192a50b8>, <algorithms.configuration.entities.trace.Trace object at 0x1192a52b0>, <algorithms.configuration.entities.trace.Trace object at 0x1192a52e8>, <algorithms.configuration.entities.trace.Trace object at 0x1192a51d0>],
+	total_steps: 40.92,
+	total_distance: 38.92,
+	total_time: 0.03,
+	algorithm_type: <class 'algorithms.classic.a_star.AStar'>,
+	fringe: 3.33%,
+	search_space: 7.48%,
+	features: dict_keys(['agent_position', 'direction_to_goal', 'distance_to_goal', 'raycast_8', 'agent_goal_angle', 'valid_moves', 'direction_to_goal_normalized', 'distance_to_goal_normalized', 'raycast_8_normalized']),
+	labels: dict_keys(['next_position', 'next_position_index']),
+	single_features: dict_keys(['global_map']),
+	single_labels: dict_keys(['global_map']),
+}
+[2019-06-02 16:36:11] - Loading training set: training_house_10000
+[2019-06-02 17:05:41] - Finished loading
+
+[2019-06-02 17:05:45] - Training set: house_10000
+{
+	map_obstacles_percentage: 8.25%,
+	goal_found: 96.88%,
+	distance_to_goal: 1.28,
+	original_distance_to_goal: 33.54,
+	trace: [<algorithms.configuration.entities.trace.Trace object at 0x11afb3cf8>, <algorithms.configuration.entities.trace.Trace object at 0x11afb3d68>, <algorithms.configuration.entities.trace.Trace object at 0x11afb3da0>, <algorithms.configuration.entities.trace.Trace object at 0x11afb3dd8>, <algorithms.configuration.entities.trace.Trace object at 0x11afb3e10>, <algorithms.configuration.entities.trace.Trace object at 0x11afb3e48>, <algorithms.configuration.entities.trace.Trace object at 0x11afb3e80>, <algorithms.configuration.entities.trace.Trace object at 0x11afb3eb8>, <algorithms.configuration.entities.trace.Trace object at 0x11afb3ef0>, <algorithms.configuration.entities.trace.Trace object at 0x11afb3f28>, <algorithms.configuration.entities.trace.Trace object at 0x11afb3f60>, <algorithms.configuration.entities.trace.Trace object at 0x11afb3f98>, <algorithms.configuration.entities.trace.Trace object at 0x11afb3fd0>, <algorithms.configuration.entities.trace.Trace object at 0x11c128080>, <algorithms.configuration.entities.trace.Trace object at 0x11c128780>, <algorithms.configuration.entities.trace.Trace object at 0x11c128748>, <algorithms.configuration.entities.trace.Trace object at 0x11c1286a0>, <algorithms.configuration.entities.trace.Trace object at 0x11c1280b8>, <algorithms.configuration.entities.trace.Trace object at 0x11c128710>, <algorithms.configuration.entities.trace.Trace object at 0x11c1287b8>, <algorithms.configuration.entities.trace.Trace object at 0x11c1287f0>, <algorithms.configuration.entities.trace.Trace object at 0x11c128828>, <algorithms.configuration.entities.trace.Trace object at 0x11c128860>, <algorithms.configuration.entities.trace.Trace object at 0x11c128898>, <algorithms.configuration.entities.trace.Trace object at 0x11c1288d0>, <algorithms.configuration.entities.trace.Trace object at 0x11c128908>, <algorithms.configuration.entities.trace.Trace object at 0x11c128940>],
+	total_steps: 42.05,
+	total_distance: 41.06,
+	total_time: 0.05,
+	algorithm_type: <class 'algorithms.classic.a_star.AStar'>,
+	fringe: 3.11%,
+	search_space: 11.53%,
+	features: dict_keys(['agent_position', 'direction_to_goal', 'distance_to_goal', 'raycast_8', 'agent_goal_angle', 'valid_moves', 'direction_to_goal_normalized', 'distance_to_goal_normalized', 'raycast_8_normalized']),
+	labels: dict_keys(['next_position', 'next_position_index']),
+	single_features: dict_keys(['global_map']),
+	single_labels: dict_keys(['global_map']),
+}
+
+
+\begin{table}[] 
+\footnotesize 
+\centering
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Training Dataset Name} & \textbf{Path Available} & \textbf{Obstacles} & \textbf{Original Distance} & \textbf{Optimal Travel Distance}\\
+\hline
+training\_uniform\_random\_fill\_10000 & 99.97\% & 19.95\% & 33.55 & 36.07\\
+\hline
+training\_block\_map\_10000 & 99.99\% & 18.68\% & 34.35 & 38.92\\
+\hline
+training\_house\_10000 & 96.88\% & 8.25\% & 33.54 & 41.06\\
+\hline
+\end{tabular}
+
+
+\caption{} 
+\label{tab:my_label} 
+\end{table}
+
