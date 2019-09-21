@@ -1,4 +1,4 @@
-from typing import List, Callable, Optional, Set
+from typing import List
 
 import torch
 
@@ -10,46 +10,7 @@ from simulator.views.map_displays.map_display import MapDisplay
 from structures import Point
 
 from algorithms.classic.sample_based.core.vertex import Vertex
-
-class Graph:
-    root_vertex_a: Vertex
-    root_vertex_b: Vertex
-
-    def __init__(self, start_pos: Point, goal_pos: Point) -> None:
-        self.root_vertex_start = Vertex(start_pos)
-        self.root_vertex_goal = Vertex(goal_pos)
-        self.root_vertex_a = self.root_vertex_start
-        self.root_vertex_b = self.root_vertex_goal
-
-    @staticmethod
-    def add_edge(parent: Vertex, child: Optional['Vertex']):
-        parent.add_child(child)
-        child.set_parent(parent)
-
-    def swap_root_vertices(self):
-        buffer = self.root_vertex_a
-        self.root_vertex_a = self.root_vertex_b
-        self.root_vertex_b = buffer
-
-    def walk_dfs(self, f: Callable[[Vertex], bool]):
-        self.root_vertex_a.visit_children(f)
-        self.root_vertex_b.visit_children(f)
-
-    def walk_dfs_single_vertex(self, root_vertex: Vertex, f: Callable[[Vertex], bool]):
-        root_vertex.visit_children(f)
-
-    def get_nearest_vertex(self, root_vertex: Vertex, point: Point) -> Vertex:
-        def get_nearest(current: Vertex, __acc) -> bool:
-            dist: float = torch.norm(point.to_tensor() - current.position.to_tensor())
-            if dist <= __acc[0]:
-                __acc[0] = dist
-                __acc[1] = current
-                return True
-            return False
-
-        acc: [float, Vertex] = [float('inf'), root_vertex]
-        self.walk_dfs_single_vertex(root_vertex, lambda current: get_nearest(current, acc))
-        return acc[1]
+from algorithms.classic.sample_based.core.graph import Graph
 
 
 class RRT_Connect(Algorithm):
@@ -59,7 +20,7 @@ class RRT_Connect(Algorithm):
 
     def __init__(self, services: Services, testing: BasicTesting = None) -> None:
         super().__init__(services, testing)
-        self.__graph = Graph(self._get_grid().agent.position, self._get_grid().goal.position)
+        self.__graph = Graph(Vertex(self._get_grid().agent.position), Vertex(self._get_grid().goal.position), [])
         self.__max_dist = 10
         self.__iterations = 10000
 
@@ -104,7 +65,7 @@ class RRT_Connect(Algorithm):
         path_a_to_mid.reverse()
         path = path_a_to_mid + path_mid_to_b
 
-        if self.__graph.root_vertex_a is self.__graph.root_vertex_goal:
+        if self.__graph.root_vertices[0] is self.__graph.root_vertex_goal:
             path.reverse()
 
         for p in path:
@@ -114,16 +75,15 @@ class RRT_Connect(Algorithm):
     def _find_path_internal(self) -> None:
 
         for i in range(self.__iterations):
-        #while True:
 
             q_rand: Point = self.__get_random_sample()
 
-            if not self.__extend(self.__graph.root_vertex_a, q_rand) == 'trapped':
+            if not self.__extend(self.__graph.root_vertices[0], q_rand) == 'trapped':
                 self.__extension_target = self.__q_new
-                if self.__connect(self.__graph.root_vertex_b, self.__q_new) == 'reached':
+                if self.__connect(self.__graph.root_vertices[-1], self.__q_new) == 'reached':
                     self.__path()
                     break
-            self.__graph.swap_root_vertices()
+            self.__graph.reverse_root_vertices()
 
             # visualization code
             self.key_frame()
@@ -136,7 +96,7 @@ class RRT_Connect(Algorithm):
                 return sample
 
     def __get_nearest_vertex(self, graph_root_vertex: Vertex, q_sample: Point) -> Vertex:
-        return self.__graph.get_nearest_vertex(graph_root_vertex, q_sample)
+        return self.__graph.get_nearest_vertex([graph_root_vertex], q_sample)
 
     @staticmethod
     def __get_new_vertex(q_near: Vertex, q_sample: Point, max_dist) -> Vertex:

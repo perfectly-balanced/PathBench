@@ -1,4 +1,4 @@
-from typing import List, Callable, Optional, Set
+from typing import List
 
 import torch
 
@@ -10,32 +10,7 @@ from simulator.views.map_displays.map_display import MapDisplay
 from structures import Point
 
 from algorithms.classic.sample_based.core.vertex import Vertex
-
-class Graph:
-    __root_vertex: Vertex
-
-    def __init__(self, agent_pos: Point) -> None:
-        self.__root_vertex = Vertex(agent_pos)
-
-    @staticmethod
-    def add_edge(parent: Vertex, child: Optional['Vertex']):
-        parent.add_child(child)
-        child.set_parent(parent)
-
-    def walk_dfs(self, f: Callable[[Vertex], bool]):
-        self.__root_vertex.visit_children(f)
-
-    def get_random_vertex(self) -> Vertex:
-        def get_random(current: Vertex, __acc) -> bool:
-            random_val: float = float(torch.rand(1).numpy())
-            if random_val <= __acc[0]:
-                __acc[0] = random_val
-                __acc[1] = current
-                return True
-            return False
-        acc: [float, Vertex] = [float('inf'), self.__root_vertex]
-        self.walk_dfs(lambda current: get_random(current, acc))
-        return acc[1]
+from algorithms.classic.sample_based.core.graph import Graph
 
 
 class RT(Algorithm):
@@ -43,7 +18,9 @@ class RT(Algorithm):
 
     def __init__(self, services: Services, testing: BasicTesting = None) -> None:
         super().__init__(services, testing)
-        self.__graph = Graph(self._get_grid().agent.position)
+        start_vertex = Vertex(self._get_grid().agent.position)
+        goal_vertex = Vertex(self._get_grid().goal.position)
+        self.__graph = Graph(start_vertex, goal_vertex, [])
 
     def set_display_info(self) -> List[MapDisplay]:
         return super().set_display_info() + [GraphMapDisplay(self._services, self.__graph)]
@@ -52,7 +29,6 @@ class RT(Algorithm):
         max_dist: float = 10
         iterations: int = 10000
         for i in range(iterations):
-        #while True:
             q_sample: Point = self.__get_random_sample()
             q_near: Vertex = self.__get_random_vertex()
             if q_near.position == q_sample:
@@ -93,7 +69,7 @@ class RT(Algorithm):
                 return sample
 
     def __get_random_vertex(self) -> Vertex:
-        return self.__graph.get_random_vertex()
+        return self.__graph.get_random_vertex([self.__graph.root_vertex_start])
 
     @staticmethod
     def __get_new_vertex(q_near: Vertex, q_sample: Point, max_dist) -> Vertex:

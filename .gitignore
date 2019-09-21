@@ -1,6 +1,11 @@
 **/.DS_Store
 builds/*
 
+# custom additions #
+training_data/
+*.pyc
+__pycache__/
+
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
 # Byte-compiled / optimized / DLL files

@@ -1,4 +1,4 @@
-from typing import Set, List, Callable, Optional
+from typing import List
 
 import torch
 
@@ -10,63 +10,18 @@ from simulator.views.map_displays.map_display import MapDisplay
 from structures import Point
 
 from algorithms.classic.sample_based.core.vertex import Vertex
+from algorithms.classic.sample_based.core.graph import Graph
 
-class Graph:
-    __root_vertex: Vertex
-
-    def __init__(self, agent_pos: Point) -> None:
-        self.__root_vertex = Vertex(agent_pos)
-        self.__root_vertex.cost: float = 0
-        self.__size: int = 1
-
-    def add_edge(self, parent: Vertex, child: Optional['Vertex']):
-        child_parent_dist = torch.norm(parent.position.to_tensor() - child.position.to_tensor())
-        child.cost = parent.cost + child_parent_dist
-        parent.add_child(child)
-        child.set_parent(parent)
-        self.__size += 1
-
-    def remove_edge(self, parent: Vertex, child: Optional['Vertex']):
-        child.cost = None
-        parent.remove_child(child)
-        self.__size -= 1
-
-    def walk_dfs(self, f: Callable[[Vertex], bool]):
-        self.__root_vertex.visit_children(f)
-
-    def get_nearest_vertex(self, point: Point) -> Vertex:
-        def get_nearest(current: Vertex, __acc) -> bool:
-            dist: float = torch.norm(point.to_tensor() - current.position.to_tensor())
-            if dist <= __acc[0]:
-                __acc[0] = dist
-                __acc[1] = current
-                return True
-            return False
-
-        acc: [float, Vertex] = [float('inf'), self.__root_vertex]
-        self.walk_dfs(lambda current: get_nearest(current, acc))
-        return acc[1]
-
-    def get_vertices_within_radius(self, vertex: Vertex, radius: float) -> List[Vertex]:
-        def get_within_radius(current: Vertex, __acc) -> bool:
-            dist: float = torch.norm(vertex.position.to_tensor() - current.position.to_tensor())
-            if dist <= radius:
-                __acc.append(current)
-            return True
-        acc: List[Vertex] = list()
-        self.walk_dfs(lambda current: get_within_radius(current, acc))
-        return acc
-
-    @property
-    def size(self) -> int:
-        return self.__size
 
 class RRT_Star(Algorithm):
     __graph: Graph
 
     def __init__(self, services: Services, testing: BasicTesting = None) -> None:
         super().__init__(services, testing)
-        self.__graph = Graph(self._get_grid().agent.position)
+        start_vertex = Vertex(self._get_grid().agent.position)
+        start_vertex.cost = 0
+        goal_vertex = Vertex(self._get_grid().goal.position)
+        self.__graph = Graph(start_vertex, goal_vertex, [])
 
     def set_display_info(self) -> List[MapDisplay]:
         return super().set_display_info() + [GraphMapDisplay(self._services, self.__graph)]
@@ -78,7 +33,6 @@ class RRT_Star(Algorithm):
         lambda_rrt_star: float = 50
         dimension = 2
         for i in range(iterations):
-        #while True:
 
             q_sample: Point = self.__get_random_sample()
             q_nearest: Vertex = self.__get_nearest_vertex(q_sample)
@@ -103,6 +57,8 @@ class RRT_Star(Algorithm):
                     q_min = q_near
                     c_min = cost_near_to_new
 
+            child_parent_dist = torch.norm(q_min.position.to_tensor() - q_new.position.to_tensor())
+            q_new.cost = q_min.cost + child_parent_dist
             self.__graph.add_edge(q_min, q_new)
 
             for q_near in Q_near:
@@ -113,13 +69,17 @@ class RRT_Star(Algorithm):
                     for parent in q_near.parents:
                         q_parent = parent
                         break
+                    q_near.cost = None
                     self.__graph.remove_edge(q_parent, q_near)
+                    child_parent_dist = torch.norm(q_new.position.to_tensor() - q_near.position.to_tensor())
+                    q_near.cost = q_new.cost + child_parent_dist
                     self.__graph.add_edge(q_new, q_near)
 
             if self._get_grid().is_agent_in_goal_radius(agent_pos=q_new.position):
                 goal_v: Vertex = Vertex(self._get_grid().goal.position)
+                child_parent_dist = torch.norm(q_new.position.to_tensor() - goal_v.position.to_tensor())
+                goal_v.cost = q_new.cost + child_parent_dist
                 self.__graph.add_edge(q_new, goal_v)
-                # trace back
                 path: List[Vertex] = [goal_v]
 
                 while len(path[-1].parents) != 0:
@@ -148,10 +108,10 @@ class RRT_Star(Algorithm):
                 return sample
 
     def __get_nearest_vertex(self, q_sample: Point) -> Vertex:
-        return self.__graph.get_nearest_vertex(q_sample)
+        return self.__graph.get_nearest_vertex([self.__graph.root_vertex_start], q_sample)
 
     def __get_vertices_within_radius(self, vertex: Vertex, radius: float) -> List[Vertex]:
-        return self.__graph.get_vertices_within_radius(vertex, radius)
+        return self.__graph.get_vertices_within_radius([self.__graph.root_vertex_start], vertex.position, radius)
 
     @staticmethod
     def __get_new_vertex(q_near: Vertex, q_sample: Point, max_dist) -> Vertex:
