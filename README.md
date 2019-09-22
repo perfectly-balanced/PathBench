@@ -14,7 +14,7 @@ This section is responsible for environment interactions and algorithm visualisa
 It provides custom collision detection systems and a graphics framework for rendering the internal
 state of the algorithms. Additionally, the platform provides a ROS real-time extension for interacting with a real-world
 robot through PathBench.
-
+<br />
 <img src="./readme_files/screenshot_51.png" width="130"/>
 <img src="./readme_files/screenshot_43.png" width="130"/>
 <img src="./readme_files/screenshot_49.png" width="130"/>
