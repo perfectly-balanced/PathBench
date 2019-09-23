@@ -1,5 +1,4 @@
 # PathBench: A Benchmarking Platform for Classic and Learned Path Planning Algorithms
-[![pipeline status](https://gitlab.doc.ic.ac.uk/ait15/individual-project/badges/master/pipeline.svg)](https://gitlab.doc.ic.ac.uk/ait15/individual-project/commits/master)
 [![coverage report](https://gitlab.doc.ic.ac.uk/ait15/individual-project/badges/master/coverage.svg)](https://gitlab.doc.ic.ac.uk/ait15/individual-project/commits/master)
 
 ## PathBench
@@ -28,14 +27,9 @@ The simulator has a custom GUI that can be used to modify the master launch conf
 </p>
 
 
-To run the simulator from the GUI execute the following command in a terminal window:
+To run the simulator from the GUI, cd into src/, and execute the following command in a terminal window:
 ```bash
-./run_gui.sh
-```
-
-To directly run the simulator execute the following command in a terminal window:
-```bash
-./run_main.sh
+python3 main_gui.py
 ```
 
 **Simulator Commands**
