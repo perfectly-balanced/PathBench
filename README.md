@@ -68,8 +68,6 @@ the algorithms. Custom metrics can be defined as well as graphical displays for 
 **ROS Real-time Extension**. The extension provides real-time support for visualisation, coordination
 and interaction with a physical robot.
 
-To run all other components the master launch configuration has to be changed from `src/main.py` and run with `./run_main.sh`.
-
 **Example Real Trajectory**
 <br />
 <img src="./readme_files/start_ann.JPG" width="130"/>
