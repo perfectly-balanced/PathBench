@@ -77,6 +77,7 @@ class Algorithm(ABC):
         Method used to move the agent on the map
         :param to: the destination
         """
+        #method is in map.py. follow param means Instead of teleport, moves in a straight line
         self._get_grid().move_agent(to, follow=True)
 
     @abstractmethod

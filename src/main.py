@@ -34,3 +34,5 @@ class MainRunner:
 
         if self.main_services.settings.clear_cache:
             self.main_services.resources.cache_dir.clear()
+
+

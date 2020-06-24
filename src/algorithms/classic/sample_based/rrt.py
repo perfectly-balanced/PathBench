@@ -13,7 +13,7 @@ from structures import Point
 
 
 class RRT(SampleBasedAlgorithm):
-    _graph: Forest
+    _graph: Forest  #used in set_display_info method in sample_based_algorithm.py
 
     def __init__(self, services: Services, testing: BasicTesting = None) -> None:
         super().__init__(services, testing)
@@ -41,8 +41,8 @@ class RRT(SampleBasedAlgorithm):
     def _extract_path(self, q_new):
 
         goal_v: Vertex = Vertex(self._get_grid().goal.position)
-        self._graph.add_edge(q_new, goal_v)
-        path: List[Vertex] = [goal_v]
+        self._graph.add_edge(q_new, goal_v)    #connect the last sampled point that's close to goal vertex and connet point to goal vertex with edge
+        path: List[Vertex] = [goal_v]    
 
         while len(path[-1].parents) != 0:
             for parent in path[-1].parents:
@@ -52,8 +52,9 @@ class RRT(SampleBasedAlgorithm):
         del path[-1]
         path.reverse()
 
+        #get animation of path tracing from start to goal
         for p in path:
-            self.move_agent(p.position)
+            self.move_agent(p.position)   
             self.key_frame(ignore_key_frame_skip=True)
 
     # Overridden Implementation #
@@ -66,19 +67,18 @@ class RRT(SampleBasedAlgorithm):
 
         for i in range(iterations):
 
-            q_sample: Point = self._get_random_sample()
-            q_near: Vertex = self._graph.get_nearest_vertex([self._graph.root_vertex_start], q_sample)
+            q_sample: Point = self._get_random_sample()     #sample a random point and return it if it's in valid position
+            q_near: Vertex = self._graph.get_nearest_vertex([self._graph.root_vertex_start], q_sample) 
             if q_near.position == q_sample:
-                continue
-            q_new: Vertex = self._get_new_vertex(q_near, q_sample, max_dist)
+                continue    #restart the while loop right away if sample point same as nearest vertex point
+            q_new: Vertex = self._get_new_vertex(q_near, q_sample, max_dist)    #get new vertex
 
-            if not self._get_grid().is_valid_line_sequence(self._get_grid().get_line_sequence(q_near.position, q_new.position)):
-                continue
+            if not self._get_grid().is_valid_line_sequence(self._get_grid().get_line_sequence(q_near.position, q_new.position)):    
+                continue    #restart the while loop right away if the straight line path from nearest vertex to new sample point is invalid 
+            self._graph.add_edge(q_near, q_new)    #add edge between 2 points
 
-            self._graph.add_edge(q_near, q_new)
-
-            if self._get_grid().is_agent_in_goal_radius(agent_pos=q_new.position):
+            if self._get_grid().is_agent_in_goal_radius(agent_pos=q_new.position):    #if agent is in goal radius, then run _extract_path method 
                 self._extract_path(q_new)
                 break
 
-            self.key_frame()
+            self.key_frame()    #add the new vertex and edge if the new sample point is not at goal yet

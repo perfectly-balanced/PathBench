@@ -10,6 +10,7 @@ faulthandler.enable()
 from main import MainRunner
 from maps import Maps
 from simulator.services.debug import DebugLevel
+from main_gui import GUI
 
 # planner testing
 from algorithms.basic_testing import BasicTesting
@@ -24,7 +25,6 @@ from algorithms.classic.graph_based.a_star import AStar
 from algorithms.classic.graph_based.bug1 import Bug1
 from algorithms.classic.graph_based.bug2 import Bug2
 from algorithms.classic.graph_based.dijkstra import Dijkstra
-from algorithms.classic.graph_based.potential_field import PotentialField
 from algorithms.classic.sample_based.sprm import SPRM
 from algorithms.classic.sample_based.rt import RT
 from algorithms.classic.sample_based.rrt import RRT
@@ -36,16 +36,24 @@ from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
 from algorithms.lstm.a_star_waypoint import WayPointNavigation
 from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
 
+from algorithms.configuration.configuration import Configuration
+from algorithms.lstm.trainer import Trainer
+from analyzer.analyzer import Analyzer
+from generator.generator import Generator
+from simulator.services.services import Services, GenericServices
+from simulator.simulator import Simulator
 
-class GUI:
+
+
+
+class TestRun(GUI):
     __maps = {
         #"uniform_random_fill_10/0" is a directory. 0.pickle inside the uniform_random_fill_10 folder inside ./src/resources/maps
         "Uniform Random Fill": ("uniform_random_fill_10/0", True),
         "Block": ("block_map_10/6", True),
         "House": ("house_10/6", True),
         #Maps.grid_map_labyrinth2 is a map defined inside Maps class
-        #"Long Wall": (Maps.grid_map_labyrinth2, True),
-        "Long Wall": (Maps.grid_map_one_obstacle1, True),
+        "Long Wall": (Maps.grid_map_labyrinth2, True),
         "Labyrinth": (Maps.grid_map_labyrinth, True),
         "Small Obstacle": (Maps.grid_map_one_obstacle.convert_to_dense_map(), True),
         "SLAM Map 1": ("map10", False),
@@ -68,7 +76,6 @@ class GUI:
         "Dijkstra": (Dijkstra, DijkstraTesting, ([], {})),
         "Bug1": (Bug1, BasicTesting, ([], {})),
         "Bug2": (Bug2, BasicTesting, ([], {})),
-        "Potential Field": (PotentialField, BasicTesting, ([], {})),
     }
 
     __animations = {
@@ -87,73 +94,8 @@ class GUI:
     }
 
     def __init__(self):
-        self.__window = Tk()
-        self.__window.title("PathBench")
-        self.__window.bind('<Escape>', lambda event: GUI.__on_closing_callback(self))
-        self.__window.protocol("WM_DELETE_WINDOW", lambda: GUI.__on_closing_callback(self))
-        self.__window.bind('<Return>', lambda event: GUI.__start_simulator_callback(self))
-
-        self.__map_choice = StringVar(self.__window, "Small Obstacle")
-        self.__algorithm_choice = StringVar(self.__window, "A*")
-        self.__animations_choice = StringVar(self.__window, "None")
-        self.__debug_choice = StringVar(self.__window, "Basic")
-
-        self.__config_from_cache()
-
-    def __cache_config(self):
-        config = {
-            "mp": self.__map_choice.get(),
-            "algo": self.__algorithm_choice.get(),
-            "ani": self.__animations_choice.get(),
-            "debug": self.__debug_choice.get(),
-        }
-
-        with open("gui_config.pickle", "wb") as f:
-            pickle.dump(config, f)
-
-    def __config_from_cache(self):
-        try:
-            #get config from gui_config.pickle in src dir
-            with open("gui_config.pickle", "rb") as f:
-                config = pickle.load(f)
-        except FileNotFoundError:
-            return
-
-        self.__map_choice.set(config["mp"])
-        self.__algorithm_choice.set(config["algo"])
-        self.__animations_choice.set(config["ani"])
-        self.__debug_choice.set(config["debug"])
-
-    @staticmethod
-    def __on_closing_callback(gui):
-        gui.__cache_config()
-        gui.__window.quit()
-
-    @staticmethod
-    def __start_simulator_callback(gui):
-        config = Configuration()
-
-        mp = gui.__maps[gui.__map_choice.get()]
-        algo = gui.__algorithms[gui.__algorithm_choice.get()]
-        ani = gui.__animations[gui.__animations_choice.get()]
-        debug = gui.__debug[gui.__debug_choice.get()]
-
-        config.load_simulator = True
-        config.simulator_graphics = True
-        config.simulator_initial_map, config.simulator_grid_display = mp   #Optional[Union[str, Map]], bool
-        config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = algo   #Optional[Type[Algorithm]],Optional[Type[BasicTesting]], Tuple[List, Dict]
-        config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani     #int, int
-        config.simulator_write_debug_level = debug    #DebugLevel
-
-        MainRunner(config).run()
-
-    def __center_window(self):
-        width = self.__window.winfo_reqwidth()
-        height = self.__window.winfo_reqheight()
-        screen_width = self.__window.winfo_screenwidth()
-        screen_height = self.__window.winfo_screenheight()
-        self.__window.geometry("+{}+{}".format(int(screen_width / 2 - width / 2), int(screen_height / 2 - height / 2)))
-
+        super().__init__()
+    
     def start(self):
         # put title
         sim_label = Label(self.__window, text="PathBench Simulator Configuration", font=("Helvetica", 16))
@@ -192,7 +134,7 @@ For additional commands please check the simulator log (debug level >= Basic)"""
         debug_option = OptionMenu(debug_frame, self.__debug_choice, *self.__debug.keys())
 
         # sim start
-        sim_start_button = Button(self.__window, highlightbackground='black', text='Start Simulator', width=25, command=lambda: GUI.__start_simulator_callback(self))
+        sim_start_button = Button(self.__window, highlightbackground='black', text='Start Simulator', width=25, command=lambda: self.run_simulator(self))
 
         sim_label.pack()
         help_label.pack()
@@ -220,7 +162,44 @@ For additional commands please check the simulator log (debug level >= Basic)"""
         self.__center_window()
         self.__window.mainloop()
 
+    
+    def run_simulator(self):
+        
+        config = Configuration()
+
+        mp = gui.__maps[gui.__map_choice.get()]
+        algo = gui.__algorithms[gui.__algorithm_choice.get()]
+        ani = gui.__animations[gui.__animations_choice.get()]
+        debug = gui.__debug[gui.__debug_choice.get()]
+
+        config.load_simulator = True
+        config.simulator_graphics = True
+        config.simulator_initial_map, config.simulator_grid_display = mp   #Optional[Union[str, Map]], bool
+        config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = algo   #Optional[Type[Algorithm]],Optional[Type[BasicTesting]], Tuple[List, Dict]
+        config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani     #int, int
+        config.simulator_write_debug_level = debug    #DebugLevel
+
+        MainRunner(config).run()
+
+    def run_analyzer(self):
+
+        config = Configuration()
+
+        config.analyzer = True
+
+    def run_generator(self):
+
+        config = Configuration()
+
+        config.generator = True
+
+    def run_trainer(self):
+
+        config = Configuration()
+
+        config.trainer = True
+
 
 if __name__ == '__main__':
-    gui = GUI()
-    gui.start()
+    testrun = TestRun()
+    testrun.start()

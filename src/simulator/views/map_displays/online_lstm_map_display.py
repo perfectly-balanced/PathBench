@@ -3,7 +3,9 @@ from typing import Union, Tuple
 
 import torch
 import pygame
-from pandas.tests.extension.numpy_.test_numpy_nested import np
+#from pandas.tests.extension.numpy_.test_numpy_nested import np
+import numpy as np
+import pandas.tests.extension
 
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.goal import Goal

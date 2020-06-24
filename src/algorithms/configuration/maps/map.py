@@ -150,7 +150,9 @@ class Map:
 
     def get_line_sequence(self, frm: Point, to: Point) -> List[Point]:
         '''
-        Bresenham's line algorithm
+        Bresenham's line algorithm:
+        Given coordinate of two points A(x1, y1) and B(x2, y2). The task to find all the intermediate points required for 
+        drawing line AB .
         '''
 
         x1 = frm.x

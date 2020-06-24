@@ -5,7 +5,11 @@ from typing import List, Any, Tuple, Dict
 import torch
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
-from pandas.tests.extension.numpy_.test_numpy_nested import np
+
+#from pandas.tests.extension.numpy_.test_numpy_nested import np
+import numpy as np
+import pandas
+
 from torch import nn
 from torch.nn import functional as F
 from torch.utils.data import Dataset, TensorDataset, Subset
