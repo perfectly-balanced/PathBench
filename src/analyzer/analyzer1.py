@@ -1,4 +1,3 @@
-import resource
 import copy
 import random
 from typing import TYPE_CHECKING, List, Tuple, Type, Any, Dict, Union, Optional
@@ -94,7 +93,6 @@ class Analyzer:
         time_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "total_time", 4)
         distance_from_goal_alldata: List[Any] = Analyzer.__get_values(results, "distance_to_goal")
         original_distance_from_goal_alldata: List[Any] = Analyzer.__get_values(results, "original_distance_to_goal")
-        path_deviation_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "total_distance")
 
         ret = {
             "goal_found_perc": goal_found,
@@ -103,12 +101,11 @@ class Analyzer:
             "average_time": average_time,
             "average_distance_from_goal": average_distance_from_goal,
             "average_original_distance_from_goal": average_original_distance_from_goal,
-            "steps_alldata": steps_alldata,
-            "distance_alldata": distance_alldata,
-            "time_alldata": time_alldata,
-            "distance_from_goal_alldata": distance_from_goal_alldata,
-            "original_distance_from_goal_alldata": original_distance_from_goal_alldata,
-            'path_deviation_alldata': distance_alldata
+            # "steps_alldata": steps_alldata,
+            # "distance_alldata": distance_alldata,
+            # "time_alldata": time_alldata,
+            # "distance_from_goal_alldata": distance_from_goal_alldata,
+            # "original_distance_from_goal_alldata": original_distance_from_goal_alldata,
             }
 
         if results:
@@ -172,14 +169,7 @@ class Analyzer:
             config.simulator_initial_map.move_agent(agent_pos, True, False)
 
         sim: Simulator = Simulator(Services(config))
-        
-        print ('Memory usage initially: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
-
-        resu = sim.start().get_results()
-        
-        print ('Memory usage finally: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
-        
-        return resu
+        return sim.start().get_results()
 
     def __convert_maps(self, maps: List[Map]) -> List[Map]:
         def f(m: Union[str, Map]) -> Map:
@@ -222,8 +212,6 @@ class Analyzer:
         res_proc["average_distance_improvement"] = average_distance_improvement
         res_proc["average_time_improvement"] = average_time_improvement
         res_proc["average_distance_from_goal_improvement"] = average_distance_from_goal_improvement
-        res_proc["average_path_deviation"] = res_proc["average_distance"]- a_star_res_proc["average_distance"] 
-        res_proc['path_deviation_alldata'] = [ y-x for x,y in zip(res_proc['path_deviation_alldata'],a_star_res_proc["distance_alldata"])]
 
         self.__services.debug.write("Rate of success: {}%, (A*: {}%), (Improvement: {}%)".format(res_proc["goal_found_perc"], a_star_res_proc["goal_found_perc"], goal_found_perc_improvement), streams=[self.__analysis_stream])
         self.__services.debug.write("Average total steps: {}, (A*: {}), (Improvement: {}%)".format(res_proc["average_steps"], a_star_res_proc["average_steps"], average_steps_improvement), streams=[self.__analysis_stream])
@@ -284,7 +272,7 @@ class Analyzer:
         self.__services.debug.write("\n", timestamp=False, streams=[self.__analysis_stream])
 
         with open('pbtest.csv', 'a+', newline='') as file:
-            fieldnames = ['Algorithm', 'Average Path Deviation', 'Success Rate', 'Average Time','Average Steps', 'Average Distance', 'Average Distance from Goal','Average Original Distance from Goal']
+            fieldnames = ['Algorithm', 'Average Time','Average Steps', 'Average Distance', 'Average Distance from Goal','Average Original Distance from Goal']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
 
             if algorithm_type == AStar:
@@ -292,28 +280,19 @@ class Analyzer:
                 global algostring 
                 algostring = None
 
+            print ('bfrrrrrrrrrrrrrrrrrrrrrr*************', algostring)
             for lst in algorithms:
                 if lst[0] == algorithm_type and algostring is not lst[3] :
                     # lst[3] is name of the current algorithm
                     algostring = lst[3]
+                    print ('***********************', algostring)
                     break
 
-            writer.writerow({'Algorithm': algostring, 'Success Rate':res_proc["goal_found_perc"], 'Average Time': res_proc["average_time"],'Average Steps': res_proc["average_steps"]\
+            writer.writerow({'Algorithm': algostring, 'Average Time': res_proc["average_time"],'Average Steps': res_proc["average_steps"]\
                 ,'Average Distance': res_proc["average_distance"],'Average Distance from Goal': res_proc["average_distance_from_goal"]\
-                    ,'Average Original Distance from Goal': res_proc["average_original_distance_from_goal"], 'Average Path Deviation': res_proc["average_path_deviation"]})
-    
-        with open('pbtestfull.csv', 'a+', newline='') as file:
-            fieldnames2 = ['Algorithm','Time', 'Distance', 'Distance from Goal','Path Deviation','Original Distance from Goal']
-            writer1 = csv.DictWriter(file, fieldnames=fieldnames2)
-
-            if algostring == 'A*':
-                writer1.writeheader() 
-
-            for n in range(len(res_proc['time_alldata'])):
-                writer1.writerow({'Algorithm': algostring,  'Time': res_proc["time_alldata"][n], 'Distance': res_proc['distance_alldata'][n],'Path Deviation':res_proc['path_deviation_alldata'][n],'Distance from Goal': res_proc['distance_from_goal_alldata'][n]\
-                    , 'Original Distance from Goal': res_proc['original_distance_from_goal_alldata'][n]})
-
-            '''writer.writerow({'Algorithm': algostring, 'Time': res_proc["time_alldata"], 'Distance': res_proc["distance_alldata"]\
+                    ,'Average Original Distance from Goal': res_proc["average_original_distance_from_goal"]})
+            
+            '''writer.writerow({'Algorithm': algostring, 'Average Time': res_proc["average_time"], 'Time': res_proc["time_alldata"], 'Distance': res_proc["distance_alldata"]\
                 ,'Distance from Goal': res_proc["distance_from_goal_alldata"]})'''
 
         return a_star_res, res_proc
@@ -495,9 +474,9 @@ class Analyzer:
         maps: List[Map] = []
 
         for i in range(10):
-            maps.append("uniform_random_fill_100/" + str(i))
-            maps.append("block_map_100/" + str(i))
-            maps.append("house_100/" + str(i))
+            maps.append("uniform_random_fill_10000/" + str(i))
+            maps.append("block_map_10000/" + str(i))
+            maps.append("house_10000/" + str(i))
 
         maps = self.__convert_maps(maps)
         # maps = [Maps.grid_map_labyrinth, Maps.grid_map_labyrinth2]
@@ -595,59 +574,19 @@ class Analyzer:
         self.__tabulate_results(algorithms, algorithm_results, with_indexing=True)
 
         df = pd.read_csv('pbtest.csv')
-        dffull = pd.read_csv('pbtestfull.csv')
+        
 
         #df_t = df.T     
 
         print(df)
-        print('********************************')
-        print(dffull)
 
         #fig, ax = plt.subplots()
         #fig.set_size_inches(11, 9)
 
 
-        plot1, axs = plt.subplots(ncols=6)
-        plot1.set_size_inches(18, 11)
+        fig, axs = plt.subplots(ncols=3)
+        fig.set_size_inches(12, 8)
 
-        plot2, axs1 = plt.subplots(ncols=5)
-        plot2.set_size_inches(18, 12)
-
-        # 'Algorithm': algostring, 'Time': res_proc["time_alldata"][n], 'Distance': res_proc['distance_alldata'][n],'Distance from Goal': 
-        # res_proc['distance_from_goal_alldata'][n], 'Original Distance from Goal': res_proc['original_distance_from_goal_alldata'][n]}
-
-        p1f = sns.violinplot(x="Algorithm", y="Time", data=dffull, ax=axs1[0])
-        p1f.set_xticklabels(p1f.get_xticklabels(), rotation=40, ha="right", fontsize=9)
-        p1f.set_title('Time vs. Algorithm ')
-        p1f.set_ylabel('Time (s)')
-
-        p2f = sns.violinplot(x="Algorithm", y='Distance', data=dffull, ax=axs1[1])
-        p2f.set_xticklabels(p1f.get_xticklabels(), rotation=40, ha="right", fontsize=9)
-        p2f.set_title('Distance vs. Algorithm ')
-        p2f.set_ylabel('Distance')
-
-        p3f = sns.violinplot(x="Algorithm", y='Distance from Goal', data=dffull, ax=axs1[2])
-        p3f.set_xticklabels(p1f.get_xticklabels(), rotation=40, ha="right", fontsize=9)
-        p3f.set_title('Distance from Goal vs. Algorithm ')
-        p3f.set_ylabel('Distance from Goal')
-
-        p4f = sns.violinplot(x="Algorithm", y='Original Distance from Goal', data=dffull, ax=axs1[3])
-        p4f.set_xticklabels(p1f.get_xticklabels(), rotation=40, ha="right", fontsize=9)
-        p4f.set_title('Original Distance from Goal vs. Algorithm ')
-        p4f.set_ylabel('Original Distance from Goal')
-
-        p5f = sns.violinplot(x="Algorithm", y='Path Deviation', data=dffull, ax=axs1[4])
-        p5f.set_xticklabels(p1f.get_xticklabels(), rotation=40, ha="right", fontsize=9)
-        p5f.set_title('Path Deviation vs. Algorithm ')
-        p5f.set_ylabel('Path Deviation')
-
-        # p1f = sns.violinplot(x="Algorithm", y="Time", data=dffull, ax=axs1[4])
-        # p1f.set_xticklabels(p1f.get_xticklabels(), rotation=40, ha="right", fontsize=9)
-        # p1f.set_title('Time vs. Algorithm ')
-        # p1f.set_ylabel('Time (s)')
-
-     
-        #bar plots
         p1 = sns.barplot(x="Algorithm", y="Average Time", data=df, ax=axs[0])
         p1.set_xticklabels(p1.get_xticklabels(), rotation=40, ha="right", fontsize=9)
         p1.set_title('Average Time vs. Algorithm ')
@@ -662,29 +601,13 @@ class Analyzer:
         p3 = sns.barplot(x="Algorithm", y="Average Steps", data=df, ax=axs[2])
         p3.set_xticklabels(p1.get_xticklabels(), rotation=40, ha="right", fontsize=9)
         p3.set_title('Average Steps vs. Algorithm ')
-        p3.set_ylabel('Average Steps')      
-
-        p4 = sns.barplot(x="Algorithm", y='Success Rate', data=df, ax=axs[3])
-        p4.set_xticklabels(p1.get_xticklabels(), rotation=40, ha="right", fontsize=9)
-        p4.set_title('Success Rate vs. Algorithm ')
-        p4.set_ylabel('Success Rate') 
-
-        p5 = sns.barplot(x="Algorithm", y="Average Distance from Goal", data=df, ax=axs[4])
-        p5.set_xticklabels(p1.get_xticklabels(), rotation=40, ha="right", fontsize=9)
-        p5.set_title('Average Distance from Goal vs. Algorithm ')
-        p5.set_ylabel('Average Distance from Goal')  
-
-        p6 = sns.barplot(x="Algorithm", y='Average Path Deviation', data=df, ax=axs[5])
-        p6.set_xticklabels(p1f.get_xticklabels(), rotation=40, ha="right", fontsize=9)
-        p6.set_title('Average Path Deviation vs. Algorithm ')
-        p6.set_ylabel('Average Path Deviation') 
+        p3.set_ylabel('Average Steps')        
         
         #ax = sns.barplot(x="Algorithm", y="Average Time", data=df)
         #plt.xticks(rotation=45)
-        plt.tight_layout(pad=2.5, w_pad=1.5, h_pad=1.5)
+        plt.tight_layout()
         plt.show()
-        
-        
+    
 
 
 

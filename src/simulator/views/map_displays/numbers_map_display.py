@@ -16,7 +16,7 @@ class NumbersMapDisplay(MapDisplay):
         self.font = None
         self.grid = grid
         if self.services.render_engine.is_display_init():
-            self.font = pygame.font.SysFont('Arial', 60)
+            self.font = pygame.font.SysFont('Arial', 11)
 
     def render(self, screen: pygame.Surface) -> bool:
         if not super().render(screen) or not self.grid:
@@ -25,7 +25,7 @@ class NumbersMapDisplay(MapDisplay):
         if self.services.settings.simulator_grid_display:
             for i in range(len(self.grid)):
                 for j in range(len(self.grid[i])):
-                    self.render_text(screen, Point(j, i), str(round(self.grid[i][j], 1)))
+                    self.render_text(screen, Point(i, j), str(round(self.grid[i][j], 1)))
 
         return True
 

@@ -39,10 +39,10 @@ class Maps:
                   Goal(Point(460, 460), 10))
 
     grid_map_one_obstacle: SparseMap = \
-        SparseMap(Size(32, 32),
+        SparseMap(Size(33, 32),
                   Agent(Point(0, 15)),   #Point(x,y) x starts from 0 from left side (column); y starts from 0 from top (row)
                   [
-                      Obstacle(Point(15, 15), 5),
+                      Obstacle(Point(15, 13), 5),
                   ],
                   Goal(Point(31, 15)))
     

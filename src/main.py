@@ -36,3 +36,68 @@ class MainRunner:
             self.main_services.resources.cache_dir.clear()
 
 
+#Work in progress
+    def run_multiple(self):
+        #Two options, generator 
+        if self.main_services.settings.generator and self.main_services.settings.trainer:
+            Generator.main(self)
+            Trainer.main(self)
+        elif self.main_services.settings.generator and self.main_services.settings.analyzer:
+            Generator.main(self)
+            Analyzer.main(self)
+        elif self.main_services.settings.generator and self.main_services.settings.load_simulator:
+            Generator.main(self)
+            simulator: Simulator = Simulator(self.main_services)
+            simulator.start()
+        #Three options, generator
+        elif self.main_services.settings.generator and self.main_services.settings.trainer and self.main_services.settings.analyzer:
+            Generator.main(self)
+            Trainer.main(self)
+            Analyzer.main(self)
+        elif self.main_services.settings.generator and self.main_services.settings.trainer and self.main_services.settings.load_simulator:
+            simulator: Simulator = Simulator(self.main_services)
+            simulator.start()
+            Generator.main(self)
+            Trainer.main(self)
+        #Four options 
+        elif self.main_services.settings.generator and self.main_services.settings.trainer and self.main_services.settings.analyzer and self.main_services.settings.load_simulator:
+            simulator: Simulator = Simulator(self.main_services)
+            simulator.start()
+            Generator.main(self)
+            Trainer.main(self)
+            Analyzer.main(self)
+        #Trainer
+        elif self.main_services.settings.trainer and self.main_services.settings.analyzer:
+            Trainer.main(self)
+            Analyzer.main(self)
+        elif self.main_services.settings.trainer and self.main_services.settings.load_simulator:
+            simulator: Simulator = Simulator(self.main_services)
+            simulator.start()
+            Trainer.main(self)
+        elif self.main_services.settings.trainer and self.main_services.settings.analyzer and self.main_services.settings.load_simulator:
+            simulator: Simulator = Simulator(self.main_services)
+            simulator.start()
+            Trainer.main(self)
+            Analyzer.main(self)
+        #Analyzer
+        elif self.main_services.settings.analyzer and self.main_services.settings.load_simulator:
+            simulator: Simulator = Simulator(self.main_services)
+            simulator.start()
+            Analyzer.main(self)
+        #Singles
+        elif self.main_services.settings.generator:
+            Generator.main(self)
+        elif self.main_services.settings.trainer:
+            Trainer.main(self)
+        elif self.main_services.settings.analyzer:
+            Analyzer.main(self)
+        elif self.main_services.settings.load_simulator:
+            simulator: Simulator = Simulator(self.main_services)
+            simulator.start()
+
+        if self.main_services.settings.clear_cache:
+            self.main_services.resources.cache_dir.clear()
+
+config = Configuration()
+mr = MainRunner(config)
+mr.run_multiple()

@@ -30,6 +30,27 @@ from algorithms.classic.sample_based.rt import RT
 from algorithms.classic.sample_based.rrt import RRT
 from algorithms.classic.sample_based.rrt_star import RRT_Star
 from algorithms.classic.sample_based.rrt_connect import RRT_Connect
+
+from algorithms.classic.sample_based.ompl_rrt import OMPL_RRT
+from algorithms.classic.sample_based.ompl_prmstar import OMPL_PRMstar
+from algorithms.classic.sample_based.ompl_lazyprmstar import OMPL_LazyPRMstar
+from algorithms.classic.sample_based.ompl_rrtstar import OMPL_RRTstar
+from algorithms.classic.sample_based.ompl_rrtsharp import OMPL_RRTsharp
+from algorithms.classic.sample_based.ompl_rrtx import OMPL_RRTXstatic
+from algorithms.classic.sample_based.ompl_informedrrt import OMPL_InformedRRT
+from algorithms.classic.sample_based.ompl_kpiece1 import OMPL_KPIECE1
+from algorithms.classic.sample_based.ompl_ltlplanner import OMPL_LTLPlanner
+from algorithms.classic.sample_based.ompl_pdst import OMPL_PDST
+from algorithms.classic.sample_based.ompl_sst import OMPL_SST
+from algorithms.classic.sample_based.ompl_aitstar import OMPL_AITstar
+from algorithms.classic.sample_based.ompl_anytimepathshortening import OMPL_AnytimePathShortening
+from algorithms.classic.sample_based.ompl_bfmt import OMPL_BFMT
+from algorithms.classic.sample_based.ompl_biest import OMPL_BiEST
+from algorithms.classic.sample_based.ompl_rrtconnect import OMPL_RRTConnect
+from algorithms.classic.sample_based.ompl_trrt import OMPL_TRRT
+
+
+
 from algorithms.classic.graph_based.wavefront import Wavefront
 from algorithms.configuration.configuration import Configuration
 from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
@@ -69,6 +90,22 @@ class GUI:
         "Bug1": (Bug1, BasicTesting, ([], {})),
         "Bug2": (Bug2, BasicTesting, ([], {})),
         "Potential Field": (PotentialField, BasicTesting, ([], {})),
+        "OMPL RRT": (OMPL_RRT, BasicTesting, ([], {})),
+        "OMPL PRM*": (OMPL_PRMstar, BasicTesting, ([], {})),
+        "OMPL Lazy PRM*": (OMPL_LazyPRMstar, BasicTesting, ([], {})),
+        "OMPL RRT*": (OMPL_RRTstar, BasicTesting, ([], {})),
+        "OMPL RRT#": (OMPL_RRTsharp, BasicTesting, ([], {})),
+        "OMPL RRTX": (OMPL_RRTXstatic, BasicTesting, ([], {})),
+        "OMPL KPIECE1": (OMPL_KPIECE1, BasicTesting, ([], {})),
+        #"OMPL LTLPlanner": (OMPL_LTLPlanner, BasicTesting, ([], {})),
+        "OMPL PDST": (OMPL_PDST, BasicTesting, ([], {})),
+        "OMPL SST": (OMPL_SST, BasicTesting, ([], {})),
+        "OMPL AITstar": (OMPL_AITstar, BasicTesting, ([], {})),
+        "OMPL AnytimePathShortening": (OMPL_AnytimePathShortening, BasicTesting, ([], {})),
+        "OMPL BFMT": (OMPL_BFMT, BasicTesting, ([], {})),
+        "OMPL BiEst": (OMPL_BiEST, BasicTesting, ([], {})),
+        "OMPL TRRT": (OMPL_TRRT, BasicTesting, ([], {})),
+        "OMPL RRTConnect": (OMPL_RRTConnect, BasicTesting, ([], {})),
     }
 
     __animations = {
@@ -179,7 +216,21 @@ For additional commands please check the simulator log (debug level >= Basic)"""
         # put algorithm option menu
         algorithm_frame = Frame(self.__window)
         algorithm_label = Label(algorithm_frame, text="Algorithm: ")
-        algorithm_option = OptionMenu(algorithm_frame, self.__algorithm_choice, *self.__algorithms.keys())
+        # # OptionMenu(frame, display, options)
+        # algorithm_option = OptionMenu(algorithm_frame, self.__algorithm_choice, *self.__algorithms.keys())
+        menubutton = Menubutton(algorithm_frame, text = self.__algorithm_choice, textvariable= self.__algorithm_choice,indicatoron=True,
+                           borderwidth=1, relief="raised", width=20)
+        main_menu = Menu(menubutton, tearoff=False)
+        menubutton.configure(menu=main_menu)
+
+        menu = Menu(main_menu, tearoff=False)
+        main_menu.add_cascade(label='OMPL', menu=menu)
+
+        for item in self.__algorithms.keys():
+            if item[:4] == 'OMPL':
+                menu.add_radiobutton(value=item, label=item, variable= self.__algorithm_choice)
+            else:
+                main_menu.add_radiobutton(value=item, label=item, variable= self.__algorithm_choice)
 
         # put animations
         animations_frame = Frame(self.__window)
@@ -203,7 +254,8 @@ For additional commands please check the simulator log (debug level >= Basic)"""
 
         algorithm_frame.pack(side=TOP)
         algorithm_label.pack(side=LEFT, padx=5, pady=5)
-        algorithm_option.pack(side=LEFT, padx=5, pady=5)
+        # algorithm_option.pack(side=LEFT, padx=5, pady=5)
+        menubutton.pack(side=LEFT, padx=5, pady=5)
 
         animations_frame.pack(side=TOP)
         animations_label.pack(side=LEFT, padx=5, pady=5)

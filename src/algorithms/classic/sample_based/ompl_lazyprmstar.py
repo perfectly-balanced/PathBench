@@ -68,15 +68,6 @@ class ProjectionEvaluator(ob.ProjectionEvaluator):
 
 # OMPL functions
 def isStateValid(state):
-    # Some arbitrary condition on the state (note that thanks to
-    # dynamic type checking we can just call getX() and do not need
-    # to convert state to an SE2State.)
-    #if state[0] > grid.size.width  and state[0] < 0.0  and state[1] < 0.0 and state[1] > grid.size.height:
-    # config = Configuration()
-    # services = Services(config)   
-    # cls = OMPL_KPIECE_Test(services)
-    # grid = cls._get_grid()
-
     if state[0] > x.size.width  and state[0] < 0.0  and state[1] < 0.0 and state[1] > x.size.height:
         return False
 
@@ -130,12 +121,6 @@ def plan(grid):
     # Construct a space information instance for this state space
     si = ob.SpaceInformation(space)
 
-    # Set the obstacles of the map for the statevalidity function
-    ##
-
-    # Set boundary for statevalidity function
-    ##
-
 
     # Set the object used to check which states in the space are valid
     si.setStateValidityChecker(ob.StateValidityCheckerFn(isStateValid))
@@ -162,7 +147,7 @@ def plan(grid):
     #pdef.setOptimizationObjective(allocateObjective(si, objectiveType))    
 
     # ******create a planner for the defined space
-    planner = og.RRT(si)
+    planner = og.LazyPRMstar(si)
     
     # set the problem we are trying to solve for the planner
     planner.setProblemDefinition(pdef)
@@ -185,7 +170,7 @@ def plan(grid):
     print(pdef)
 
     # attempt to solve the problem within ten second of planning time
-    solved = planner.solve(1000.0)
+    solved = planner.solve(15.0)
 
     # For troubleshooting 
     if solved:
@@ -203,7 +188,6 @@ def plan(grid):
 
     #return trace for _find_path_internal method
     print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-    
     x= pdef.getSolutionPath().printAsMatrix()
     lst = x.split()
     lst = [int(round(float(x),0)) for x in lst]
@@ -225,13 +209,8 @@ def plan(grid):
 
     return trace
 
-
-#run plan function to get path 
-#trace = plan()
-
-
 # OMPL Algorithm Class 
-class OMPL_KPIECE_Test(Algorithm):
+class OMPL_LazyPRMstar(Algorithm):
     #trace: List[Point] = plan()
   
     def __init__(self, services: Services, testing: BasicTesting = None):
@@ -243,18 +222,6 @@ class OMPL_KPIECE_Test(Algorithm):
         Read super description
         """
         return super().set_display_info()
-    
-    # def export_info(self):
-    #     """
-    #     export PathBench info for OMPL functions
-    #     """
-    #     grid: Map = self._get_grid()
-
-    #     #agent and goal are represented by a point(x,y) and radius
-    #     agent: Agent = grid.agent
-    #     goal: Goal = grid.goal    
-
-    #     #return xxx , xxx , xxx , xxx
 
 
     def _find_path_internal(self) -> None:
@@ -264,8 +231,8 @@ class OMPL_KPIECE_Test(Algorithm):
         """
         grid: Map = self._get_grid()
 
-        for obj in grid.obstacles:
-            print ('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', obj.position.x,' ',obj.position.y)
+        # for obj in grid.obstacles:
+        #     print ('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', obj.position.x,' ',obj.position.y)
 
         trace = None
         #pass map used to plan to generate a list of points as path to goal 
@@ -281,37 +248,5 @@ class OMPL_KPIECE_Test(Algorithm):
                 break
 
 
-
-# config = Configuration()
-# services = Services(config)
-# testing = BasicTesting(services)
-
-#(xxx,xxx,xxx,xxx,) = OMPL_RRT_Test(services, testing).export_info()
-
-# Different examples of state validity functions
-# Create a narrow passage between y=[-3,3].  Only a 6x6x6 cube will be valid, centered at origin
-# def isStateValid(state):
-#     if state.getY() >= -3 and state.getY() <= 3:
-#         return state.getX() >= -3 and state.getX() <= 3 and \
-#             state.getZ() >= -3 and state.getZ() <= 3
-#     return True
-
-# # Check path segments for validity
-# def isStateValid(state):
-#     # Let's pretend that the validity check is computationally relatively
-#     # expensive to emphasize the benefit of explicitly generating valid
-#     # samples
-#     sleep(.001)
-#     # Valid states satisfy the following constraints:
-#     # -1<= x,y,z <=1
-#     # if .25 <= z <= .5, then |x|>.8 and |y|>.8
-#     return not (fabs(state[0] < .8) and fabs(state[1] < .8) and \
-#         state[2] > .25 and state[2] < .5)
-
-# def isStateValid(state):
-#     x = state[0]
-#     y = state[1]
-#     z = state[2]
-#     return x*x + y*y + z*z > .8
 
 

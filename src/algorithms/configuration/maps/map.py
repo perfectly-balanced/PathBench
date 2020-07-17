@@ -141,12 +141,26 @@ class Map:
 
         if not follow:
             return self.move(self.agent, to, no_trace)
+        # else:
+        #     line: List[Point] = self.get_line_sequence(self.agent.position, to)
+        #     for next_pos in line:
+        #         if not self.move(self.agent, next_pos, no_trace):
+        #             return False
+        #     return True        
+                    # for pt in EIGHT_POINTS_MOVE_VECTOR:
+                    #     inx = int(next_pos.x + point.x)
+                    #     iny = int(next_pos.y + point.y)
         else:
             line: List[Point] = self.get_line_sequence(self.agent.position, to)
+            print(line)
+            n=0
             for next_pos in line:
                 if not self.move(self.agent, next_pos, no_trace):
-                    return False
-            return True
+                    if n == 0:
+                        continue     
+                    if n is not 0: 
+                        return False         
+            return True        
 
     def get_line_sequence(self, frm: Point, to: Point) -> List[Point]:
         '''

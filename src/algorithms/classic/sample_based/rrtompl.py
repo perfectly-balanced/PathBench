@@ -231,7 +231,7 @@ def plan(grid):
 
 
 # OMPL Algorithm Class 
-class OMPL_KPIECE_Test(Algorithm):
+class OMPL_RRT(Algorithm):
     #trace: List[Point] = plan()
   
     def __init__(self, services: Services, testing: BasicTesting = None):
@@ -243,18 +243,6 @@ class OMPL_KPIECE_Test(Algorithm):
         Read super description
         """
         return super().set_display_info()
-    
-    # def export_info(self):
-    #     """
-    #     export PathBench info for OMPL functions
-    #     """
-    #     grid: Map = self._get_grid()
-
-    #     #agent and goal are represented by a point(x,y) and radius
-    #     agent: Agent = grid.agent
-    #     goal: Goal = grid.goal    
-
-    #     #return xxx , xxx , xxx , xxx
 
 
     def _find_path_internal(self) -> None:
@@ -281,37 +269,5 @@ class OMPL_KPIECE_Test(Algorithm):
                 break
 
 
-
-# config = Configuration()
-# services = Services(config)
-# testing = BasicTesting(services)
-
-#(xxx,xxx,xxx,xxx,) = OMPL_RRT_Test(services, testing).export_info()
-
-# Different examples of state validity functions
-# Create a narrow passage between y=[-3,3].  Only a 6x6x6 cube will be valid, centered at origin
-# def isStateValid(state):
-#     if state.getY() >= -3 and state.getY() <= 3:
-#         return state.getX() >= -3 and state.getX() <= 3 and \
-#             state.getZ() >= -3 and state.getZ() <= 3
-#     return True
-
-# # Check path segments for validity
-# def isStateValid(state):
-#     # Let's pretend that the validity check is computationally relatively
-#     # expensive to emphasize the benefit of explicitly generating valid
-#     # samples
-#     sleep(.001)
-#     # Valid states satisfy the following constraints:
-#     # -1<= x,y,z <=1
-#     # if .25 <= z <= .5, then |x|>.8 and |y|>.8
-#     return not (fabs(state[0] < .8) and fabs(state[1] < .8) and \
-#         state[2] > .25 and state[2] < .5)
-
-# def isStateValid(state):
-#     x = state[0]
-#     y = state[1]
-#     z = state[2]
-#     return x*x + y*y + z*z > .8
 
 

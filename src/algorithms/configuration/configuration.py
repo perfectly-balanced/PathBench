@@ -7,7 +7,24 @@ from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule
 from algorithms.lstm.ML_model import MLModel
 from simulator.services.debug import DebugLevel
 from structures import Size
+from maps import Maps 
 
+#planner implementations
+from algorithms.classic.graph_based.a_star import AStar
+from algorithms.classic.graph_based.bug1 import Bug1
+from algorithms.classic.graph_based.bug2 import Bug2
+from algorithms.classic.graph_based.dijkstra import Dijkstra
+from algorithms.classic.graph_based.potential_field import PotentialField
+from algorithms.classic.sample_based.sprm import SPRM
+from algorithms.classic.sample_based.rt import RT
+from algorithms.classic.sample_based.rrt import RRT
+from algorithms.classic.sample_based.rrt_star import RRT_Star
+from algorithms.classic.sample_based.rrt_connect import RRT_Connect
+#from algorithms.classic.sample_based.OMPLtesting import OMPL_RRT_Test
+from algorithms.classic.graph_based.wavefront import Wavefront
+from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
+#from algorithms.lstm.a_star_waypoint import WayPointNavigation
+#from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
 
 class Configuration:
     simulator_grid_display: bool
@@ -39,16 +56,16 @@ class Configuration:
 
     def __init__(self) -> None:
         # Simulator settings
-        self.simulator_grid_display = True
-        self.simulator_initial_map = None
+        self.simulator_grid_display = False
+        self.simulator_initial_map = None #Maps.grid_map_one_obstacle1
         self.simulator_testing_type = None
-        self.simulator_algorithm_type = None
-        self.simulator_algorithm_parameters = [], {}
+        self.simulator_algorithm_type = None #AStar
+        self.simulator_algorithm_parameters = ([], {})
         self.simulator_graphics = False
         self.simulator_key_frame_speed = 0
         self.simulator_key_frame_skip = 0
         self.simulator_write_debug_level = DebugLevel.NONE
-        self.simulator_window_size = Size(0, 0)
+        self.simulator_window_size = Size(200, 200)
 
         # Generator
         self.generator = False

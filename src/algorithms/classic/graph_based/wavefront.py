@@ -12,6 +12,7 @@ from simulator.views.map_displays.gradient_map_display import GradientMapDisplay
 from simulator.views.map_displays.map_display import MapDisplay
 from simulator.views.map_displays.numbers_map_display import NumbersMapDisplay
 from structures import Point
+import copy
 
 
 class Wavefront(Algorithm):
@@ -61,17 +62,17 @@ class Wavefront(Algorithm):
         #make all the cells of the stepgrid 0  
         self.step_grid = [[0 for _ in range(grid.size.width)] for _ in range(grid.size.height)]
         
-        print("grid=",grid)
-        print("________________________________________________________\n")
-        print("self.step_grid=",self.step_grid)
-        print("________________________________________________________\n")
-        print("queue=",queue)
+        #print("grid=",grid)
+        #print("________________________________________________________\n")
+        #print("self.step_grid=",self.step_grid)
+        #print("________________________________________________________\n")
+        #print("queue=",queue)
         
         #make the goal cell 1
         self.step_grid[goal.position.y][goal.position.x] = 1
             
-        print("________________________________________________________\n")
-        print("self.step_grid=",self.step_grid)
+        #print("________________________________________________________\n")
+        #print("self.step_grid=",self.step_grid)
 
         #agent_reached is True when the agent position is equal to goal position
         agent_reached: bool = self.__equal_pos(goal.position, agent.position)
@@ -96,8 +97,8 @@ class Wavefront(Algorithm):
                 self.move_agent(t)
                 self.key_frame(ignore_key_frame_skip=True)
             
-            print("________________________________________________________\n")
-            print("trace=",trace)
+            #print("________________________________________________________\n")
+            #print("trace=",trace)
             
 
     def __equal_pos(self, pos1: Point, pos2: Point) -> bool:
