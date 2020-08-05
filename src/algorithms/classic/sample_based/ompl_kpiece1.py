@@ -169,7 +169,7 @@ def plan(grid):
     print(pdef)
 
     # attempt to solve the problem within ten second of planning time
-    solved = planner.solve(15.0)
+    solved = planner.solve(40.0)
 
     # For troubleshooting 
     if solved:
@@ -177,36 +177,34 @@ def plan(grid):
         # and inquire about the found path
         path = pdef.getSolutionPath()
         print("Found solution:\n%s" % path)
+         #return trace for _find_path_internal method
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+
+        if path is None:
+            return None     
+
+        x= pdef.getSolutionPath().printAsMatrix()
+        lst = x.split()
+        lst = [int(round(float(x),0)) for x in lst]
+
+        print(x)
+        print(lst)
+        
+        trace=[]
+        counter = 0
+        
+        for num in lst:
+            try:
+                trace.append(Point(lst[counter],y=lst[counter + 1]))
+                counter+=2
+                print (trace)
+                print(counter)
+            except:
+                break
+
+        return trace
     else:
         print("No solution found")
-  
-
-    #metrics generation and graphing is possible here
-    #
-
-
-    #return trace for _find_path_internal method
-    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-    x= pdef.getSolutionPath().printAsMatrix()
-    lst = x.split()
-    lst = [int(round(float(x),0)) for x in lst]
-
-    print(x)
-    print(lst)
-    
-    trace=[]
-    counter = 0
-    
-    for num in lst:
-        try:
-            trace.append(Point(lst[counter],y=lst[counter + 1]))
-            counter+=2
-            print (trace)
-            print(counter)
-        except:
-            break
-
-    return trace
 
 # OMPL Algorithm Class 
 class OMPL_KPIECE1(Algorithm):

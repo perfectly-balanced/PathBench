@@ -132,7 +132,38 @@ class MapsDir(Directory):
 
     def get_atlas(self, atlas_name: str) -> Atlas:
         return Atlas(self._services, atlas_name, self._full_path())
+        
+class HouseExpoDir(Directory):
+    @staticmethod
+    def _default_save(dir: 'Directory', name: str, obj: Any):
+        Directory._pickle(obj, name, dir._full_path())
+    # @staticmethod
+    # def _image_default_save(dir: Directory, name: str, image: pygame.Surface) -> None:
+    #     name = dir._add_extension(name, "png")
+    #     pygame.image.save(image, dir._full_path() + name)
 
+    @staticmethod
+    def _image_default_load(dir: Directory, name: str) -> pygame.Surface:
+        name = dir._add_extension(name, "png")
+        image = pygame.image.load(dir._full_path() + name)
+        return image
+
+    def save(self, name: str, obj: Any, path: str):
+        Directory._pickle(obj, name, path)
+    
+    # def save(self, name: str, obj: pygame.Surface,
+    #          save_function: Callable[['Directory', str, pygame.Surface], None] = None) -> None:
+    #     super().save(name, obj, HouseExpoDir._image_default_save)
+
+    def load(self, name: str,
+             load_function: Callable[['Directory', str], pygame.Surface] = None) -> pygame.Surface:
+        return super().load(name, HouseExpoDir._image_default_load)
+
+    def create_atlas(self, atlas_name: str) -> 'HouseExpoDir':
+        return HouseExpoDir(self._services, atlas_name, self._full_path(), True)
+
+    def get_atlas(self, atlas_name: str) -> 'HouseExpoDir':
+        return HouseExpoDir(self._services, atlas_name, self._full_path())
 
 class ScreenshotsDir(ImagesDir):
     def __init__(self, services: Services, name: str, parent: str):
@@ -146,3 +177,4 @@ class ScreenshotsDir(ImagesDir):
 
 class TrainingDataDir(Directory):
     pass
+

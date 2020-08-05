@@ -1,4 +1,5 @@
 from typing import List, Set, Tuple, Optional
+from memory_profiler import profile
 
 import numpy as np
 
@@ -22,6 +23,7 @@ class Bug1(Algorithm):
         """
         return super().set_display_info()
 
+    #@profile
     def _find_path_internal(self) -> None:
         """
         Read super description

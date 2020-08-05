@@ -4,7 +4,8 @@ from typing import Tuple, List, TYPE_CHECKING, Dict, Callable, Type, Set, Any
 import numpy as np
 from pygame.surface import Surface
 import math
-
+import os
+import json
 from algorithms.classic.graph_based.a_star import AStar
 from algorithms.classic.testing.a_star_testing import AStarTesting
 from algorithms.configuration.configuration import Configuration
@@ -20,9 +21,12 @@ from simulator.services.services import Services
 from simulator.services.timer import Timer
 from simulator.simulator import Simulator
 from structures import Point, Size
-
+from matplotlib import pyplot as plt
 if TYPE_CHECKING:
     from main import MainRunner
+from natsort import natsorted
+
+from algorithms.lstm.LSTM_CAE_tile_by_tile import CAE
 
 
 class Generator:
@@ -43,34 +47,47 @@ class Generator:
         self.generate_maps = self.__services.debug.debug_func(DebugLevel.BASIC)(self.generate_maps)
         self.label_maps = self.__services.debug.debug_func(DebugLevel.BASIC)(self.label_maps)
 
-    def generate_map_from_image(self, image_name: str, rand_entities: bool = False, entity_radius: int = None) -> Map:
+    def generate_map_from_image(self, image_name: str, rand_entities: bool = False, entity_radius: int = None, house_expo_flag: bool = False) -> Map:
         """
         Generate a map from an image
         Load the image from the default location and save the map in the default location
         :param image_name: The image name
         :return: The map
         """
-        self.__services.debug.write("Started map generation from image: " + str(image_name), DebugLevel.BASIC)
+        self.__services.debug.write("Started map generation from image: " + str(image_name) + " With House_expo = " + str(house_expo_flag),
+        DebugLevel.BASIC)
         timer: Timer = Timer()
-        surface: Surface = self.__services.resources.images_dir.load(image_name)
-
+        if house_expo_flag:
+            surface: Surface = self.__services.resources.house_expo_dir.load(image_name) #loading directory
+        else:
+            surface: Surface = self.__services.resources.images_dir.load(image_name) #loading directory
+        self.__services.debug.write("Image loaded with Resolution:" + str(surface.get_width()) +" x "+ str(surface.get_height()),DebugLevel.HIGH)
         grid: List[List[int]] = [[0 for _ in range(surface.get_width())] for _ in range(surface.get_height())]
         agent_avg_location: np.ndarray = np.array([.0, .0])
         agent_avg_count: int = 1
-
         goal_avg_location: np.ndarray = np.array([.0, .0])
-        goal_avg_count: int = 1
 
-        for x in range(surface.get_width()):
-            for y in range(surface.get_height()):
-                if Generator.is_in_color_range(surface.get_at((x, y)), Generator.AGENT_COLOR, 5):
-                    agent_avg_location, agent_avg_count = \
-                        Generator.increment_moving_average(agent_avg_location, agent_avg_count, np.array([x, y]))
-                elif Generator.is_in_color_range(surface.get_at((x, y)), Generator.GOAL_COLOR, 5):
-                    goal_avg_location, goal_avg_count = \
-                        Generator.increment_moving_average(goal_avg_location, goal_avg_count, np.array([x, y]))
-                elif Generator.is_in_color_range(surface.get_at((x, y)), Generator.WALL_COLOR):
-                    grid[y][x] = DenseMap.WALL_ID
+        if house_expo_flag: 
+            '''
+            We can optimize for house_expo dataset by skipping the check for the goal and agent at each pixel,
+            instead, we can only identify obstacles
+            '''
+            self.__services.debug.write("Begin iteration through map",DebugLevel.HIGH)
+            for x in range(surface.get_width()):
+                for y in range(surface.get_height()):
+                    if Generator.is_in_color_range(surface.get_at((x, y)), Generator.WALL_COLOR):
+                        grid[y][x] = DenseMap.WALL_ID
+        else: 
+             for x in range(surface.get_width()):
+                for y in range(surface.get_height()):
+                    if Generator.is_in_color_range(surface.get_at((x, y)), Generator.AGENT_COLOR, 5):
+                        agent_avg_location, agent_avg_count = \
+                            Generator.increment_moving_average(agent_avg_location, agent_avg_count, np.array([x, y]))
+                    elif Generator.is_in_color_range(surface.get_at((x, y)), Generator.GOAL_COLOR, 5):
+                        goal_avg_location, goal_avg_count = \
+                            Generator.increment_moving_average(goal_avg_location, goal_avg_count, np.array([x, y]))
+                    if Generator.is_in_color_range(surface.get_at((x, y)), Generator.WALL_COLOR):
+                        grid[y][x] = DenseMap.WALL_ID
 
         agent_avg_location = np.array(agent_avg_location, dtype=int)
         goal_avg_location = np.array(goal_avg_location, dtype=int)
@@ -78,14 +95,29 @@ class Generator:
 
         if rand_entities:
             self.__place_random_agent_and_goal(grid, Size(surface.get_width(), surface.get_height()))
+            self.__services.debug.write("Placed random agent and goal ",DebugLevel.HIGH)
         else:
             grid[agent_avg_location[1]][agent_avg_location[0]] = DenseMap.AGENT_ID
             grid[goal_avg_location[1]][goal_avg_location[0]] = DenseMap.GOAL_ID
+        
+        if not house_expo_flag: 
+            '''
+            We can optimize the house_expo generation by skipping this step, 
+            as we have already defined the agent radius
+            '''
+            self.__services.debug.write("Skipped agent_radius change checking ",DebugLevel.HIGH)
 
-        for x in range(surface.get_width()):
-            for y in range(surface.get_height()):
-                if Generator.is_in_color_range(surface.get_at((x, y)), Generator.AGENT_COLOR, 5):
-                    agent_radius = max(agent_radius, np.linalg.norm(agent_avg_location - np.array([x, y])))
+            for x in range(surface.get_width()):
+                for y in range(surface.get_height()):
+                    if Generator.is_in_color_range(surface.get_at((x, y)), Generator.AGENT_COLOR, 5):
+                        '''
+                        If color at x y is red (agent) then change the radius of the agent to the max 
+                        Change the agent radius to the max between the old radius (from previous iteration )
+                        and the magnitude of the agent location - the point 
+                        This basically defines the agent radius as the largest red size. But we don't need to do
+                        this as we are supplying our own radius
+                        '''
+                        agent_radius = max(agent_radius, np.linalg.norm(agent_avg_location - np.array([x, y])))
 
         agent_radius = int(agent_radius)
 
@@ -95,13 +127,18 @@ class Generator:
         res_map: DenseMap = DenseMap(grid)
         res_map.agent.radius = agent_radius
         res_map.goal.radius = agent_radius
+
         self.__services.debug.write("Generated initial dense map in " + str(timer.stop()) + " seconds",
                                     DebugLevel.BASIC)
         timer = Timer()
         res_map.extend_walls()
         self.__services.debug.write("Extended walls in " + str(timer.stop()) + " seconds", DebugLevel.BASIC)
         map_name: str = str(image_name.split('.')[0]) + ".pickle"
-        self.__services.resources.maps_dir.save(map_name, res_map)
+        if house_expo_flag:
+            path = "resources/maps/_house_expo/"
+            self.__services.resources.house_expo_dir.save(map_name, res_map, path)
+        else:
+            self.__services.resources.maps_dir.save(map_name, res_map)
         self.__services.debug.write("Finished generation. Map is in resources folder", DebugLevel.BASIC)
         return res_map
 
@@ -134,14 +171,14 @@ class Generator:
             agent_pos: Point = self.__get_rand_position(dimensions)
 
             if grid[agent_pos.y][agent_pos.x] == DenseMap.CLEAR_ID:
-                grid[agent_pos.y][agent_pos.x] = DenseMap.AGENT_ID
+                grid[agent_pos.y][agent_pos.x] = DenseMap.AGENT_ID #Changes the value of pos on grid to 2 for agent id 
                 break
 
         while True:
             goal_pos: Point = self.__get_rand_position(dimensions)
 
             if grid[goal_pos.y][goal_pos.x] == DenseMap.CLEAR_ID:
-                grid[goal_pos.y][goal_pos.x] = DenseMap.GOAL_ID
+                grid[goal_pos.y][goal_pos.x] = DenseMap.GOAL_ID #Changes the value of pos on grid to 3 for goal id 
                 break
 
     def __place_entity_near_corner(self, entity: Type[Entity], corner: int, grid: List[List[int]], dimensions: Size) -> \
@@ -526,7 +563,7 @@ class Generator:
         return DenseMap(grid)
 
     def generate_maps(self, nr_of_samples: int, dimensions: Size, gen_type: str, fill_range: List[float],
-                      nr_of_obstacle_range: List[int], min_map_range: List[int], max_map_range: List[int]) -> List[Map]:
+                      nr_of_obstacle_range: List[int], min_map_range: List[int], max_map_range: List[int],json_save: bool = False) -> List[Map]:
         if gen_type not in Generator.AVAILABLE_GENERATION_METHODS:
             raise Exception(
                 "Generation type {} does not exist in {}".format(gen_type, self.AVAILABLE_GENERATION_METHODS))
@@ -552,26 +589,43 @@ class Generator:
         maps: List[Map] = []
 
         for _ in range(nr_of_samples):
+
             fill_rate = fill_range[0] + torch.rand((1,)) * (fill_range[1] - fill_range[0])
-            if gen_type == "uniform_random_fill":
+            if gen_type == "uniform_random_fill": #random fill
                 mp: Map = self.__generate_random_map(dimensions, fill_rate)
-            elif gen_type == "block_map":
+            elif gen_type == "block_map": #block
                 mp: Map = self.__generate_random_const_obstacles(
                     dimensions,
                     fill_rate,
                     int(torch.randint(nr_of_obstacle_range[0], nr_of_obstacle_range[1], (1,)).item())
                 )
-            else:
+            else: #house map
                 min_map_size = int(torch.randint(min_map_range[0], min_map_range[1], (1,)).item())
+                print(min_map_size)
                 max_map_size = int(torch.randint(max_map_range[0], max_map_range[1], (1,)).item())
+                print(max_map_size)
                 mp: Map = self.__generate_random_house(
                     dimensions,
                     min_room_size=Size(min_map_size, min_map_size),
                     max_room_size=Size(max_map_size, max_map_size),
                 )
+            #print('grid is \n', mp.grid)
             atlas.append(mp)
             maps.append(mp)
             progress_bar.step()
+          
+            map_as_dict = {
+                "goal" : [mp.goal.position.x,mp.goal.position.y],
+                "agent" : [mp.agent.position.x, mp.agent.position.y],
+                "grid" : mp.grid 
+            }
+            if json_save: 
+                with open('output path here'+ str(_) + '.json', 'w') as outfile:
+                    json.dump(map_as_dict,outfile)
+                    self.__services.debug.write("Dumping JSON: " + str(_) + "\n", DebugLevel.LOW)
+
+
+        #print(maps[1].grid)
 
         self.__services.debug.write("Finished atlas generation: " + str(atlas_name) + "\n", DebugLevel.BASIC)
         return maps
@@ -596,7 +650,7 @@ class Generator:
         if len(atlases) == 1:
             self.__services.debug.write("Processing single atlas (overwrite True)", DebugLevel.BASIC)
             res = self.__label_single_maps(atlases[0], feature_list, label_list, single_label_list, single_label_list,
-                                           True)
+                                        True)
             self.__save_training_data(label_atlas_name, res)
             return
 
@@ -616,7 +670,7 @@ class Generator:
             t = t + next_res
 
         self.__save_training_data(label_atlas_name, t)
-
+     
     def __save_training_data(self, training_name: str, training_data: List[Dict[str, Any]]) -> None:
         self.__services.debug.write("Saving atlas labelling: " + training_name, DebugLevel.BASIC)
         self.__services.resources.training_data_dir.save(training_name, training_data)
@@ -625,6 +679,9 @@ class Generator:
     def __label_single_maps(self, atlas_name, feature_list: List[str], label_list: List[str],
                             single_feature_list: List[str], single_label_list: List[str], overwrite: bool) -> List[
         Dict[str, any]]:
+        """
+        Passed atlas name, feature list, label list, and returns res object with the map features labelled for training
+        """
         if not atlas_name:
             return []
 
@@ -738,6 +795,14 @@ class Generator:
         mp = modify_f(mp)
         self.__services.resources.maps_dir.save(map_name, mp)
 
+    def convert_house_expo(self):
+        path = './resources/house_expo/'
+        print("Taking images from" + path) 
+        #print(os.listdir(path))
+        for filename in natsorted(os.listdir(path)):
+            print('filename:', filename)
+            self.generate_map_from_image(filename,True,2,True)
+
     @staticmethod
     def increment_moving_average(cur_value: np.ndarray, count: int, new_number: np.ndarray) -> Tuple[np.ndarray, int]:
         """
@@ -772,20 +837,36 @@ class Generator:
         generator.generate_map_from_image("map14", True, 2)
         return # TODO Remove this
         """
+        generator: Generator = Generator(m.main_services)
 
         if m.main_services.settings.generator_modify:
             generator.modify_map(*m.main_services.settings.generator_modify())
 
-        maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(64, 64),
-                                       m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 6], [8, 15], [35, 45])
+        if not m.main_services.settings.generator_house_expo:
+            if m.main_services.settings.generator_size == 8: #Fill rate and nr obstacle range (1,2) is for unifrom random fill (0.1,0.2)
+                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(8, 8),
+                                        m.main_services.settings.generator_gen_type, [0.1, 0.2], [1, 2], [3,4], [5, 7],json_save = True)
 
-        """
-        if m.main_services.settings.generator_nr_of_examples > 0:
-            # show sample
-            for i in range(5):
-                plt.imshow(maps[i].grid, cmap=CAE.MAP_COLORMAP_FULL)
-                plt.show()
-        """
+            if m.main_services.settings.generator_size == 16:
+                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(16, 16),
+                                        m.main_services.settings.generator_gen_type, [0.1, 0.2], [1, 4], [4,6], [8, 11],json_save = True)
+
+            if m.main_services.settings.generator_size == 28:
+                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(28, 28),
+                                        m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 4], [6,10], [14, 22],json_save = True)
+
+            else:
+                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(64, 64),
+                                        m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 6], [8,15], [35, 45],json_save = False)
+
+        #This will display 5 of the maps generated
+        if m.main_services.settings.generator_show_gen_sample and not m.main_services.settings.generator_house_expo:
+            if m.main_services.settings.generator_nr_of_examples > 0:
+                # show sample
+                for i in range(5):
+                    plt.imshow(maps[i].grid, cmap=CAE.MAP_COLORMAP_FULL)
+                    plt.show()
+       
 
         if m.main_services.settings.generator_aug_labelling_features or m.main_services.settings.generator_aug_labelling_labels or \
                 m.main_services.settings.generator_aug_single_labelling_features or m.main_services.settings.generator_aug_single_labelling_labels:
@@ -795,8 +876,17 @@ class Generator:
                                          m.main_services.settings.generator_aug_labelling_labels,
                                          m.main_services.settings.generator_aug_single_labelling_features,
                                          m.main_services.settings.generator_aug_single_labelling_labels)
+        
+        if m.main_services.settings.generator_house_expo: 
+            generator.convert_house_expo()
+            # generator.label_maps(m.main_services.settings.generator_labelling_atlases,
+            #                      m.main_services.settings.generator_labelling_features,
+            #                      m.main_services.settings.generator_labelling_labels,
+            #                      m.main_services.settings.generator_single_labelling_features,
+            #                      m.main_services.settings.generator_single_labelling_labels)
+     
         else:
-            # create
+            
             generator.label_maps(m.main_services.settings.generator_labelling_atlases,
                                  m.main_services.settings.generator_labelling_features,
                                  m.main_services.settings.generator_labelling_labels,

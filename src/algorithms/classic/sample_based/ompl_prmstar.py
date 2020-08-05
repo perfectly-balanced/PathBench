@@ -31,7 +31,7 @@ import sys
 from os.path import abspath, dirname, join
 #sys.path.insert(1, join(dirname(dirname(abspath(__file__))), 'py-bindings'))
 sys.path.insert(1,'/home/bruce/omplapp-1.4.2-Source/ompl/py-bindings')
-print(sys.path)
+#print(sys.path)
 from ompl import util as ou
 from ompl import base as ob
 from ompl import geometric as og
@@ -39,7 +39,8 @@ from math import sqrt
 import argparse
 from typing import List, Tuple
 
-
+#set the time the algorithm runs for
+time = 40.0
 
 
 def list2vec(l):
@@ -91,6 +92,7 @@ def plan(grid):
 
     #agent and goal are represented by a point(x,y) and radius
     global x
+    global time
     x = grid
     agent: Agent = grid.agent
     goal: Goal = grid.goal
@@ -169,7 +171,7 @@ def plan(grid):
     print(pdef)
 
     # attempt to solve the problem within ten second of planning time
-    solved = planner.solve(15.0)
+    solved = planner.solve(time)
 
     # For troubleshooting 
     if solved:
@@ -177,36 +179,41 @@ def plan(grid):
         # and inquire about the found path
         path = pdef.getSolutionPath()
         print("Found solution:\n%s" % path)
+         #return trace for _find_path_internal method
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+        
+        if path is None:
+            return None
+
+        x= pdef.getSolutionPath().printAsMatrix()
+        lst = x.split()
+        lst = [int(round(float(x),0)) for x in lst]
+
+        print(x)
+        print(lst)
+        
+        trace=[]
+        counter = 0
+        
+        for num in lst:
+            try:
+                trace.append(Point(lst[counter],y=lst[counter + 1]))
+                counter+=2
+                print (trace)
+                print(counter)
+            except:
+                break
+
+        return trace
     else:
         print("No solution found")
-  
+        return None
 
     #metrics generation and graphing is possible here
-    #
 
 
-    #return trace for _find_path_internal method
-    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-    x= pdef.getSolutionPath().printAsMatrix()
-    lst = x.split()
-    lst = [int(round(float(x),0)) for x in lst]
 
-    print(x)
-    print(lst)
-    
-    trace=[]
-    counter = 0
-    
-    for num in lst:
-        try:
-            trace.append(Point(lst[counter],y=lst[counter + 1]))
-            counter+=2
-            print (trace)
-            print(counter)
-        except:
-            break
-
-    return trace
+   
 
 # OMPL Algorithm Class 
 class OMPL_PRMstar(Algorithm):
@@ -233,18 +240,18 @@ class OMPL_PRMstar(Algorithm):
         # for obj in grid.obstacles:
         #     print ('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', obj.position.x,' ',obj.position.y)
 
-        trace = None
+        #trace = None
         #pass map used to plan to generate a list of points as path to goal 
-        while trace is None:
-            trace = plan(grid) 
+        trace = plan(grid) 
 
+        
+        if trace is not None:
+            for point in trace:
+                self.move_agent(point)
+                self.key_frame(ignore_key_frame_skip=True)
 
-        for point in trace:
-            self.move_agent(point)
-            self.key_frame(ignore_key_frame_skip=True)
-
-            if grid.is_goal_reached(point,grid.goal):
-                break
+                if grid.is_goal_reached(point,grid.goal):
+                    break
 
 
 

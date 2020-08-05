@@ -1,4 +1,4 @@
-from simulator.services.resources.directories import ModelDir, CacheDir, ImagesDir, MapsDir, ScreenshotsDir, \
+from simulator.services.resources.directories import ModelDir, CacheDir, ImagesDir, MapsDir,HouseExpoDir, ScreenshotsDir, \
     TrainingDataDir
 from simulator.services.resources.directory import Directory
 from simulator.services.services import Services
@@ -11,6 +11,7 @@ class Resources(Directory):
     maps_dir: MapsDir
     screenshots_dir: ScreenshotsDir
     training_data_dir: TrainingDataDir
+    house_expo_dir: HouseExpoDir
 
     def __init__(self, services: Services):
         super().__init__(services, "resources", "./")
@@ -21,3 +22,4 @@ class Resources(Directory):
         self.maps_dir = MapsDir(self._services, "maps", self._full_path())
         self.screenshots_dir = ScreenshotsDir(self._services, "screenshots", self._full_path())
         self.training_data_dir = TrainingDataDir(self._services, "training_data", self._full_path())
+        self.house_expo_dir = HouseExpoDir(self._services, "house_expo", self._full_path())

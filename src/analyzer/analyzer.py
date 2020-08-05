@@ -1,4 +1,5 @@
 import resource
+import psutil
 import copy
 import random
 from typing import TYPE_CHECKING, List, Tuple, Type, Any, Dict, Union, Optional
@@ -10,6 +11,7 @@ import seaborn as sns
 
 from io import StringIO
 
+from memory_profiler import profile
 from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.classic.testing.a_star_testing import AStarTesting
@@ -39,10 +41,54 @@ from algorithms.classic.graph_based.potential_field import PotentialField
 from algorithms.classic.graph_based.bug1 import Bug1
 from algorithms.classic.graph_based.bug2 import Bug2
 from algorithms.classic.sample_based.rt import RT
+from algorithms.VIN.vin import VINTest
+# OMPL algorithms
+from algorithms.classic.sample_based.ompl_rrt import OMPL_RRT
+from algorithms.classic.sample_based.ompl_prmstar import OMPL_PRMstar
+from algorithms.classic.sample_based.ompl_lazyprmstar import OMPL_LazyPRMstar
+from algorithms.classic.sample_based.ompl_rrtstar import OMPL_RRTstar
+from algorithms.classic.sample_based.ompl_rrtsharp import OMPL_RRTsharp
+from algorithms.classic.sample_based.ompl_rrtx import OMPL_RRTXstatic
+from algorithms.classic.sample_based.ompl_informedrrt import OMPL_InformedRRT
+from algorithms.classic.sample_based.ompl_kpiece1 import OMPL_KPIECE1
+from algorithms.classic.sample_based.ompl_ltlplanner import OMPL_LTLPlanner
+from algorithms.classic.sample_based.ompl_pdst import OMPL_PDST
+from algorithms.classic.sample_based.ompl_sst import OMPL_SST
+from algorithms.classic.sample_based.ompl_aitstar import OMPL_AITstar
+from algorithms.classic.sample_based.ompl_anytimepathshortening import OMPL_AnytimePathShortening
+from algorithms.classic.sample_based.ompl_bfmt import OMPL_BFMT
+from algorithms.classic.sample_based.ompl_biest import OMPL_BiEST
+from algorithms.classic.sample_based.ompl_rrtconnect import OMPL_RRTConnect
+from algorithms.classic.sample_based.ompl_trrt import OMPL_TRRT
+from algorithms.classic.sample_based.ompl_birlrt import OMPL_BiRLRT
+from algorithms.classic.sample_based.ompl_bitrrt import OMPL_BiTRRT 
+from algorithms.classic.sample_based.ompl_bitstar import OMPL_BITstar
+from algorithms.classic.sample_based.ompl_bkpiece1 import OMPL_BKPIECE1
+from algorithms.classic.sample_based.ompl_syclop import OMPL_Syclop 
+from algorithms.classic.sample_based.ompl_cforest import OMPL_CForest
+from algorithms.classic.sample_based.ompl_est import OMPL_EST
+from algorithms.classic.sample_based.ompl_fmt import OMPL_FMT
+from algorithms.classic.sample_based.ompl_lazylbtrrt import OMPL_LazyLBTRRT
+from algorithms.classic.sample_based.ompl_lazyprm import OMPL_LazyPRM
+from algorithms.classic.sample_based.ompl_lazyrrt import OMPL_LazyRRT
+from algorithms.classic.sample_based.ompl_lbkpiece1 import OMPL_LBKPIECE1
+from algorithms.classic.sample_based.ompl_lbtrrt import OMPL_LBTRRT
+from algorithms.classic.sample_based.ompl_prm import OMPL_PRM
+from algorithms.classic.sample_based.ompl_spars import OMPL_SPARS
+from algorithms.classic.sample_based.ompl_spars2 import OMPL_SPARS2
+from algorithms.classic.sample_based.ompl_vfrrt import OMPL_VFRRT
+from algorithms.classic.sample_based.ompl_prrt import OMPL_pRRT
+from algorithms.classic.sample_based.ompl_tsrrt import OMPL_TSRRT
+from algorithms.classic.sample_based.ompl_psbl import OMPL_pSBL
+from algorithms.classic.sample_based.ompl_sbl import OMPL_SBL
+from algorithms.classic.sample_based.ompl_stride import OMPL_STRIDE
+from algorithms.classic.sample_based.ompl_qrrt import OMPL_QRRT
 
 if TYPE_CHECKING:
     from main import MainRunner
 
+global algostring
+algostring = []
 
 class Analyzer:
     __services: Services
@@ -95,7 +141,9 @@ class Analyzer:
         distance_from_goal_alldata: List[Any] = Analyzer.__get_values(results, "distance_to_goal")
         original_distance_from_goal_alldata: List[Any] = Analyzer.__get_values(results, "original_distance_to_goal")
         path_deviation_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "total_distance")
-
+        memory_alldata = Analyzer.__get_values(filtered_results, "memory")
+        average_memory = Analyzer.__get_average_value(results, "memory")
+  
         ret = {
             "goal_found_perc": goal_found,
             "average_steps": average_steps,
@@ -108,7 +156,9 @@ class Analyzer:
             "time_alldata": time_alldata,
             "distance_from_goal_alldata": distance_from_goal_alldata,
             "original_distance_from_goal_alldata": original_distance_from_goal_alldata,
-            'path_deviation_alldata': distance_alldata
+            'path_deviation_alldata': distance_alldata,
+            'memory_alldata': memory_alldata,
+            'average memory': average_memory
             }
 
         if results:
@@ -116,6 +166,8 @@ class Analyzer:
                 ret["average_fringe"] = Analyzer.__get_average_value(filtered_results, "fringe")
                 ret["average_search_space"] = Analyzer.__get_average_value(filtered_results, "search_space")
                 ret["average_total_search_space"] = Analyzer.__get_average_value(filtered_results, "total_search_space")
+                ret['search_space_alldata']= Analyzer.__get_values(filtered_results, "total_search_space")
+
 
             # combined lstm
             if "kernels" in results[0]:
@@ -143,7 +195,10 @@ class Analyzer:
                 ret["average_local_kernel_average_search_space"] = Analyzer.__get_average_value(filtered_results, "local_kernel_average_search_space")
                 ret["average_local_kernel_average_fringe"] = Analyzer.__get_average_value(filtered_results, "local_kernel_average_fringe")
                 ret["average_local_kernel_average_total"] = Analyzer.__get_average_value(filtered_results, "local_kernel_average_total")
-
+                ret["average_total_search_space"] = Analyzer.__get_average_value(filtered_results, "local_kernel_total_search_space")
+                ret['search_space_alldata']= Analyzer.__get_values(filtered_results, "local_kernel_total_search_space") #
+                ret["average_total_search_space"] = Analyzer.__get_average_value(filtered_results, "local_kernel_total_search_space") #
+                
                 # with combined lstm
                 if "global_kernel_kernel_names" in results[0]:
                     ret["global_kernel_kernel_names"] = results[0]["global_kernel_kernel_names"]
@@ -160,6 +215,7 @@ class Analyzer:
                         ret["kernels_pick_perc"][idx] = round(ret["kernels_pick_perc"][idx], 2)
         return ret
 
+    #@profile (precision=4)
     def __run_simulation(self, grid: Map, algorithm_type: Type[Algorithm], testing_type: Type[BasicTesting],
                          algo_params: Tuple[list, dict], agent_pos: Point = None) -> Dict[str, Any]:
         config = Configuration()
@@ -173,11 +229,21 @@ class Analyzer:
 
         sim: Simulator = Simulator(Services(config))
         
-        print ('Memory usage initially: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+        memory1 = psutil.virtual_memory()
+        # print("_*************((((((((((((((((()))))))))))))))))))))%^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+        # print ('Memory usage initially:')
+        before = memory1.used
 
         resu = sim.start().get_results()
         
-        print ('Memory usage finally: %s (kb)' % resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+        # print ('resu===============================================',resu)
+        # print ('Memory usage finally:')
+        memory2 = psutil.virtual_memory()
+        after = memory2.used
+        print('############################################################Memory used =====', (abs(after - before)/1000),'KB')
+        resu ['memory'] = (abs(after - before)/1000)
+        
+        #print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> resu = ", resu)
         
         return resu
 
@@ -224,6 +290,7 @@ class Analyzer:
         res_proc["average_distance_from_goal_improvement"] = average_distance_from_goal_improvement
         res_proc["average_path_deviation"] = res_proc["average_distance"]- a_star_res_proc["average_distance"] 
         res_proc['path_deviation_alldata'] = [ y-x for x,y in zip(res_proc['path_deviation_alldata'],a_star_res_proc["distance_alldata"])]
+        
 
         self.__services.debug.write("Rate of success: {}%, (A*: {}%), (Improvement: {}%)".format(res_proc["goal_found_perc"], a_star_res_proc["goal_found_perc"], goal_found_perc_improvement), streams=[self.__analysis_stream])
         self.__services.debug.write("Average total steps: {}, (A*: {}), (Improvement: {}%)".format(res_proc["average_steps"], a_star_res_proc["average_steps"], average_steps_improvement), streams=[self.__analysis_stream])
@@ -235,6 +302,9 @@ class Analyzer:
             self.__services.debug.write("Average search space (no fringe): {}%".format(res_proc["average_search_space"]), streams=[self.__analysis_stream])
             self.__services.debug.write("Average fringe: {}%".format(res_proc["average_fringe"]), streams=[self.__analysis_stream])
             self.__services.debug.write("Average total search space: {}%".format(res_proc["average_total_search_space"]), streams=[self.__analysis_stream])
+        # else:
+        #     res_proc["average_total_search_space"]= float('nan')
+        #     res_proc['search_space_alldata']= [float('nan') for x in range(len(res_proc['path_deviation_alldata']))]
 
         if "kernels" in res_proc:
             self.__services.debug.write("Kernels: {}".format(res_proc["kernels"]), streams=[self.__analysis_stream])
@@ -280,41 +350,52 @@ class Analyzer:
             if "global_kernel_kernel_names" in res_proc:
                 self.__services.debug.write("Global kernel kernels: {}%".format(res_proc["global_kernel_kernel_names"]), streams=[self.__analysis_stream])
                 self.__services.debug.write("Global kernel kernel calls percentages: {}%".format(list(map(lambda r: str(r) + "%", res_proc["kernels_pick_perc"]))), streams=[self.__analysis_stream])
-
+        
+        try:
+            if res_proc["average_total_search_space"]:
+                pass
+        except:
+            res_proc["average_total_search_space"]= float('nan')
+            res_proc['search_space_alldata']= [float('nan') for x in range(len(res_proc['path_deviation_alldata']))]
+        
         self.__services.debug.write("\n", timestamp=False, streams=[self.__analysis_stream])
 
+        # writing average data to csv file
         with open('pbtest.csv', 'a+', newline='') as file:
-            fieldnames = ['Algorithm', 'Average Path Deviation', 'Success Rate', 'Average Time','Average Steps', 'Average Distance', 'Average Distance from Goal','Average Original Distance from Goal']
+            fieldnames = ['Algorithm', 'Average Path Deviation', 'Success Rate', 'Average Time','Average Steps', 'Average Distance', 'Average Distance from Goal','Average Original Distance from Goal','Average Search Space', 'Average Memory']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
 
             if algorithm_type == AStar:
                 writer.writeheader()
-                global algostring 
-                algostring = None
-
+                 
             for lst in algorithms:
-                if lst[0] == algorithm_type and algostring is not lst[3] :
+                if lst[0] == algorithm_type and lst[3] not in algostring :
                     # lst[3] is name of the current algorithm
-                    algostring = lst[3]
+                    algoname1 = lst[3]
+                    algostring.append(lst[3])
                     break
 
-            writer.writerow({'Algorithm': algostring, 'Success Rate':res_proc["goal_found_perc"], 'Average Time': res_proc["average_time"],'Average Steps': res_proc["average_steps"]\
+            writer.writerow({'Algorithm': algoname1, 'Success Rate':res_proc["goal_found_perc"], 'Average Time': res_proc["average_time"],'Average Steps': res_proc["average_steps"]\
                 ,'Average Distance': res_proc["average_distance"],'Average Distance from Goal': res_proc["average_distance_from_goal"]\
-                    ,'Average Original Distance from Goal': res_proc["average_original_distance_from_goal"], 'Average Path Deviation': res_proc["average_path_deviation"]})
-    
+                    ,'Average Original Distance from Goal': res_proc["average_original_distance_from_goal"], 'Average Path Deviation': res_proc["average_path_deviation"], 'Average Search Space': res_proc["average_total_search_space"]\
+                        , 'Average Memory': res_proc["average memory"] })
+
+        # writing all data points to csv file
+
         with open('pbtestfull.csv', 'a+', newline='') as file:
-            fieldnames2 = ['Algorithm','Time', 'Distance', 'Distance from Goal','Path Deviation','Original Distance from Goal']
+            fieldnames2 = ['Algorithm','Time', 'Distance', 'Distance from Goal','Path Deviation','Original Distance from Goal','Search Space','Memory']
             writer1 = csv.DictWriter(file, fieldnames=fieldnames2)
 
-            if algostring == 'A*':
+            if algoname1 == 'A*':
                 writer1.writeheader() 
 
             for n in range(len(res_proc['time_alldata'])):
-                writer1.writerow({'Algorithm': algostring,  'Time': res_proc["time_alldata"][n], 'Distance': res_proc['distance_alldata'][n],'Path Deviation':res_proc['path_deviation_alldata'][n],'Distance from Goal': res_proc['distance_from_goal_alldata'][n]\
-                    , 'Original Distance from Goal': res_proc['original_distance_from_goal_alldata'][n]})
+                writer1.writerow({'Algorithm': algoname1,  'Time': res_proc["time_alldata"][n], 'Distance': res_proc['distance_alldata'][n],'Path Deviation':res_proc['path_deviation_alldata'][n],'Distance from Goal': res_proc['distance_from_goal_alldata'][n]\
+                    , 'Original Distance from Goal': res_proc['original_distance_from_goal_alldata'][n], 'Search Space': res_proc['search_space_alldata'][n]\
+                    , 'Memory': res_proc['memory_alldata'][n]})
 
-            '''writer.writerow({'Algorithm': algostring, 'Time': res_proc["time_alldata"], 'Distance': res_proc["distance_alldata"]\
-                ,'Distance from Goal': res_proc["distance_from_goal_alldata"]})'''
+            '''writer.writerow({'Algorithm': algoname1, 'Time': res_proc["time_alldata"], 'Distance': res_proc["distance_alldata"]\
+                ,'Distance from Goal': res_proc["distance_from_goal_alldata"],})'''
 
         return a_star_res, res_proc
 
@@ -494,13 +575,14 @@ class Analyzer:
         self.__analysis_stream = StringIO()
         maps: List[Map] = []
 
-        for i in range(10):
-            maps.append("uniform_random_fill_100/" + str(i))
-            maps.append("block_map_100/" + str(i))
-            maps.append("house_100/" + str(i))
+        for i in range(45):
+            maps.append("testing_maps_pickles/block_map_1000/" + str(i))
+            # maps.append("uniform_random_fill_10000/" + str(i*4))
+            # maps.append("block_map_10000/" + str(i*4))
+            # maps.append("house_10000/" + str(i*4))
 
-        maps = self.__convert_maps(maps)
-        # maps = [Maps.grid_map_labyrinth, Maps.grid_map_labyrinth2]
+        # maps = self.__convert_maps(maps)
+        # maps = [Maps.grid_map_small_one_obstacle2]#], Maps.grid_map_labyrinth2]
 
         '''algorithms: List[Tuple[Type[Algorithm], Type[BasicTesting], Tuple[list, dict]]] = [
             (AStar, AStarTesting, ([], {})),
@@ -524,36 +606,65 @@ class Analyzer:
 
         algorithms: List[Tuple[Type[Algorithm], Type[BasicTesting], Tuple[list, dict]]] = [
             (AStar, AStarTesting, ([], {}), "A*"),
-            (Wavefront, WavefrontTesting, ([], {}), "Wave-front" ),
-            (Dijkstra, DijkstraTesting, ([], {}), "Dijkstra"),
-            (OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_model"}), "Online LSTM"),
-            (OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_uniform_random_fill_10000_model"}), "CAE Online LSTM"),
+            #(Wavefront, WavefrontTesting, ([], {}), "Wave-front" ),
+            #(Dijkstra, DijkstraTesting, ([], {}), "Dijkstra"),
+            #(OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_model"}), "Online LSTM"),
+            #(OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}), "Online LSTM (ubh 10000 training)"),
+            #(OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_uniform_random_fill_10000_model"}), "CAE Online LSTM"),
+            #(OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}), "CAE Online LSTM (ubh 10000 training)"),
             #(CombinedOnlineLSTM, CombinedOnlineLSTMTesting, ([], {}), "Combined Online LSTM"),
-            #(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (CombinedOnlineLSTM, ([], {}))}), "WayPointNavigation"),
+            #(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (CombinedOnlineLSTM, ([], {}))}), "WayPointNavigation (Bagging)"),
+            #(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"}))}), "WayPointNavigation (Map -block training)"),
+            #(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}))}), "WayPointNavigation (Map -urf training)"),
             #(RT, BasicTesting, ([], {})),
             #(RRT, BasicTesting, ([], {})),
-            #(RRT_Star, BasicTesting, ([], {})),
-            #(RRT_Connect, BasicTesting, ([], {})),
-            #(Bug1, BasicTesting, ([], {})),
-            #(Bug2, BasicTesting, ([], {}))
-            #(PotentialField, BasicTesting, ([], {}))
+            #(RRT_Star, BasicTesting, ([], {}), "RRT*"),
+            #(Bug1, BasicTesting, ([], {}), "Bug 1"),
+            #(Bug2, BasicTesting, ([], {}), "Bug 2"),
+            #(PotentialField, BasicTesting, ([], {}), "Potential Field"),
+            (VINTest, BasicTesting,([], {}), "VIN" ),
+            #(OMPL_RRT, BasicTesting, ([], {}), "OMPL RRT"),
+            # (OMPL_PRMstar, BasicTesting, ([], {}), "OMPL PRM*"),
+            #(RRT_Connect, BasicTesting, ([], {}), "RRT Connect"),
+            # (OMPL_LazyPRMstar, BasicTesting, ([], {}), "OMPL Lazy PRM*"),
+            # (OMPL_RRTXstatic, BasicTesting, ([], {}), "OMPL RRTX"),
+            # (OMPL_RRTstar, BasicTesting, ([], {}), "OMPL RRT*"),
+            # (OMPL_RRTsharp, BasicTesting, ([], {}), "OMPL RRT#"),
+            # (OMPL_KPIECE1, BasicTesting, ([], {}), "OMPL KPIECE1"),
+            # (OMPL_PDST, BasicTesting, ([], {}), "OMPL PDST"),
+            # (OMPL_SST, BasicTesting, ([], {}), "OMPL SST"),
+            # (OMPL_BiEST, BasicTesting, ([], {}), "OMPL BiEST"),
+            # (OMPL_TRRT, BasicTesting, ([], {}), "OMPL TRRT"),
+            # (OMPL_RRTConnect, BasicTesting, ([], {}), "OMPL RRT Connect"),
+            # (OMPL_BITstar, BasicTesting, ([], {}), "OMPL BIT*"),
+            # (OMPL_BKPIECE1, BasicTesting, ([], {}), "OMPL BKPIECE1"),
+            # (OMPL_EST, BasicTesting, ([], {}), "OMPL EST"),
+            # (OMPL_LazyLBTRRT, BasicTesting, ([], {}), "OMPL LazyLBTRRT"),
+            # (OMPL_LazyPRM, BasicTesting, ([], {}), "OMPL LazyPRM"),
+            # (OMPL_LazyRRT, BasicTesting, ([], {}), "OMPL LazyRRT"),
+            # (OMPL_LBKPIECE1, BasicTesting, ([], {}), "OMPL LBKPIECE1"),
+            # (OMPL_LBTRRT, BasicTesting, ([], {}), "OMPL LBTRRT"),
+            # (OMPL_PRM, BasicTesting, ([], {}), "OMPL PRM"),
+            # (OMPL_STRIDE, BasicTesting, ([], {}), "OMPL STRIDE"), 
+            # (OMPL_SBL, BasicTesting, ([], {}), "OMPL SBL"),
+
         ]
 
         '''algorithm_names: List[str] = [
             "A*",
             "Wave-front",
             "Dijkstra",               
-            "Online LSTM on uniform_random_fill_10000 (paper solution)",
+            "Online LSTM on uniform_random_fill_10000 (paper solution)", # View Module
             "Online LSTM on block_map_10000",
             "Online LSTM on house_10000",
             "Online LSTM on uniform_random_fill_10000_block_map_10000",
             "Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000",
-            "CAE Online LSTM on uniform_random_fill_10000",
+            "CAE Online LSTM on uniform_random_fill_10000", # Map Module
             "CAE Online LSTM on block_map_10000 (paper solution)",
             "CAE Online LSTM on house_10000",
             "CAE Online LSTM on uniform_random_fill_10000_block_map_10000",
             "CAE Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000",
-            "Combined Online LSTM (proposed solution)",
+            "Combined Online LSTM (proposed solution)", # Bagging Module
             "WayPointNavigation with local kernel: A* and global kernel: CAE Online LSTM on block_map_10000 (paper solution)",
             "WayPointNavigation with local kernel: A* and global kernel: Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000 (paper solution)",
             "WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)",
@@ -561,19 +672,47 @@ class Analyzer:
 
         algorithm_names: List[str] = [
             "A*",
-            "Wave-front",
-            "Dijkstra",
-            "Online LSTM on uniform_random_fill_10000 (paper solution)",
-            "CAE Online LSTM on uniform_random_fill_10000",
+            #"Wave-front",
+            #"Dijkstra",
+            #"Online LSTM on uniform_random_fill_10000 (paper solution)",
+            #"Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000",
+            #"CAE Online LSTM on uniform_random_fill_10000",
+            #"CAE Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000",
             #"Combined Online LSTM (proposed solution)",
-            #"WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)",                                    
+            #"WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)",
+            #"WayPointNavigation with local kernel: A* and global kernel: CAE Online LSTM on block_map_10000 (paper solution)",
+            #"WayPointNavigation with local kernel: A* and global kernel: Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000 (paper solution)",                                           
             #"RT",
             #"RRT",
             #"RRT*",
-            #"RRT-Connect",
             #"Bug1",
-            #"Bug2"
-            #"PotentialField"
+            #"Bug2",
+            #"PotentialField",
+            "VIN",
+            #"OMPL RRT",
+            # "OMPL PRM*",
+            #"RRT-Connect",
+            # "OMPL Lazy PRM*",
+            # "OMPL RRT*",
+            # "OMPL RRT#",
+            # "OMPL RRTX",
+            # "OMPL KPIECE1",
+            # "OMPL PDST",
+            # "OMPL SST",
+            # "OMPL BiEst",
+            # "OMPL TRRT",
+            # "OMPL RRTConnect",
+            # "OMPL BITstar",
+            # "OMPL BKPIECE1",
+            # "OMPL EST",
+            # "OMPL LazyLBTRRT",
+            # "OMPL LazyPRM",
+            # "OMPL LazyRRT",
+            # "OMPL LBKPIECE1",
+            # "OMPL LBTRRT",
+            # "OMPL PRM",
+            # "OMPL STRIDE",
+            # "OMPL SBL",
         ]
 
         self.__services.debug.write("", timestamp=False, streams=[self.__analysis_stream])
@@ -607,8 +746,7 @@ class Analyzer:
         #fig.set_size_inches(11, 9)
 
 
-        plot1, axs = plt.subplots(ncols=6)
-        plot1.set_size_inches(18, 11)
+
 
         plot2, axs1 = plt.subplots(ncols=5)
         plot2.set_size_inches(18, 12)
@@ -647,6 +785,9 @@ class Analyzer:
         # p1f.set_ylabel('Time (s)')
 
      
+        plot1, axs = plt.subplots(ncols=5)
+        plot1.set_size_inches(18, 11)
+
         #bar plots
         p1 = sns.barplot(x="Algorithm", y="Average Time", data=df, ax=axs[0])
         p1.set_xticklabels(p1.get_xticklabels(), rotation=40, ha="right", fontsize=9)
@@ -669,12 +810,12 @@ class Analyzer:
         p4.set_title('Success Rate vs. Algorithm ')
         p4.set_ylabel('Success Rate') 
 
-        p5 = sns.barplot(x="Algorithm", y="Average Distance from Goal", data=df, ax=axs[4])
-        p5.set_xticklabels(p1.get_xticklabels(), rotation=40, ha="right", fontsize=9)
-        p5.set_title('Average Distance from Goal vs. Algorithm ')
-        p5.set_ylabel('Average Distance from Goal')  
+        # p5 = sns.barplot(x="Algorithm", y="Average Distance from Goal", data=df, ax=axs[4])
+        # p5.set_xticklabels(p1.get_xticklabels(), rotation=40, ha="right", fontsize=9)
+        # p5.set_title('Average Distance from Goal vs. Algorithm ')
+        # p5.set_ylabel('Average Distance from Goal')  
 
-        p6 = sns.barplot(x="Algorithm", y='Average Path Deviation', data=df, ax=axs[5])
+        p6 = sns.barplot(x="Algorithm", y='Average Path Deviation', data=df, ax=axs[4])
         p6.set_xticklabels(p1f.get_xticklabels(), rotation=40, ha="right", fontsize=9)
         p6.set_title('Average Path Deviation vs. Algorithm ')
         p6.set_ylabel('Average Path Deviation') 
@@ -684,31 +825,7 @@ class Analyzer:
         plt.tight_layout(pad=2.5, w_pad=1.5, h_pad=1.5)
         plt.show()
         
-        
 
-
-
-        # Read the file into a variable flight_data
-
-
-        # (df[['Algorithm', 'Average Time']]
-        #     #.groupby('Manufacturer')
-        #     #.mean()
-        #     .sort_values('Average Time')
-        #     .plot(kind='bar'))  
-
-
-        #plt.figure(figsize=(10,6))
-
-        # Add title
-        #plt.title("Average Path Planning Time for Different Algorithms")
-
-        # Bar chart showing average arrival delay for Spirit Airlines flights by month
-        #sns.barplot(data=df)
-
-        #plt.ylabel("Average Time (in seconds)")
-
-        #plt.show()
 
         # Complex Analysis begins here
             

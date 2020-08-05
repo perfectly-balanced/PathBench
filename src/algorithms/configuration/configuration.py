@@ -4,6 +4,7 @@ from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.maps.map import Map
 from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule
+from algorithms.lstm.LSTM_CAE_tile_by_tile import LSTMCAEModel
 from algorithms.lstm.ML_model import MLModel
 from simulator.services.debug import DebugLevel
 from structures import Size
@@ -37,6 +38,13 @@ class Configuration:
     simulator_key_frame_skip: int
     simulator_write_debug_level: DebugLevel
     simulator_window_size: Size
+    #VIN
+    simulator_vin_plot: bool
+    simulator_vin_weights: int
+    simulator_vin_imsize: int
+    simulator_vin_l_h: int
+    simulator_vin_l_q: int
+
     generator: bool
     generator_labelling_atlases: List[Any]
     generator_gen_type: str
@@ -46,6 +54,9 @@ class Configuration:
     generator_single_labelling_features: List[str]
     generator_single_labelling_labels: List[str]
     generator_modify: Callable[[], Tuple[str, Callable[[Map], Map]]]
+    generator_show_gen_sample: bool
+    generator_house_expo: bool
+    generator_size: int
     trainer: bool
     trainer_model: Type[MLModel]
     trainer_custom_config: Optional[Dict[str, Any]]
@@ -67,6 +78,7 @@ class Configuration:
         self.simulator_write_debug_level = DebugLevel.NONE
         self.simulator_window_size = Size(200, 200)
 
+
         # Generator
         self.generator = False
         self.generator_labelling_atlases = []
@@ -81,7 +93,9 @@ class Configuration:
         self.generator_aug_single_labelling_features = []
         self.generator_aug_single_labelling_labels = []
         self.generator_modify = None
-
+        self.generator_show_gen_sample = False
+        self.generator_house_expo = False
+        self.generator_size = 64
         # Trainer
         self.trainer = False
         self.trainer_model = BasicLSTMModule

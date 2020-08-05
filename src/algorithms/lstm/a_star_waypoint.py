@@ -31,7 +31,7 @@ class WayPointNavigation(Algorithm):
 
     def __init__(self, services: Services, testing: BasicTesting = None,
                  local_kernel: Tuple[Type[Algorithm], Tuple[List, Dict]] = (AStar, ([], {})),
-                 global_kernel: Tuple[Type[OnlineLSTM], Tuple[List, Dict]] = None, global_kernel_max_it: int = 20):
+                 global_kernel: Tuple[Type[OnlineLSTM], Tuple[List, Dict]] = (CombinedOnlineLSTM, ([], {})), global_kernel_max_it: int = 20):
         super().__init__(services, testing)
 
         if not global_kernel:

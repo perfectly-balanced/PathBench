@@ -40,7 +40,8 @@ import argparse
 from typing import List, Tuple
 
 
-
+#set the time the algorithm runs for
+time = 15.0
 
 def list2vec(l):
     ret = ou.vectorDouble()
@@ -91,6 +92,7 @@ def plan(grid):
 
     #agent and goal are represented by a point(x,y) and radius
     global x
+    global time
     x = grid
     agent: Agent = grid.agent
     goal: Goal = grid.goal
@@ -169,7 +171,7 @@ def plan(grid):
     print(pdef)
 
     # attempt to solve the problem within ten second of planning time
-    solved = planner.solve(15.0)
+    solved = planner.solve(time)
 
     # For troubleshooting 
     if solved:

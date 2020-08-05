@@ -14,6 +14,8 @@ from simulator.views.map_displays.map_display import MapDisplay
 from simulator.views.map_displays.solid_color_map_display import SolidColorMapDisplay
 from structures import Point
 
+from memory_profiler import profile
+
 """
 Heap duplicates https://www.redblobgames.com/pathfinding/a-star/implementation.html#optimizations
 """
@@ -57,6 +59,7 @@ class AStar(Algorithm):
         ]
 
     # noinspection PyUnusedLocal
+    #@profile
     def _find_path_internal(self) -> None:
         self._init_mem()
 

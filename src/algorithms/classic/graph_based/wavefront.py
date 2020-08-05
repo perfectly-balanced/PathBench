@@ -54,6 +54,7 @@ class Wavefront(Algorithm):
         """
         #._get_grid() is in Algorithm class and gets the map
         grid: Map = self._get_grid()
+        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& grid", (grid.obstacles[0].position.x,grid.obstacles[0].position.y))
         #agent and goal are represented by a point(x,y) and radius
         agent: Agent = grid.agent
         goal: Goal = grid.goal

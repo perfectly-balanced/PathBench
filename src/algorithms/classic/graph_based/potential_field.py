@@ -1,7 +1,7 @@
 from typing import List, Tuple
 import pygame
 from typing import Set, List, Tuple, Optional, Dict
-
+from memory_profiler import profile
 import numpy as np
 
 #from algorithms.configuration.configuration import Configuration
@@ -183,9 +183,9 @@ class PotentialField(Algorithm):
         #distance from point to closest obstacle
         dq = np.hypot(x - ox[minid], y - oy[minid])
 
-        print('dq,1st',dq)
+        #print('dq,1st',dq)
 
-        if dq <= 0.99:
+        if dq <= 0.99 and not 0:
         #if dq <= 1.85:
             if dq <= 0.1:
                 return 0.5 * self.ETA * (1.0 / dq) ** 2
@@ -201,13 +201,13 @@ class PotentialField(Algorithm):
         # calc potential field
         pmap = self.calc_potential_field(grid)
 
-        print('pmapheat',self.pmapheat)
+        #print('pmapheat',self.pmapheat)
         self.step_grid=pmap
 
-        for lst in pmap:
-            for num in lst:
-                print(str((num))+"  ",end='')
-            print("\n")
+        # for lst in pmap:
+        #     for num in lst:
+        #         print(str((num))+"  ",end='')
+        #    print("\n")
         
         self.pmapnew= set([num for lst in pmap for num in lst if num < 1000000])
         #print("pmap=",pmapnew)
@@ -233,7 +233,7 @@ class PotentialField(Algorithm):
         #     plt.plot(gix, giy, "*m")
 
         rx, ry = [grid.agent.position.x], [grid.agent.position.y]
-        print('rx,ry',rx,ry)
+        #print('rx,ry',rx,ry)
         motion = grid.EIGHT_POINTS_MOVE_VECTOR
         visited=[]
         lst = grid.obstacles
@@ -256,16 +256,22 @@ class PotentialField(Algorithm):
                     minp = p
                     minix = inx
                     miniy = iny
-
+                    if (inx,iny) in visited:
+                        print("stuck")
+                        break
             visited.append((minix,miniy))
-            print("minix,miniy",minix,miniy)
+            #print("minix,miniy",minix,miniy)
             ix = minix
             iy = miniy
             d = np.hypot(grid.goal.position.x - ix, grid.goal.position.y - iy)
-            print('d=',d)
+            #print('d=',d)
             rx.append(iy)
             ry.append(ix)
             point1=Point(ix,iy)
+
+            if (-1,-1) in visited:
+                print("stuck at start")
+                break
 
             # if show_animation:
             #     plt.plot(ix, iy, ".r")
@@ -278,6 +284,7 @@ class PotentialField(Algorithm):
 
 
     # noinspection PyUnusedLocal
+    #@profile
     def _find_path_internal(self) -> None:
         """
         Read super description
@@ -293,4 +300,5 @@ class PotentialField(Algorithm):
 
         # path generation
         self.potential_field_planning(grid)
+
 

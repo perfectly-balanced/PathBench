@@ -39,8 +39,8 @@ from math import sqrt
 import argparse
 from typing import List, Tuple
 
-
-
+#set the time the algorithm runs for
+time = 15.0
 
 def list2vec(l):
     ret = ou.vectorDouble()
@@ -91,6 +91,7 @@ def plan(grid):
 
     #agent and goal are represented by a point(x,y) and radius
     global x
+    global time
     x = grid
     agent: Agent = grid.agent
     goal: Goal = grid.goal
@@ -169,7 +170,7 @@ def plan(grid):
     print(pdef)
 
     # attempt to solve the problem within ten second of planning time
-    solved = planner.solve(15.0)
+    solved = planner.solve(time)
 
     # For troubleshooting 
     if solved:
@@ -177,36 +178,34 @@ def plan(grid):
         # and inquire about the found path
         path = pdef.getSolutionPath()
         print("Found solution:\n%s" % path)
+         #return trace for _find_path_internal method
+        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+        
+        if path is None:
+            return None
+            
+        x= pdef.getSolutionPath().printAsMatrix()
+        lst = x.split()
+        lst = [int(round(float(x),0)) for x in lst]
+
+        print(x)
+        print(lst)
+        
+        trace=[]
+        counter = 0
+        
+        for num in lst:
+            try:
+                trace.append(Point(lst[counter],y=lst[counter + 1]))
+                counter+=2
+                print (trace)
+                print(counter)
+            except:
+                break
+
+        return trace
     else:
         print("No solution found")
-  
-
-    #metrics generation and graphing is possible here
-    #
-
-
-    #return trace for _find_path_internal method
-    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-    x= pdef.getSolutionPath().printAsMatrix()
-    lst = x.split()
-    lst = [int(round(float(x),0)) for x in lst]
-
-    print(x)
-    print(lst)
-    
-    trace=[]
-    counter = 0
-    
-    for num in lst:
-        try:
-            trace.append(Point(lst[counter],y=lst[counter + 1]))
-            counter+=2
-            print (trace)
-            print(counter)
-        except:
-            break
-
-    return trace
 
 # OMPL Algorithm Class 
 class OMPL_RRTConnect(Algorithm):

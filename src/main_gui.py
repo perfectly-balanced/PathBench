@@ -48,8 +48,31 @@ from algorithms.classic.sample_based.ompl_bfmt import OMPL_BFMT
 from algorithms.classic.sample_based.ompl_biest import OMPL_BiEST
 from algorithms.classic.sample_based.ompl_rrtconnect import OMPL_RRTConnect
 from algorithms.classic.sample_based.ompl_trrt import OMPL_TRRT
+from algorithms.classic.sample_based.ompl_birlrt import OMPL_BiRLRT
+from algorithms.classic.sample_based.ompl_bitrrt import OMPL_BiTRRT 
+from algorithms.classic.sample_based.ompl_bitstar import OMPL_BITstar
+from algorithms.classic.sample_based.ompl_bkpiece1 import OMPL_BKPIECE1
+from algorithms.classic.sample_based.ompl_syclop import OMPL_Syclop 
+from algorithms.classic.sample_based.ompl_cforest import OMPL_CForest
+from algorithms.classic.sample_based.ompl_est import OMPL_EST
+from algorithms.classic.sample_based.ompl_fmt import OMPL_FMT
+from algorithms.classic.sample_based.ompl_lazylbtrrt import OMPL_LazyLBTRRT
+from algorithms.classic.sample_based.ompl_lazyprm import OMPL_LazyPRM
+from algorithms.classic.sample_based.ompl_lazyrrt import OMPL_LazyRRT
+from algorithms.classic.sample_based.ompl_lbkpiece1 import OMPL_LBKPIECE1
+from algorithms.classic.sample_based.ompl_lbtrrt import OMPL_LBTRRT
+from algorithms.classic.sample_based.ompl_prm import OMPL_PRM
+from algorithms.classic.sample_based.ompl_spars import OMPL_SPARS
+from algorithms.classic.sample_based.ompl_spars2 import OMPL_SPARS2
+from algorithms.classic.sample_based.ompl_vfrrt import OMPL_VFRRT
+from algorithms.classic.sample_based.ompl_prrt import OMPL_pRRT
+from algorithms.classic.sample_based.ompl_tsrrt import OMPL_TSRRT
+from algorithms.classic.sample_based.ompl_psbl import OMPL_pSBL
+from algorithms.classic.sample_based.ompl_sbl import OMPL_SBL
+from algorithms.classic.sample_based.ompl_stride import OMPL_STRIDE
+from algorithms.classic.sample_based.ompl_qrrt import OMPL_QRRT
 
-
+from algorithms.VIN.vin import VINTest
 
 from algorithms.classic.graph_based.wavefront import Wavefront
 from algorithms.configuration.configuration import Configuration
@@ -68,6 +91,12 @@ class GUI:
         #"Long Wall": (Maps.grid_map_labyrinth2, True),
         "Long Wall": (Maps.grid_map_one_obstacle1, True),
         "Labyrinth": (Maps.grid_map_labyrinth, True),
+        "vin test 8x8": (Maps.grid_map_small_one_obstacle2, True),
+        "vin test 8x8 -2": (Maps.grid_map_small_one_obstacle, True),
+        "vin test 8x8 -3": (Maps.grid_map_small_one_obstacle3, True),
+        "vin test 16x16 -1": (Maps.grid_map_complex_obstacle, True),
+        "vin test 16x16 -2": (Maps.grid_map_complex_obstacle2, True),
+        "vin test 28x28 -1": (Maps.grid_map_28x28vin, True),
         "Small Obstacle": (Maps.grid_map_one_obstacle.convert_to_dense_map(), True),
         "SLAM Map 1": ("map10", False),
         "SLAM Map 1 (compressed)": ("map11", True),
@@ -97,15 +126,39 @@ class GUI:
         "OMPL RRT#": (OMPL_RRTsharp, BasicTesting, ([], {})),
         "OMPL RRTX": (OMPL_RRTXstatic, BasicTesting, ([], {})),
         "OMPL KPIECE1": (OMPL_KPIECE1, BasicTesting, ([], {})),
-        #"OMPL LTLPlanner": (OMPL_LTLPlanner, BasicTesting, ([], {})),
+        "OMPL LazyLBTRRT": (OMPL_LazyLBTRRT, BasicTesting, ([], {})),
+        "OMPL LazyPRM": (OMPL_LazyPRM, BasicTesting, ([], {})),
+        "OMPL LazyRRT": (OMPL_LazyRRT, BasicTesting, ([], {})),
+        "OMPL LBKPIECE1": (OMPL_LBKPIECE1, BasicTesting, ([], {})),
+        "OMPL LBTRRT": (OMPL_LBTRRT, BasicTesting, ([], {})),
+        "OMPL PRM": (OMPL_PRM, BasicTesting, ([], {})),
+        "OMPL SBL": (OMPL_SBL, BasicTesting, ([], {})),
+        "OMPL STRIDE": (OMPL_STRIDE, BasicTesting, ([], {})),
         "OMPL PDST": (OMPL_PDST, BasicTesting, ([], {})),
         "OMPL SST": (OMPL_SST, BasicTesting, ([], {})),
-        "OMPL AITstar": (OMPL_AITstar, BasicTesting, ([], {})),
-        "OMPL AnytimePathShortening": (OMPL_AnytimePathShortening, BasicTesting, ([], {})),
-        "OMPL BFMT": (OMPL_BFMT, BasicTesting, ([], {})),
         "OMPL BiEst": (OMPL_BiEST, BasicTesting, ([], {})),
         "OMPL TRRT": (OMPL_TRRT, BasicTesting, ([], {})),
         "OMPL RRTConnect": (OMPL_RRTConnect, BasicTesting, ([], {})),
+        "OMPL BITstar": (OMPL_BITstar, BasicTesting, ([], {})),
+        "OMPL BKPIECE1": (OMPL_BKPIECE1, BasicTesting, ([], {})),
+        "OMPL EST": (OMPL_EST, BasicTesting, ([], {})),
+        "VIN": (VINTest, BasicTesting, ([], {})),
+        #"OMPL LTLPlanner": (OMPL_LTLPlanner, BasicTesting, ([], {})),
+        #"OMPL AITstar": (OMPL_AITstar, BasicTesting, ([], {})),
+        #"OMPL AnytimePathShortening": (OMPL_AnytimePathShortening, BasicTesting, ([], {})),
+        #"OMPL BFMT": (OMPL_BFMT, BasicTesting, ([], {})),
+        #"OMPL BiRLRT": (OMPL_BiRLRT, BasicTesting, ([], {})),
+        #"OMPL BiTRRT": (OMPL_BiTRRT, BasicTesting, ([], {})),
+        #"OMPL Syclop ": (OMPL_Syclop, BasicTesting, ([], {})),
+        #"OMPL CForest": (OMPL_CForest, BasicTesting, ([], {})),
+        #"OMPL FMT": (OMPL_FMT, BasicTesting, ([], {})),
+        #"OMPL SPARS": (OMPL_SPARS, BasicTesting, ([], {})), 
+        #"OMPL SPARS2": (OMPL_SPARS2, BasicTesting, ([], {})),
+        #"OMPL VFRRT": (OMPL_VFRRT, BasicTesting, ([], {})),
+        #"OMPL pRRT": (OMPL_pRRT, BasicTesting, ([], {})),
+        #"OMPL TSRRT": (OMPL_TSRRT, BasicTesting, ([], {})),
+        #"OMPL pSBL": (OMPL_pSBL, BasicTesting, ([], {})),
+        #"OMPL QRRT": (OMPL_QRRT, BasicTesting, ([], {})),
     }
 
     __animations = {
@@ -167,7 +220,7 @@ class GUI:
         gui.__window.quit()
 
     @staticmethod
-    def __start_simulator_callback(gui):
+    def __start_simulator_callback(gui): #Setting the configuration file.
         config = Configuration()
 
         mp = gui.__maps[gui.__map_choice.get()]

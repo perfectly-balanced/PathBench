@@ -2,6 +2,8 @@ from typing import List
 
 import torch
 
+from memory_profiler import profile
+
 from algorithms.classic.sample_based.core.sample_based_algorithm import SampleBasedAlgorithm
 from algorithms.basic_testing import BasicTesting
 from simulator.services.services import Services
@@ -10,6 +12,7 @@ from structures import Point
 from algorithms.classic.sample_based.core.vertex import Vertex
 from algorithms.classic.sample_based.core.graph import Forest
 
+n=0
 
 class RRT_Connect(SampleBasedAlgorithm):
     _graph: Forest
@@ -92,9 +95,15 @@ class RRT_Connect(SampleBasedAlgorithm):
     # Overridden Implementation #
     # --------------------------#
 
+    #@profile
     def _find_path_internal(self) -> None:
 
         for i in range(self._iterations):
+            global n 
+            n+=1
+
+            if n is 100:
+                break
 
             q_rand: Point = self._get_random_sample()
 

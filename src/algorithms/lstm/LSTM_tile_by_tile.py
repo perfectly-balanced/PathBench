@@ -120,10 +120,12 @@ class BasicLSTMModule(MLModel):
             ],
             "save_name": "tile_by_tile",
             "training_data": [
-                "training_uniform_random_fill_10",
+                'training_house_1000'
+                # "training__house_expo"
+                #"training_house_100", #Impt
             ],
             # training_uniform_random_fill_10000_block_map_10000_house_10000, "training_uniform_random_fill_10000_block_map_10000", "training_house_10000", "training_uniform_random_fill_10000", "training_block_map_10000",
-            "epochs": 2,
+            "epochs": 100,
             "num_layers": 2,
             "lstm_input_size": 12,
             "lstm_output_size": 8,

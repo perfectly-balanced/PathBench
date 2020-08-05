@@ -15,7 +15,7 @@ class Directory(Service):
     _parent: str
 
     def __init__(self, services: Services, name: str, parent: str, create: bool = False,
-                 overwrite: bool = False) -> None:
+                 overwrite: bool = True) -> None: #Toggle overwrite: to True or False to enable overwriting of generated maps
         super().__init__(services)
 
         if name:
@@ -29,7 +29,7 @@ class Directory(Service):
                 shutil.rmtree(self._full_path())
 
             if not os.path.exists(self._full_path()):
-                os.mkdir(self._full_path())
+                os.makedirs(self._full_path())
             else:
                 raise Exception("Directory already exists")
 

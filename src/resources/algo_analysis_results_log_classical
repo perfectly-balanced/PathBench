@@ -1,60 +1,23 @@
 
-[2020-07-14 07:41:19] - Starting basic analysis: number of maps = 30, number of algorithms = 6
+[2020-08-05 15:26:03] - Starting basic analysis: number of maps = 45, number of algorithms = 2
 
-[2020-07-14 07:41:19] - 0. A*
-[2020-07-14 07:41:23] - Rate of success: 93.33%, (A*: 93.33%), (Improvement: 0%)
-[2020-07-14 07:41:23] - Average total steps: 71.36, (A*: 71.36), (Improvement: 0%)
-[2020-07-14 07:41:23] - Average total distance: 39.55, (A*: 39.55), (Improvement: 0%)
-[2020-07-14 07:41:23] - Average time: 0.0752 seconds, (A*: 0.0752 seconds), (Improvement: 0%)
-[2020-07-14 07:41:23] - Average distance from goal: 2.36, (A*: 2.36), (Improvement: 0%) (Average original distance from goal: 34.47)
-[2020-07-14 07:41:23] - Average search space (no fringe): 6.61%
-[2020-07-14 07:41:23] - Average fringe: 2.86%
-[2020-07-14 07:41:23] - Average total search space: 9.47%
-
-
-[2020-07-14 07:41:23] - 1. Wave-front
-[2020-07-14 07:41:26] - Rate of success: 93.33%, (A*: 93.33%), (Improvement: 0%)
-[2020-07-14 07:41:26] - Average total steps: 71.36, (A*: 71.36), (Improvement: 0%)
-[2020-07-14 07:41:26] - Average total distance: 43.36, (A*: 39.55), (Improvement: -9.63%)
-[2020-07-14 07:41:26] - Average time: 0.0796 seconds, (A*: 0.0752 seconds), (Improvement: -5.85%)
-[2020-07-14 07:41:26] - Average distance from goal: 2.36, (A*: 2.36), (Improvement: 0%) (Average original distance from goal: 34.47)
+[2020-08-05 15:26:03] - 0. A*
+[2020-08-05 15:26:03] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
+[2020-08-05 15:26:03] - Average total steps: 17.42, (A*: 17.42), (Improvement: 0%)
+[2020-08-05 15:26:03] - Average total distance: 8.94, (A*: 8.94), (Improvement: 0%)
+[2020-08-05 15:26:03] - Average time: 0.0031 seconds, (A*: 0.0031 seconds), (Improvement: 0%)
+[2020-08-05 15:26:03] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 8.01)
+[2020-08-05 15:26:03] - Average search space (no fringe): 6.85%
+[2020-08-05 15:26:03] - Average fringe: 10.62%
+[2020-08-05 15:26:03] - Average total search space: 17.47%
 
 
-[2020-07-14 07:41:26] - 2. Dijkstra
-[2020-07-14 07:41:30] - Rate of success: 93.33%, (A*: 93.33%), (Improvement: 0%)
-[2020-07-14 07:41:30] - Average total steps: 71.36, (A*: 71.36), (Improvement: 0%)
-[2020-07-14 07:41:30] - Average total distance: 39.55, (A*: 39.55), (Improvement: 0%)
-[2020-07-14 07:41:30] - Average time: 0.1018 seconds, (A*: 0.0752 seconds), (Improvement: -35.37%)
-[2020-07-14 07:41:30] - Average distance from goal: 2.36, (A*: 2.36), (Improvement: 0%) (Average original distance from goal: 34.47)
-[2020-07-14 07:41:30] - Average search space (no fringe): 44.52%
-[2020-07-14 07:41:30] - Average fringe: 2.26%
-[2020-07-14 07:41:30] - Average total search space: 46.78%
-
-
-[2020-07-14 07:41:30] - 3. Online LSTM on uniform_random_fill_10000 (paper solution)
-[2020-07-14 07:41:33] - Rate of success: 46.67%, (A*: 93.33%), (Improvement: -49.99%)
-[2020-07-14 07:41:33] - Average total steps: 61.29, (A*: 61.0), (Improvement: -0.48%)
-[2020-07-14 07:41:33] - Average total distance: 35.09, (A*: 34.06), (Improvement: -3.02%)
-[2020-07-14 07:41:33] - Average time: 0.084 seconds, (A*: 0.0552 seconds), (Improvement: -52.17%)
-[2020-07-14 07:41:33] - Average distance from goal: 9.93, (A*: 2.36), (Improvement: -320.76%) (Average original distance from goal: 34.47)
-
-
-[2020-07-14 07:41:33] - 4. CAE Online LSTM on uniform_random_fill_10000
-[2020-07-14 07:41:36] - Rate of success: 40.0%, (A*: 93.33%), (Improvement: -57.14%)
-[2020-07-14 07:41:36] - Average total steps: 48.5, (A*: 48.33), (Improvement: -0.35%)
-[2020-07-14 07:41:36] - Average total distance: 28.15, (A*: 27.14), (Improvement: -3.72%)
-[2020-07-14 07:41:36] - Average time: 0.0909 seconds, (A*: 0.042 seconds), (Improvement: -116.43%)
-[2020-07-14 07:41:36] - Average distance from goal: 14.24, (A*: 2.36), (Improvement: -503.39%) (Average original distance from goal: 34.47)
-
-
-[2020-07-14 07:41:36] - 5. Combined Online LSTM (proposed solution)
-[2020-07-14 07:42:12] - Rate of success: 83.33%, (A*: 93.33%), (Improvement: -10.71%)
-[2020-07-14 07:42:12] - Average total steps: 113.0, (A*: 72.96), (Improvement: -54.88%)
-[2020-07-14 07:42:12] - Average total distance: 43.22, (A*: 40.33), (Improvement: -7.17%)
-[2020-07-14 07:42:12] - Average time: 1.2214 seconds, (A*: 0.0759 seconds), (Improvement: -1509.22%)
-[2020-07-14 07:42:12] - Average distance from goal: 1.63, (A*: 2.36), (Improvement: 30.93%) (Average original distance from goal: 34.47)
-[2020-07-14 07:42:12] - Kernels: ['caelstm_section_lstm_training_block_map_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_model', 'caelstm_section_lstm_training_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model', 'caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_model', 'tile_by_tile_training_block_map_10000_model', 'tile_by_tile_training_house_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model', 'tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model']
-[2020-07-14 07:42:12] - Kernels pick percentages: ['23.33%', '26.67%', '10.0%', '3.33%', '3.33%', '6.67%', '10.0%', '10.0%', '0.0%', '6.67%']
+[2020-08-05 15:26:03] - 1. VIN
+[2020-08-05 15:26:14] - Rate of success: 80.0%, (A*: 100.0%), (Improvement: -20.0%)
+[2020-08-05 15:26:14] - Average total steps: 103.64, (A*: 14.94), (Improvement: -593.71%)
+[2020-08-05 15:26:14] - Average total distance: 7.86, (A*: 7.67), (Improvement: -2.48%)
+[2020-08-05 15:26:14] - Average time: 0.1495 seconds, (A*: 0.0027 seconds), (Improvement: -5437.04%)
+[2020-08-05 15:26:14] - Average distance from goal: 2.49, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 8.01)
 
 
 \begin{table}[] 
@@ -68,15 +31,7 @@
 \hline
 0 & AStar & n/a\\
 \hline
-1 & Wavefront & n/a\\
-\hline
-2 & Dijkstra & n/a\\
-\hline
-3 & OnlineLSTM & uniform\_random\_fill\_10000\\
-\hline
-4 & OnlineLSTM & uniform\_random\_fill\_10000\\
-\hline
-5 & CombinedOnlineLSTM & n/a\\
+1 & VINTest & n/a\\
 \hline
 \end{tabular}
 
@@ -87,17 +42,9 @@
 \hline
 \textbf{Nr.} & \textbf{Success Rate} & \textbf{Distance} & \textbf{Time} & \textbf{Distance Left}\\
 \hline
-0 & 93.33\% (I: 0\%) & 39.55 (A*: 39.55) (I: 0\%) & 0.0752s & 2.36\\
+0 & 100.0\% (I: 0\%) & 8.94 (A*: 8.94) (I: 0\%) & 0.0031s & 0.0\\
 \hline
-1 & 93.33\% (I: 0\%) & 43.36 (A*: 39.55) (I: -9.63\%) & 0.0796s & 2.36\\
-\hline
-2 & 93.33\% (I: 0\%) & 39.55 (A*: 39.55) (I: 0\%) & 0.1018s & 2.36\\
-\hline
-3 & 46.67\% (I: -49.99\%) & 35.09 (A*: 34.06) (I: -3.02\%) & 0.084s & 9.93\\
-\hline
-4 & 40.0\% (I: -57.14\%) & 28.15 (A*: 27.14) (I: -3.72\%) & 0.0909s & 14.24\\
-\hline
-5 & 83.33\% (I: -10.71\%) & 43.22 (A*: 40.33) (I: -7.17\%) & 1.2214s & 1.63\\
+1 & 80.0\% (I: -20.0\%) & 7.86 (A*: 7.67) (I: -2.48\%) & 0.1495s & 2.49\\
 \hline
 \end{tabular}
 
@@ -126,7 +73,7 @@
 \hline
 \textbf{Nr.} & \textbf{Total Search} & \textbf{Total Fringe} & \textbf{Session Search} & \textbf{Session Fringe}\\
 \hline
-0 & 9.47\% & 2.86\% & 9.47\% & 2.86\%\\
+0 & 17.47\% & 10.62\% & 17.47\% & 10.62\%\\
 \hline
 \end{tabular}
 

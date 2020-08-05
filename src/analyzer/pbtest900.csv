@@ -1,0 +1,20 @@
+Algorithm,Average Path Deviation,Success Rate,Average Time,Average Steps,Average Distance,Average Distance from Goal,Average Original Distance from Goal,Average Search Space,Average Memory
+A*,0,99,0.0442,68.18,38.61,0.42,33.38,10.52,88.32
+Wave-front,3.64,99,0.0607,68.07,42.25,0.42,33.38,nan,22.77
+Dijkstra,0,99,0.0699,68.18,38.61,0.42,33.38,42.74,228.59
+View Module (u 10000 training),0.910000000000004,60,0.0694,57.87,33.32,9.89,33.38,nan,17.96
+View Module (u b h 10000 training),2.54,71.44,0.0773,64.95,37.12,6.48,33.38,nan,12.57
+Map Module (u 10000 training),1.06,61.56,0.0898,57.34,33.18,9.17,33.38,nan,14.5
+Map Module (u b h 10000 training),2.25,64.33,0.0992,64.75,36.51,7.44,33.38,nan,12.61
+Bagging Module,1.72,86.22,1.0126,99.68,37.78,2.96,33.38,nan,72.64
+WayPointNavigation,7.78,99,1.6999,129.25,46.39,0.26,33.38,3.96,803.64
+WayPointNavigation (caelstm b 10000 training),4.56,99,0.2653,120.26,43.17,0.28,33.38,4.75,55.5
+WayPointNavigation (tilebytile u b h 10000 training),7.01,99,0.2334,127.2,45.62,0.21,33.38,4.43,28.44
+Potential Field,20.6,93.67,6.673,99.5,57.81,1.56,33.38,nan,1015.77
+OMPL RRT,36.01,99.67,2.155,84.49,74.33,0.13,33.38,nan,553.63
+OMPL PRM*,13.04,98.89,30.1184,61.92,53.36,0.62,34.34,nan,39327.2
+RRT Connect,38.25,96.67,1.6004,89.99,79,1.41,34.34,nan,2265.77
+OMPL Lazy PRM*,6.25,100,30.4776,59.1,46.12,0,34.34,nan,36302.35
+OMPL RRT*,7.35,78.89,30.087,53.31,47.01,1.56,34.34,nan,11117.91
+OMPL RRT#,7.36000000000001,71.11,30.1343,52.73,47.09,2.83,34.34,nan,32392.08
+OMPL KPIECE1,205.94,97.78,1.7963,270.24,246.34,0.12,34.34,nan,2380.82
