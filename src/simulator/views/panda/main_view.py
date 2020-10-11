@@ -14,6 +14,13 @@ class MainView(ShowBase):
         self.cam.setPos(0, -40, 0)
         self.cam.lookAt(0, 0, 0)
 
+        # Preliminary capabilities check.
+
+        if not base.win.getGsg().getSupportsBasicShaders():
+            raise Exception("Video driver reports that shaders are not supported.")
+        if not base.win.getGsg().getSupportsDepthTexture():
+            raise Exception("Video driver reports that depth textures are not supported.")
+
         # creating the offscreen buffer.
 
         winprops = WindowProperties(size=(512, 512))
@@ -29,9 +36,7 @@ class MainView(ShowBase):
         self.buffer = self.__light_buffer
 
         if not self.__light_buffer:
-            self.t = addTitle(
-                "Shadow Demo: Video driver cannot create an offscreen buffer.")
-            return
+            raise Exception("Video driver cannot create an offscreen buffer.")
 
         self.__light_depth_map = Texture()
         self.__light_buffer.addRenderTexture(self.__light_depth_map, GraphicsOutput.RTMBindOrCopy,
@@ -47,21 +52,21 @@ class MainView(ShowBase):
                                  GraphicsOutput.RTPColor)
 
         self.__light_cam = self.makeCamera(self.__light_buffer)
-        self.__light_cam.node().setScene(render)
+        self.__light_cam.node().setScene(self.render)
         self.__light_cam.node().getLens().setFov(40)
         self.__light_cam.node().getLens().setNearFar(10, 1000)
 
         self.__light_cam.setPos(0, -600, 200)
-        self.__light_cam.lookAt(0, -10, 0)
+        self.__light_cam.lookAt(0, 0, 0)
 
         self.ambient = 0.2
 
         # setting up shader
-        render.setShaderInput('light', self.__light_cam)
-        render.setShaderInput('Ldepthmap', self.__light_depth_map)
-        render.setShaderInput('ambient', (self.ambient, 0, 0, 1.0))
-        render.setShaderInput('texDisable', (0, 0, 0, 0))
-        render.setShaderInput('scale', (1, 1, 1, 1))
+        self.render.setShaderInput('light', self.__light_cam)
+        self.render.setShaderInput('Ldepthmap', self.__light_depth_map)
+        self.render.setShaderInput('ambient', (self.ambient, 0, 0, 1.0))
+        self.render.setShaderInput('texDisable', (1, 1, 1, 1))
+        self.render.setShaderInput('scale', (1, 1, 1, 1))
 
         # Put a shader on the Light camera.
         lci = NodePath(PandaNode("Light Camera Initializer"))
@@ -79,9 +84,6 @@ class MainView(ShowBase):
         else:
             mci.setShader(loader.loadShader('shader/shadow-nosupport.sha'))
         self.cam.node().setInitialState(mci.getState())
-
-        # constants
-        self.render.setShaderInput('push', 0.04)
 
         # MAP #
 
@@ -109,10 +111,10 @@ class MainView(ShowBase):
                         self.__mesh.make_top_face(j, i, k)
                         
         self.__terrain = self.render.attachNewNode(self.__mesh.geom_node)
-        self.__terrain.setShaderInput("texDisable", (1, 1, 1, 1))
         self.__terrain_movement = self.__terrain.hprInterval(50, LPoint3(0, 360, 360))
         self.__terrain_movement.loop()
 
+        """
         # LIGHTING #
 
         self.light_model = self.loader.loadModel('models/misc/sphere')
@@ -135,3 +137,15 @@ class MainView(ShowBase):
         self.__terrain.setLight(alnp)
 
         self.__terrain.setShaderAuto()
+        """
+
+        base.cam.reparentTo(render)
+        base.cam.setPos(30, -45, 26)
+        base.cam.lookAt(0, 0, 0)
+        self.__light_cam.node().hideFrustum()
+
+        self.__light_cam.setPos(0, -25, 25)
+        self.__light_cam.lookAt(0, 0, 0)
+        self.__light_cam.node().getLens().setNearFar(10, 1000)
+
+        self.render.setShaderInput('push', 0.5)
