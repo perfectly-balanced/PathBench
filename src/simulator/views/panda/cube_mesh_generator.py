@@ -3,17 +3,20 @@ from panda3d.core import GeomVertexFormat, GeomVertexData
 from panda3d.core import Geom, GeomTriangles, GeomVertexWriter
 from panda3d.core import Vec3, Vec4, Point3
 from numbers import Real
+
+assert(__name__ != "__main__")
  
 class CubeMeshGenerator():
+    name : str
     mesh : Geom
 
-    def __init__(self, name = 'CubeMesh'):
+    def __init__(self, name: str = 'CubeMesh') -> None:
         self.name = name
-        self.finished = False
+        self.__finished = False
  
-        self.format = GeomVertexFormat.getV3c4t2()
+        self.__format = GeomVertexFormat.getV3c4t2()
 
-        self.__vertex_data = GeomVertexData(name, self.format, Geom.UHStatic)
+        self.__vertex_data = GeomVertexData(name, self.__format, Geom.UHStatic)
         self.__vertex_data.setNumRows(26136)
         
         self.mesh = Geom(self.__vertex_data)
@@ -27,7 +30,7 @@ class CubeMeshGenerator():
         
         self.__face_count = 0
     
-    def make_face(self, x1, y1, z1, x2, y2, z2, colour):
+    def make_face(self, x1, y1, z1, x2, y2, z2, colour) -> None:
         """
         colour: can be a triple or a float
         """
@@ -56,46 +59,46 @@ class CubeMeshGenerator():
         
         self.__face_count += 1
     
-    def make_front_face(self, x, y, z, colour = 1.0):
+    def make_front_face(self, x, y, z, colour = 1.0) -> None:
         """
         colour: can be a triple or a float
         """
 
         self.make_face(x + 1, y + 1, z - 1, x, y + 1, z, colour)
     
-    def make_back_face(self, x, y, z, colour = 1.0):
+    def make_back_face(self, x, y, z, colour = 1.0) -> None:
         """
         colour: can be a triple or a float
         """
 
         self.make_face(x, y, z - 1, x + 1, y, z, colour)
     
-    def make_right_face(self, x, y, z, colour = 1.0):
+    def make_right_face(self, x, y, z, colour = 1.0) -> None:
         """
         colour: can be a triple or a float
         """
 
         self.make_face(x + 1, y, z - 1, x + 1, y + 1, z, colour)
     
-    def make_left_face(self, x, y, z, colour = 1.0):
+    def make_left_face(self, x, y, z, colour = 1.0) -> None:
         """
         colour: can be a triple or a float
         """
 
         self.make_face(x, y + 1, z - 1, x, y, z, colour)
     
-    def make_top_face(self, x, y, z, colour = 1.0):
+    def make_top_face(self, x, y, z, colour = 1.0) -> None:
         """
         colour: can be a triple or a float
         """
 
         self.make_face(x + 1, y + 1, z, x, y, z, colour)
     
-    def make_bottom_face(self, x, y, z, colour = 1.0):
+    def make_bottom_face(self, x, y, z, colour = 1.0) -> None:
         """
         colour: can be a triple or a float
         """
-        
+
         self.make_face(x, y + 1, z - 1, x + 1, y, z - 1, colour)
 
     @property
@@ -104,10 +107,10 @@ class CubeMeshGenerator():
 
     @geom_node.getter
     def geom_node(self) -> GeomNode:
-        if self.finished == False:
+        if not self.__finished:
             self.__triangles.closePrimitive()
             self.mesh.addPrimitive(self.__triangles)
-            self.finished = True
-        geom_node = GeomNode(self.name)
-        geom_node.addGeom(self.mesh)
-        return geom_node
+            self.__finished = True
+        node = GeomNode(self.name)
+        node.addGeom(self.mesh)
+        return node
