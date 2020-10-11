@@ -1,10 +1,11 @@
 from direct.showbase.ShowBase import ShowBase
 from cube_mesh_generator import CubeMeshGenerator
+from typing import List
 
 assert(__name__ != "__main__")
 
 class MainView(ShowBase):
-    def __init__(self, map3d) -> None:
+    def __init__(self, map3d : List[List[List[bool]]]) -> None:
         super().__init__(self)
 
         self.__map = map3d
@@ -30,4 +31,4 @@ class MainView(ShowBase):
                     if k+1 not in self.__map[j][i] or self.__map[j][i][k+1] == 0:
                         self.__mesh.make_top_face(j, i, k)
                         
-        render.attachNewNode(self.__mesh.geom_node)
+        self.render.attachNewNode(self.__mesh.geom_node)
