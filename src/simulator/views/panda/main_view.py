@@ -58,7 +58,7 @@ class MainView(ShowBase):
 
         # setting up shader
         render.setShaderInput('light', self.__light_cam)
-        render.setShaderInput('self.__light_depth_map', self.__light_depth_map)
+        render.setShaderInput('Ldepthmap', self.__light_depth_map)
         render.setShaderInput('ambient', (self.ambient, 0, 0, 1.0))
         render.setShaderInput('texDisable', (0, 0, 0, 0))
         render.setShaderInput('scale', (1, 1, 1, 1))
