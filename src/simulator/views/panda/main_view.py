@@ -42,7 +42,6 @@ class MainView(ShowBase):
                     if i-1 not in self.__map_data[j] or not self.__map_data[j][i-1][k]:
                         self.__mesh.make_back_face(j, i, k)
                     if i+1 not in self.__map_data[j] or not self.__map_data[j][i+1][k]:
-                        
                         self.__mesh.make_front_face(j, i, k)
                     if k-1 not in self.__map_data[j][i] or not self.__map_data[j][i][k-1]:
                         self.__mesh.make_bottom_face(j, i, k) 
