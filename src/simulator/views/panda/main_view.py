@@ -13,62 +13,64 @@ class MainView(ShowBase):
         self.setBackgroundColor(0, 0, 0.2, 1)
 
         # MAP #
+        self.__map_data = map3d
+        self.__generate_map()
 
-        self.__map = map3d
-        self.__mesh = CubeMeshGenerator('3D Voxel Map')
-
-        for j in self.__map:
-            for i in self.__map[j]:
-                for k in self.__map[j][i]:
-                    if not self.__map[j][i][k]:
-                        continue
-                        
-                    if j-1 not in self.__map or not self.__map[j-1][i][k]:
-                        self.__mesh.make_left_face(j, i, k)
-                    if j+1 not in self.__map or not self.__map[j+1][i][k]:
-                        self.__mesh.make_right_face(j, i, k)
-                    if i-1 not in self.__map[j] or not self.__map[j][i-1][k]:
-                        self.__mesh.make_back_face(j, i, k)
-                    if i+1 not in self.__map[j] or not self.__map[j][i+1][k]:
-                        
-                        self.__mesh.make_front_face(j, i, k)
-                    if k-1 not in self.__map[j][i] or not self.__map[j][i][k-1]:
-                        self.__mesh.make_bottom_face(j, i, k) 
-                    if k+1 not in self.__map[j][i] or not self.__map[j][i][k+1]:
-                        self.__mesh.make_top_face(j, i, k)
-                        
-        self.__terrain = self.render.attachNewNode(self.__mesh.geom_node)
-        self.__terrain_movement = self.__terrain.hprInterval(50, LPoint3(0, 360, 360))
-        self.__terrain_movement.loop()
-
+        # LIGHTING #
+        self.ambient = 0.2
         # self.basic_lighting()
         self.advanced_lighting()
 
+        # VIEW #
         self.cam.reparentTo(self.render)
         self.cam.setPos(0, -25, 25)
-        self.cam.lookAt(0, 0, 0)
+        self.cam.lookAt(self.__map)
+    
+    def __generate_map(self):
+        self.__mesh = CubeMeshGenerator('3D Voxel Map')
+
+        for j in self.__map_data:
+            for i in self.__map_data[j]:
+                for k in self.__map_data[j][i]:
+                    if not self.__map_data[j][i][k]:
+                        continue
+                        
+                    if j-1 not in self.__map_data or not self.__map_data[j-1][i][k]:
+                        self.__mesh.make_left_face(j, i, k)
+                    if j+1 not in self.__map_data or not self.__map_data[j+1][i][k]:
+                        self.__mesh.make_right_face(j, i, k)
+                    if i-1 not in self.__map_data[j] or not self.__map_data[j][i-1][k]:
+                        self.__mesh.make_back_face(j, i, k)
+                    if i+1 not in self.__map_data[j] or not self.__map_data[j][i+1][k]:
+                        
+                        self.__mesh.make_front_face(j, i, k)
+                    if k-1 not in self.__map_data[j][i] or not self.__map_data[j][i][k-1]:
+                        self.__mesh.make_bottom_face(j, i, k) 
+                    if k+1 not in self.__map_data[j][i] or not self.__map_data[j][i][k+1]:
+                        self.__mesh.make_top_face(j, i, k)
+                        
+        self.__map = self.render.attachNewNode(self.__mesh.geom_node)
+        self.__map_movement = self.__map.hprInterval(50, LPoint3(0, 360, 360))
+        self.__map_movement.loop()
 
     def basic_lighting(self):
-        self.light_model = self.loader.loadModel('models/misc/sphere')
-        self.light_model.setScale(0.2, 0.2, 0.2)
-        self.light_model.setPos(25, -25, 25)
-        self.light_model.reparentTo(self.render)
-
+        # POINT LIGHT #
         plight = PointLight("plight")
-        plight.setShadowCaster(True, 2048, 2048)
         plnp = self.cam.attachNewNode(plight)
+        plight.setShadowCaster(True, 2048, 2048)
         plight.setAttenuation((1, 0, 0)) # constant, linear, and quadratic.
         plight.getLens().setFov(40)
         plight.getLens().setNearFar(10, 2000)
-        plnp.lookAt(self.__terrain)
-        self.__terrain.setLight(plnp)
+        self.__map.setLight(plnp)
         
+        # AMBIENT #
         alight = AmbientLight("alight")
-        alight.setColor((0.04, 0.04, 0.04, 1))
         alnp = self.render.attachNewNode(alight)
-        self.__terrain.setLight(alnp)
+        alight.setColor((self.ambient, self.ambient, self.ambient, 1.0))
+        self.__map.setLight(alnp)
 
-        self.__terrain.setShaderAuto()
+        # ENABLE DEFAULT SHADOW SHADERS #
+        self.__map.setShaderAuto()
     
     def advanced_lighting(self):
         # Preliminary capabilities check.
@@ -94,23 +96,18 @@ class MainView(ShowBase):
             raise Exception("Video driver cannot create an offscreen buffer.")
 
         self.__light_depth_map = Texture()
-        self.__light_buffer.addRenderTexture(self.__light_depth_map, GraphicsOutput.RTMBindOrCopy,
-                                 GraphicsOutput.RTPDepthStencil)
+        self.__light_buffer.addRenderTexture(self.__light_depth_map, GraphicsOutput.RTMBindOrCopy, GraphicsOutput.RTPDepthStencil)
         if self.win.getGsg().getSupportsShadowFilter():
             self.__light_depth_map.setMinfilter(Texture.FTShadow)
             self.__light_depth_map.setMagfilter(Texture.FTShadow)
 
-        # Adding a color texture is totally unnecessary, but it helps with
-        # debugging.
+        # Adding a color texture is totally unnecessary, but it helps with debugging.
         self.__light_colour_map = Texture()
-        self.__light_buffer.addRenderTexture(self.__light_colour_map, GraphicsOutput.RTMBindOrCopy,
-                                 GraphicsOutput.RTPColor)
+        self.__light_buffer.addRenderTexture(self.__light_colour_map, GraphicsOutput.RTMBindOrCopy, GraphicsOutput.RTPColor)
 
         self.__light_cam = self.makeCamera(self.__light_buffer)
         self.__light_cam.node().setScene(self.render)
         self.__light_cam.node().getLens().setFov(40)
-
-        self.ambient = 0.2
 
         # setting up shader
         self.render.setShaderInput('light', self.__light_cam)
@@ -137,7 +134,7 @@ class MainView(ShowBase):
         self.cam.node().setInitialState(mci.getState())
 
         self.__light_cam.setPos(0, -25, 25)
-        self.__light_cam.lookAt(0, 0, 0)
+        self.__light_cam.lookAt(self.__map)
         self.__light_cam.node().getLens().setNearFar(10, 1000)
         self.__light_cam.node().hideFrustum()
 
