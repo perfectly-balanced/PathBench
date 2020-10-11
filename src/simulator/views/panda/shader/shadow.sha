@@ -1,0 +1,87 @@
+// Copyright (c) 2008, Carnegie Mellon University.
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+// 3. Neither the name of Carnegie Mellon University nor the names of
+//    other contributors may be used to endorse or promote products
+//    derived from this software without specific prior written
+//    permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE AUTHORS "AS IS" AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+// OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+// NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+// THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// 
+// (This is the Modified BSD License.  See also
+// http://www.opensource.org/licenses/bsd-license.php )
+
+//Cg
+
+void vshader(float4 vtx_position : POSITION,
+             float2 vtx_texcoord0 : TEXCOORD0,
+             float3 vtx_normal : NORMAL,
+
+             uniform float4x4 trans_model_to_clip_of_light,
+             uniform float4x4 mat_modelproj,
+             uniform float4 mspos_light,
+             uniform float4 k_ambient,
+             uniform float4 k_scale,
+             uniform float k_push,
+
+             out float4 l_position : POSITION,
+             out float2 l_texcoord0 : TEXCOORD0,
+             out float4 l_shadowcoord : TEXCOORD1,
+             out float  l_smooth : TEXCOORD2,
+             out float4 l_lightclip : TEXCOORD3)
+{
+    float4 position = vtx_position * k_scale;
+
+    // vertex position
+    l_position = mul(mat_modelproj, position);
+
+    // Pass through texture coordinate for main texture.
+    l_texcoord0 = vtx_texcoord0;
+
+    // Calculate the surface lighting factor.
+    l_smooth = saturate(dot(vtx_normal, normalize(mspos_light.xyz - position.xyz)));
+
+    // Calculate light-space clip position.
+    float4 pushed = position + float4(vtx_normal * k_push, 0);
+    l_lightclip = mul(trans_model_to_clip_of_light, pushed);
+
+    // Calculate shadow-map texture coordinates.
+    l_shadowcoord = l_lightclip * float4(0.5, 0.5, 0.5, 1.0) +
+                    l_lightclip.w * float4(0.5, 0.5, 0.5, 0.0);
+}
+
+
+void fshader(in float2 l_texcoord0 : TEXCOORD0,
+             in float4 l_shadowcoord : TEXCOORD1,
+             in float  l_smooth : TEXCOORD2,
+             in float4 l_lightclip : TEXCOORD3,
+             uniform sampler2D tex_0 : TEXUNIT0,
+             uniform sampler2DShadow k_Ldepthmap : TEXUNIT1,
+             uniform float4 k_ambient,
+             uniform float4 k_texDisable,
+             out float4 o_color : COLOR)
+{
+    float3 circleoffs = float3(l_lightclip.xy / l_lightclip.w, 0);
+    float falloff = saturate(1.0 - dot(circleoffs, circleoffs));
+    float4 baseColor = saturate(tex2D(tex_0, l_texcoord0) + k_texDisable);
+    float shade = shadow2DProj(k_Ldepthmap, l_shadowcoord).r;
+    o_color = baseColor * (falloff * shade * l_smooth + k_ambient.x);
+}
