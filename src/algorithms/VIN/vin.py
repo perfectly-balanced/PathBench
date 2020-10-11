@@ -31,7 +31,8 @@ import logging
 import torch
 from torch.autograd import Variable
 
-from dataset.dataset import *
+from datafreeze import freeze
+from dataset import *
 from utility.utils import *
 from model import *
 
