@@ -8,23 +8,23 @@ assert(__name__ != "__main__")
 class MainView(ShowBase):
     def __init__(self, map3d : List[List[List[bool]]]) -> None:
         super().__init__(self)
-
-        self.disableMouse()
-        self.setBackgroundColor(0, 0, 0.2, 1)
+        
+        self.disable_mouse()
+        self.use_drive()
+        self.set_background_color(0, 0, 0.2, 1)
 
         # MAP #
         self.__map_data = map3d
         self.__generate_map()
 
-        # LIGHTING #
-        self.ambient = 0.2
-        # self.basic_lighting()
-        self.advanced_lighting()
-
         # VIEW #
-        self.cam.reparentTo(self.render)
-        self.cam.setPos(0, -25, 25)
-        self.cam.lookAt(self.__map)
+        self.cam.set_pos(0, -25, 25)
+        self.cam.look_at(self.__map)
+
+        # LIGHTING #
+        self.__ambient = 0.5
+        self.basic_lighting()
+        # self.advanced_lighting()
     
     def __generate_map(self):
         self.__mesh = CubeMeshGenerator('3D Voxel Map')
@@ -48,77 +48,80 @@ class MainView(ShowBase):
                     if k+1 not in self.__map_data[j][i] or not self.__map_data[j][i][k+1]:
                         self.__mesh.make_top_face(j, i, k)
                         
-        self.__map = self.render.attachNewNode(self.__mesh.geom_node)
+        self.__map = self.render.attach_new_node(self.__mesh.geom_node)
         self.__map_movement = self.__map.hprInterval(50, LPoint3(0, 360, 360))
         self.__map_movement.loop()
 
     def basic_lighting(self):
         # POINT LIGHT #
         plight = PointLight("plight")
-        plnp = self.cam.attachNewNode(plight)
-        plight.setShadowCaster(True, 2048, 2048)
-        plight.setAttenuation((1, 0, 0)) # constant, linear, and quadratic.
-        plight.getLens().setFov(40)
-        plight.getLens().setNearFar(10, 2000)
-        self.__map.setLight(plnp)
+        plnp = self.cam.attach_new_node(plight)
+        plight.set_shadow_caster(True, 2048, 2048)
+        # plight.set_attenuation((1.0, 0, 0)) # constant, linear, and quadratic.
+        self.__map.set_light(plnp)
+
+        bmin, bmax = self.__map.get_tight_bounds(plnp)
+        lens = plight.get_lens()
+        lens.set_film_offset((bmin.xz + bmax.xz) * 0.5)
+        lens.set_film_size(bmax.xz - bmin.xz)
+        lens.set_near_far(bmin.y, bmax.y)
         
         # AMBIENT #
         alight = AmbientLight("alight")
-        alnp = self.render.attachNewNode(alight)
-        alight.setColor((self.ambient, self.ambient, self.ambient, 1.0))
-        self.__map.setLight(alnp)
+        alnp = self.cam.attach_new_node(alight)
+        alight.set_color((self.__ambient, self.__ambient, self.__ambient, 1.0))
+        self.__map.set_light(alnp)
 
         # ENABLE DEFAULT SHADOW SHADERS #
-        self.__map.setShaderAuto()
+        self.__map.set_shader_auto()
     
     def advanced_lighting(self):
-        # Preliminary capabilities check.
-        if not self.win.getGsg().getSupportsBasicShaders():
+        # preliminary capabilities check
+        if not self.win.getGsg().get_supports_basic_shaders():
             raise Exception("Video driver reports that shaders are not supported.")
-        if not self.win.getGsg().getSupportsDepthTexture():
+        if not self.win.getGsg().get_supports_depth_texture():
             raise Exception("Video driver reports that depth textures are not supported.")
 
-        # creating the offscreen buffer.
-        winprops = WindowProperties(size=(512, 512))
+        # creating the offscreen light buffer
+        winprops = WindowProperties(size=self.get_size())
         props = FrameBufferProperties()
-        props.setRgbColor(1)
-        props.setAlphaBits(1)
-        props.setDepthBits(1)
-        self.__light_buffer = self.graphicsEngine.makeOutput(
-            self.pipe, "offscreen buffer", -2,
+        props.set_rgb_color(1)
+        props.set_alpha_bits(1)
+        props.set_depth_bits(1)
+        self.__light_buffer = self.graphics_engine.make_output(
+            self.pipe, "light_buffer", -2,
             props, winprops,
             GraphicsPipe.BFRefuseWindow,
             self.win.getGsg(), self.win)
-        self.__light_buffer.active = True
 
         if not self.__light_buffer:
             raise Exception("Video driver cannot create an offscreen buffer.")
 
         self.__light_depth_map = Texture()
-        self.__light_buffer.addRenderTexture(self.__light_depth_map, GraphicsOutput.RTMBindOrCopy, GraphicsOutput.RTPDepthStencil)
-        if self.win.getGsg().getSupportsShadowFilter():
+        self.__light_buffer.add_render_texture(self.__light_depth_map, GraphicsOutput.RTMBindOrCopy, GraphicsOutput.RTPDepthStencil)
+        if self.win.getGsg().get_supports_shadow_filter():
             self.__light_depth_map.setMinfilter(Texture.FTShadow)
             self.__light_depth_map.setMagfilter(Texture.FTShadow)
 
-        # Adding a color texture is totally unnecessary, but it helps with debugging.
+        # adding a color texture is totally unnecessary, but it helps with debugging.
         self.__light_colour_map = Texture()
-        self.__light_buffer.addRenderTexture(self.__light_colour_map, GraphicsOutput.RTMBindOrCopy, GraphicsOutput.RTPColor)
+        self.__light_buffer.add_render_texture(self.__light_colour_map, GraphicsOutput.RTMBindOrCopy, GraphicsOutput.RTPColor)
 
-        self.__light_cam = self.makeCamera(self.__light_buffer)
-        self.__light_cam.node().setScene(self.render)
-        self.__light_cam.node().getLens().setFov(40)
+        # light is controlled via this camera
+        self.__light_cam = self.makeCamera(self.__light_buffer, camName="light_cam", useCamera=self.cam)
 
         # setting up shader
-        self.render.setShaderInput('light', self.__light_cam)
-        self.render.setShaderInput('Ldepthmap', self.__light_depth_map)
-        self.render.setShaderInput('ambient', (self.ambient, 0, 0, 1.0))
-        self.render.setShaderInput('texDisable', (1, 1, 1, 1))
-        self.render.setShaderInput('scale', (1, 1, 1, 1))
+        self.render.set_shader_input('light', self.__light_cam)
+        self.render.set_shader_input('light_depth_map', self.__light_depth_map)
+        self.render.set_shader_input('ambient', self.__ambient)
+        self.render.set_shader_input('tex_disable', (1, 1, 1, 1))
+        self.render.set_shader_input('scale', (1, 1, 1, 1))
+        self.render.set_shader_input('push', 1.0)
 
         # Put a shader on the Light camera.
         lci = NodePath(PandaNode("Light Camera Initializer"))
-        lci.setShader(loader.loadShader('shader/caster.sha'))
-        self.__light_cam.node().setInitialState(lci.getState())
+        lci.set_shader(loader.load_shader('shader/caster.sha'))
+        self.__light_cam.node().set_initial_state(lci.get_state())
 
         # Put a shader on the Main camera.
         # Some video cards have special hardware for shadow maps.
@@ -126,15 +129,13 @@ class MainView(ShowBase):
         # shader that does not require hardware support.
 
         mci = NodePath(PandaNode("Main Camera Initializer"))
-        if self.win.getGsg().getSupportsShadowFilter():
-            mci.setShader(loader.loadShader('shader/shadow.sha'))
+        if self.win.getGsg().get_supports_shadow_filter():
+            mci.set_shader(loader.load_shader('shader/shadow.sha'))
         else:
-            mci.setShader(loader.loadShader('shader/shadow-nosupport.sha'))
-        self.cam.node().setInitialState(mci.getState())
+            mci.set_shader(loader.load_shader('shader/shadow-nosupport.sha'))
+        self.cam.node().set_initial_state(mci.get_state())
 
-        self.__light_cam.setPos(0, -25, 25)
-        self.__light_cam.lookAt(self.__map)
-        self.__light_cam.node().getLens().setNearFar(10, 1000)
+        # setup light camera
+        self.__light_cam.look_at(self.__map)
+        self.__light_cam.node().get_lens().set_near_far(10, 1000)
         self.__light_cam.node().hideFrustum()
-
-        self.render.setShaderInput('push', 0.5)
