@@ -11,79 +11,6 @@ class MainView(ShowBase):
 
         self.disableMouse()
         self.setBackgroundColor(0, 0, 0.2, 1)
-        self.cam.setPos(0, -40, 0)
-        self.cam.lookAt(0, 0, 0)
-
-        # Preliminary capabilities check.
-
-        if not base.win.getGsg().getSupportsBasicShaders():
-            raise Exception("Video driver reports that shaders are not supported.")
-        if not base.win.getGsg().getSupportsDepthTexture():
-            raise Exception("Video driver reports that depth textures are not supported.")
-
-        # creating the offscreen buffer.
-
-        winprops = WindowProperties(size=(512, 512))
-        props = FrameBufferProperties()
-        props.setRgbColor(1)
-        props.setAlphaBits(1)
-        props.setDepthBits(1)
-        self.__light_buffer = base.graphicsEngine.makeOutput(
-            base.pipe, "offscreen buffer", -2,
-            props, winprops,
-            GraphicsPipe.BFRefuseWindow,
-            base.win.getGsg(), base.win)
-        self.buffer = self.__light_buffer
-
-        if not self.__light_buffer:
-            raise Exception("Video driver cannot create an offscreen buffer.")
-
-        self.__light_depth_map = Texture()
-        self.__light_buffer.addRenderTexture(self.__light_depth_map, GraphicsOutput.RTMBindOrCopy,
-                                 GraphicsOutput.RTPDepthStencil)
-        if base.win.getGsg().getSupportsShadowFilter():
-            self.__light_depth_map.setMinfilter(Texture.FTShadow)
-            self.__light_depth_map.setMagfilter(Texture.FTShadow)
-
-        # Adding a color texture is totally unnecessary, but it helps with
-        # debugging.
-        self.__light_colour_map = Texture()
-        self.__light_buffer.addRenderTexture(self.__light_colour_map, GraphicsOutput.RTMBindOrCopy,
-                                 GraphicsOutput.RTPColor)
-
-        self.__light_cam = self.makeCamera(self.__light_buffer)
-        self.__light_cam.node().setScene(self.render)
-        self.__light_cam.node().getLens().setFov(40)
-        self.__light_cam.node().getLens().setNearFar(10, 1000)
-
-        self.__light_cam.setPos(0, -600, 200)
-        self.__light_cam.lookAt(0, 0, 0)
-
-        self.ambient = 0.2
-
-        # setting up shader
-        self.render.setShaderInput('light', self.__light_cam)
-        self.render.setShaderInput('Ldepthmap', self.__light_depth_map)
-        self.render.setShaderInput('ambient', (self.ambient, 0, 0, 1.0))
-        self.render.setShaderInput('texDisable', (1, 1, 1, 1))
-        self.render.setShaderInput('scale', (1, 1, 1, 1))
-
-        # Put a shader on the Light camera.
-        lci = NodePath(PandaNode("Light Camera Initializer"))
-        lci.setShader(loader.loadShader('shader/caster.sha'))
-        self.__light_cam.node().setInitialState(lci.getState())
-
-        # Put a shader on the Main camera.
-        # Some video cards have special hardware for shadow maps.
-        # If the card has that, use it.  If not, use a different
-        # shader that does not require hardware support.
-
-        mci = NodePath(PandaNode("Main Camera Initializer"))
-        if self.win.getGsg().getSupportsShadowFilter():
-            mci.setShader(loader.loadShader('shader/shadow.sha'))
-        else:
-            mci.setShader(loader.loadShader('shader/shadow-nosupport.sha'))
-        self.cam.node().setInitialState(mci.getState())
 
         # MAP #
 
@@ -114,9 +41,14 @@ class MainView(ShowBase):
         self.__terrain_movement = self.__terrain.hprInterval(50, LPoint3(0, 360, 360))
         self.__terrain_movement.loop()
 
-        """
-        # LIGHTING #
+        # self.basic_lighting()
+        self.advanced_lighting()
 
+        self.cam.reparentTo(self.render)
+        self.cam.setPos(0, -25, 25)
+        self.cam.lookAt(0, 0, 0)
+
+    def basic_lighting(self):
         self.light_model = self.loader.loadModel('models/misc/sphere')
         self.light_model.setScale(0.2, 0.2, 0.2)
         self.light_model.setPos(25, -25, 25)
@@ -137,15 +69,76 @@ class MainView(ShowBase):
         self.__terrain.setLight(alnp)
 
         self.__terrain.setShaderAuto()
-        """
+    
+    def advanced_lighting(self):
+        # Preliminary capabilities check.
+        if not self.win.getGsg().getSupportsBasicShaders():
+            raise Exception("Video driver reports that shaders are not supported.")
+        if not self.win.getGsg().getSupportsDepthTexture():
+            raise Exception("Video driver reports that depth textures are not supported.")
 
-        base.cam.reparentTo(render)
-        base.cam.setPos(30, -45, 26)
-        base.cam.lookAt(0, 0, 0)
-        self.__light_cam.node().hideFrustum()
+        # creating the offscreen buffer.
+        winprops = WindowProperties(size=(512, 512))
+        props = FrameBufferProperties()
+        props.setRgbColor(1)
+        props.setAlphaBits(1)
+        props.setDepthBits(1)
+        self.__light_buffer = self.graphicsEngine.makeOutput(
+            self.pipe, "offscreen buffer", -2,
+            props, winprops,
+            GraphicsPipe.BFRefuseWindow,
+            self.win.getGsg(), self.win)
+        self.__light_buffer.active = True
+
+        if not self.__light_buffer:
+            raise Exception("Video driver cannot create an offscreen buffer.")
+
+        self.__light_depth_map = Texture()
+        self.__light_buffer.addRenderTexture(self.__light_depth_map, GraphicsOutput.RTMBindOrCopy,
+                                 GraphicsOutput.RTPDepthStencil)
+        if self.win.getGsg().getSupportsShadowFilter():
+            self.__light_depth_map.setMinfilter(Texture.FTShadow)
+            self.__light_depth_map.setMagfilter(Texture.FTShadow)
+
+        # Adding a color texture is totally unnecessary, but it helps with
+        # debugging.
+        self.__light_colour_map = Texture()
+        self.__light_buffer.addRenderTexture(self.__light_colour_map, GraphicsOutput.RTMBindOrCopy,
+                                 GraphicsOutput.RTPColor)
+
+        self.__light_cam = self.makeCamera(self.__light_buffer)
+        self.__light_cam.node().setScene(self.render)
+        self.__light_cam.node().getLens().setFov(40)
+
+        self.ambient = 0.2
+
+        # setting up shader
+        self.render.setShaderInput('light', self.__light_cam)
+        self.render.setShaderInput('Ldepthmap', self.__light_depth_map)
+        self.render.setShaderInput('ambient', (self.ambient, 0, 0, 1.0))
+        self.render.setShaderInput('texDisable', (1, 1, 1, 1))
+        self.render.setShaderInput('scale', (1, 1, 1, 1))
+
+        # Put a shader on the Light camera.
+        lci = NodePath(PandaNode("Light Camera Initializer"))
+        lci.setShader(loader.loadShader('shader/caster.sha'))
+        self.__light_cam.node().setInitialState(lci.getState())
+
+        # Put a shader on the Main camera.
+        # Some video cards have special hardware for shadow maps.
+        # If the card has that, use it.  If not, use a different
+        # shader that does not require hardware support.
+
+        mci = NodePath(PandaNode("Main Camera Initializer"))
+        if self.win.getGsg().getSupportsShadowFilter():
+            mci.setShader(loader.loadShader('shader/shadow.sha'))
+        else:
+            mci.setShader(loader.loadShader('shader/shadow-nosupport.sha'))
+        self.cam.node().setInitialState(mci.getState())
 
         self.__light_cam.setPos(0, -25, 25)
         self.__light_cam.lookAt(0, 0, 0)
         self.__light_cam.node().getLens().setNearFar(10, 1000)
+        self.__light_cam.node().hideFrustum()
 
         self.render.setShaderInput('push', 0.5)
