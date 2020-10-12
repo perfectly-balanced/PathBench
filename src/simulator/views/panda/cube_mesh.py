@@ -47,7 +47,7 @@ class CubeMesh():
         self.__texcoord = GeomVertexWriter(self.__vertex_data, 'texcoord')
         
         self.__face_count = 0
-        self.__finished = False
+        self.__finished = False # todo: remove
 
         # List[IntPoint3]
         # key: <face-index>
