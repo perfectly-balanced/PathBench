@@ -5,7 +5,8 @@ from panda3d.core import LVector3, Vec3, Vec4, Point3
 from numbers import Real
 
 assert(__name__ != "__main__")
- 
+__all__ = ['CubeMeshGenerator']
+
 def normalise(*args):
     v = LVector3(*args)
     v.normalize()
