@@ -34,7 +34,7 @@ class MainView(ShowBase):
         elif lighting == Lighting.CUSTOM:
             self.__custom_lighting()
     
-    def __generate_map(self, artificial_lighting: bool = False):
+    def __generate_map(self, artificial_lighting: bool = False) -> None:
         self.__mesh = CubeMeshGenerator('3D Voxel Map', artificial_lighting)
 
         for j in self.__map_data:
@@ -60,7 +60,7 @@ class MainView(ShowBase):
         self.__map_movement = self.__map.hprInterval(50, LPoint3(0, 360, 360))
         self.__map_movement.loop()
 
-    def __basic_lighting(self):
+    def __basic_lighting(self) -> None:
         # POINT LIGHT #
         plight = PointLight("plight")
         plnp = self.cam.attach_new_node(plight)
@@ -83,7 +83,7 @@ class MainView(ShowBase):
         # ENABLE DEFAULT SHADOW SHADERS #
         self.__map.set_shader_auto()
     
-    def __custom_lighting(self):
+    def __custom_lighting(self) -> None:
         # preliminary capabilities check
         if not self.win.getGsg().get_supports_basic_shaders():
             raise Exception("Video driver reports that shaders are not supported.")
