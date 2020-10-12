@@ -78,6 +78,7 @@ class MainView(ShowBase):
 
                 n = gen()
 
+
                 while not cube_exists(n):
                     n = gen()
                 return to_coord(n)
