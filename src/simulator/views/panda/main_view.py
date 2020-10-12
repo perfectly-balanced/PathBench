@@ -14,6 +14,7 @@ class Lighting(IntEnum):
     BASIC = 1
     CUSTOM = 2
 
+
 START_CUBE_COLOUR = (220, 0, 0)
 GOAL_CUBE_COLOUR = (0, 220, 0)
 
@@ -23,7 +24,7 @@ class MainView(ShowBase):
 
     def __init__(self, map_data: List[List[List[bool]]], start_pos: IntPoint3 = None, goal_pos: IntPoint3 = None, lighting: Lighting = Lighting.ARTIFICAL) -> None:
         super().__init__(self)
-        
+
         self.set_background_color(0, 0, 0.2, 1)
 
         # MAP #
@@ -40,20 +41,20 @@ class MainView(ShowBase):
             self.__basic_lighting()
         elif lighting == Lighting.CUSTOM:
             self.__custom_lighting()
-        
+
         # initialise goal and origin #
         self.__start_pos = None
         self.__goal_pos = None
         self.start_pos = start_pos
         self.goal_pos = goal_pos
-        
+
         # randomly initialise undefined positions
         if self.goal_pos == None or self.start_pos == None:
             map_sz = 0
             for i in range(len(self.__map_data)):
                 for j in range(len(self.__map_data[i])):
                     map_sz += len(self.__map_data[i][j])
-            
+
             def randpos() -> IntPoint3:
                 def to_coord(n: int) -> IntPoint3:
                     for i in range(len(self.__map_data)):
@@ -67,7 +68,7 @@ class MainView(ShowBase):
                 def cube_exists(n: int) -> bool:
                     i, j, k = to_coord(n)
                     return self.__map_data[i][j][k]
-                
+
                 def gen() -> int:
                     return random.randint(0, map_sz-1)
 
@@ -75,7 +76,7 @@ class MainView(ShowBase):
                 while not cube_exists(n):
                     n = gen()
                 return to_coord(n)
-            
+
             if self.start_pos == None:
                 p = randpos()
                 while p == self.goal_pos:
@@ -87,7 +88,7 @@ class MainView(ShowBase):
                 while p == self.start_pos:
                     p = randpos()
                 self.goal_pos = p
-    
+
     @property
     def start_pos(self) -> str:
         return 'start_pos'
@@ -129,7 +130,7 @@ class MainView(ShowBase):
         return self.__map_mesh
 
     def __generate_map(self, artificial_lighting: bool = False) -> None:
-        self.__map_mesh = CubeMesh(self.__map_data, '3D Voxel Map', artificial_lighting)                        
+        self.__map_mesh = CubeMesh(self.__map_data, '3D Voxel Map', artificial_lighting)
         self.__map = self.render.attach_new_node(self.__map_mesh.geom_node)
         self.__map_movement = self.__map.hprInterval(50, LPoint3(0, 360, 360))
         self.__map_movement.loop()
@@ -147,7 +148,7 @@ class MainView(ShowBase):
         lens.set_film_offset((bmin.xz + bmax.xz) * 0.5)
         lens.set_film_size(bmax.xz - bmin.xz)
         lens.set_near_far(bmin.y, bmax.y)
-        
+
         # AMBIENT #
         alight = AmbientLight("alight")
         alnp = self.cam.attach_new_node(alight)
@@ -156,7 +157,7 @@ class MainView(ShowBase):
 
         # ENABLE DEFAULT SHADOW SHADERS #
         self.__map.set_shader_auto()
-    
+
     def __custom_lighting(self) -> None:
         # preliminary capabilities check
         if not self.win.getGsg().get_supports_basic_shaders():

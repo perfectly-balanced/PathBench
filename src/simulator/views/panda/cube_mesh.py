@@ -19,7 +19,7 @@ class Face(IntEnum):
     LEFT = 0
     RIGHT = 1
     BACK = 2
-    FRONT = 3 
+    FRONT = 3
     BOTTOM = 4
     TOP = 5
 
@@ -33,19 +33,19 @@ class CubeMesh():
         self.name = name
         self.__artificial_lighting = artificial_lighting
         self.__default_colour = default_colour
- 
+
         self.__vertex_data_format = GeomVertexFormat.getV3n3c4t2()
         self.__vertex_data = GeomVertexData(name, self.__vertex_data_format, Geom.UHDynamic)
-        
+
         self.mesh = Geom(self.__vertex_data)
         self.__triangles = GeomTriangles(Geom.UHDynamic)
         self.__triangle_data = self.__triangles.modifyVertices()
-        
+
         self.__vertex = GeomVertexWriter(self.__vertex_data, 'vertex')
         self.__normal = GeomVertexWriter(self.__vertex_data, 'normal')
         self.__colour = GeomVertexRewriter(self.__vertex_data, 'color')
         self.__texcoord = GeomVertexWriter(self.__vertex_data, 'texcoord')
-        
+
         self.__face_count = 0
 
         # List[IntPoint3]
@@ -80,15 +80,15 @@ class CubeMesh():
                             faces.append(self.__face_count-1)
                         else:
                             faces.append(None)
-                    
+
                     # add face if there is not adjacent face
                     add_face(Face.LEFT, i-1 not in self.structure or not self.structure[i-1][j][k])
-                    add_face(Face.RIGHT, i+1 not in self.structure or not self.structure[i+1][j][k])                    
+                    add_face(Face.RIGHT, i+1 not in self.structure or not self.structure[i+1][j][k])
                     add_face(Face.BACK, j-1 not in self.structure[i] or not self.structure[i][j-1][k])
                     add_face(Face.FRONT, j+1 not in self.structure[i] or not self.structure[i][j+1][k])
                     add_face(Face.BOTTOM, k-1 not in self.structure[i][j] or not self.structure[i][j][k-1])
                     add_face(Face.TOP, k+1 not in self.structure[i][j] or not self.structure[i][j][k+1])
-                    
+
                     self.__cube_face_map[i][j][k] = tuple(faces)
 
         self.__triangles.closePrimitive()
@@ -107,9 +107,9 @@ class CubeMesh():
                     return (r / factor, g / factor, b / factor)
                 else:
                     return (r, g, b)
-        
+
         return self.default_colour
-    
+
     def set_cube_colour(self, pos: IntPoint3, colour: Colour) -> None:
         x, y, z = pos
 
@@ -134,7 +134,7 @@ class CubeMesh():
         else:
             r, g, b = colour
             return (r * factor, g * factor, b * factor)
-    
+
     @staticmethod
     def __LIGHT_ATTENUATION_FACTOR(face: Face) -> Real:
         switcher = {Face.LEFT: 0.9,
@@ -143,16 +143,16 @@ class CubeMesh():
                     Face.FRONT: 0.6,
                     Face.BOTTOM: 0.7,
                     Face.TOP: 1.0
-        }
+                    }
         return switcher.get(face.value)
-    
+
     def __face_colour(self, colour: Colour, face: Face) -> TColour:
         c = (colour, colour, colour) if isinstance(colour, Real) else colour
         if self.artificial_lighting:
             return self.__attenuate_colour(c, self.__LIGHT_ATTENUATION_FACTOR(face))
         else:
             return c
-        
+
     def __make_face(self, face: Face, pos: IntPoint3) -> None:
         r, g, b = self.__face_colour(self.default_colour, face)
 
@@ -187,12 +187,12 @@ class CubeMesh():
             self.__texcoord.addData2f(0.0, 0.0)
             self.__texcoord.addData2f(1.0, 0.0)
             self.__texcoord.addData2f(1.0, 1.0)
-            
+
             vertex_id = self.__face_count * 4
-            
+
             self.__triangles.addVertices(vertex_id, vertex_id + 1, vertex_id + 3)
             self.__triangles.addVertices(vertex_id + 1, vertex_id + 2, vertex_id + 3)
-            
+
             self.__face_count += 1
 
         x, y, z = pos
@@ -237,7 +237,7 @@ class CubeMesh():
     def default_colour(self) -> TColour:
         c = self.__default_colour
         return (c, c, c) if isinstance(c, Real) else c
-    
+
     @default_colour.setter
     def default_colour(self, value: Colour) -> None:
         old_r, old_g, old_b = self.default_colour
@@ -252,10 +252,10 @@ class CubeMesh():
                     p = (i, j, k)
 
                     r, g, b = self.get_cube_colour(p)
-                    
+
                     def close(a, b):
                         return math.isclose(a, b, rel_tol=1e-3)
-                    
+
                     # only change cube colour if it closely resembles
                     # the previous default colour.
                     if close(old_r, r) and \
