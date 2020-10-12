@@ -92,9 +92,9 @@ class MainView(ShowBase):
 
     @origin_pos.setter
     def origin_pos(self, value: Point3) -> None:
-        self.__reset_colour(self.__origin_pos)
+        self.__map_mesh.clear_cube_colour(self.__origin_pos)
         self.__origin_pos = value
-        self.__set_colour(self.__origin_pos, ORIGIN_CUBE_COLOUR)
+        self.__map_mesh.set_cube_colour(self.__origin_pos, ORIGIN_CUBE_COLOUR)
 
     @property
     def goal_pos(self) -> str:
@@ -106,18 +106,12 @@ class MainView(ShowBase):
 
     @goal_pos.setter
     def goal_pos(self, value: Point3) -> None:
-        self.__reset_colour(self.__goal_pos)
+        self.__map_mesh.clear_cube_colour(self.__goal_pos)
         self.__goal_pos = value
-        self.__set_colour(self.__goal_pos, GOAL_CUBE_COLOUR)
-    
-    def __reset_colour(self, pos: Point3) -> None:
-        pass
-    
-    def __set_colour(self, pos: Point3, colour: Colour) -> None:
-        pass
+        self.__map_mesh.set_cube_colour(self.__goal_pos, GOAL_CUBE_COLOUR)
 
     def __generate_map(self, artificial_lighting: bool = False) -> None:
-        self.__mesh = CubeMeshGenerator('3D Voxel Map', artificial_lighting)
+        self.__map_mesh = CubeMeshGenerator('3D Voxel Map', artificial_lighting)
 
         for j in self.__map_data:
             for i in self.__map_data[j]:
@@ -126,19 +120,19 @@ class MainView(ShowBase):
                         continue
                         
                     if j-1 not in self.__map_data or not self.__map_data[j-1][i][k]:
-                        self.__mesh.make_left_face(j, i, k)
+                        self.__map_mesh.make_left_face(j, i, k)
                     if j+1 not in self.__map_data or not self.__map_data[j+1][i][k]:
-                        self.__mesh.make_right_face(j, i, k)
+                        self.__map_mesh.make_right_face(j, i, k)
                     if i-1 not in self.__map_data[j] or not self.__map_data[j][i-1][k]:
-                        self.__mesh.make_back_face(j, i, k)
+                        self.__map_mesh.make_back_face(j, i, k)
                     if i+1 not in self.__map_data[j] or not self.__map_data[j][i+1][k]:
-                        self.__mesh.make_front_face(j, i, k)
+                        self.__map_mesh.make_front_face(j, i, k)
                     if k-1 not in self.__map_data[j][i] or not self.__map_data[j][i][k-1]:
-                        self.__mesh.make_bottom_face(j, i, k) 
+                        self.__map_mesh.make_bottom_face(j, i, k) 
                     if k+1 not in self.__map_data[j][i] or not self.__map_data[j][i][k+1]:
-                        self.__mesh.make_top_face(j, i, k)
+                        self.__map_mesh.make_top_face(j, i, k)
                         
-        self.__map = self.render.attach_new_node(self.__mesh.geom_node)
+        self.__map = self.render.attach_new_node(self.__map_mesh.geom_node)
         self.__map_movement = self.__map.hprInterval(50, LPoint3(0, 360, 360))
         self.__map_movement.loop()
 

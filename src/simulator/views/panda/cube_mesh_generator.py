@@ -11,14 +11,22 @@ def normalise(*args):
     v.normalize()
     return v
 
+FRONT_FACE_ATTENUATION = 0.6
+BACK_FACE_ATTENUATION = 0.85
+RIGHT_FACE_ATENUATION = 1.0
+LEFT_FACE_ATTENUATION = 0.9
+TOP_FACE_ATTENUATION = 1.0
+BOTTOM_FACE_ATTENUATION = 0.7
+
 class CubeMeshGenerator():
     name : str
     mesh : Geom
 
-    def __init__(self, name: str = 'CubeMesh', artificial_lighting: bool = False) -> None:
+    def __init__(self, name: str = 'CubeMesh', artificial_lighting: bool = False, clear_colour: Colour = 1.0) -> None:
         self.name = name
         self.__finished = False
         self.__artificial_lighting = artificial_lighting
+        self.__clear_colour = clear_colour
  
         self.__format = GeomVertexFormat.getV3n3c4t2()
 
@@ -74,7 +82,16 @@ class CubeMeshGenerator():
         self.__triangles.addVertices(vertex_id + 1, vertex_id + 2, vertex_id + 3)
         
         self.__face_count += 1
+
+    def get_cube_colour(self, pos: Point3) -> Colour:
+        return 0 # todo
     
+    def set_cube_colour(self, pos: Point3, colour: Colour) -> None:
+        pass # todo
+
+    def clear_cube_colour(self, pos: Point3) -> None:
+        self.set_cube_colour(pos, self.clear_colour)
+
     @staticmethod
     def __attenuate_colour(colour: Colour, factor: Real):
         if isinstance(colour, Real):
@@ -86,30 +103,28 @@ class CubeMeshGenerator():
     def __apply_artificial_lighting(self, colour: Colour, factor: Real) -> Colour:
         return self.__attenuate_colour(colour, factor) if self.artificial_lighting else colour
         
-    def make_front_face(self, x, y, z, colour: Colour = 1.0) -> None:
-        c = self.__apply_artificial_lighting(colour, 0.6)
+    def make_front_face(self, x, y, z) -> None:
+        c = self.__apply_artificial_lighting(self.clear_colour, FRONT_FACE_ATTENUATION)
         self.make_face(x + 1, y + 1, z - 1, x, y + 1, z, c)
     
-    def make_back_face(self, x, y, z, colour: Colour = 1.0) -> None:
-        c = self.__apply_artificial_lighting(colour, 0.6)
-        self.make_face(x, y, z - 1, x + 1, y, z, colour)
+    def make_back_face(self, x, y, z) -> None:
+        c = self.__apply_artificial_lighting(self.clear_colour, BACK_FACE_ATTENUATION)
+        self.make_face(x, y, z - 1, x + 1, y, z, c)
     
-    def make_right_face(self, x, y, z, colour: Colour = 1.0) -> None:
-        c = self.__apply_artificial_lighting(colour, 0.85)
+    def make_right_face(self, x, y, z) -> None:
+        c = self.__apply_artificial_lighting(self.clear_colour, RIGHT_FACE_ATENUATION)
         self.make_face(x + 1, y, z - 1, x + 1, y + 1, z, c)
     
-    def make_left_face(self, x, y, z, colour: Colour = 1.0) -> None:
-        c = self.__apply_artificial_lighting(colour, 0.9)
+    def make_left_face(self, x, y, z) -> None:
+        c = self.__apply_artificial_lighting(self.clear_colour, LEFT_FACE_ATTENUATION)
         self.make_face(x, y + 1, z - 1, x, y, z, c)
     
-    def make_top_face(self, x, y, z, colour: Colour = 1.0) -> None:
-        c = self.__apply_artificial_lighting(colour, 1.0)
+    def make_top_face(self, x, y, z) -> None:
+        c = self.__apply_artificial_lighting(self.clear_colour, TOP_FACE_ATTENUATION)
         self.make_face(x + 1, y + 1, z, x, y, z, c)
     
-    def make_bottom_face(self, x, y, z, colour: Colour = 1.0) -> None:
-
-
-        c = self.__apply_artificial_lighting(colour, 0.7)
+    def make_bottom_face(self, x, y, z) -> None:
+        c = self.__apply_artificial_lighting(self.clear_colour, BOTTOM_FACE_ATTENUATION)
         self.make_face(x, y + 1, z - 1, x + 1, y, z - 1, c)
 
     @property
@@ -133,3 +148,18 @@ class CubeMeshGenerator():
     @artificial_lighting.getter
     def artificial_lighting(self) -> bool:
         return self.__artificial_lighting
+
+    @property
+    def clear_colour(self) -> str:
+        return 'clear_colour'
+
+    @clear_colour.getter
+    def clear_colour(self) -> bool:
+        return self.__clear_colour
+    
+    @clear_colour.setter
+    def clear_colour(self, value: Colour) -> None:
+        self.__clear_colour = value
+        # todo:
+        # find all the cubes to recolour (ones that have colour same to old clear colour)
+        # clear their colour
