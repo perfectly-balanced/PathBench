@@ -4,8 +4,7 @@ from panda3d.core import Geom, GeomTriangles, GeomVertexWriter
 from panda3d.core import LVector3, Vec3, Vec4, Point3
 from numbers import Real
 
-assert(__name__ != "__main__")
-__all__ = ['CubeMeshGenerator']
+from .types import Colour
 
 def normalise(*args):
     v = LVector3(*args)
@@ -36,11 +35,7 @@ class CubeMeshGenerator():
         
         self.__face_count = 0
     
-    def make_face(self, x1, y1, z1, x2, y2, z2, colour) -> None:
-        """
-        colour: can be a triple or a float
-        """
-
+    def make_face(self, x1, y1, z1, x2, y2, z2, colour: Colour) -> None:
         if x1 == x2:
             self.__vertex.addData3f(x1, y1, z1)
             self.__vertex.addData3f(x2, y2, z1)
@@ -81,68 +76,38 @@ class CubeMeshGenerator():
         self.__face_count += 1
     
     @staticmethod
-    def __attenuate_colour(colour, factor: Real):
-        """
-        colour: can be a triple or a float
-        """
-
+    def __attenuate_colour(colour: Colour, factor: Real):
         if isinstance(colour, Real):
             return colour * factor
         else:
             r, g, b = colour
             return (r * factor, g * factor, b * factor)
     
-    def __apply_artificial_lighting(self, colour, factor: Real):
-        """
-        colour: can be a triple or a float
-        """
+    def __apply_artificial_lighting(self, colour: Colour, factor: Real) -> Colour:
         return self.__attenuate_colour(colour, factor) if self.artificial_lighting else colour
         
-    
-    def make_front_face(self, x, y, z, colour = 1.0) -> None:
-        """
-        colour: can be a triple or a float
-        """
-
+    def make_front_face(self, x, y, z, colour: Colour = 1.0) -> None:
         c = self.__apply_artificial_lighting(colour, 0.6)
         self.make_face(x + 1, y + 1, z - 1, x, y + 1, z, c)
     
-    def make_back_face(self, x, y, z, colour = 1.0) -> None:
-        """
-        colour: can be a triple or a float
-        """
-
+    def make_back_face(self, x, y, z, colour: Colour = 1.0) -> None:
         c = self.__apply_artificial_lighting(colour, 0.6)
         self.make_face(x, y, z - 1, x + 1, y, z, colour)
     
-    def make_right_face(self, x, y, z, colour = 1.0) -> None:
-        """
-        colour: can be a triple or a float
-        """
-
+    def make_right_face(self, x, y, z, colour: Colour = 1.0) -> None:
         c = self.__apply_artificial_lighting(colour, 0.85)
         self.make_face(x + 1, y, z - 1, x + 1, y + 1, z, c)
     
-    def make_left_face(self, x, y, z, colour = 1.0) -> None:
-        """
-        colour: can be a triple or a float
-        """
-
+    def make_left_face(self, x, y, z, colour: Colour = 1.0) -> None:
         c = self.__apply_artificial_lighting(colour, 0.9)
         self.make_face(x, y + 1, z - 1, x, y, z, c)
     
-    def make_top_face(self, x, y, z, colour = 1.0) -> None:
-        """
-        colour: can be a triple or a float
-        """
-
+    def make_top_face(self, x, y, z, colour: Colour = 1.0) -> None:
         c = self.__apply_artificial_lighting(colour, 1.0)
         self.make_face(x + 1, y + 1, z, x, y, z, c)
     
-    def make_bottom_face(self, x, y, z, colour = 1.0) -> None:
-        """
-        colour: can be a triple or a float
-        """
+    def make_bottom_face(self, x, y, z, colour: Colour = 1.0) -> None:
+
 
         c = self.__apply_artificial_lighting(colour, 0.7)
         self.make_face(x, y + 1, z - 1, x + 1, y, z - 1, c)
@@ -165,6 +130,6 @@ class CubeMeshGenerator():
     def artificial_lighting(self) -> str:
         return 'artificial_lighting'
 
-    @geom_node.getter
+    @artificial_lighting.getter
     def artificial_lighting(self) -> bool:
         return self.__artificial_lighting

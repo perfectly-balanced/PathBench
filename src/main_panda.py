@@ -1,4 +1,4 @@
-from main_view import MainView
+from simulator.views.panda.main_view import MainView
 import random
 
 if __name__ == "__main__":
