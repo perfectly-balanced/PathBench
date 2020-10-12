@@ -21,7 +21,9 @@ jobs:
     - name: Install dependencies
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
-        $CONDA/bin/conda install pygame torch torchvision memory-profiler seaborn dataset datafreeze normality dill natsort sklearn pandas numpy tk
+        $CONDA/bin/conda install -c cogsci pygame
+        pip3 install torch torchvision memory-profiler seaborn dataset datafreeze normality dill natsort sklearn pandas numpy
+        sudo apt install python3-tk
     - name: Lint with flake8
       run: |
         $CONDA/bin/conda install flake8
