@@ -1,4 +1,4 @@
-from typing import Tuple, NamedTuple
+from typing import Tuple, NamedTuple, Dict
 
 import torch, numpy as np
 
@@ -8,11 +8,13 @@ class Point(torch.Tensor):
     """
     pos: Tuple[int, ...]
 
-    def __new__(cls, *ords):
+    def __new__(cls, *ords, **kwargs):
         return torch.Tensor.__new__(cls, len(ords))
 
-    def __init__(self, *ords):
-        assert len(ords) > 1, "Needs at least two dimensions"
+    def __init__(self, *ords, **kwargs):
+        if ("x" in kwargs and "y" in kwargs):
+            ords = (kwargs["x"], kwargs["y"])
+        assert (len(ords) > 1), "Needs at least two dimensions"
         super().__init__()
         self.pos = tuple(ords)
         self.data = torch.FloatTensor(self.pos)
@@ -53,7 +55,15 @@ class Point(torch.Tensor):
         return hash(self.pos)
 
     def __repr__(self) -> str:
+        if len(self.pos) == 2:
+            return f"Point(x={self.x}, y={self.y})"
         return f"Point({', '.join(str(i) for i in self.pos)})"
+
+    def __copy__(self) -> 'Point':
+        return copy.deepcopy(self)
+
+    def __deepcopy__(self, memo: Dict) -> 'Point':
+        return Point(*self.pos)
 
 class Size(NamedTuple):
     """
