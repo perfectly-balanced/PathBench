@@ -1,6 +1,6 @@
 from typing import Tuple, NamedTuple
 
-import torch
+import torch, numpy as np
 
 class Point(torch.Tensor):
     """
@@ -8,14 +8,14 @@ class Point(torch.Tensor):
     """
     pos: Tuple[int, ...]
 
-    @staticmethod
     def __new__(cls, *ords):
-        return super().__new__(cls, len(ords))
+        return torch.Tensor.__new__(cls, len(ords))
 
     def __init__(self, *ords):
         assert len(ords) > 1, "Needs at least two dimensions"
         super().__init__()
         self.pos = tuple(ords)
+        self.data = torch.FloatTensor(self.pos)
     
     @property
     def x(self) -> int:
