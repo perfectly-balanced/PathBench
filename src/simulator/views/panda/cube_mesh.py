@@ -2,6 +2,7 @@ from panda3d.core import Texture, GeomNode
 from panda3d.core import GeomVertexFormat, GeomVertexData
 from panda3d.core import Geom, GeomTriangles, GeomVertexWriter
 from panda3d.core import LVector3, Vec3, Vec4, Point3
+from typing import List
 from numbers import Real
 
 from .types import Colour
@@ -18,13 +19,14 @@ LEFT_FACE_ATTENUATION = 0.9
 TOP_FACE_ATTENUATION = 1.0
 BOTTOM_FACE_ATTENUATION = 0.7
 
-class CubeMeshGenerator():
-    name : str
-    mesh : Geom
+class CubeMesh():
+    name: str
+    mesh: Geom
+    structure: List[List[List[bool]]]
 
-    def __init__(self, name: str = 'CubeMesh', artificial_lighting: bool = False, clear_colour: Colour = 1.0) -> None:
+    def __init__(self, structure: List[List[List[bool]]], name: str = 'CubeMesh', artificial_lighting: bool = False, clear_colour: Colour = 1.0) -> None:
+        self.structure = structure
         self.name = name
-        self.__finished = False
         self.__artificial_lighting = artificial_lighting
         self.__clear_colour = clear_colour
  
@@ -42,8 +44,59 @@ class CubeMeshGenerator():
         self.__texcoord = GeomVertexWriter(self.__vertex_data, 'texcoord')
         
         self.__face_count = 0
+        self.__finished = False
+        self.__face_cube_map = [] # List[Point3] - key: <face-index>, value: <cube-pos>
+        self.__cube_face_map = [] # List[List[List[Tuple[Integral, Integral]]]] - key: <cube-pos>, value: (<face-index-min-inclusive>, <face-index-max-exclusive>)
+
+        # build mesh
+        # we only make visible faces: if there are two adjacent faces, they aren't added.
+        self.__cube_face_map = [None for _ in self.structure]
+        for i in self.structure:
+            self.__cube_face_map[i] = [None for _ in self.structure[i]]
+            for j in self.structure[i]:
+                self.__cube_face_map[i][j] = [None for _ in self.structure[i][j]]
+                for k in self.structure[i][j]:
+                    min_face_idx_inclusive = self.__face_count - 1
+
+                    # skip if cube doesn't exist
+                    if not self.structure[i][j][k]:
+                        self.__cube_face_map[i][j][k] = (min_face_idx_inclusive, min_face_idx_inclusive)
+                        continue
+                        
+                    # left
+                    if i-1 not in self.structure or not self.structure[i-1][j][k]:
+                        self.__make_left_face(i, j, k)
+                        self.__face_cube_map.append(Point3(i, j, k))
+
+                    # right
+                    if i+1 not in self.structure or not self.structure[i+1][j][k]:
+                        self.__make_right_face(i, j, k)
+                        self.__face_cube_map.append(Point3(i, j, k))
+                    
+                    # back
+                    if j-1 not in self.structure[i] or not self.structure[i][j-1][k]:
+                        self.__make_back_face(i, j, k)
+                        self.__face_cube_map.append(Point3(i, j, k))
+                    
+                    # front
+                    if j+1 not in self.structure[i] or not self.structure[i][j+1][k]:
+                        self.__make_front_face(i, j, k)
+                        self.__face_cube_map.append(Point3(i, j, k))
+                    
+                    # bottom
+                    if k-1 not in self.structure[i][j] or not self.structure[i][j][k-1]:
+                        self.__make_bottom_face(i, j, k)
+                        self.__face_cube_map.append(Point3(i, j, k))
+                    
+                    # top
+                    if k+1 not in self.structure[i][j] or not self.structure[i][j][k+1]:
+                        self.__make_top_face(i, j, k)
+                        self.__face_cube_map.append(Point3(i, j, k))
+                    
+                    max_face_idx_exclusive = self.__face_count
+                    self.__cube_face_map[i][j][k] = (min_face_idx_inclusive, max_face_idx_exclusive)
     
-    def make_face(self, x1, y1, z1, x2, y2, z2, colour: Colour) -> None:
+    def __make_face(self, x1, y1, z1, x2, y2, z2, colour: Colour) -> None:
         if x1 == x2:
             self.__vertex.addData3f(x1, y1, z1)
             self.__vertex.addData3f(x2, y2, z1)
@@ -103,29 +156,29 @@ class CubeMeshGenerator():
     def __apply_artificial_lighting(self, colour: Colour, factor: Real) -> Colour:
         return self.__attenuate_colour(colour, factor) if self.artificial_lighting else colour
         
-    def make_front_face(self, x, y, z) -> None:
+    def __make_front_face(self, x, y, z) -> None:
         c = self.__apply_artificial_lighting(self.clear_colour, FRONT_FACE_ATTENUATION)
-        self.make_face(x + 1, y + 1, z - 1, x, y + 1, z, c)
+        self.__make_face(x + 1, y + 1, z - 1, x, y + 1, z, c)
     
-    def make_back_face(self, x, y, z) -> None:
+    def __make_back_face(self, x, y, z) -> None:
         c = self.__apply_artificial_lighting(self.clear_colour, BACK_FACE_ATTENUATION)
-        self.make_face(x, y, z - 1, x + 1, y, z, c)
+        self.__make_face(x, y, z - 1, x + 1, y, z, c)
     
-    def make_right_face(self, x, y, z) -> None:
+    def __make_right_face(self, x, y, z) -> None:
         c = self.__apply_artificial_lighting(self.clear_colour, RIGHT_FACE_ATENUATION)
-        self.make_face(x + 1, y, z - 1, x + 1, y + 1, z, c)
+        self.__make_face(x + 1, y, z - 1, x + 1, y + 1, z, c)
     
-    def make_left_face(self, x, y, z) -> None:
+    def __make_left_face(self, x, y, z) -> None:
         c = self.__apply_artificial_lighting(self.clear_colour, LEFT_FACE_ATTENUATION)
-        self.make_face(x, y + 1, z - 1, x, y, z, c)
+        self.__make_face(x, y + 1, z - 1, x, y, z, c)
     
-    def make_top_face(self, x, y, z) -> None:
+    def __make_top_face(self, x, y, z) -> None:
         c = self.__apply_artificial_lighting(self.clear_colour, TOP_FACE_ATTENUATION)
-        self.make_face(x + 1, y + 1, z, x, y, z, c)
+        self.__make_face(x + 1, y + 1, z, x, y, z, c)
     
-    def make_bottom_face(self, x, y, z) -> None:
+    def __make_bottom_face(self, x, y, z) -> None:
         c = self.__apply_artificial_lighting(self.clear_colour, BOTTOM_FACE_ATTENUATION)
-        self.make_face(x, y + 1, z - 1, x + 1, y, z - 1, c)
+        self.__make_face(x, y + 1, z - 1, x + 1, y, z - 1, c)
 
     @property
     def geom_node(self) -> str:

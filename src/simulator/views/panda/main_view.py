@@ -5,7 +5,7 @@ from enum import IntEnum, unique
 from typing import List, Tuple
 import random
 
-from .cube_mesh_generator import CubeMeshGenerator
+from .cube_mesh import CubeMesh
 from .types import Colour
 
 @unique
@@ -21,13 +21,13 @@ class MainView(ShowBase):
     __origin_pos: Point3
     __goal_pos: Point3
 
-    def __init__(self, map3d: List[List[List[bool]]], lighting: Lighting = Lighting.ARTIFICAL) -> None:
+    def __init__(self, map_data: List[List[List[bool]]], lighting: Lighting = Lighting.ARTIFICAL) -> None:
         super().__init__(self)
         
         self.set_background_color(0, 0, 0.2, 1)
 
         # MAP #
-        self.__map_data = map3d
+        self.__map_data = map_data
         self.__generate_map(lighting == Lighting.ARTIFICAL)
 
         # VIEW #
@@ -111,27 +111,7 @@ class MainView(ShowBase):
         self.__map_mesh.set_cube_colour(self.__goal_pos, GOAL_CUBE_COLOUR)
 
     def __generate_map(self, artificial_lighting: bool = False) -> None:
-        self.__map_mesh = CubeMeshGenerator('3D Voxel Map', artificial_lighting)
-
-        for j in self.__map_data:
-            for i in self.__map_data[j]:
-                for k in self.__map_data[j][i]:
-                    if not self.__map_data[j][i][k]:
-                        continue
-                        
-                    if j-1 not in self.__map_data or not self.__map_data[j-1][i][k]:
-                        self.__map_mesh.make_left_face(j, i, k)
-                    if j+1 not in self.__map_data or not self.__map_data[j+1][i][k]:
-                        self.__map_mesh.make_right_face(j, i, k)
-                    if i-1 not in self.__map_data[j] or not self.__map_data[j][i-1][k]:
-                        self.__map_mesh.make_back_face(j, i, k)
-                    if i+1 not in self.__map_data[j] or not self.__map_data[j][i+1][k]:
-                        self.__map_mesh.make_front_face(j, i, k)
-                    if k-1 not in self.__map_data[j][i] or not self.__map_data[j][i][k-1]:
-                        self.__map_mesh.make_bottom_face(j, i, k) 
-                    if k+1 not in self.__map_data[j][i] or not self.__map_data[j][i][k+1]:
-                        self.__map_mesh.make_top_face(j, i, k)
-                        
+        self.__map_mesh = CubeMesh(self.__map_data, '3D Voxel Map', artificial_lighting)                        
         self.__map = self.render.attach_new_node(self.__map_mesh.geom_node)
         self.__map_movement = self.__map.hprInterval(50, LPoint3(0, 360, 360))
         self.__map_movement.loop()
