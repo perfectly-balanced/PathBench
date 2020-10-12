@@ -1,50 +1,59 @@
-from typing import NamedTuple
+from typing import Tuple, NamedTuple
 
 import torch
 
-class Point3D(NamedTuple, torch.Tensor):
+class Point(torch.Tensor):
     """
-    A point in 3D space has 3 coordinates x, y, and z.
+    A point has a variable number of coordinates specified in the constructor. We assume the point has at least two coordinates
     """
-
-    x: int
-    y: int
-    z: int
-
-    def to_tensor(self) -> torch.Tensor:
-        return torch.Tensor([float(self.x), float(self.y), float(self.z)])
+    pos: Tuple[int, ...]
 
     @staticmethod
-    def from_tensor(inp: torch.Tensor) -> 'Point3D':
-        return Point3D(int(torch.round(inp[0])), int(torch.round(inp[1]), int(torch.round(inp[2]))))
+    def __new__(cls, *ords):
+        return super().__new__(cls, len(ords))
 
+    def __init__(self, *ords):
+        assert len(ords) > 1, "Needs at least two dimensions"
+        super().__init__()
+        self.pos = tuple(ords)
+    
+    @property
+    def x(self) -> int:
+        return self.pos[0]
 
-class Point(NamedTuple, torch.Tensor):
-    """
-    A point has 2 coordinates x and y.
-    """
-    x: int
-    y: int
+    @property
+    def y(self) -> int:
+        return self.pos[1]
+
+    @property
+    def z(self) -> int:
+        assert len(self.pos) > 2, "Not three dimensional"
+        return self.pos[2]
 
     def to_tensor(self) -> torch.Tensor:
-        return torch.Tensor([float(self.x), float(self.y)])
+        return torch.Tensor([float(c) for c in self.pos])
 
     @staticmethod
     def from_tensor(inp: torch.Tensor) -> 'Point':
-        return Point(int(torch.round(inp[0])), int(torch.round(inp[1])))
+        assert len(list(inp.size())) == 1
+        return Point([int(torch.round(inp[i])) for i in range(list(inp.size())[0])])
+        #return Point(int(torch.round(inp[0])), int(torch.round(inp[1])))
 
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, Point) and (self.pos == other.pos)
 
-class Size3D(NamedTuple):
-    """
-    This tuple represents the size of objects in 3D. It has 3 parameters: length, width, and height.
-    """
-    length: int
-    width: int
-    height: int
+    def __ne__(self, other: object) -> bool:
+        return not (self == other)
 
-    def to_tensor(self) -> torch.Tensor:
-        return torch.Tensor([float(self.length), float(self.width), float(self.height)])
+    def __lt__(self, other: object) -> bool:
+        assert isinstance(other, Point), "Must compare with another point"
+        return self.pos < other.pos
 
+    def __hash__(self) -> int:
+        return hash(self.pos)
+
+    def __repr__(self) -> str:
+        return f"Point({', '.join(i for i in self.pos)})"
 
 class Size(NamedTuple):
     """
