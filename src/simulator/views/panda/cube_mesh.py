@@ -2,6 +2,7 @@ from panda3d.core import Texture, GeomNode
 from panda3d.core import GeomVertexFormat, GeomVertexData
 from panda3d.core import Geom, GeomTriangles, GeomVertexWriter
 from panda3d.core import LVector3, Vec3, Vec4, Point3
+from enum import IntEnum, unique, Enum
 from typing import List
 from numbers import Real
 
@@ -12,12 +13,14 @@ def normalise(*args):
     v.normalize()
     return v
 
-FRONT_FACE_ATTENUATION = 0.6
-BACK_FACE_ATTENUATION = 0.85
-RIGHT_FACE_ATENUATION = 1.0
-LEFT_FACE_ATTENUATION = 0.9
-TOP_FACE_ATTENUATION = 1.0
-BOTTOM_FACE_ATTENUATION = 0.7
+@unique
+class Face(IntEnum):
+    LEFT = 0
+    RIGHT = 1
+    BACK = 2
+    FRONT = 3 
+    BOTTOM = 4
+    TOP = 5
 
 class CubeMesh():
     name: str
@@ -71,96 +74,23 @@ class CubeMesh():
                     if not self.structure[i][j][k]:
                         self.__cube_face_map[i][j][k] = (None, None, None, None, None, None)
                         continue
-                        
-                    # left
-                    if i-1 not in self.structure or not self.structure[i-1][j][k]:
-                        self.__make_left_face(i, j, k)
-                        self.__face_cube_map.append(pos)
-                        faces.append(self.__face_count-1)
-                    else:
-                        faces.append(None)
 
-                    # right
-                    if i+1 not in self.structure or not self.structure[i+1][j][k]:
-                        self.__make_right_face(i, j, k)
-                        self.__face_cube_map.append(pos)
-                        faces.append(self.__face_count-1)
-                    else:
-                        faces.append(None)
-                    
-                    # back
-                    if j-1 not in self.structure[i] or not self.structure[i][j-1][k]:
-                        self.__make_back_face(i, j, k)
-                        self.__face_cube_map.append(pos)
-                        faces.append(self.__face_count-1)
-                    else:
-                        faces.append(None)
-                    
-                    # front
-                    if j+1 not in self.structure[i] or not self.structure[i][j+1][k]:
-                        self.__make_front_face(i, j, k)
-                        self.__face_cube_map.append(pos)
-                        faces.append(self.__face_count-1)
-                    else:
-                        faces.append(None)
-                    
-                    # bottom
-                    if k-1 not in self.structure[i][j] or not self.structure[i][j][k-1]:
-                        self.__make_bottom_face(i, j, k)
-                        self.__face_cube_map.append(pos)
-                        faces.append(self.__face_count-1)
-                    else:
-                        faces.append(None)
-                    
-                    # top
-                    if k+1 not in self.structure[i][j] or not self.structure[i][j][k+1]:
-                        self.__make_top_face(i, j, k)
-                        self.__face_cube_map.append(pos)
-                        faces.append(self.__face_count-1)
-                    else:
-                        faces.append(None)
+                    def add_face(face: Face, make: bool) -> None:
+                        if make:
+                            self.__make_face(face, pos)
+                            self.__face_cube_map.append(pos)
+                            faces.append(self.__face_count-1)
+                        else:
+                            faces.append(None)
+                        
+                    add_face(Face.LEFT, i-1 not in self.structure or not self.structure[i-1][j][k])
+                    add_face(Face.RIGHT, i+1 not in self.structure or not self.structure[i+1][j][k])                    
+                    add_face(Face.BACK, j-1 not in self.structure[i] or not self.structure[i][j-1][k])
+                    add_face(Face.FRONT, j+1 not in self.structure[i] or not self.structure[i][j+1][k])
+                    add_face(Face.BOTTOM, k-1 not in self.structure[i][j] or not self.structure[i][j][k-1])
+                    add_face(Face.TOP, k+1 not in self.structure[i][j] or not self.structure[i][j][k+1])
                     
                     self.__cube_face_map[i][j][k] = tuple(faces)
-    
-    def __make_face(self, x1, y1, z1, x2, y2, z2, colour: Colour) -> None:
-        if x1 == x2:
-            self.__vertex.addData3f(x1, y1, z1)
-            self.__vertex.addData3f(x2, y2, z1)
-            self.__vertex.addData3f(x2, y2, z2)
-            self.__vertex.addData3f(x1, y1, z2)
-
-            self.__normal.addData3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z1 - 1))
-            self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z1 - 1))
-            self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
-            self.__normal.addData3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z2 - 1))
-        else:
-            self.__vertex.addData3f(x1, y1, z1)
-            self.__vertex.addData3f(x2, y1, z1)
-            self.__vertex.addData3f(x2, y2, z2)
-            self.__vertex.addData3f(x1, y2, z2)
-
-            self.__normal.addData3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z1 - 1))
-            self.__normal.addData3(normalise(2 * x2 - 1, 2 * y1 - 1, 2 * z1 - 1))
-            self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
-            self.__normal.addData3(normalise(2 * x1 - 1, 2 * y2 - 1, 2 * z2 - 1))
-
-        r, g, b = (colour, colour, colour) if isinstance(colour, Real) else colour
-        self.__colour.addData4f(r, g, b, 1.0)
-        self.__colour.addData4f(r, g, b, 1.0)
-        self.__colour.addData4f(r, g, b, 1.0)
-        self.__colour.addData4f(r, g, b, 1.0)
-
-        self.__texcoord.addData2f(0.0, 1.0)
-        self.__texcoord.addData2f(0.0, 0.0)
-        self.__texcoord.addData2f(1.0, 0.0)
-        self.__texcoord.addData2f(1.0, 1.0)
-        
-        vertex_id = self.__face_count * 4
-        
-        self.__triangles.addVertices(vertex_id, vertex_id + 1, vertex_id + 3)
-        self.__triangles.addVertices(vertex_id + 1, vertex_id + 2, vertex_id + 3)
-        
-        self.__face_count += 1
 
     def get_cube_colour(self, pos: Point3) -> Colour:
         x, y, z = pos
@@ -171,15 +101,7 @@ class CubeMesh():
                 self.__colour.setRow(faces[i] * 4)
                 r, g, b, _ = self.__colour.getData4f()
                 if self.artificial_lighting:
-                    switcher = {
-                        0: LEFT_FACE_ATTENUATION,
-                        1: RIGHT_FACE_ATENUATION,
-                        2: BACK_FACE_ATTENUATION,
-                        3: FRONT_FACE_ATTENUATION,
-                        4: BOTTOM_FACE_ATTENUATION,
-                        5: TOP_FACE_ATTENUATION
-                    }
-                    factor = switcher.get(i)
+                    factor = self.__LIGHT_ATTENUATION_FACTOR(i)
                     return (r / factor, g / factor, b / factor)
                 else:
                     return (r, g, b)
@@ -192,16 +114,7 @@ class CubeMesh():
         faces = self.__cube_face_map[x][y][z]
         for i in range(len(faces)):
             if faces[i] != None:
-                switcher = {
-                    0: LEFT_FACE_ATTENUATION,
-                    1: RIGHT_FACE_ATENUATION,
-                    2: BACK_FACE_ATTENUATION,
-                    3: FRONT_FACE_ATTENUATION,
-                    4: BOTTOM_FACE_ATTENUATION,
-                    5: TOP_FACE_ATTENUATION
-                }
-                factor = switcher.get(i)
-                c = self.__attenuate_colour(colour, factor)
+                c = self.__attenuate_colour(colour, self.__LIGHT_ATTENUATION_FACTOR(Face(i)))
                 r, g, b = (c, c, c) if isinstance(c, Real) else c
 
                 self.__colour.setRow(faces[i] * 4)
@@ -215,6 +128,17 @@ class CubeMesh():
         self.set_cube_colour(pos, self.clear_colour)
 
     @staticmethod
+    def __LIGHT_ATTENUATION_FACTOR(face: Face) -> Real:
+        switcher = {Face.LEFT: 0.9,
+                    Face.RIGHT: 1.0,
+                    Face.BACK: 0.85,
+                    Face.FRONT: 0.6,
+                    Face.BOTTOM: 0.7,
+                    Face.TOP: 1.0
+        }
+        return switcher.get(face.value)
+
+    @staticmethod
     def __attenuate_colour(colour: Colour, factor: Real):
         if isinstance(colour, Real):
             return colour * factor
@@ -225,29 +149,65 @@ class CubeMesh():
     def __apply_artificial_lighting(self, colour: Colour, factor: Real) -> Colour:
         return self.__attenuate_colour(colour, factor) if self.artificial_lighting else colour
         
-    def __make_front_face(self, x, y, z) -> None:
-        c = self.__apply_artificial_lighting(self.clear_colour, FRONT_FACE_ATTENUATION)
-        self.__make_face(x + 1, y + 1, z - 1, x, y + 1, z, c)
-    
-    def __make_back_face(self, x, y, z) -> None:
-        c = self.__apply_artificial_lighting(self.clear_colour, BACK_FACE_ATTENUATION)
-        self.__make_face(x, y, z - 1, x + 1, y, z, c)
-    
-    def __make_right_face(self, x, y, z) -> None:
-        c = self.__apply_artificial_lighting(self.clear_colour, RIGHT_FACE_ATENUATION)
-        self.__make_face(x + 1, y, z - 1, x + 1, y + 1, z, c)
-    
-    def __make_left_face(self, x, y, z) -> None:
-        c = self.__apply_artificial_lighting(self.clear_colour, LEFT_FACE_ATTENUATION)
-        self.__make_face(x, y + 1, z - 1, x, y, z, c)
-    
-    def __make_top_face(self, x, y, z) -> None:
-        c = self.__apply_artificial_lighting(self.clear_colour, TOP_FACE_ATTENUATION)
-        self.__make_face(x + 1, y + 1, z, x, y, z, c)
-    
-    def __make_bottom_face(self, x, y, z) -> None:
-        c = self.__apply_artificial_lighting(self.clear_colour, BOTTOM_FACE_ATTENUATION)
-        self.__make_face(x, y + 1, z - 1, x + 1, y, z - 1, c)
+    def __make_face(self, face: Face, pos: Point3) -> None:
+        c = self.__apply_artificial_lighting(self.clear_colour, self.__LIGHT_ATTENUATION_FACTOR(face))
+        r, g, b = (c, c, c) if isinstance(c, Real) else c
+
+        def make(x1, y1, z1, x2, y2, z2) -> None:
+            if x1 == x2:
+                self.__vertex.addData3f(x1, y1, z1)
+                self.__vertex.addData3f(x2, y2, z1)
+                self.__vertex.addData3f(x2, y2, z2)
+                self.__vertex.addData3f(x1, y1, z2)
+
+                self.__normal.addData3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z1 - 1))
+                self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z1 - 1))
+                self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
+                self.__normal.addData3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z2 - 1))
+            else:
+                self.__vertex.addData3f(x1, y1, z1)
+                self.__vertex.addData3f(x2, y1, z1)
+                self.__vertex.addData3f(x2, y2, z2)
+                self.__vertex.addData3f(x1, y2, z2)
+
+                self.__normal.addData3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z1 - 1))
+                self.__normal.addData3(normalise(2 * x2 - 1, 2 * y1 - 1, 2 * z1 - 1))
+                self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
+                self.__normal.addData3(normalise(2 * x1 - 1, 2 * y2 - 1, 2 * z2 - 1))
+
+            self.__colour.addData4f(r, g, b, 1.0)
+            self.__colour.addData4f(r, g, b, 1.0)
+            self.__colour.addData4f(r, g, b, 1.0)
+            self.__colour.addData4f(r, g, b, 1.0)
+
+            self.__texcoord.addData2f(0.0, 1.0)
+            self.__texcoord.addData2f(0.0, 0.0)
+            self.__texcoord.addData2f(1.0, 0.0)
+            self.__texcoord.addData2f(1.0, 1.0)
+            
+            vertex_id = self.__face_count * 4
+            
+            self.__triangles.addVertices(vertex_id, vertex_id + 1, vertex_id + 3)
+            self.__triangles.addVertices(vertex_id + 1, vertex_id + 2, vertex_id + 3)
+            
+            self.__face_count += 1
+
+        x, y, z = pos
+
+        if face == Face.FRONT:
+            make(x + 1, y + 1, z - 1, x, y + 1, z)
+        elif face == Face.BACK:
+            make(x, y, z - 1, x + 1, y, z)
+        elif face == Face.RIGHT:
+            make(x + 1, y, z - 1, x + 1, y + 1, z)
+        elif face == Face.LEFT:
+            make(x, y + 1, z - 1, x, y, z)
+        elif face == Face.TOP:
+            make(x + 1, y + 1, z, x, y, z)
+        elif face == Face.BOTTOM:
+            make(x, y + 1, z - 1, x + 1, y, z - 1)
+        else:
+            raise Exception("unknown face")
 
     @property
     def geom_node(self) -> str:
