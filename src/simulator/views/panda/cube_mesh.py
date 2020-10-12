@@ -33,9 +33,8 @@ class CubeMesh():
         self.__artificial_lighting = artificial_lighting
         self.__clear_colour = clear_colour
  
-        self.__format = GeomVertexFormat.getV3n3c4t2()
-
-        self.__vertex_data = GeomVertexData(name, self.__format, Geom.UHDynamic)
+        self.__vertex_data_format = GeomVertexFormat.getV3n3c4t2()
+        self.__vertex_data = GeomVertexData(name, self.__vertex_data_format, Geom.UHDynamic)
         
         self.mesh = Geom(self.__vertex_data)
         self.__triangles = GeomTriangles(Geom.UHDynamic)
@@ -115,7 +114,7 @@ class CubeMesh():
         for i in range(len(faces)):
             if faces[i] != None:
                 r, g, b = self.__face_colour(colour, Face(i))
-                
+
                 self.__colour.setRow(faces[i] * 4)
                 self.__colour.addData4f(r, g, b, 1.0)
                 self.__colour.addData4f(r, g, b, 1.0)
