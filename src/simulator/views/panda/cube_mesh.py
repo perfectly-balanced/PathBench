@@ -6,7 +6,7 @@ from enum import IntEnum, unique, Enum
 from typing import List
 from numbers import Real
 
-from .types import Colour
+from .types import TColour, Colour
 
 def normalise(*args):
     v = LVector3(*args)
@@ -114,11 +114,9 @@ class CubeMesh():
         faces = self.__cube_face_map[x][y][z]
         for i in range(len(faces)):
             if faces[i] != None:
-                c = self.__attenuate_colour(colour, self.__LIGHT_ATTENUATION_FACTOR(Face(i)))
-                r, g, b = (c, c, c) if isinstance(c, Real) else c
-
+                r, g, b = self.__face_colour(colour, Face(i))
+                
                 self.__colour.setRow(faces[i] * 4)
-
                 self.__colour.addData4f(r, g, b, 1.0)
                 self.__colour.addData4f(r, g, b, 1.0)
                 self.__colour.addData4f(r, g, b, 1.0)
@@ -127,6 +125,14 @@ class CubeMesh():
     def clear_cube_colour(self, pos: Point3) -> None:
         self.set_cube_colour(pos, self.clear_colour)
 
+    @staticmethod
+    def __attenuate_colour(colour: Colour, factor: Real) -> Colour:
+        if isinstance(colour, Real):
+            return colour * factor
+        else:
+            r, g, b = colour
+            return (r * factor, g * factor, b * factor)
+    
     @staticmethod
     def __LIGHT_ATTENUATION_FACTOR(face: Face) -> Real:
         switcher = {Face.LEFT: 0.9,
@@ -137,21 +143,16 @@ class CubeMesh():
                     Face.TOP: 1.0
         }
         return switcher.get(face.value)
-
-    @staticmethod
-    def __attenuate_colour(colour: Colour, factor: Real):
-        if isinstance(colour, Real):
-            return colour * factor
-        else:
-            r, g, b = colour
-            return (r * factor, g * factor, b * factor)
     
-    def __apply_artificial_lighting(self, colour: Colour, factor: Real) -> Colour:
-        return self.__attenuate_colour(colour, factor) if self.artificial_lighting else colour
+    def __face_colour(self, colour: Colour, face: Face) -> TColour:
+        c = (colour, colour, colour) if isinstance(colour, Real) else colour
+        if self.artificial_lighting:
+            return self.__attenuate_colour(c, self.__LIGHT_ATTENUATION_FACTOR(face))
+        else:
+            return c
         
     def __make_face(self, face: Face, pos: Point3) -> None:
-        c = self.__apply_artificial_lighting(self.clear_colour, self.__LIGHT_ATTENUATION_FACTOR(face))
-        r, g, b = (c, c, c) if isinstance(c, Real) else c
+        r, g, b = self.__face_colour(self.clear_colour, face)
 
         def make(x1, y1, z1, x2, y2, z2) -> None:
             if x1 == x2:
@@ -193,7 +194,6 @@ class CubeMesh():
             self.__face_count += 1
 
         x, y, z = pos
-
         if face == Face.FRONT:
             make(x + 1, y + 1, z - 1, x, y + 1, z)
         elif face == Face.BACK:
