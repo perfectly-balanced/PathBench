@@ -5,17 +5,23 @@ from typing import List
 
 assert(__name__ != "__main__")
 
+from enum import IntEnum, unique
+
+@unique
+class Lighting(IntEnum):
+    ARTIFICAL = 0
+    BASIC = 1
+    CUSTOM = 2
+
 class MainView(ShowBase):
-    def __init__(self, map3d : List[List[List[bool]]]) -> None:
+    def __init__(self, map3d: List[List[List[bool]]], lighting: Lighting = Lighting.ARTIFICAL) -> None:
         super().__init__(self)
         
-        self.disable_mouse()
-        self.use_drive()
         self.set_background_color(0, 0, 0.2, 1)
 
         # MAP #
         self.__map_data = map3d
-        self.__generate_map()
+        self.__generate_map(lighting == Lighting.ARTIFICAL)
 
         # VIEW #
         self.cam.set_pos(0, -25, 25)
@@ -23,11 +29,13 @@ class MainView(ShowBase):
 
         # LIGHTING #
         self.__ambient = 0.5
-        self.basic_lighting()
-        # self.advanced_lighting()
+        if lighting == Lighting.BASIC:
+            self.__basic_lighting()
+        elif lighting == Lighting.CUSTOM:
+            self.__custom_lighting()
     
-    def __generate_map(self):
-        self.__mesh = CubeMeshGenerator('3D Voxel Map')
+    def __generate_map(self, artificial_lighting: bool = False):
+        self.__mesh = CubeMeshGenerator('3D Voxel Map', artificial_lighting)
 
         for j in self.__map_data:
             for i in self.__map_data[j]:
@@ -52,7 +60,7 @@ class MainView(ShowBase):
         self.__map_movement = self.__map.hprInterval(50, LPoint3(0, 360, 360))
         self.__map_movement.loop()
 
-    def basic_lighting(self):
+    def __basic_lighting(self):
         # POINT LIGHT #
         plight = PointLight("plight")
         plnp = self.cam.attach_new_node(plight)
@@ -75,7 +83,7 @@ class MainView(ShowBase):
         # ENABLE DEFAULT SHADOW SHADERS #
         self.__map.set_shader_auto()
     
-    def advanced_lighting(self):
+    def __custom_lighting(self):
         # preliminary capabilities check
         if not self.win.getGsg().get_supports_basic_shaders():
             raise Exception("Video driver reports that shaders are not supported.")
