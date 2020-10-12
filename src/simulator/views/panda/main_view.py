@@ -1,4 +1,5 @@
 from direct.showbase.ShowBase import ShowBase
+from direct.showbase.ShowBaseGlobal import globalClock
 from panda3d.core import PointLight, AmbientLight, LPoint3, WindowProperties, FrameBufferProperties, GraphicsPipe, Texture, GraphicsOutput, NodePath, PandaNode
 from panda3d.core import *
 
@@ -28,15 +29,15 @@ class MainView(ShowBase):
     def __init__(self, map_data: List[List[List[bool]]], start_pos: IntPoint3 = None, goal_pos: IntPoint3 = None, lighting: Lighting = Lighting.ARTIFICAL) -> None:
         super().__init__(self)
 
+        # disables the default camera behaviour
+        self.disable_mouse()
+
+
         self.set_background_color(0, 0, 0.2, 1)
 
         # MAP #
         self.__map_data = map_data
         self.__generate_map(lighting == Lighting.ARTIFICAL)
-
-        # VIEW #
-        self.cam.set_pos(0, -25, 25)
-        self.cam.look_at(self.__map)
 
         # LIGHTING #
         self.__ambient = 0.5
@@ -76,6 +77,7 @@ class MainView(ShowBase):
                     return random.randint(0, map_sz-1)
 
                 n = gen()
+
                 while not cube_exists(n):
                     n = gen()
                 return to_coord(n)
