@@ -25,7 +25,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        sudo apt install -y python3-pip python3-tk
+        sudo apt install -y python3-pip python3-tk python3.6-dev
         pip3 install pygame torch torchvision memory-profiler seaborn dataset datafreeze normality dill natsort sklearn pandas numpy pygame
     - name: Lint with flake8
       run: |
