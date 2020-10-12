@@ -14,5 +14,11 @@ if __name__ == "__main__":
     map3d[0][0][0] = True # added for debugging purposes
     map3d[0][0][1] = True # added for debugging purposes
 
-    view = MainView(map3d)
+    view = MainView(map3d, start_pos=(0,0,0), goal_pos=(0,0,1))
+
+    # testing dynamic change of default colour
+    view.map_mesh.default_colour = (0,0,0)
+    view.map_mesh.default_colour = (0,0,1)
+    view.map_mesh.default_colour = (1,1,1)
+
     view.run()

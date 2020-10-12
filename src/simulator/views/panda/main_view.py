@@ -14,14 +14,14 @@ class Lighting(IntEnum):
     BASIC = 1
     CUSTOM = 2
 
-ORIGIN_CUBE_COLOUR = (220, 0, 0)
+START_CUBE_COLOUR = (220, 0, 0)
 GOAL_CUBE_COLOUR = (0, 220, 0)
 
 class MainView(ShowBase):
-    __origin_pos: IntPoint3
+    __start_pos: IntPoint3
     __goal_pos: IntPoint3
 
-    def __init__(self, map_data: List[List[List[bool]]], lighting: Lighting = Lighting.ARTIFICAL) -> None:
+    def __init__(self, map_data: List[List[List[bool]]], start_pos: IntPoint3 = None, goal_pos: IntPoint3 = None, lighting: Lighting = Lighting.ARTIFICAL) -> None:
         super().__init__(self)
         
         self.set_background_color(0, 0, 0.2, 1)
@@ -41,63 +41,68 @@ class MainView(ShowBase):
         elif lighting == Lighting.CUSTOM:
             self.__custom_lighting()
         
-        # Randomly initialise goal and origin #
-        self.__origin_pos = None
+        # initialise goal and origin #
+        self.__start_pos = None
         self.__goal_pos = None
-
-        map_sz = 0
-        for i in range(len(self.__map_data)):
-            for j in range(len(self.__map_data[i])):
-                map_sz += len(self.__map_data[i][j])
+        self.start_pos = start_pos
+        self.goal_pos = goal_pos
         
-        def randpos() -> IntPoint3:
-            def to_coord(n: int) -> IntPoint3:
-                for i in range(len(self.__map_data)):
-                    for j in range(len(self.__map_data[i])):
-                        for k in range(len(self.__map_data[i][j])):
-                            if n == 0:
-                                return (i, j, k)
-                            else:
-                                n -= 1
-
-            def cube_exists(n: int) -> bool:
-                i, j, k = to_coord(n)
-                return self.__map_data[i][j][k]
+        # randomly initialise undefined positions
+        if self.goal_pos == None or self.start_pos == None:
+            map_sz = 0
+            for i in range(len(self.__map_data)):
+                for j in range(len(self.__map_data[i])):
+                    map_sz += len(self.__map_data[i][j])
             
-            def gen() -> int:
-                return random.randint(0, map_sz-1)
+            def randpos() -> IntPoint3:
+                def to_coord(n: int) -> IntPoint3:
+                    for i in range(len(self.__map_data)):
+                        for j in range(len(self.__map_data[i])):
+                            for k in range(len(self.__map_data[i][j])):
+                                if n == 0:
+                                    return (i, j, k)
+                                else:
+                                    n -= 1
 
-            n = gen()
-            while not cube_exists(n):
+                def cube_exists(n: int) -> bool:
+                    i, j, k = to_coord(n)
+                    return self.__map_data[i][j][k]
+                
+                def gen() -> int:
+                    return random.randint(0, map_sz-1)
+
                 n = gen()
-            return to_coord(n)
+                while not cube_exists(n):
+                    n = gen()
+                return to_coord(n)
+            
+            if self.start_pos == None:
+                p = randpos()
+                while p == self.goal_pos:
+                    p = randpos()
+                self.start_pos = p
 
-        po = randpos()
-        pg = randpos()
-        while pg == po:
-            pg = randpos()
-        self.origin_pos = (0,0,0) # commented out for debugging purposes: po
-        self.goal_pos = (0,0,1) # commented out for debugging purposes: pg
-
-        # testing clear colour
-        self.__map_mesh.clear_colour = (0,0,0)
-        self.__map_mesh.clear_colour = (0,0,1)
-        self.__map_mesh.clear_colour = (1,1,1)
+            if self.goal_pos == None:
+                p = randpos()
+                while p == self.start_pos:
+                    p = randpos()
+                self.goal_pos = p
     
     @property
-    def origin_pos(self) -> str:
-        return 'origin_pos'
+    def start_pos(self) -> str:
+        return 'start_pos'
 
-    @origin_pos.getter
-    def origin_pos(self) -> IntPoint3:
-        return self.origin_pos
+    @start_pos.getter
+    def start_pos(self) -> IntPoint3:
+        return self.__start_pos
 
-    @origin_pos.setter
-    def origin_pos(self, value: IntPoint3) -> None:
-        if self.__origin_pos != None:
-            self.__map_mesh.clear_cube_colour(self.__origin_pos)
-        self.__origin_pos = value
-        self.__map_mesh.set_cube_colour(self.__origin_pos, ORIGIN_CUBE_COLOUR)
+    @start_pos.setter
+    def start_pos(self, value: IntPoint3) -> None:
+        if self.__start_pos != None:
+            self.__map_mesh.reset_cube_colour(self.__start_pos)
+        self.__start_pos = value
+        if self.__start_pos != None:
+            self.__map_mesh.set_cube_colour(self.__start_pos, START_CUBE_COLOUR)
 
     @property
     def goal_pos(self) -> str:
@@ -105,14 +110,23 @@ class MainView(ShowBase):
 
     @goal_pos.getter
     def goal_pos(self) -> IntPoint3:
-        return self.goal_pos
+        return self.__goal_pos
 
     @goal_pos.setter
     def goal_pos(self, value: IntPoint3) -> None:
         if self.__goal_pos != None:
-            self.__map_mesh.clear_cube_colour(self.__goal_pos)
+            self.__map_mesh.reset_cube_colour(self.__goal_pos)
         self.__goal_pos = value
-        self.__map_mesh.set_cube_colour(self.__goal_pos, GOAL_CUBE_COLOUR)
+        if self.__goal_pos != None:
+            self.__map_mesh.set_cube_colour(self.__goal_pos, GOAL_CUBE_COLOUR)
+
+    @property
+    def map_mesh(self) -> str:
+        return 'map_mesh'
+
+    @map_mesh.getter
+    def map_mesh(self) -> CubeMesh:
+        return self.__map_mesh
 
     def __generate_map(self, artificial_lighting: bool = False) -> None:
         self.__map_mesh = CubeMesh(self.__map_data, '3D Voxel Map', artificial_lighting)                        
