@@ -13,11 +13,7 @@ class RenderingEngine(Service):
 
     @staticmethod
     def draw_rect(screen: pygame.Surface, color: Union[pygame.Color, Tuple[int, int, int]], rect: pygame.Rect) -> None:
-        try:
-            pygame.draw.rect(screen, color, rect)
-        except TypeError:
-            print(color)
-            raise
+        pygame.draw.rect(screen, color, rect)
 
     @staticmethod
     def draw_circle(screen: pygame.Surface, color: Union[pygame.Color, Tuple[int, int, int]], pos: Point, radius: int,
