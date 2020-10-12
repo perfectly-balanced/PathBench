@@ -1,10 +1,10 @@
-from typing import Tuple, NamedTuple, Dict
-
-import torch, numpy as np
+from typing import Tuple, NamedTuple
+import torch
 
 class Point(torch.Tensor):
     """
-    A point has a variable number of coordinates specified in the constructor. We assume the point has at least two coordinates
+    A point has a variable number of coordinates specified in the constructor.
+    Each point is immutable.
     """
     pos: Tuple[int, ...]
 
@@ -29,7 +29,7 @@ class Point(torch.Tensor):
 
     @property
     def z(self) -> int:
-        assert len(self.pos) > 2, "Not three dimensional"
+        assert len(self.pos) > 2, "Point has no Z-coordinate"
         return self.pos[2]
 
     def to_tensor(self) -> torch.Tensor:
@@ -39,7 +39,6 @@ class Point(torch.Tensor):
     def from_tensor(inp: torch.Tensor) -> 'Point':
         assert len(list(inp.size())) == 1
         return Point([int(torch.round(inp[i])) for i in range(list(inp.size())[0])])
-        #return Point(int(torch.round(inp[0])), int(torch.round(inp[1])))
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Point) and (self.pos == other.pos)
@@ -62,7 +61,7 @@ class Point(torch.Tensor):
     def __copy__(self) -> 'Point':
         return copy.deepcopy(self)
 
-    def __deepcopy__(self, memo: Dict) -> 'Point':
+    def __deepcopy__(self, memo: dict) -> 'Point':
         return Point(*self.pos)
 
 class Size(NamedTuple):
