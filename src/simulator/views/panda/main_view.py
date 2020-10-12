@@ -14,8 +14,8 @@ class Lighting(IntEnum):
     BASIC = 1
     CUSTOM = 2
 
-ORIGIN_CUBE_COLOUR = (220, 20, 60)
-GOAL_CUBE_COLOUR = (127, 255, 0)
+ORIGIN_CUBE_COLOUR = (220, 0, 0)
+GOAL_CUBE_COLOUR = (0, 220, 0)
 
 class MainView(ShowBase):
     __origin_pos: Point3
@@ -76,11 +76,8 @@ class MainView(ShowBase):
         pg = randpos()
         while pg == po:
             pg = randpos()
-        self.origin_pos = po
-        self.goal_pos = pg
-
-        print(po)
-        print(pg)
+        self.origin_pos = (0,0,0) # commented out for debugging purposes: po
+        self.goal_pos = (0,0,1) # commented out for debugging purposes: pg
     
     @property
     def origin_pos(self) -> str:
@@ -92,7 +89,8 @@ class MainView(ShowBase):
 
     @origin_pos.setter
     def origin_pos(self, value: Point3) -> None:
-        self.__map_mesh.clear_cube_colour(self.__origin_pos)
+        if self.__origin_pos != None:
+            self.__map_mesh.clear_cube_colour(self.__origin_pos)
         self.__origin_pos = value
         self.__map_mesh.set_cube_colour(self.__origin_pos, ORIGIN_CUBE_COLOUR)
 
@@ -106,7 +104,8 @@ class MainView(ShowBase):
 
     @goal_pos.setter
     def goal_pos(self, value: Point3) -> None:
-        self.__map_mesh.clear_cube_colour(self.__goal_pos)
+        if self.__goal_pos != None:
+            self.__map_mesh.clear_cube_colour(self.__goal_pos)
         self.__goal_pos = value
         self.__map_mesh.set_cube_colour(self.__goal_pos, GOAL_CUBE_COLOUR)
 

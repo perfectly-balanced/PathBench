@@ -45,8 +45,16 @@ class CubeMesh():
         
         self.__face_count = 0
         self.__finished = False
-        self.__face_cube_map = [] # List[Point3] - key: <face-index>, value: <cube-pos>
-        self.__cube_face_map = [] # List[List[List[Tuple[Integral, Integral]]]] - key: <cube-pos>, value: (<face-index-min-inclusive>, <face-index-max-exclusive>)
+
+        # List[Point3]
+        # key: <face-index>
+        # value: <cube-pos>
+        self.__face_cube_map = []
+
+        # List[List[List[Tuple[Integral, Integral, Integral, Integral, Integral, Integral]]]]
+        # key: <cube-pos>
+        # value: (<face-index-left>, <face-index-right>, <face-index-back>, <face-index-front>, <face-index-bottom>, <face-index-top>)
+        self.__cube_face_map = []
 
         # build mesh
         # we only make visible faces: if there are two adjacent faces, they aren't added.
@@ -56,45 +64,63 @@ class CubeMesh():
             for j in self.structure[i]:
                 self.__cube_face_map[i][j] = [None for _ in self.structure[i][j]]
                 for k in self.structure[i][j]:
-                    min_face_idx_inclusive = self.__face_count - 1
+                    faces = []
+                    pos = Point3(i, j, k)
 
                     # skip if cube doesn't exist
                     if not self.structure[i][j][k]:
-                        self.__cube_face_map[i][j][k] = (min_face_idx_inclusive, min_face_idx_inclusive)
+                        self.__cube_face_map[i][j][k] = (None, None, None, None, None, None)
                         continue
                         
                     # left
                     if i-1 not in self.structure or not self.structure[i-1][j][k]:
                         self.__make_left_face(i, j, k)
-                        self.__face_cube_map.append(Point3(i, j, k))
+                        self.__face_cube_map.append(pos)
+                        faces.append(self.__face_count-1)
+                    else:
+                        faces.append(None)
 
                     # right
                     if i+1 not in self.structure or not self.structure[i+1][j][k]:
                         self.__make_right_face(i, j, k)
-                        self.__face_cube_map.append(Point3(i, j, k))
+                        self.__face_cube_map.append(pos)
+                        faces.append(self.__face_count-1)
+                    else:
+                        faces.append(None)
                     
                     # back
                     if j-1 not in self.structure[i] or not self.structure[i][j-1][k]:
                         self.__make_back_face(i, j, k)
-                        self.__face_cube_map.append(Point3(i, j, k))
+                        self.__face_cube_map.append(pos)
+                        faces.append(self.__face_count-1)
+                    else:
+                        faces.append(None)
                     
                     # front
                     if j+1 not in self.structure[i] or not self.structure[i][j+1][k]:
                         self.__make_front_face(i, j, k)
-                        self.__face_cube_map.append(Point3(i, j, k))
+                        self.__face_cube_map.append(pos)
+                        faces.append(self.__face_count-1)
+                    else:
+                        faces.append(None)
                     
                     # bottom
                     if k-1 not in self.structure[i][j] or not self.structure[i][j][k-1]:
                         self.__make_bottom_face(i, j, k)
-                        self.__face_cube_map.append(Point3(i, j, k))
+                        self.__face_cube_map.append(pos)
+                        faces.append(self.__face_count-1)
+                    else:
+                        faces.append(None)
                     
                     # top
                     if k+1 not in self.structure[i][j] or not self.structure[i][j][k+1]:
                         self.__make_top_face(i, j, k)
-                        self.__face_cube_map.append(Point3(i, j, k))
+                        self.__face_cube_map.append(pos)
+                        faces.append(self.__face_count-1)
+                    else:
+                        faces.append(None)
                     
-                    max_face_idx_exclusive = self.__face_count
-                    self.__cube_face_map[i][j][k] = (min_face_idx_inclusive, max_face_idx_exclusive)
+                    self.__cube_face_map[i][j][k] = tuple(faces)
     
     def __make_face(self, x1, y1, z1, x2, y2, z2, colour: Colour) -> None:
         if x1 == x2:
@@ -137,10 +163,53 @@ class CubeMesh():
         self.__face_count += 1
 
     def get_cube_colour(self, pos: Point3) -> Colour:
-        return 0 # todo
+        x, y, z = pos
+
+        faces = self.__cube_face_map[x][y][z]
+        for i in faces:
+            if faces[i] != None:
+                self.__colour.setRow(faces[i] * 4)
+                r, g, b, _ = self.__colour.getData4f()
+                if self.artificial_lighting:
+                    switcher = {
+                        0: LEFT_FACE_ATTENUATION,
+                        1: RIGHT_FACE_ATENUATION,
+                        2: BACK_FACE_ATTENUATION,
+                        3: FRONT_FACE_ATTENUATION,
+                        4: BOTTOM_FACE_ATTENUATION,
+                        5: TOP_FACE_ATTENUATION
+                    }
+                    factor = switcher.get(i)
+                    return (r / factor, g / factor, b / factor)
+                else:
+                    return (r, g, b)
+        
+        return self.clear_colour
     
     def set_cube_colour(self, pos: Point3, colour: Colour) -> None:
-        pass # todo
+        x, y, z = pos
+
+        faces = self.__cube_face_map[x][y][z]
+        for i in range(len(faces)):
+            if faces[i] != None:
+                switcher = {
+                    0: LEFT_FACE_ATTENUATION,
+                    1: RIGHT_FACE_ATENUATION,
+                    2: BACK_FACE_ATTENUATION,
+                    3: FRONT_FACE_ATTENUATION,
+                    4: BOTTOM_FACE_ATTENUATION,
+                    5: TOP_FACE_ATTENUATION
+                }
+                factor = switcher.get(i)
+                c = self.__attenuate_colour(colour, factor)
+                r, g, b = (c, c, c) if isinstance(c, Real) else c
+
+                self.__colour.setRow(faces[i] * 4)
+
+                self.__colour.addData4f(r, g, b, 1.0)
+                self.__colour.addData4f(r, g, b, 1.0)
+                self.__colour.addData4f(r, g, b, 1.0)
+                self.__colour.addData4f(r, g, b, 1.0)
 
     def clear_cube_colour(self, pos: Point3) -> None:
         self.set_cube_colour(pos, self.clear_colour)
