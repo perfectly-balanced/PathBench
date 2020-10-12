@@ -1,12 +1,12 @@
 from direct.showbase.ShowBase import ShowBase
-from panda3d.core import PointLight, AmbientLight, LPoint3, Point3, WindowProperties, FrameBufferProperties, GraphicsPipe, Texture, GraphicsOutput, NodePath, PandaNode
+from panda3d.core import PointLight, AmbientLight, LPoint3, WindowProperties, FrameBufferProperties, GraphicsPipe, Texture, GraphicsOutput, NodePath, PandaNode
 
 from enum import IntEnum, unique
 from typing import List, Tuple
 import random
 
 from .cube_mesh import CubeMesh
-from .types import Colour
+from .types import Colour, IntPoint3
 
 @unique
 class Lighting(IntEnum):
@@ -18,8 +18,8 @@ ORIGIN_CUBE_COLOUR = (220, 0, 0)
 GOAL_CUBE_COLOUR = (0, 220, 0)
 
 class MainView(ShowBase):
-    __origin_pos: Point3
-    __goal_pos: Point3
+    __origin_pos: IntPoint3
+    __goal_pos: IntPoint3
 
     def __init__(self, map_data: List[List[List[bool]]], lighting: Lighting = Lighting.ARTIFICAL) -> None:
         super().__init__(self)
@@ -50,8 +50,8 @@ class MainView(ShowBase):
             for j in range(len(self.__map_data[i])):
                 map_sz += len(self.__map_data[i][j])
         
-        def randpos() -> Point3:
-            def to_coord(n: int) -> Point3:
+        def randpos() -> IntPoint3:
+            def to_coord(n: int) -> IntPoint3:
                 for i in range(len(self.__map_data)):
                     for j in range(len(self.__map_data[i])):
                         for k in range(len(self.__map_data[i][j])):
@@ -78,17 +78,22 @@ class MainView(ShowBase):
             pg = randpos()
         self.origin_pos = (0,0,0) # commented out for debugging purposes: po
         self.goal_pos = (0,0,1) # commented out for debugging purposes: pg
+
+        # testing clear colour
+        self.__map_mesh.clear_colour = (0,0,0)
+        self.__map_mesh.clear_colour = (0,0,1)
+        self.__map_mesh.clear_colour = (1,1,1)
     
     @property
     def origin_pos(self) -> str:
         return 'origin_pos'
 
     @origin_pos.getter
-    def origin_pos(self) -> Point3:
+    def origin_pos(self) -> IntPoint3:
         return self.origin_pos
 
     @origin_pos.setter
-    def origin_pos(self, value: Point3) -> None:
+    def origin_pos(self, value: IntPoint3) -> None:
         if self.__origin_pos != None:
             self.__map_mesh.clear_cube_colour(self.__origin_pos)
         self.__origin_pos = value
@@ -99,11 +104,11 @@ class MainView(ShowBase):
         return 'goal_pos'
 
     @goal_pos.getter
-    def goal_pos(self) -> Point3:
+    def goal_pos(self) -> IntPoint3:
         return self.goal_pos
 
     @goal_pos.setter
-    def goal_pos(self, value: Point3) -> None:
+    def goal_pos(self, value: IntPoint3) -> None:
         if self.__goal_pos != None:
             self.__map_mesh.clear_cube_colour(self.__goal_pos)
         self.__goal_pos = value

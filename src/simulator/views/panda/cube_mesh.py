@@ -1,12 +1,13 @@
 from panda3d.core import Texture, GeomNode
 from panda3d.core import GeomVertexFormat, GeomVertexData
-from panda3d.core import Geom, GeomTriangles, GeomVertexWriter
-from panda3d.core import LVector3, Vec3, Vec4, Point3
+from panda3d.core import Geom, GeomTriangles, GeomVertexWriter, GeomVertexRewriter
+from panda3d.core import LVector3, Vec3, Vec4
 from enum import IntEnum, unique, Enum
 from typing import List
 from numbers import Real
+import math
 
-from .types import TColour, Colour
+from .types import TColour, Colour, IntPoint3
 
 def normalise(*args):
     v = LVector3(*args)
@@ -42,13 +43,13 @@ class CubeMesh():
         
         self.__vertex = GeomVertexWriter(self.__vertex_data, 'vertex')
         self.__normal = GeomVertexWriter(self.__vertex_data, 'normal')
-        self.__colour = GeomVertexWriter(self.__vertex_data, 'color')
+        self.__colour = GeomVertexRewriter(self.__vertex_data, 'color')
         self.__texcoord = GeomVertexWriter(self.__vertex_data, 'texcoord')
         
         self.__face_count = 0
         self.__finished = False
 
-        # List[Point3]
+        # List[IntPoint3]
         # key: <face-index>
         # value: <cube-pos>
         self.__face_cube_map = []
@@ -67,7 +68,7 @@ class CubeMesh():
                 self.__cube_face_map[i][j] = [None for _ in self.structure[i][j]]
                 for k in self.structure[i][j]:
                     faces = []
-                    pos = Point3(i, j, k)
+                    pos = (i, j, k)
 
                     # skip if cube doesn't exist
                     if not self.structure[i][j][k]:
@@ -91,23 +92,23 @@ class CubeMesh():
                     
                     self.__cube_face_map[i][j][k] = tuple(faces)
 
-    def get_cube_colour(self, pos: Point3) -> Colour:
+    def get_cube_colour(self, pos: IntPoint3) -> TColour:
         x, y, z = pos
 
         faces = self.__cube_face_map[x][y][z]
-        for i in faces:
+        for i in range(len(faces)):
             if faces[i] != None:
                 self.__colour.setRow(faces[i] * 4)
                 r, g, b, _ = self.__colour.getData4f()
                 if self.artificial_lighting:
-                    factor = self.__LIGHT_ATTENUATION_FACTOR(i)
+                    factor = self.__LIGHT_ATTENUATION_FACTOR(Face(i))
                     return (r / factor, g / factor, b / factor)
                 else:
                     return (r, g, b)
         
         return self.clear_colour
     
-    def set_cube_colour(self, pos: Point3, colour: Colour) -> None:
+    def set_cube_colour(self, pos: IntPoint3, colour: Colour) -> None:
         x, y, z = pos
 
         faces = self.__cube_face_map[x][y][z]
@@ -121,7 +122,7 @@ class CubeMesh():
                 self.__colour.addData4f(r, g, b, 1.0)
                 self.__colour.addData4f(r, g, b, 1.0)
 
-    def clear_cube_colour(self, pos: Point3) -> None:
+    def clear_cube_colour(self, pos: IntPoint3) -> None:
         self.set_cube_colour(pos, self.clear_colour)
 
     @staticmethod
@@ -150,7 +151,7 @@ class CubeMesh():
         else:
             return c
         
-    def __make_face(self, face: Face, pos: Point3) -> None:
+    def __make_face(self, face: Face, pos: IntPoint3) -> None:
         r, g, b = self.__face_colour(self.clear_colour, face)
 
         def make(x1, y1, z1, x2, y2, z2) -> None:
@@ -235,12 +236,29 @@ class CubeMesh():
         return 'clear_colour'
 
     @clear_colour.getter
-    def clear_colour(self) -> bool:
-        return self.__clear_colour
+    def clear_colour(self) -> TColour:
+        c = self.__clear_colour
+        return (c, c, c) if isinstance(c, Real) else c
     
     @clear_colour.setter
     def clear_colour(self, value: Colour) -> None:
+        old_r, old_g, old_b = self.clear_colour
         self.__clear_colour = value
-        # todo:
-        # find all the cubes to recolour (ones that have colour same to old clear colour)
-        # clear their colour
+
+        # update colour of cubes that have old clear colour
+        for i in self.structure:
+            for j in self.structure[i]:
+                for k in self.structure[i][j]:
+                    if not self.structure[i][j][k]:
+                        continue
+                    p = (i, j, k)
+
+                    r, g, b = self.get_cube_colour(p)
+                    
+                    def close(a, b):
+                        return math.isclose(a, b, rel_tol=1e-3)
+                        
+                    if close(old_r, r) and \
+                       close(old_g, g) and \
+                       close(old_b, b):
+                        self.set_cube_colour(p, self.clear_colour)
