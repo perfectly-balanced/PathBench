@@ -26,14 +26,14 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install torch torchvision memory-profiler seaborn dataset datafreeze normality dill natsort pygame sklearn pandas numpy
-        apt install -y python3-tk
+        apt install -y python3-tk python3-pygame
+        pip install torch torchvision memory-profiler seaborn dataset datafreeze normality dill natsort sklearn pandas numpy
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
+    - name: Run tests
       run: |
         cd tests && python run_tests.py
