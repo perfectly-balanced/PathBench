@@ -53,7 +53,7 @@ class Point(torch.Tensor):
         return hash(self.pos)
 
     def __repr__(self) -> str:
-        return f"Point({', '.join(i for i in self.pos)})"
+        return f"Point({', '.join(str(i) for i in self.pos)})"
 
 class Size(NamedTuple):
     """
