@@ -32,6 +32,10 @@ class Point(torch.Tensor):
     def z(self) -> int:
         assert len(self.pos) > 2, "Point has no Z-coordinate"
         return self.pos[2]
+
+    @property
+    def n_dim(self) -> int:
+        return len(self.pos)
     
     def __getitem__(self, idx):
         return self.pos[idx]
