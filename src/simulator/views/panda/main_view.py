@@ -92,7 +92,7 @@ class MainView(ShowBase):
         
         # collision traverser & queue
         self.__ctrav = CollisionTraverser('ctrav')
-        self.cTrav = self.__ctrav
+        self.__ctrav.show_collisions(self.__map)
         self.__cqueue = CollisionHandlerQueue()
 
         # map collision boxes
@@ -100,13 +100,15 @@ class MainView(ShowBase):
         self.__map_cn.set_collide_mask(BitMask32.bit(1))
         self.__map_cnp = self.__map.attach_new_node(self.__map_cn)
         self.__ctrav.add_collider(self.__map_cnp, self.__cqueue)
-
-        box = CollisionBox(Point3(0, 0, 0), Point3(200, 200, 200))
+        
+        x, y, z = (0,0,0)
+        box = CollisionBox(Point3(x,y,z), Point3(x+1, y+1, z-1))
         self.__map_cn.add_solid(box)
+        self.__map_cnp.show()
 
         # mouse picker
         picker_node = CollisionNode('mouseRay')
-        picker_np = camera.attach_new_node(picker_node)
+        picker_np = self.cam.attach_new_node(picker_node)
         picker_node.set_from_collide_mask(BitMask32.bit(1))
         
         self.picker_ray = CollisionRay()
@@ -122,7 +124,7 @@ class MainView(ShowBase):
 
                 # set the position of the ray based on the mouse position
                 self.picker_ray.set_from_lens(self.camNode,mpos.getX(),mpos.getY())
-                self.__ctrav.traverse(self.__map_cnp)
+                self.__ctrav.traverse(self.__map)
                 # if we have hit something sort the hits so that the closest is first and highlight the node
                 if self.__cqueue.get_num_entries() > 0:
                     self.__cqueue.sort_entries()
