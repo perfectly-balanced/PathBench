@@ -356,10 +356,10 @@ class Map:
         return Point(pos.x + move.x, pos.y + move.y)
 
     def get_movement_cost(self, frm: Union[Point, Entity] = None, to: Union[Point, Entity] = None) -> float:
-        if frm is None:
+        if not frm:
             frm = self.agent
 
-        if to is None:
+        if not to:
             to = self.goal
 
         if isinstance(frm, Entity):
