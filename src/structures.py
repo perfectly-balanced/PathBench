@@ -1,5 +1,5 @@
 from typing import Tuple, NamedTuple
-import torch
+import torch, copy
 
 class Point(torch.Tensor):
     """
