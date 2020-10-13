@@ -35,11 +35,9 @@ class MainView(ShowBase):
     def __init__(self, map_data: List[List[List[bool]]], start_pos: IntPoint3 = None, goal_pos: IntPoint3 = None, lighting: Lighting = Lighting.ARTIFICAL) -> None:
         super().__init__(self)
 
-
         # disables the default camera behaviour
         self.disable_mouse()
-
-
+        self.__camera = Camera(self, self.cam)
 
         self.set_background_color(0, 0, 0.2, 1)
 
@@ -91,8 +89,6 @@ class MainView(ShowBase):
                     return random.randint(0, map_sz-1)
 
                 n = gen()
-
-
 
                 while not cube_exists(n):
                     n = gen()
