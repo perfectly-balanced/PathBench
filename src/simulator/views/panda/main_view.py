@@ -142,14 +142,26 @@ class MainView(ShowBase):
                     if pos[2] == len(self.__map_data[pos[0]][pos[1]]):
                         pos[2] -= 1
                     pos = tuple(pos)
-
-                    self.goal_pos = pos
                     
                     # debug
                     import time
                     print(str(time.time()) + ' click on ' + po.get_name() + ' pos ' + str(pos))
+                    
+                    return pos
+            return None
         
-        self.accept('mouse1', on_click)
+        def left_click():
+            p = on_click()
+            if p != None:
+                self.goal_pos = p
+        
+        def right_click():
+            p = on_click()
+            if p != None:
+                self.start_pos = p
+
+        self.accept('mouse1', left_click)
+        self.accept('mouse3', right_click)
         
     @property
     def start_pos(self) -> str:
