@@ -20,7 +20,7 @@ class TestExtendedWall(unittest.TestCase):
 
     def test_str(self) -> None:
         entity: ExtendedWall = ExtendedWall(Point(2, 3), 10)
-        self.assertEqual("ExtendedWall: {position: Point(x=2, y=3), radius: 10}", str(entity))
+        self.assertEqual("ExtendedWall: {position: Point(2, 3), radius: 10}", str(entity))
 
     def test_eq(self) -> None:
         entity1: ExtendedWall = ExtendedWall(Point(2, 3), 10)

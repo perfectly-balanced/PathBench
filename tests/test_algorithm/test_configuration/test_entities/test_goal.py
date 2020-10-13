@@ -20,7 +20,7 @@ class TestGoal(unittest.TestCase):
 
     def test_str(self) -> None:
         entity: Goal = Goal(Point(2, 3), 10)
-        self.assertEqual("Goal: {position: Point(x=2, y=3), radius: 10}", str(entity))
+        self.assertEqual("Goal: {position: Point(2, 3), radius: 10}", str(entity))
 
     def test_eq(self) -> None:
         entity1: Goal = Goal(Point(2, 3), 10)

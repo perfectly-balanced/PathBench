@@ -216,18 +216,18 @@ class TestSparseMap(unittest.TestCase):
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ]).convert_to_sparse_map()
         self.assertEqual("""SparseMap: {
-		size: Size(width=4, height=3), 
-		agent: Agent: {position: Point(x=0, y=1), radius: 0}, 
+		size: Size(4, 3), 
+		agent: Agent: {position: Point(0, 1), radius: 0}, 
 		obstacles: {
 			size: 4, 
 			entities: [
-				Obstacle: {position: Point(x=1, y=0), radius: 0}, 
-				Obstacle: {position: Point(x=2, y=0), radius: 0}, 
-				Obstacle: {position: Point(x=3, y=0), radius: 0}, 
-				Obstacle: {position: Point(x=3, y=1), radius: 0}, 
+				Obstacle: {position: Point(1, 0), radius: 0}, 
+				Obstacle: {position: Point(2, 0), radius: 0}, 
+				Obstacle: {position: Point(3, 0), radius: 0}, 
+				Obstacle: {position: Point(3, 1), radius: 0}, 
 			]
 		}, 
-		goal: Goal: {position: Point(x=3, y=2), radius: 0}
+		goal: Goal: {position: Point(3, 2), radius: 0}
 	}""", str(map1))
 
     def test_str_debug_level_3(self) -> None:
@@ -241,34 +241,34 @@ class TestSparseMap(unittest.TestCase):
         ]).convert_to_sparse_map()
         map1._services = service
         self.assertEqual("""SparseMap: {
-		size: Size(width=10, height=3), 
-		agent: Agent: {position: Point(x=0, y=2), radius: 0}, 
+		size: Size(10, 3), 
+		agent: Agent: {position: Point(0, 2), radius: 0}, 
 		obstacles: {
 			size: 20, 
 			entities: [
-				Obstacle: {position: Point(x=0, y=0), radius: 0}, 
-				Obstacle: {position: Point(x=1, y=0), radius: 0}, 
-				Obstacle: {position: Point(x=2, y=0), radius: 0}, 
-				Obstacle: {position: Point(x=3, y=0), radius: 0}, 
-				Obstacle: {position: Point(x=4, y=0), radius: 0}, 
-				Obstacle: {position: Point(x=5, y=0), radius: 0}, 
-				Obstacle: {position: Point(x=6, y=0), radius: 0}, 
-				Obstacle: {position: Point(x=7, y=0), radius: 0}, 
-				Obstacle: {position: Point(x=8, y=0), radius: 0}, 
-				Obstacle: {position: Point(x=9, y=0), radius: 0}, 
-				Obstacle: {position: Point(x=0, y=1), radius: 0}, 
-				Obstacle: {position: Point(x=1, y=1), radius: 0}, 
-				Obstacle: {position: Point(x=2, y=1), radius: 0}, 
-				Obstacle: {position: Point(x=3, y=1), radius: 0}, 
-				Obstacle: {position: Point(x=4, y=1), radius: 0}, 
-				Obstacle: {position: Point(x=5, y=1), radius: 0}, 
-				Obstacle: {position: Point(x=6, y=1), radius: 0}, 
-				Obstacle: {position: Point(x=7, y=1), radius: 0}, 
-				Obstacle: {position: Point(x=8, y=1), radius: 0}, 
-				Obstacle: {position: Point(x=9, y=1), radius: 0}, 
+				Obstacle: {position: Point(0, 0), radius: 0}, 
+				Obstacle: {position: Point(1, 0), radius: 0}, 
+				Obstacle: {position: Point(2, 0), radius: 0}, 
+				Obstacle: {position: Point(3, 0), radius: 0}, 
+				Obstacle: {position: Point(4, 0), radius: 0}, 
+				Obstacle: {position: Point(5, 0), radius: 0}, 
+				Obstacle: {position: Point(6, 0), radius: 0}, 
+				Obstacle: {position: Point(7, 0), radius: 0}, 
+				Obstacle: {position: Point(8, 0), radius: 0}, 
+				Obstacle: {position: Point(9, 0), radius: 0}, 
+				Obstacle: {position: Point(0, 1), radius: 0}, 
+				Obstacle: {position: Point(1, 1), radius: 0}, 
+				Obstacle: {position: Point(2, 1), radius: 0}, 
+				Obstacle: {position: Point(3, 1), radius: 0}, 
+				Obstacle: {position: Point(4, 1), radius: 0}, 
+				Obstacle: {position: Point(5, 1), radius: 0}, 
+				Obstacle: {position: Point(6, 1), radius: 0}, 
+				Obstacle: {position: Point(7, 1), radius: 0}, 
+				Obstacle: {position: Point(8, 1), radius: 0}, 
+				Obstacle: {position: Point(9, 1), radius: 0}, 
 			]
 		}, 
-		goal: Goal: {position: Point(x=1, y=2), radius: 0}
+		goal: Goal: {position: Point(1, 2), radius: 0}
 	}""", str(map1))
 
 
