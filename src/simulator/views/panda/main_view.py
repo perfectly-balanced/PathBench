@@ -22,6 +22,12 @@ class Lighting(IntEnum):
 START_CUBE_COLOUR: Final = GREEN
 GOAL_CUBE_COLOUR: Final = RED
 
+key_map = {
+    "rotate": False
+}
+def update_key_map(key, state):
+    key_map[key] = state
+
 class MainView(ShowBase):
     __start_pos: IntPoint3
     __goal_pos: IntPoint3
@@ -40,6 +46,12 @@ class MainView(ShowBase):
         # MAP #
         self.__map_data = map_data
         self.__generate_map(lighting == Lighting.ARTIFICAL)
+
+        # enabling rotation of the object
+        self.accept('space', update_key_map, ["rotate", True])
+        self.accept('space-up', update_key_map, ["rotate", False])
+        self.angle = 0
+        self.taskMgr.add(self.update, "update")
 
         # LIGHTING #
         self.__ambient = 0.5
@@ -251,6 +263,14 @@ class MainView(ShowBase):
 
         # ENABLE DEFAULT SHADOW SHADERS #
         self.__map.set_shader_auto()
+
+
+    def update(self, task):
+        if (key_map["rotate"]):
+            self.angle += 1
+            self.__map.setH(self.angle)
+        return task.cont
+
 
     def __custom_lighting(self) -> None:
         # preliminary capabilities check

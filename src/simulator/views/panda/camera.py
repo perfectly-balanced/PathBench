@@ -1,14 +1,14 @@
 from direct.showbase.ShowBaseGlobal import globalClock
 
-keyMap = {
+key_map = {
     "up": False,
     "down": False,
     "left": False,
     "right": False
 }
 
-def updateKeyMap(key, state):
-    keyMap[key] = state
+def update_key_map(key, state):
+    key_map[key] = state
 
 class Camera:
     def __init__(self, base, cam):
@@ -23,68 +23,64 @@ class Camera:
         self.base.accept('wheel_up', lambda: self.cam.setY(self.cam.getY() + 90 * globalClock.getDt()))
         self.base.accept('wheel_down', lambda: self.cam.setY(self.cam.getY() - 90 * globalClock.getDt()))
         # Use the arrow/awsd keys to move left, right, up and down
-        self.base.accept('a', updateKeyMap, ["left", True])
-        self.base.accept('a-up', updateKeyMap, ["left", False])
-        self.base.accept('d', updateKeyMap, ["right", True])
-        self.base.accept('d-up', updateKeyMap, ["right", False])
-        self.base.accept('arrow_left', updateKeyMap, ["left", True])
-        self.base.accept('arrow_left-up', updateKeyMap, ["left", False])
-        self.base.accept('arrow_right', updateKeyMap, ["right", True])
-        self.base.accept('arrow_right-up', updateKeyMap, ["right", False])
-        self.base.accept('w', updateKeyMap, ["up", True])
-        self.base.accept('w-up', updateKeyMap, ["up", False])
-        self.base.accept('s', updateKeyMap, ["down", True])
-        self.base.accept('s-up', updateKeyMap, ["down", False])
-        self.base.accept('arrow_up', updateKeyMap, ["up", True])
-        self.base.accept('arrow_up-up', updateKeyMap, ["up", False])
-        self.base.accept('arrow_down', updateKeyMap, ["down", True])
-        self.base.accept('arrow_down-up', updateKeyMap, ["down", False])
-        # enabling rotation of the object
-        # self.base.accept('space', updateKeyMap, ["rotate", True])
-        # self.base.accept('space-up', updateKeyMap, ["rotate", False])
-        self.speedL = 3
-        self.speedR = 3
-        self.speedU = 3
-        self.speedD = 3
+        self.base.accept('a', update_key_map, ["left", True])
+        self.base.accept('a-up', update_key_map, ["left", False])
+        self.base.accept('d', update_key_map, ["right", True])
+        self.base.accept('d-up', update_key_map, ["right", False])
+        self.base.accept('arrow_left', update_key_map, ["left", True])
+        self.base.accept('arrow_left-up', update_key_map, ["left", False])
+        self.base.accept('arrow_right', update_key_map, ["right", True])
+        self.base.accept('arrow_right-up', update_key_map, ["right", False])
+        self.base.accept('w', update_key_map, ["up", True])
+        self.base.accept('w-up', update_key_map, ["up", False])
+        self.base.accept('s', update_key_map, ["down", True])
+        self.base.accept('s-up', update_key_map, ["down", False])
+        self.base.accept('arrow_up', update_key_map, ["up", True])
+        self.base.accept('arrow_up-up', update_key_map, ["up", False])
+        self.base.accept('arrow_down', update_key_map, ["down", True])
+        self.base.accept('arrow_down-up', update_key_map, ["down", False])
+
+        self.speed_l = 4
+        self.speed_r = 4
+        self.speed_u = 4
+        self.speed_d = 4
         self.angle = 0
         self.base.taskMgr.add(self.update, "update")
 
     def update(self, task):
         dt = globalClock.getDt()
-        posH = self.cam.getH()
-        posP = self.cam.getP()
-        posY = self.cam.getY()
-        if (keyMap["left"]):
-            posH += self.speedL * dt
-            if self.speedL < 120:
-                self.speedL += 2
+        pos_h = self.cam.getH()
+        pos_p = self.cam.getP()
+        pos_y = self.cam.getY()
+        if (key_map["left"]):
+            pos_h += self.speed_l * dt
+            if self.speed_l < 150:
+                self.speed_l += 2
         else:
-            self.speedL = 4
+            self.speed_l = 4
 
-        if (keyMap["right"]):
-            posH -= self.speedR * dt
-            if self.speedR < 120:
-                self.speedR += 2
+        if (key_map["right"]):
+            pos_h -= self.speed_r * dt
+            if self.speed_r < 150:
+                self.speed_r += 2
         else:
-            self.speedR = 4
-        if (keyMap["up"]):
-            posP += self.speedU * dt
-            if self.speedU < 120:
-                self.speedU += 2
-        else:
-            self.speedU = 4
-        if (keyMap["down"]):
-            posP -= self.speedD * dt
-            if self.speedD < 120:
-                self.speedD += 2
-        else:
-            self.speedD = 4
-        # if (keyMap["rotate"]):
-        #     self.angle += 1.5
-        #     self.base.__map.setH(self.angle)
+            self.speed_r = 4
 
-        self.cam.setH(posH)
-        self.cam.setP(posP)
-        self.cam.setY(posY)
+        if (key_map["up"]):
+            pos_p += self.speed_u * dt
+            if self.speed_u < 150:
+                self.speed_u += 2
+        else:
+            self.speed_u = 4
+        if (key_map["down"]):
+            pos_p -= self.speed_d * dt
+            if self.speed_d < 150:
+                self.speed_d += 2
+        else:
+            self.speed_d = 4
+
+        self.cam.setH(pos_h)
+        self.cam.setP(pos_p)
+        self.cam.setY(pos_y)
 
         return task.cont
