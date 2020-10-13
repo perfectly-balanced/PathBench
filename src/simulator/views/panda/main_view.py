@@ -101,11 +101,10 @@ class MainView(ShowBase):
         self.__map_cnp = self.__map.attach_new_node(self.__map_cn)
         self.__ctrav.add_collider(self.__map_cnp, self.__cqueue)
         
-        x, y, z = (0,0,0)
         for x in range(len(self.__map_data)):
             for y in range(len(self.__map_data[x])):
                 for z in range(len(self.__map_data[x][y])):
-                    if self.__map_data[x][y][z]:
+                    if self.__map_mesh.cube_visible((x, y, z)):
                         self.__map_cn.add_solid(CollisionBox(Point3(x,y,z), Point3(x+1, y+1, z-1)))
 
         # mouse picker

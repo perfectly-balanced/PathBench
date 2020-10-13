@@ -262,3 +262,10 @@ class CubeMesh():
                        close(old_g, g) and \
                        close(old_b, b):
                         self.set_cube_colour(p, self.default_colour)
+    
+    def cube_visible(self, pos: IntPoint3) -> bool:
+        x, y, z = pos
+        for f in self.__cube_face_map[x][y][z]:
+            if f != None:
+                return True
+        return False
