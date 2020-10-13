@@ -89,39 +89,46 @@ class MainView(ShowBase):
                 while p == self.start_pos:
                     p = randpos()
                 self.goal_pos = p
-                
-        collision_traverser = CollisionTraverser('collision_traverser')
-        base.cTrav = collision_traverser
-        queue_handler = CollisionHandlerQueue()
+        
+        # collision traverser & queue
+        self.__ctrav = CollisionTraverser('ctrav')
+        self.cTrav = self.__ctrav
+        self.__cqueue = CollisionHandlerQueue()
 
-        map_collision_node = CollisionNode('3D Voxel Map CN')
-        map_collision_np = self.__map.attach_new_node(map_collision_node)
-        map_collision_node.setFromCollideMask(GeomNode.getDefaultCollideMask())
-        map_collision_node.setIntoCollideMask(GeomNode.getDefaultCollideMask())
-        collision_traverser.addCollider(map_collision_np, queue_handler)
+        # map collision boxes
+        self.__map_cn = CollisionNode('3D Voxel Map Collision Node')
+        self.__map_cn.set_collide_mask(BitMask32.bit(1))
+        self.__map_cnp = self.__map.attach_new_node(self.__map_cn)
+        self.__ctrav.add_collider(self.__map_cnp, self.__cqueue)
 
-        box = CollisionBox(Point3(0, 0, 0),Point3(20, 20, 20))
-        map_collision_node.addSolid(box)
-        map_collision_np.show()
-        map_collision_np.set_tag('3D Voxel Map Collidable Cube', '1')
+        box = CollisionBox(Point3(0, 0, 0), Point3(200, 200, 200))
+        self.__map_cn.add_solid(box)
 
-        # cube picking
+        # mouse picker
         picker_node = CollisionNode('mouseRay')
         picker_np = camera.attach_new_node(picker_node)
-        picker_node.setFromCollideMask(GeomNode.getDefaultCollideMask())
-        picker_ray = CollisionRay()
-        picker_node.addSolid(picker_ray)
-        collision_traverser.addCollider(picker_np, queue_handler)
+        picker_node.set_from_collide_mask(BitMask32.bit(1))
+        
+        self.picker_ray = CollisionRay()
+        picker_node.add_solid(self.picker_ray)
+        self.__ctrav.add_collider(picker_np, self.__cqueue)
 
         def on_click():
-            mpos = base.mouseWatcherNode.getMouse()
-            picker_ray.setFromLens(base.camNode, mpos.getX(), mpos.getY())
-            collision_traverser.traverse(map_collision_np)
-            if queue_handler.getNumEntries() > 0:
-                queue_handler.sortEntries()
-                pickedObj = queue_handler.getEntry(0).getIntoNodePath()
-                if not pickedObj.isEmpty():
-                    print(pickedObj.node().get_name())
+            print('mouse click')
+            # check if we have access to the mouse
+            if self.mouseWatcherNode.hasMouse():
+                # get the mouse position
+                mpos = self.mouseWatcherNode.get_mouse()
+
+                # set the position of the ray based on the mouse position
+                self.picker_ray.set_from_lens(self.camNode,mpos.getX(),mpos.getY())
+                self.__ctrav.traverse(self.__map_cnp)
+                # if we have hit something sort the hits so that the closest is first and highlight the node
+                if self.__cqueue.get_num_entries() > 0:
+                    self.__cqueue.sort_entries()
+                    po = self.__cqueue.get_entry(0).get_into_node_path()
+                    import time
+                    print(str(time.time()) + ' click on ' + po.get_name())
         
         self.accept('mouse1', on_click)
         
@@ -168,8 +175,8 @@ class MainView(ShowBase):
     def __generate_map(self, artificial_lighting: bool = False) -> None:
         self.__map_mesh = CubeMesh(self.__map_data, '3D Voxel Map', artificial_lighting)
         self.__map = self.render.attach_new_node(self.__map_mesh.geom_node)
-        self.__map_movement = self.__map.hprInterval(50, LPoint3(0, 360, 360))
-        self.__map_movement.loop()
+        # self.__map_movement = self.__map.hprInterval(50, LPoint3(0, 360, 360))
+        # self.__map_movement.loop()
 
     def __basic_lighting(self) -> None:
         # POINT LIGHT #
