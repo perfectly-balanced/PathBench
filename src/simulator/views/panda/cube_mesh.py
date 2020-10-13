@@ -26,11 +26,10 @@ class Face(IntEnum):
 class CubeMesh():
     name: str
     mesh: Geom
-    structure: List[List[List[bool]]]
 
     def __init__(self, structure: List[List[List[bool]]], name: str = 'CubeMesh', artificial_lighting: bool = False, default_colour: Colour = 1.0) -> None:
-        self.structure = structure
         self.name = name
+        self.__structure = structure
         self.__artificial_lighting = artificial_lighting
         self.__default_colour = default_colour
 
@@ -263,6 +262,14 @@ class CubeMesh():
                        close(old_b, b):
                         self.set_cube_colour(p, self.default_colour)
     
+    @property
+    def structure(self) -> str:
+        return 'structure'
+    
+    @structure.getter
+    def structure(self) -> List[List[List[bool]]]:
+        return self.__structure
+
     def cube_visible(self, pos: IntPoint3) -> bool:
         x, y, z = pos
         for f in self.__cube_face_map[x][y][z]:
