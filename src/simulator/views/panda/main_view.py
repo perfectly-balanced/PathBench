@@ -5,6 +5,7 @@ from panda3d.core import *
 from enum import IntEnum, unique
 from typing import List, Tuple
 import random
+import math
 
 from .cube_mesh import CubeMesh
 from .types import Colour, IntPoint3
@@ -92,7 +93,6 @@ class MainView(ShowBase):
         
         # collision traverser & queue
         self.__ctrav = CollisionTraverser('ctrav')
-        self.__ctrav.show_collisions(self.__map)
         self.__cqueue = CollisionHandlerQueue()
 
         # map collision boxes
@@ -102,9 +102,11 @@ class MainView(ShowBase):
         self.__ctrav.add_collider(self.__map_cnp, self.__cqueue)
         
         x, y, z = (0,0,0)
-        box = CollisionBox(Point3(x,y,z), Point3(x+1, y+1, z-1))
-        self.__map_cn.add_solid(box)
-        self.__map_cnp.show()
+        for x in range(len(self.__map_data)):
+            for y in range(len(self.__map_data[x])):
+                for z in range(len(self.__map_data[x][y])):
+                    if self.__map_data[x][y][z]:
+                        self.__map_cn.add_solid(CollisionBox(Point3(x,y,z), Point3(x+1, y+1, z-1)))
 
         # mouse picker
         picker_node = CollisionNode('mouseRay')
@@ -114,6 +116,9 @@ class MainView(ShowBase):
         self.picker_ray = CollisionRay()
         picker_node.add_solid(self.picker_ray)
         self.__ctrav.add_collider(picker_np, self.__cqueue)
+
+        # debug
+        # self.__ctrav.show_collisions(self.__map)
 
         def on_click():
             # check if we have access to the mouse
@@ -128,8 +133,22 @@ class MainView(ShowBase):
                 if self.__cqueue.get_num_entries() > 0:
                     self.__cqueue.sort_entries()
                     po = self.__cqueue.get_entry(0).get_into_node_path()
+
+                    x, y, z = self.__cqueue.get_entry(0).getSurfacePoint(self.__map)
+                    pos = [max(math.floor(x), 0), max(math.floor(y), 0), max(math.ceil(z), 0)]
+                    if pos[0] == len(self.__map_data):
+                        pos[0] -= 1
+                    if pos[1] == len(self.__map_data[pos[0]]):
+                        pos[1] -= 1
+                    if pos[2] == len(self.__map_data[pos[0]][pos[1]]):
+                        pos[2] -= 1
+                    pos = tuple(pos)
+
+                    self.goal_pos = pos
+                    
+                    # debug
                     import time
-                    print(str(time.time()) + ' click on ' + po.get_name() + ' pos ' + str(self.__cqueue.get_entry(0).getSurfacePoint(self.__map)))
+                    print(str(time.time()) + ' click on ' + po.get_name() + ' pos ' + str(pos))
         
         self.accept('mouse1', on_click)
         
