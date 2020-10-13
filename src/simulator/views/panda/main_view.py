@@ -116,7 +116,6 @@ class MainView(ShowBase):
         self.__ctrav.add_collider(picker_np, self.__cqueue)
 
         def on_click():
-            print('mouse click')
             # check if we have access to the mouse
             if self.mouseWatcherNode.hasMouse():
                 # get the mouse position
@@ -130,7 +129,7 @@ class MainView(ShowBase):
                     self.__cqueue.sort_entries()
                     po = self.__cqueue.get_entry(0).get_into_node_path()
                     import time
-                    print(str(time.time()) + ' click on ' + po.get_name())
+                    print(str(time.time()) + ' click on ' + po.get_name() + ' pos ' + str(self.__cqueue.get_entry(0).getSurfacePoint(self.__map)))
         
         self.accept('mouse1', on_click)
         
