@@ -14,6 +14,7 @@ class Point(torch.Tensor):
     def __init__(self, *ords, **kwargs):
         if ("x" in kwargs and "y" in kwargs):
             ords = (kwargs["x"], kwargs["y"])
+            if ("z" in kwargs): ords = (*ords, kwargs["z"])
         assert (len(ords) > 1), "Needs at least two dimensions"
         super().__init__()
         self.pos = tuple(ords)
@@ -54,8 +55,6 @@ class Point(torch.Tensor):
         return hash(self.pos)
 
     def __repr__(self) -> str:
-        if len(self.pos) == 2:
-            return f"Point(x={self.x}, y={self.y})"
         return f"Point({', '.join(str(i) for i in self.pos)})"
 
     def __copy__(self) -> 'Point':
@@ -64,12 +63,45 @@ class Point(torch.Tensor):
     def __deepcopy__(self, memo: dict) -> 'Point':
         return Point(*self.pos)
 
-class Size(NamedTuple):
+class Size:
     """
-    This tuple is used to describe the size of an object. It has 2 parameters width and height.
+    This tuple is used to describe the size of an object in n dimensions.
+    The first three dimensions can be referred to as width, height, and depth, 
+    which correspond to x, y, and z accordingly.
     """
-    width: int
-    height: int
+    __size: Point
+
+    def __init__(self, *sizes, **kwargs):
+        if ("width" in kwargs and "height" in kwargs):
+            sizes = (kwargs["width"], kwargs["height"])
+            if "depth" in kwargs:
+                sizes = (*sizes, kwargs["depth"])
+        self.__size = Point(*sizes)
+
+    @property
+    def size(self):
+        return self.__size
+    
+    @property
+    def width(self):
+        return self.__size.x
+    
+    @property
+    def height(self):
+        return self.__size.y
+    
+    @property
+    def depth(self):
+        return self.__size.z
 
     def to_tensor(self) -> torch.Tensor:
-        return torch.Tensor([float(self.width), float(self.height)])
+        return torch.Tensor([float(i) for i in self.__size.pos])
+    
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, Size) and self.__size == other.__size
+    
+    def __ne__(self, other: object) -> bool:
+        return not (self == other)
+    
+    def __repr__(self) -> str:
+        return f"Size({', '.join(str(i) for i in self.__size.pos)})"

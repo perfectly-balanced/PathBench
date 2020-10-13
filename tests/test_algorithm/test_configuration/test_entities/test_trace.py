@@ -20,7 +20,7 @@ class TestTrace(unittest.TestCase):
 
     def test_str(self) -> None:
         entity: Trace = Trace(Point(2, 3))
-        self.assertEqual("Trace: {position: Point(x=2, y=3)}", str(entity))
+        self.assertEqual("Trace: {position: Point(2, 3)}", str(entity))
 
     def test_eq(self) -> None:
         entity1: Trace = Trace(Point(2, 3))

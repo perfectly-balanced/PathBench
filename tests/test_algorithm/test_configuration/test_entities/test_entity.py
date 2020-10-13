@@ -19,7 +19,7 @@ class TestEntity(unittest.TestCase):
 
     def test_str(self) -> None:
         entity: Entity = Entity(Point(2, 3), 10)
-        self.assertEqual("Entity: {position: Point(x=2, y=3), radius: 10}", str(entity))
+        self.assertEqual("Entity: {position: Point(2, 3), radius: 10}", str(entity))
 
     def test_eq(self) -> None:
         entity1: Entity = Entity(Point(2, 3), 10)

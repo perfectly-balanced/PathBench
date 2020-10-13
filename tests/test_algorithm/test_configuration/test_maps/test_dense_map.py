@@ -241,9 +241,9 @@ class TestDenseMap(unittest.TestCase):
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         self.assertEqual("""DenseMap: {
-		size: Size(width=4, height=3), 
-		agent: Agent: {position: Point(x=0, y=1), radius: 0}, 
-		goal: Goal: {position: Point(x=3, y=2), radius: 0}, 
+		size: Size(4, 3), 
+		agent: Agent: {position: Point(0, 1), radius: 0}, 
+		goal: Goal: {position: Point(3, 2), radius: 0}, 
 		obstacles: 5, 
 		grid: [
 			4, 1, 1, 1, 
@@ -263,9 +263,9 @@ class TestDenseMap(unittest.TestCase):
         ).convert_to_dense_map()
         map1._services = service
         self.assertEqual("""DenseMap: {
-		size: Size(width=30, height=30), 
-		agent: Agent: {position: Point(x=1, y=2), radius: 1}, 
-		goal: Goal: {position: Point(x=4, y=3), radius: 1}, 
+		size: Size(30, 30), 
+		agent: Agent: {position: Point(1, 2), radius: 1}, 
+		goal: Goal: {position: Point(4, 3), radius: 1}, 
 		obstacles: 898, 
 		grid: [
 			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
