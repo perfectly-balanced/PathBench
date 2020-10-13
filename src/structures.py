@@ -32,6 +32,9 @@ class Point(torch.Tensor):
     def z(self) -> int:
         assert len(self.pos) > 2, "Point has no Z-coordinate"
         return self.pos[2]
+    
+    def __getitem__(self, idx):
+        return self.pos[idx]
 
     def to_tensor(self) -> torch.Tensor:
         return torch.Tensor([float(c) for c in self.pos])
@@ -39,7 +42,7 @@ class Point(torch.Tensor):
     @staticmethod
     def from_tensor(inp: torch.Tensor) -> 'Point':
         assert len(list(inp.size())) == 1
-        return Point([int(torch.round(inp[i])) for i in range(list(inp.size())[0])])
+        return Point(*[int(torch.round(inp[i])) for i in range(list(inp.size())[0])])
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Point) and (self.pos == other.pos)
@@ -83,16 +86,22 @@ class Size:
         return self.__size
     
     @property
-    def width(self):
+    def width(self) -> int:
         return self.__size.x
     
     @property
-    def height(self):
+    def height(self) -> int:
         return self.__size.y
     
     @property
-    def depth(self):
+    def depth(self) -> int:
         return self.__size.z
+    
+    def __getitem__(self, idx) -> int:
+        return self.__size[idx]
+    
+    def __len__(self) -> int:
+        return len(self.__size)
 
     def to_tensor(self) -> torch.Tensor:
         return torch.Tensor([float(i) for i in self.__size.pos])

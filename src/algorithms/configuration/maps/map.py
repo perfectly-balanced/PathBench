@@ -237,9 +237,9 @@ class Map:
         return pos.x == goal.position.x and pos.y == goal.position.y
 
     def is_agent_in_goal_radius(self, agent_pos: Point = None, goal: Goal = None) -> bool:
-        if not agent_pos:
+        if agent_pos is None:
             agent_pos = self.agent.position
-        if not goal:
+        if goal is None:
             goal = self.goal
         dist: np.ndarray = np.linalg.norm(np.array(agent_pos) - np.array(goal.position))
         return dist <= (goal.radius + self.agent.radius) or dist < 0.0001

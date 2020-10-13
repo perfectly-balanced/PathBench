@@ -168,7 +168,7 @@ class BasicTesting:
 
     @staticmethod
     def distance_from_agent_to_goal(mp: Map, agent_pos: Point = None):
-        if not agent_pos:
+        if agent_pos is None:
             agent_pos = mp.agent.position
         dist = np.linalg.norm(np.array(agent_pos) - np.array(mp.goal.position))
         return dist

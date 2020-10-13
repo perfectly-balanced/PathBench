@@ -3,14 +3,14 @@ from typing import List, Optional, Set, Dict, Callable, TypeVar, Union, Tuple
 from structures import Point, Size
 
 #Entities to import from entity folder and map
-from entities.agent import Agent
-from entities.entity import Entity
-from entities.extended_wall import ExtendedWall
-from entities.goal import Goal
-from entities.obstacle import Obstacle
-from domains.map import Map
-from domains.sparse_map import SparseMap
-from domains.dense_map import DenseMap
+from algorithms.configuration.entities.agent import Agent
+from algorithms.configuration.entities.entity import Entity
+from algorithms.configuration.entities.extended_wall import ExtendedWall
+from algorithms.configuration.entities.goal import Goal
+from algorithms.configuration.entities.obstacle import Obstacle
+from algorithms.configuration.maps.map import Map
+from algorithms.configuration.maps.sparse_map import SparseMap
+from algorithms.configuration.maps.dense_map import DenseMap
 
 from structures import Point, Size
 import math

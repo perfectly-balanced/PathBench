@@ -124,7 +124,7 @@ class AStar(Algorithm):
         """
         trace = []
         pos = goal.position
-        while self.mem.back_pointer[pos]:
+        while self.mem.back_pointer[pos] is not None:
             trace.append(pos)
             pos = self.mem.back_pointer[pos]
         return trace
