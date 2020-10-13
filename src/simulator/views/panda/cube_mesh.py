@@ -7,7 +7,7 @@ from typing import List
 from numbers import Real
 import math
 
-from .types import TColour, Colour, IntPoint3
+from .types import RGBAColour, IntPoint3
 
 def normalise(*args):
     v = LVector3(*args)
@@ -27,7 +27,7 @@ class CubeMesh():
     name: str
     mesh: Geom
 
-    def __init__(self, structure: List[List[List[bool]]], name: str = 'CubeMesh', artificial_lighting: bool = False, default_colour: Colour = 1.0) -> None:
+    def __init__(self, structure: List[List[List[bool]]], name: str = 'CubeMesh', artificial_lighting: bool = False, default_colour: RGBAColour = RGBAColour(1.0), hidden_faces: bool = False) -> None:
         self.name = name
         self.__structure = structure
         self.__artificial_lighting = artificial_lighting
@@ -73,7 +73,7 @@ class CubeMesh():
                         continue
 
                     def add_face(face: Face, should_add: bool) -> None:
-                        if should_add:
+                        if hidden_faces or should_add:
                             self.__make_face(face, pos)
                             self.__face_cube_map.append(pos)
                             faces.append(self.__face_count-1)
@@ -90,49 +90,46 @@ class CubeMesh():
 
                     self.__cube_face_map[i][j][k] = tuple(faces)
 
-        self.__triangles.closePrimitive()
-        self.mesh.addPrimitive(self.__triangles)
+        self.__triangles.close_primitive()
+        self.mesh.add_primitive(self.__triangles)
 
-    def get_cube_colour(self, pos: IntPoint3) -> TColour:
+    def get_cube_colour(self, pos: IntPoint3) -> RGBAColour:
         x, y, z = pos
 
         faces = self.__cube_face_map[x][y][z]
         for i in range(len(faces)):
             if faces[i] != None:
                 self.__colour.setRow(faces[i] * 4)
-                r, g, b, _ = self.__colour.getData4f()
+                r, g, b, a = self.__colour.getData4f()
                 if self.artificial_lighting:
                     factor = self.__LIGHT_ATTENUATION_FACTOR(Face(i))
-                    return (r / factor, g / factor, b / factor)
+                    return RGBAColour(r / factor, g / factor, b / factor, a)
                 else:
-                    return (r, g, b)
+                    return RGBAColour(r, g, b, a)
 
         return self.default_colour
 
-    def set_cube_colour(self, pos: IntPoint3, colour: Colour) -> None:
+    def set_cube_colour(self, pos: IntPoint3, colour: RGBAColour) -> None:
         x, y, z = pos
 
         faces = self.__cube_face_map[x][y][z]
         for i in range(len(faces)):
             if faces[i] != None:
-                r, g, b = self.__face_colour(colour, Face(i))
+                r, g, b, a = self.__face_colour(colour, Face(i))
 
                 self.__colour.setRow(faces[i] * 4)
-                self.__colour.addData4f(r, g, b, 1.0)
-                self.__colour.addData4f(r, g, b, 1.0)
-                self.__colour.addData4f(r, g, b, 1.0)
-                self.__colour.addData4f(r, g, b, 1.0)
+                self.__colour.addData4f(r, g, b, a)
+                self.__colour.addData4f(r, g, b, a)
+                self.__colour.addData4f(r, g, b, a)
+                self.__colour.addData4f(r, g, b, a)
 
     def reset_cube_colour(self, pos: IntPoint3) -> None:
         self.set_cube_colour(pos, self.default_colour)
 
     @staticmethod
-    def __attenuate_colour(colour: Colour, factor: Real) -> Colour:
-        if isinstance(colour, Real):
-            return colour * factor
-        else:
-            r, g, b = colour
-            return (r * factor, g * factor, b * factor)
+    def __attenuate_colour(colour: RGBAColour, factor: Real) -> RGBAColour:
+        r, g, b, a = colour
+        return RGBAColour(r * factor, g * factor, b * factor, a)
 
     @staticmethod
     def __LIGHT_ATTENUATION_FACTOR(face: Face) -> Real:
@@ -145,15 +142,14 @@ class CubeMesh():
                     }
         return switcher.get(face.value)
 
-    def __face_colour(self, colour: Colour, face: Face) -> TColour:
-        c = (colour, colour, colour) if isinstance(colour, Real) else colour
+    def __face_colour(self, colour: RGBAColour, face: Face) -> RGBAColour:
         if self.artificial_lighting:
-            return self.__attenuate_colour(c, self.__LIGHT_ATTENUATION_FACTOR(face))
+            return self.__attenuate_colour(colour, self.__LIGHT_ATTENUATION_FACTOR(face))
         else:
-            return c
+            return colour
 
     def __make_face(self, face: Face, pos: IntPoint3) -> None:
-        r, g, b = self.__face_colour(self.default_colour, face)
+        r, g, b, a = self.__face_colour(self.default_colour, face)
 
         def make(x1, y1, z1, x2, y2, z2) -> None:
             if x1 == x2:
@@ -177,10 +173,10 @@ class CubeMesh():
                 self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
                 self.__normal.addData3(normalise(2 * x1 - 1, 2 * y2 - 1, 2 * z2 - 1))
 
-            self.__colour.addData4f(r, g, b, 1.0)
-            self.__colour.addData4f(r, g, b, 1.0)
-            self.__colour.addData4f(r, g, b, 1.0)
-            self.__colour.addData4f(r, g, b, 1.0)
+            self.__colour.addData4f(r, g, b, a)
+            self.__colour.addData4f(r, g, b, a)
+            self.__colour.addData4f(r, g, b, a)
+            self.__colour.addData4f(r, g, b, a)
 
             self.__texcoord.addData2f(0.0, 1.0)
             self.__texcoord.addData2f(0.0, 0.0)
@@ -233,13 +229,12 @@ class CubeMesh():
         return 'default_colour'
 
     @default_colour.getter
-    def default_colour(self) -> TColour:
-        c = self.__default_colour
-        return (c, c, c) if isinstance(c, Real) else c
+    def default_colour(self) -> RGBAColour:
+        return self.__default_colour
 
     @default_colour.setter
-    def default_colour(self, value: Colour) -> None:
-        old_r, old_g, old_b = self.default_colour
+    def default_colour(self, value: RGBAColour) -> None:
+        old_r, old_g, old_b, old_a = self.default_colour
         self.__default_colour = value
 
         # update colour of cubes that have old clear colour
@@ -250,7 +245,7 @@ class CubeMesh():
                         continue
                     p = (i, j, k)
 
-                    r, g, b = self.get_cube_colour(p)
+                    r, g, b, a = self.get_cube_colour(p)
 
                     def close(a, b):
                         return math.isclose(a, b, rel_tol=1e-3)
@@ -259,7 +254,8 @@ class CubeMesh():
                     # the previous default colour.
                     if close(old_r, r) and \
                        close(old_g, g) and \
-                       close(old_b, b):
+                       close(old_b, b) and \
+                       close(old_a, a):
                         self.set_cube_colour(p, self.default_colour)
     
     @property

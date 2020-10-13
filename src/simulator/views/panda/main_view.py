@@ -8,7 +8,7 @@ import random
 import math
 
 from .cube_mesh import CubeMesh
-from .types import Colour, IntPoint3
+from .types import RGBAColour, IntPoint3
 
 @unique
 class Lighting(IntEnum):
@@ -17,8 +17,8 @@ class Lighting(IntEnum):
     CUSTOM = 2
 
 
-START_CUBE_COLOUR = (220, 0, 0)
-GOAL_CUBE_COLOUR = (0, 220, 0)
+START_CUBE_COLOUR = RGBAColour(220, 0, 0)
+GOAL_CUBE_COLOUR = RGBAColour(0, 220, 0)
 
 class MainView(ShowBase):
     __start_pos: IntPoint3
@@ -116,7 +116,7 @@ class MainView(ShowBase):
         picker_node.add_solid(self.picker_ray)
         self.__ctrav.add_collider(picker_np, self.__cqueue)
 
-        # debug
+        # debug -> shows collision ray / impact point
         # self.__ctrav.show_collisions(self.__map)
 
         def on_click():
@@ -163,6 +163,11 @@ class MainView(ShowBase):
         self.accept('mouse1', left_click)
         self.accept('mouse3', right_click)
         
+        self.__map.set_transparency(TransparencyAttrib.MAlpha)
+        # the following can be used to override the alpha channel, makes entire object look ghostly
+        # self.__map.set_attrib(ColorBlendAttrib.make(ColorBlendAttrib.MAdd, ColorBlendAttrib.OIncomingAlpha, ColorBlendAttrib.OOne))
+        # self.__map.set_alpha_scale(0.15)
+
     @property
     def start_pos(self) -> str:
         return 'start_pos'
@@ -204,8 +209,9 @@ class MainView(ShowBase):
         return self.__map_mesh
 
     def __generate_map(self, artificial_lighting: bool = False) -> None:
-        self.__map_mesh = CubeMesh(self.__map_data, '3D Voxel Map', artificial_lighting)
+        self.__map_mesh = CubeMesh(self.__map_data, '3D Voxel Map', artificial_lighting, default_colour = RGBAColour(1, 1, 1, 0.05), hidden_faces = True)
         self.__map = self.render.attach_new_node(self.__map_mesh.geom_node)
+
         # self.__map_movement = self.__map.hprInterval(50, LPoint3(0, 360, 360))
         # self.__map_movement.loop()
 
