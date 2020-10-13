@@ -1,5 +1,6 @@
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import PointLight, AmbientLight, LPoint3, WindowProperties, FrameBufferProperties, GraphicsPipe, Texture, GraphicsOutput, NodePath, PandaNode
+from panda3d.core import *
 
 from enum import IntEnum, unique
 from typing import List, Tuple
@@ -88,7 +89,42 @@ class MainView(ShowBase):
                 while p == self.start_pos:
                     p = randpos()
                 self.goal_pos = p
+                
+        collision_traverser = CollisionTraverser('collision_traverser')
+        base.cTrav = collision_traverser
+        queue_handler = CollisionHandlerQueue()
 
+        map_collision_node = CollisionNode('3D Voxel Map CN')
+        map_collision_np = self.__map.attach_new_node(map_collision_node)
+        map_collision_node.setFromCollideMask(GeomNode.getDefaultCollideMask())
+        map_collision_node.setIntoCollideMask(GeomNode.getDefaultCollideMask())
+        collision_traverser.addCollider(map_collision_np, queue_handler)
+
+        box = CollisionBox(Point3(0, 0, 0),Point3(20, 20, 20))
+        map_collision_node.addSolid(box)
+        map_collision_np.show()
+        map_collision_np.set_tag('3D Voxel Map Collidable Cube', '1')
+
+        # cube picking
+        picker_node = CollisionNode('mouseRay')
+        picker_np = camera.attach_new_node(picker_node)
+        picker_node.setFromCollideMask(GeomNode.getDefaultCollideMask())
+        picker_ray = CollisionRay()
+        picker_node.addSolid(picker_ray)
+        collision_traverser.addCollider(picker_np, queue_handler)
+
+        def on_click():
+            mpos = base.mouseWatcherNode.getMouse()
+            picker_ray.setFromLens(base.camNode, mpos.getX(), mpos.getY())
+            collision_traverser.traverse(map_collision_np)
+            if queue_handler.getNumEntries() > 0:
+                queue_handler.sortEntries()
+                pickedObj = queue_handler.getEntry(0).getIntoNodePath()
+                if not pickedObj.isEmpty():
+                    print(pickedObj.node().get_name())
+        
+        self.accept('mouse1', on_click)
+        
     @property
     def start_pos(self) -> str:
         return 'start_pos'
