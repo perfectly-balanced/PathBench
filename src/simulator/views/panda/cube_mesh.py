@@ -115,13 +115,13 @@ class CubeMesh():
         faces = self.__cube_face_map[x][y][z]
         for i in range(len(faces)):
             if faces[i] != None:
-                r, g, b, a = self.__face_colour(colour, Face(i))
+                c = self.__face_colour(colour, Face(i))
 
                 self.__colour.setRow(faces[i] * 4)
-                self.__colour.addData4f(r, g, b, a)
-                self.__colour.addData4f(r, g, b, a)
-                self.__colour.addData4f(r, g, b, a)
-                self.__colour.addData4f(r, g, b, a)
+                self.__colour.addData4f(*c)
+                self.__colour.addData4f(*c)
+                self.__colour.addData4f(*c)
+                self.__colour.addData4f(*c)
 
     def reset_cube_colour(self, pos: IntPoint3) -> None:
         self.set_cube_colour(pos, self.default_colour)
@@ -149,7 +149,7 @@ class CubeMesh():
             return colour
 
     def __make_face(self, face: Face, pos: IntPoint3) -> None:
-        r, g, b, a = self.__face_colour(self.default_colour, face)
+        colour = self.__face_colour(self.default_colour, face)
 
         def make(x1, y1, z1, x2, y2, z2) -> None:
             if x1 == x2:
@@ -173,10 +173,10 @@ class CubeMesh():
                 self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
                 self.__normal.addData3(normalise(2 * x1 - 1, 2 * y2 - 1, 2 * z2 - 1))
 
-            self.__colour.addData4f(r, g, b, a)
-            self.__colour.addData4f(r, g, b, a)
-            self.__colour.addData4f(r, g, b, a)
-            self.__colour.addData4f(r, g, b, a)
+            self.__colour.addData4f(*colour)
+            self.__colour.addData4f(*colour)
+            self.__colour.addData4f(*colour)
+            self.__colour.addData4f(*colour)
 
             self.__texcoord.addData2f(0.0, 1.0)
             self.__texcoord.addData2f(0.0, 0.0)
