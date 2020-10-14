@@ -26,7 +26,7 @@ def make_arc(angle_degs = 360, nsteps = 16, thickness = 2, colour = (1,1,1)):
 
 
 class ColourPicker:
-    pick_colour_callback: Callable[[LRGBColorf], None]
+    pick_colour_callback: Callable[[Tuple[float, float, float, float]], None]
 
     __base: ShowBase
 
@@ -34,9 +34,10 @@ class ColourPicker:
     __palette_size: Tuple[int, int]
     __palette_frame: DirectFrame
 
-    __picker: NodePath # circular sprite over picked region
+    __marker: DirectFrame
+    __marker_center: DirectFrame
 
-    def __init__(self, base: ShowBase, pick_colour_callback: Callable[[LRGBColorf], None], **kwargs) -> None:
+    def __init__(self, base: ShowBase, pick_colour_callback: Callable[[Tuple[float, float, float, float]], None], **kwargs) -> None:
         self.__base = base
         self.pick_colour_callback = pick_colour_callback
 
@@ -46,30 +47,21 @@ class ColourPicker:
         self.__palette_size = (self.__palette_img.getReadXSize(), self.__palette_img.getReadYSize())
         self.__palette_frame = DirectFrame(image=palette_filename, **kwargs)
         self.__palette_frame['state'] = DGG.NORMAL
-        self.__palette_frame.bind(DGG.B1PRESS, command=self.__pick_colour)
+        self.__palette_frame.bind(DGG.B1PRESS, command=self.__pick)
 
-        # PICKER #        
+        # MARKER #        
         core_thickness = 3.0
         border_thickness = 1.0
         border_colour = (0,0,0)
 
-        self.__picker = make_arc(thickness=3.0)
-        self.__picker.reparent_to(self.__base.pixel2d)
-        self.__picker.set_scale(5.0, 1., 5.0)
+        self.__marker = DirectFrame(parent=self.__palette_frame,
+                                    frameColor=(0.0, 0.0, 0.0, 1.0),
+                                    frameSize=(-0.08, .08, -.08, .08),
+                                    pos=(0.0, 0.0, 0.0))
 
-        # outer border
-        border = make_arc(thickness=border_thickness, colour=border_colour)
-        border.reparent_to(self.__picker)
-        scale = (core_thickness + border_thickness) / core_thickness
-        border.set_scale(scale, 1., scale)
-
-        # inner border
-        border = make_arc(thickness=border_thickness, colour=border_colour)
-        border.reparent_to(self.__picker)
-        scale = (core_thickness - 1) / core_thickness
-        border.set_scale(scale, 1., scale)
-
-        self.__picker.set_pos((self.__palette_frame.getX(self.__base.pixel2d), 0, self.__palette_frame.getZ(self.__base.pixel2d)))
+        self.__marker_center = DirectFrame(parent=self.__marker,
+                                           frameSize=(-.03, .03, -.03, .03))
+        self.__update_marker_colour()
 
     def __colour_at(self, x: float, y: float) -> Union[LRGBColorf, None]:
         w, h = self.__palette_size
@@ -88,10 +80,52 @@ class ColourPicker:
             return self.__palette_img.getXel(int(x), int(y))
         else:
             return None
+        
+    def __update_marker_colour(self) -> Tuple[float, float, float, float]:
+        colour = (*self.__colour_under_marker(), 1.0)
+        self.__marker_center['frameColor'] = colour
+        return colour
 
-    def __colour_under_picker(self) -> Union[LRGBColorf, None]:
-        x, _, z = self.__picker.get_pos()
-        return self.__colour_at(x, z)
+    def __update_marker_pos(self) -> None:
+        if not self.__base.mouseWatcherNode.hasMouse():
+            return None
+
+        pointer = self.__base.win.get_pointer(0)
+        x, y = pointer.getX(), -pointer.getY()
+
+        w, h = self.__palette_size
+        screen = self.__base.pixel2d
+
+        img_scale = self.__palette_frame['image_scale']
+        sx = self.__palette_frame.getSx(screen) * img_scale[0]
+        sy = self.__palette_frame.getSz(screen) * img_scale[2]
+
+        x -= self.__palette_frame.getX(screen)
+        y -= self.__palette_frame.getZ(screen)
+        x /= sx
+        y /= sy
+
+        x = max(-0.88, min(0.88, x))
+        y = max(-0.88, min(0.88, y))
+
+        self.__marker.set_pos(x, 0.0, y)
+
+    def __colour_under_marker(self) -> Union[LRGBColorf, None]:
+        x, _, y = self.__marker.get_pos()
+
+        w, h = self.__palette_size
+        screen = self.__base.pixel2d
+        
+        img_scale = self.__palette_frame['image_scale']
+        sx = self.__palette_frame.getSx(screen) * img_scale[0]
+        sy = self.__palette_frame.getSz(screen) * img_scale[2]
+
+        x *= sx
+        y *= sy
+        x += self.__palette_frame.getX(screen)
+        y += self.__palette_frame.getZ(screen)
+
+        return self.__colour_at(x, y)
 
     def __colour_under_mouse(self) -> Union[LRGBColorf, None]:
         if not self.__base.mouseWatcherNode.hasMouse():
@@ -100,14 +134,9 @@ class ColourPicker:
         pointer = self.__base.win.get_pointer(0)
         return self.__colour_at(pointer.getX(), -pointer.getY())
 
-    def __pick_colour(self, *args):
-        print("HERE")
-        colour = self.__colour_under_mouse()
-        if colour != None:
-            self.pick_colour_callback(colour)
-            pointer = self.__base.win.get_pointer(0)
-            x, y = pointer.getX(), pointer.getY()
-            self.__picker.set_pos((x, 0, -y))
+    def __pick(self, *args):
+        self.__update_marker_pos()
+        self.pick_colour_callback(self.__update_marker_colour())
 
 class Window():
     __base: ShowBase
