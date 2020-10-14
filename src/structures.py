@@ -72,45 +72,45 @@ class Size:
     The first three dimensions can be referred to as width, height, and depth, 
     which correspond to x, y, and z accordingly.
     """
-    __size: Point
+    _size: Point
 
     def __init__(self, *sizes, **kwargs):
         if ("width" in kwargs and "height" in kwargs):
             sizes = (kwargs["width"], kwargs["height"])
             if "depth" in kwargs:
                 sizes = (*sizes, kwargs["depth"])
-        self.__size = Point(*sizes)
+        self._size = Point(*sizes)
 
     @property
     def size(self):
-        return self.__size
+        return self._size
     
     @property
     def width(self) -> int:
-        return self.__size.x
+        return self._size.x
     
     @property
     def height(self) -> int:
-        return self.__size.y
+        return self._size.y
     
     @property
     def depth(self) -> int:
-        return self.__size.z
+        return self._size.z
     
     def __getitem__(self, idx) -> int:
-        return self.__size[idx]
+        return self._size[idx]
     
     def __len__(self) -> int:
-        return len(self.__size)
+        return len(self._size)
 
     def to_tensor(self) -> torch.Tensor:
-        return torch.Tensor([float(i) for i in self.__size.pos])
+        return torch.Tensor([float(i) for i in self._size.pos])
     
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, Size) and self.__size == other.__size
+        return isinstance(other, Size) and self._size == other._size
     
     def __ne__(self, other: object) -> bool:
         return not (self == other)
     
     def __repr__(self) -> str:
-        return f"Size({', '.join(str(i) for i in self.__size.pos)})"
+        return f"Size({', '.join(str(i) for i in self._size.pos)})"

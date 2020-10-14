@@ -8,7 +8,9 @@ from typing import BinaryIO, Callable, Any
 from simulator.services.debug import DebugLevel
 from simulator.services.service import Service
 from simulator.services.services import Services
+from simulator.services.resources.smart_unpickle import load as smart_load
 
+from typing import NamedTuple
 
 class Directory(Service):
     _name: str
@@ -78,8 +80,9 @@ class Directory(Service):
         if not os.path.isfile(directory + file_name):
             return None
         handle: BinaryIO
+
         with open(directory + file_name, 'rb') as handle:
-            return pickle.load(handle)
+            return smart_load(handle)
 
     @staticmethod
     def _add_extension(file_name: str, extension: str) -> str:
