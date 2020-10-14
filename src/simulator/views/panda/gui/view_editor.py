@@ -83,7 +83,10 @@ class ColourPicker:
         
     def __update_marker_colour(self) -> Tuple[float, float, float, float]:
         c = self.__colour_under_marker()
-        self.__marker_center['frameColor'] = c
+        if c is None:
+            c = self.__marker_center['frameColor']
+        else:
+            self.__marker_center['frameColor'] = c
         return c
 
     def __update_marker_pos(self) -> None:
