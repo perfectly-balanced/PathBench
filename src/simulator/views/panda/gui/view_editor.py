@@ -63,7 +63,7 @@ class ColourPicker:
                                            frameSize=(-.03, .03, -.03, .03))
         self.__update_marker_colour()
 
-    def __colour_at(self, x: float, y: float) -> Union[LRGBColorf, None]:
+    def __colour_at(self, x: float, y: float) -> Union[Tuple[float, float, float, float], None]:
         w, h = self.__palette_size
         screen = self.__base.pixel2d
 
@@ -77,14 +77,14 @@ class ColourPicker:
         y = (0.5 - y / (2.0 * sy)) * h
 
         if 0 <= x < w and 0 <= y < h:
-            return self.__palette_img.getXel(int(x), int(y))
+            return (*self.__palette_img.getXel(int(x), int(y)), 1.0)
         else:
             return None
         
     def __update_marker_colour(self) -> Tuple[float, float, float, float]:
-        colour = (*self.__colour_under_marker(), 1.0)
-        self.__marker_center['frameColor'] = colour
-        return colour
+        c = self.__colour_under_marker()
+        self.__marker_center['frameColor'] = c
+        return c
 
     def __update_marker_pos(self) -> None:
         if not self.__base.mouseWatcherNode.hasMouse():
@@ -105,12 +105,12 @@ class ColourPicker:
         x /= sx
         y /= sy
 
-        x = max(-0.88, min(0.88, x))
-        y = max(-0.88, min(0.88, y))
+        x = max(-0.87, min(0.87, x))
+        y = max(-0.87, min(0.87, y))
 
         self.__marker.set_pos(x, 0.0, y)
 
-    def __colour_under_marker(self) -> Union[LRGBColorf, None]:
+    def __colour_under_marker(self) -> Union[Tuple[float, float, float, float], None]:
         x, _, y = self.__marker.get_pos()
 
         w, h = self.__palette_size
@@ -127,7 +127,7 @@ class ColourPicker:
 
         return self.__colour_at(x, y)
 
-    def __colour_under_mouse(self) -> Union[LRGBColorf, None]:
+    def __colour_under_mouse(self) -> Union[Tuple[float, float, float, float], None]:
         if not self.__base.mouseWatcherNode.hasMouse():
             return None
 
