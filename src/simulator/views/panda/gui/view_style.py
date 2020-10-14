@@ -1,8 +1,9 @@
 from panda3d.core import *
 from direct.showbase.ShowBase import ShowBase
 from direct.gui.OnscreenImage import OnscreenImage
+from direct.gui.DirectGui import *
 
-from typing import Tuple
+from typing import Tuple, Union
 import os, math
 
 def make_arc(angle_degs = 360, nsteps = 16, thickness = 2, colour = (1,1,1)):
@@ -27,29 +28,26 @@ class ViewStyle:
     base: ShowBase
 
     __palette_img: PNMImage
-    __palette: OnscreenImage
-    __palette_scale_factor: float
-    __palette_size: Tuple[float, float] # (width, height)
+    __palette_size: Tuple[int, int]
+    __palette_frame: DirectFrame
 
     __picker: NodePath # circular sprite over picked region
 
-    def __init__(self, base: ShowBase):
+    def __init__(self, base: ShowBase) -> None:
         self.base = base
         
         # PALETTE #
         palette_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "colour_palette.png")
         self.__palette_img = PNMImage(Filename.fromOsSpecific(palette_filename))
-        self.__palette = OnscreenImage(image=palette_filename)
-        self.__palette.reparentTo(self.base.pixel2d)
-
-        self.__palette_scale_factor = 1. / 10.
-        self.__palette_size = (self.__palette_img.getReadXSize() * self.__palette_scale_factor, self.__palette_img.getReadYSize() * self.__palette_scale_factor)
-        
-        # default size of an OnscreenImage is 2x2 panda units (hence we must scale by half the actual size)
-        self.__palette.set_scale(self.__palette_size[0] * .5, 1., self.__palette_size[1] * .5)
-
-        # note that the origin of an OnscreenImage is at its center
-        self.__palette.set_pos(self.base.win.get_size()[0] / 2, 0, -self.base.win.get_size()[1] / 2)
+        self.__palette_size = (self.__palette_img.getReadXSize(), self.__palette_img.getReadYSize())
+        self.__palette_frame = DirectFrame(relief=DGG.SUNKEN,
+                                           borderWidth=(.05, .05),
+                                           image=palette_filename,
+                                           image_scale=(.95, 1., .95),
+                                           frameColor=(.3, .3, .3, 1.),
+                                           frameSize=(-1., 1., -1., 1.),
+                                           pos=(-.15, 0., .3),
+                                           scale=(.25, 1., .25))
 
         self.base.accept("mouse1", self.__pick_colour)
 
@@ -74,27 +72,36 @@ class ViewStyle:
         scale = (core_thickness - 1) / core_thickness
         border.set_scale(scale, 1., scale)
 
-        self.__picker.set_pos(self.__palette.get_pos())
+        self.__picker.set_pos((self.__palette_frame.getX(self.base.pixel2d), 0, self.__palette_frame.getZ(self.base.pixel2d)))
 
-    def __colour_at(self, pos: Tuple[float, float]):
-        x, y = pos
-        palette_x, _, palette_z = self.__palette.get_pos()
-        
-        rel_x = x - palette_x + self.__palette_size[0] / 2.
-        rel_y = y + palette_z + self.__palette_size[1] / 2.
+    def __colour_at(self, x: float, y: float) -> Union[LRGBColorf, None]:
+        w, h = self.__palette_size
+        screen = self.base.pixel2d
 
-        if 0 <= rel_x < self.__palette_size[0] and 0 <= rel_y < self.__palette_size[1]:
-            return self.__palette_img.getXel(int(rel_x / self.__palette_scale_factor), int(rel_y / self.__palette_scale_factor))
+        img_scale = self.__palette_frame['image_scale']
+        sx = self.__palette_frame.getSx(screen) * img_scale[0]
+        sy = self.__palette_frame.getSz(screen) * img_scale[2]
+
+        x -= self.__palette_frame.getX(screen)
+        y -= self.__palette_frame.getZ(screen)
+        x = (0.5 + x / (2.0 * sx)) * w
+        y = (0.5 - y / (2.0 * sy)) * h
+
+        if 0 <= x < w and 0 <= y < h:
+            return self.__palette_img.getXel(int(x), int(y))
         else:
             return None
 
-    def __colour_under_picker(self):
+    def __colour_under_picker(self) -> Union[LRGBColorf, None]:
         x, _, z = self.__picker.get_pos()
-        return self.__colour_at((x, -z))
+        return self.__colour_at(x, z)
 
-    def __colour_under_mouse(self):
+    def __colour_under_mouse(self) -> Union[LRGBColorf, None]:
+        if not self.base.mouseWatcherNode.hasMouse():
+            return None
+
         pointer = self.base.win.get_pointer(0)
-        return self.__colour_at((pointer.getX(), pointer.getY()))
+        return self.__colour_at(pointer.getX(), -pointer.getY())
 
     def __pick_colour(self):
         col = self.__colour_under_mouse()
