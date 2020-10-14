@@ -1,5 +1,4 @@
 from simulator.views.panda.main_view import MainView
-from simulator.views.panda.types import RGBAColour
 import random
 
 if __name__ == "__main__":

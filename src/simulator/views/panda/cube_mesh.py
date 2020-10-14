@@ -7,7 +7,7 @@ from typing import List
 from numbers import Real
 import math
 
-from .types import RGBAColour, IntPoint3
+from .common import IntPoint3, Colour, WHITE
 
 def normalise(*args):
     v = LVector3(*args)
@@ -27,7 +27,7 @@ class CubeMesh():
     name: str
     mesh: Geom
 
-    def __init__(self, structure: List[List[List[bool]]], name: str = 'CubeMesh', artificial_lighting: bool = False, default_colour: RGBAColour = RGBAColour(1.0), hidden_faces: bool = False) -> None:
+    def __init__(self, structure: List[List[List[bool]]], name: str = 'CubeMesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, hidden_faces: bool = False) -> None:
         self.name = name
         self.__structure = structure
         self.__artificial_lighting = artificial_lighting
@@ -93,7 +93,7 @@ class CubeMesh():
         self.__triangles.close_primitive()
         self.mesh.add_primitive(self.__triangles)
 
-    def get_cube_colour(self, pos: IntPoint3) -> RGBAColour:
+    def get_cube_colour(self, pos: IntPoint3) -> Colour:
         x, y, z = pos
 
         faces = self.__cube_face_map[x][y][z]
@@ -103,13 +103,13 @@ class CubeMesh():
                 r, g, b, a = self.__colour.getData4f()
                 if self.artificial_lighting:
                     factor = self.__LIGHT_ATTENUATION_FACTOR(Face(i))
-                    return RGBAColour(r / factor, g / factor, b / factor, a)
+                    return Colour(r / factor, g / factor, b / factor, a)
                 else:
-                    return RGBAColour(r, g, b, a)
+                    return Colour(r, g, b, a)
 
         return self.default_colour
 
-    def set_cube_colour(self, pos: IntPoint3, colour: RGBAColour) -> None:
+    def set_cube_colour(self, pos: IntPoint3, colour: Colour) -> None:
         x, y, z = pos
 
         faces = self.__cube_face_map[x][y][z]
@@ -127,9 +127,9 @@ class CubeMesh():
         self.set_cube_colour(pos, self.default_colour)
 
     @staticmethod
-    def __attenuate_colour(colour: RGBAColour, factor: Real) -> RGBAColour:
+    def __attenuate_colour(colour: Colour, factor: Real) -> Colour:
         r, g, b, a = colour
-        return RGBAColour(r * factor, g * factor, b * factor, a)
+        return Colour(r * factor, g * factor, b * factor, a)
 
     @staticmethod
     def __LIGHT_ATTENUATION_FACTOR(face: Face) -> Real:
@@ -142,7 +142,7 @@ class CubeMesh():
                     }
         return switcher.get(face.value)
 
-    def __face_colour(self, colour: RGBAColour, face: Face) -> RGBAColour:
+    def __face_colour(self, colour: Colour, face: Face) -> Colour:
         if self.artificial_lighting:
             return self.__attenuate_colour(colour, self.__LIGHT_ATTENUATION_FACTOR(face))
         else:
@@ -229,11 +229,11 @@ class CubeMesh():
         return 'default_colour'
 
     @default_colour.getter
-    def default_colour(self) -> RGBAColour:
+    def default_colour(self) -> Colour:
         return self.__default_colour
 
     @default_colour.setter
-    def default_colour(self, value: RGBAColour) -> None:
+    def default_colour(self, value: Colour) -> None:
         old_r, old_g, old_b, old_a = self.default_colour
         self.__default_colour = value
 

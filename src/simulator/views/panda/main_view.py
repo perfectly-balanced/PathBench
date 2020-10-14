@@ -3,12 +3,12 @@ from panda3d.core import PointLight, AmbientLight, LPoint3, WindowProperties, Fr
 from panda3d.core import *
 
 from enum import IntEnum, unique
-from typing import List, Tuple
+from typing import List, Tuple, Final
 import random
 import math
 
 from .cube_mesh import CubeMesh
-from .types import RGBAColour, IntPoint3
+from .common import IntPoint3, Colour, WHITE, BLACK, RED, GREEN, BLUE
 
 @unique
 class Lighting(IntEnum):
@@ -17,8 +17,8 @@ class Lighting(IntEnum):
     CUSTOM = 2
 
 
-START_CUBE_COLOUR = RGBAColour(220, 0, 0)
-GOAL_CUBE_COLOUR = RGBAColour(0, 220, 0)
+START_CUBE_COLOUR: Final = GREEN
+GOAL_CUBE_COLOUR: Final = RED
 
 class MainView(ShowBase):
     __start_pos: IntPoint3
@@ -163,7 +163,7 @@ class MainView(ShowBase):
         self.accept('mouse1', left_click)
         self.accept('mouse3', right_click)
         
-        self.__map.set_transparency(TransparencyAttrib.MAlpha)
+        self.__map.set_transparency(TransparencyAttrib.M_alpha)
         # the following can be used to override the alpha channel, makes entire object look ghostly
         # self.__map.set_attrib(ColorBlendAttrib.make(ColorBlendAttrib.MAdd, ColorBlendAttrib.OIncomingAlpha, ColorBlendAttrib.OOne))
         # self.__map.set_alpha_scale(0.15)
@@ -209,8 +209,12 @@ class MainView(ShowBase):
         return self.__map_mesh
 
     def __generate_map(self, artificial_lighting: bool = False) -> None:
-        self.__map_mesh = CubeMesh(self.__map_data, '3D Voxel Map', artificial_lighting, default_colour = RGBAColour(1, 1, 1, 0.05), hidden_faces = True)
+        self.__map_mesh = CubeMesh(self.__map_data, '3D Voxel Map', artificial_lighting, default_colour = WHITE.with_alpha(0), hidden_faces = True)
         self.__map = self.render.attach_new_node(self.__map_mesh.geom_node)
+
+        self.__wireframe_map_mesh = CubeMesh(self.__map_data, '3D Voxel Map Wireframe', artificial_lighting, default_colour = BLACK.with_alpha(0.2), hidden_faces = False)
+        self.__wireframe_map = self.__map.attach_new_node(self.__wireframe_map_mesh.geom_node)
+        self.__wireframe_map.setRenderModeWireframe()
 
         # self.__map_movement = self.__map.hprInterval(50, LPoint3(0, 360, 360))
         # self.__map_movement.loop()
