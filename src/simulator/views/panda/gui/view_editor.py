@@ -424,24 +424,39 @@ class ViewElement():
         self.__colour_callback = colour_callback
         self.__visible = visible
 
-        self.__frame = DirectFrame(parent=parent)
+        self.__frame = DirectFrame(parent=parent, frameColor=WINDOW_BG_COLOUR)
 
         self.__cv = ColourView(self.__frame, colour)
         self.__cv.frame.set_scale((0.15, 1.0, 0.15))
-
+        self.__cv.frame.set_pos((-0.65, 1.0, 0.0))
+        
         self.__label = DirectLabel(parent=self.__frame,
                                    text=self.__name,
                                    text_fg=Colour(1.0),
                                    text_bg=WINDOW_BG_COLOUR,
-                                   pos=(-0.5, 0.0, 0.0),
+                                   borderWidth=(.0, .0),
+                                   pos=(0.28, 0.0, -0.03),
                                    scale=(0.1, 1.0, 0.1))
 
         visibility_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "visible.png")
         self.__visibility_btn = DirectButton(parent=self.__frame,
                                              image=visibility_filename,
                                              frameColor=Colour(0,0,0,0),
-                                             pos=(-0.5, 0.0, 0.0),
-                                             scale=(0.09, 1.0, 0.06))
+                                             pos=(-0.92, 0.0, 0.0),
+                                             scale=(0.09, 1.0, 0.06),
+                                             command=self.__toggle_visible)
+                                            
+        self.__visibility_bar = DirectFrame(parent=self.__frame,
+                                            borderWidth=(.0, .0),
+                                            frameColor=Colour(0.5),
+                                            frameSize=(-0.1, 0.1, -0.01, 0.01),
+                                            pos=(-0.92, 0.0, 0.0),
+                                            hpr=(40, 0, 40))
+        
+        self.visible = self.__visible # trigger UI update
+
+    def __toggle_visible(self):
+        self.visible = not self.visible
 
     @property
     def frame(self) -> DirectFrame:
@@ -472,6 +487,10 @@ class ViewElement():
     def visible(self, value: bool) -> None:
         self.__visible = value
         self.__visibility_callback(value)
+        if self.__visible:
+            self.__visibility_bar.hide()
+        else:
+            self.__visibility_bar.show()
 
 class ViewEditor():
     __base: ShowBase
@@ -488,7 +507,7 @@ class ViewEditor():
                                frameColor=WINDOW_BG_COLOUR,
                                pos=(150, 0., -200),
                                scale=(150, 1., 150),
-                               frameSize = (-1.1, 1.1, -7.0, 1.0))
+                               frameSize = (-1.1, 1.1, -4.1, 1.0))
 
         self.__colour_picker = AdvancedColourPicker(self.__base, self.__window.frame, lambda x: print(x))
 
