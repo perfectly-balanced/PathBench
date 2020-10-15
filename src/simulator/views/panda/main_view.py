@@ -72,6 +72,7 @@ class MainView(ShowBase):
         # MAP #
         self.__map_data = map_data
         self.__generate_map(lighting == Lighting.ARTIFICAL)
+
         self.worldOrigin = self.render.attachNewNode("Origin")
         self.__map.reparentTo(self.worldOrigin)
 
@@ -414,7 +415,7 @@ class MainView(ShowBase):
         self.__light_cam.node().get_lens().set_near_far(10, 1000)
         self.__light_cam.node().hideFrustum()
 
-        # Define a procedure to move the camera by moving the world origin
+        # Defines a procedure to move the camera by moving the world origin
         # Always keeps the camera oriented towards the world origin
 
     def moveOrbitalCameraTask(self, task):
@@ -453,10 +454,7 @@ class MainView(ShowBase):
             self.angleLongitudeDegrees = self.angleLongitudeDegrees - 360.0
         if (self.angleLongitudeDegrees < -180.0):
             self.angleLongitudeDegrees = self.angleLongitudeDegrees + 360.0
-        if (self.angleLatitudeDegrees > (90.0 - 0.001)):
-            self.angleLatitudeDegrees = 90.0 - 0.001
-        if (self.angleLatitudeDegrees < (-90.0 + 0.001)):
-            self.angleLatitudeDegrees = -90.0 + 0.001
+
         if (self.cameraDistance < self.minCameraDistance):
             self.cameraDistance = self.minCameraDistance
         if (self.cameraDistance > self.maxCameraDistance):
