@@ -9,6 +9,7 @@ import math
 
 from .cube_mesh import CubeMesh
 from .common import IntPoint3, Colour, WHITE, BLACK, RED, GREEN, BLUE
+from .gui.view_editor import ViewEditor
 
 @unique
 class Lighting(IntEnum):
@@ -162,11 +163,9 @@ class MainView(ShowBase):
 
         self.accept('mouse1', left_click)
         self.accept('mouse3', right_click)
-        
-        self.__map.set_transparency(TransparencyAttrib.M_alpha)
-        # the following can be used to override the alpha channel, makes entire object look ghostly
-        # self.__map.set_attrib(ColorBlendAttrib.make(ColorBlendAttrib.MAdd, ColorBlendAttrib.OIncomingAlpha, ColorBlendAttrib.OOne))
-        # self.__map.set_alpha_scale(0.15)
+
+        # GUI #
+        self.__vs = ViewEditor(self)
 
     @property
     def start_pos(self) -> str:
@@ -211,7 +210,12 @@ class MainView(ShowBase):
     def __generate_map(self, artificial_lighting: bool = False) -> None:
         self.__map_mesh = CubeMesh(self.__map_data, '3D Voxel Map', artificial_lighting, default_colour = WHITE.with_alpha(0), hidden_faces = True)
         self.__map = self.render.attach_new_node(self.__map_mesh.geom_node)
+        self.__map.set_transparency(TransparencyAttrib.M_alpha)
+        # the following can be used to override the alpha channel, makes entire object look ghostly
+        # self.__map.set_attrib(ColorBlendAttrib.make(ColorBlendAttrib.MAdd, ColorBlendAttrib.OIncomingAlpha, ColorBlendAttrib.OOne))
+        # self.__map.set_alpha_scale(0.15)
 
+        # Wireframe overlay
         self.__wireframe_map_mesh = CubeMesh(self.__map_data, '3D Voxel Map Wireframe', artificial_lighting, default_colour = BLACK.with_alpha(0.2), hidden_faces = False)
         self.__wireframe_map = self.__map.attach_new_node(self.__wireframe_map_mesh.geom_node)
         self.__wireframe_map.setRenderModeWireframe()

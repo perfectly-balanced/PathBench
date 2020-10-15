@@ -7,6 +7,10 @@ from typing import Tuple, Union, Callable
 import os
 import math
 
+from ..common import Colour
+
+WINDOW_BG_COLOUR = Colour(.3, .3, .3, 1.)
+
 def make_arc(angle_degs = 360, nsteps = 16, thickness = 2, colour = (1,1,1)):
     ls = LineSegs()
     ls.set_thickness(thickness)
@@ -49,18 +53,15 @@ class ColourPicker:
         self.__palette_frame['state'] = DGG.NORMAL
         self.__palette_frame.bind(DGG.B1PRESS, command=self.__pick)
 
-        # MARKER #        
-        core_thickness = 3.0
-        border_thickness = 1.0
-        border_colour = (0,0,0)
-
+        # MARKER #
         self.__marker = DirectFrame(parent=self.__palette_frame,
                                     frameColor=(0.0, 0.0, 0.0, 1.0),
                                     frameSize=(-0.08, .08, -.08, .08),
                                     pos=(0.0, 0.0, 0.0))
 
         self.__marker_center = DirectFrame(parent=self.__marker,
-                                           frameSize=(-.03, .03, -.03, .03))
+                                           frameSize=(-0.03, 0.03, -0.03, 0.03))
+        
         self.__update_marker_colour()
 
     def __colour_at(self, x: float, y: float) -> Union[Tuple[float, float, float, float], None]:
@@ -82,7 +83,7 @@ class ColourPicker:
             return None
         
     def __update_marker_colour(self) -> Tuple[float, float, float, float]:
-        c = self.__colour_under_marker()
+        c = self.colour_under_marker()
         if c is None:
             c = self.__marker_center['frameColor']
         else:
@@ -108,12 +109,12 @@ class ColourPicker:
         x /= sx
         y /= sy
 
-        x = max(-0.87, min(0.87, x))
-        y = max(-0.87, min(0.87, y))
+        x = max(-0.92, min(0.92, x))
+        y = max(-0.92, min(0.92, y))
 
         self.__marker.set_pos(x, 0.0, y)
 
-    def __colour_under_marker(self) -> Union[Tuple[float, float, float, float], None]:
+    def colour_under_marker(self) -> Union[Tuple[float, float, float, float], None]:
         x, _, y = self.__marker.get_pos()
 
         w, h = self.__palette_size
@@ -130,7 +131,7 @@ class ColourPicker:
 
         return self.__colour_at(x, y)
 
-    def __colour_under_mouse(self) -> Union[Tuple[float, float, float, float], None]:
+    def colour_under_mouse(self) -> Union[Tuple[float, float, float, float], None]:
         if not self.__base.mouseWatcherNode.hasMouse():
             return None
 
@@ -141,13 +142,17 @@ class ColourPicker:
         self.__update_marker_pos()
         self.pick_colour_callback(self.__update_marker_colour())
 
+    @property
+    def frame(self) -> DirectFrame:
+        return self.__palette_frame
+
 class Window():
     __base: ShowBase
     __name: str
     
     __frame: DirectFrame
-    __drag_start: Point2()
-    __drag_offset: Vec2()
+    __drag_start: Point2
+    __drag_offset: Vec2
 
     def __init__(self, base: ShowBase, name: str, *args, **kwargs):
         self.__base = base
@@ -192,6 +197,39 @@ class Window():
     def frame(self) -> DirectFrame:
         return self.__frame
 
+class ColourView():
+    def __init__(self, parent: DirectFrame, colour: Union[Colour, None] = None):
+        self.__frame = DirectFrame(parent=parent,
+                                  relief=DGG.SUNKEN,
+                                  borderWidth=(.05, .05),
+                                  frameColor=WINDOW_BG_COLOUR,
+                                  frameSize=(-.4, .4, -.3, .3),
+                                  scale=(.5, 1., .5))
+        self.__view = DirectFrame(parent=self.__frame,
+                                    frameColor=colour if colour else WINDOW_BG_COLOUR,
+                                    frameSize=(-.35, .35, -.25, .25))
+        self.__colour = colour
+
+    @property
+    def colour(self) -> str:
+        return 'colour'
+    
+    @colour.getter
+    def colour(self) -> Union[Colour, None]:
+        return self.__colour
+
+    @colour.setter
+    def colour(self, value) -> None:
+        self.__colour = value
+        self.__view['frameColor'] = value if value else WINDOW_BG_COLOUR
+    
+    @property
+    def frame(self) -> DirectFrame:
+        return self.__frame
+
+    def set_colour(self, value) -> None:
+        self.colour = value
+
 class ViewEditor():
     __base: ShowBase
     __window = Window
@@ -202,23 +240,31 @@ class ViewEditor():
 
         self.__window = Window(self.__base, "view_editor", parent=self.__base.pixel2d,
                                             relief=DGG.RAISED,
-                                            borderWidth=(.05, .05),
+                                            borderWidth=(0.0, 0.0),
                                             frameColor=(.5, .5, .5, 1.),
                                             pos=(150, 0., -200),
-                                            scale=(150, 1., 150))
+                                            scale=(150, 1., 150),
+                                            frameSize = (-0.8, 0.8, -2.0, 1.0))
 
         self.__colour_picker = ColourPicker(self.__base,
                                             lambda col: print("Colour: " + str(col)),
                                             parent=self.__window.frame,
                                             relief=DGG.SUNKEN,
-                                            borderWidth=(.05, .05),
-                                            image_scale=(.95, 1., .95),
-                                            frameColor=(.3, .3, .3, 1.),
+                                            borderWidth=(.0, .0),
+                                            image_scale=(1., 1., 1.),
+                                            frameColor=WINDOW_BG_COLOUR,
                                             frameSize=(-1., 1., -1., 1.),
-                                            pos=(-.15, 0., .3),
-                                            scale=(.5, 1., .5))
+                                            scale=(0.75, 1., 0.75))
+    
+        self.__cv_picked = ColourView(self.__window.frame)
+        self.__cv_picked.frame.set_pos(-0.55, 0.0, -1.3)
+        self.__cv_hovered = ColourView(self.__window.frame)
+        self.__cv_hovered.frame.set_pos(-0.55, 0.0, -0.95)
+        self.__colour_picker.pick_colour_callback = self.__cv_picked.set_colour
 
-if __name__ == "__main__":
-    app = ShowBase()
-    vs = ViewEditor(app)
-    app.run()
+        def update_cv_hovered(task):
+            c = self.__colour_picker.colour_under_mouse()
+            self.__cv_hovered.set_colour(c)
+            return task.cont
+
+        self.__update_cv_hovered_tk = self.__base.taskMgr.add(update_cv_hovered, 'update_cv_hovered')
