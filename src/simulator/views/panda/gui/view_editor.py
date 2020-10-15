@@ -62,8 +62,7 @@ class ColourPicker:
 
         self.__marker_center = DirectFrame(parent=self.__marker,
                                            frameSize=(-0.03, 0.03, -0.03, 0.03))
-        
-        self.__update_marker_colour()
+        self.__marker.hide()
 
     def __colour_at(self, x: float, y: float) -> Union[Tuple[float, float, float, float], None]:
         w, h = self.__palette_size
@@ -114,6 +113,7 @@ class ColourPicker:
         y = max(-0.92, min(0.92, y))
 
         self.__marker.set_pos(x, 0.0, y)
+        self.__marker.show()
 
     def colour_under_marker(self) -> Union[Tuple[float, float, float, float], None]:
         x, _, y = self.__marker.get_pos()
@@ -146,6 +146,10 @@ class ColourPicker:
     @property
     def frame(self) -> DirectFrame:
         return self.__palette_frame
+    
+    @property
+    def marker(self) -> DirectFrame:
+        return self.__marker
 
 class Window():
     __base: ShowBase
@@ -211,7 +215,7 @@ class ColourView():
                                   frameSize=(-0.52, 0.52, -0.44, 0.44),
                                   scale=(0.5, 1.0, 0.5))
         self.__view = DirectFrame(parent=self.__frame,
-                                    frameColor=colour if colour else WINDOW_BG_COLOUR,
+                                    frameColor=colour if colour != None else WINDOW_BG_COLOUR,
                                     frameSize=(-0.47, 0.47, -0.39, 0.39))
         self.__colour = colour
 
@@ -226,25 +230,25 @@ class ColourView():
     @colour.setter
     def colour(self, value) -> None:
         self.__colour = value
-        self.__view['frameColor'] = value if value else WINDOW_BG_COLOUR
+        self.__view['frameColor'] = value if value != None else WINDOW_BG_COLOUR
     
     @property
     def frame(self) -> DirectFrame:
         return self.__frame
 
-    def set_colour(self, value) -> None:
-        self.colour = value
-
 class ColourChannel():
-    edit_callback: Callable[['ColourChannel'], None]
+    __slider_edit_callback: Callable[['ColourChannel', float], None]
+    __entry_edit_callback: Callable[['ColourChannel', float], None]
 
     __frame: DirectFrame
     __label: DirectLabel
     __slider: DirectSlider
     __entry: DirectEntry
 
-    def __init__(self, parent: DirectFrame, text: str, value: float, edit_callback: Callable[['ColourChannel'], None]):
+    def __init__(self, parent: DirectFrame, text: str, value: float, slider_edit_callback: Callable[['ColourChannel', float], None], entry_edit_callback: Callable[['ColourChannel', float], None]):
         self.__frame = DirectFrame(parent=parent)
+        self.__slider_edit_callback = slider_edit_callback
+        self.__entry_edit_callback = entry_edit_callback
         
         self.__label = DirectLabel(parent=self.__frame,
                                     text=text,
@@ -259,22 +263,49 @@ class ColourChannel():
                                     frameColor=WIDGET_BG_COLOUR,
                                     frameSize=(-1.0, 1.0, -0.4, 0.4),
                                     thumb_frameSize=(-0.075, 0.075, -0.2, 0.2),
-                                    command=lambda: edit_callback(self),
                                     value=value,
                                     pos=(0.05, 0.0, 0.0255),
                                     scale=(0.45, 1.0, 0.5))
 
         self.__entry = DirectEntry(parent=self.__frame,
                                    frameColor=WIDGET_BG_COLOUR,
-                                   command=lambda: edit_callback(self),
                                    text_fg=Colour(1.0),
+                                   initialText=str(value),
                                    scale=0.1,
                                    width=3,
                                    pos=(0.55, 0.0, -0.01105))
 
+        self.__set_callbacks()
+
+    def __unset_callbacks(self):
+        self.__slider['command'] = None
+        self.__entry['command'] = None
+
+    def __set_callbacks(self):
+        self.__slider['command'] = lambda: self.__slider_edit_callback(self, self.__slider['value'])
+        self.__entry['command'] = lambda s: self.__entry_edit_callback(self, float(s))
+
     @property
     def frame(self) -> DirectFrame:
         return self.__frame
+    
+    def update_slider(self, value: float):
+        self.__unset_callbacks()
+        self.__slider['value'] = value
+        self.__set_callbacks()
+
+    def update_entry(self, value: float):
+        self.__unset_callbacks()
+        self.__entry.enterText(f'{value:.3f}')
+        self.__set_callbacks()
+
+    def update(self, value: float):
+        self.update_slider(value)
+        self.update_entry(value)
+
+    @property
+    def value(self) -> float:
+        return self.__slider['value']
 
 class ViewEditor():
     __base: ShowBase
@@ -284,7 +315,7 @@ class ViewEditor():
 
     def __init__(self, base: ShowBase):
         self.__base = base
-        self.__colour = Colour(0.5)
+        self.__colour = Colour(0.25, 0.5, 0.75, 1.0)
 
         self.__window = Window(self.__base, "view_editor", parent=self.__base.pixel2d,
                                             relief=DGG.RAISED,
@@ -305,25 +336,26 @@ class ViewEditor():
                                             scale=(1.0, 1.0, 0.75),
                                             pos=(0.0, 0.0, 0.15))
     
-        self.__cv_picked = ColourView(self.__window.frame)
+        self.__cv_picked = ColourView(self.__window.frame, self.__colour)
         self.__cv_picked.frame.set_pos(-0.74, 0.0, -1.41)
         self.__cv_hovered = ColourView(self.__window.frame)
         self.__cv_hovered.frame.set_pos(-0.74, 0.0, -0.89)
-        self.__colour_picker.pick_colour_callback = self.__cv_picked.set_colour
+        self.__colour_picker.pick_colour_callback = self.__colour_picked_callback
 
         def update_cv_hovered(task):
             c = self.__colour_picker.colour_under_mouse()
-            self.__cv_hovered.set_colour(c)
+            self.__cv_hovered.colour = c
             return task.cont
         self.__base.taskMgr.add(update_cv_hovered, 'update_cv_hovered')
 
         c = self.__colour
         f = self.__window.frame
-        callback = self.__colour_channel_edit_callback
-        self.__r = ColourChannel(f, "R", c[0], callback)
-        self.__g = ColourChannel(f, "G", c[1], callback)
-        self.__b = ColourChannel(f, "B", c[2], callback)
-        self.__a = ColourChannel(f, "A", c[3], callback)
+        sc = self.__colour_channel_slider_edit_callback
+        ec = self.__colour_channel_entry_edit_callback
+        self.__r = ColourChannel(f, "R", c[0], sc, ec)
+        self.__g = ColourChannel(f, "G", c[1], sc, ec)
+        self.__b = ColourChannel(f, "B", c[2], sc, ec)
+        self.__a = ColourChannel(f, "A", c[3], sc, ec)
 
         x = 0.14
         y_base = -0.8
@@ -333,6 +365,24 @@ class ViewEditor():
         self.__b.frame.set_pos((x, 0.0, y_base+y_inc*2))
         self.__a.frame.set_pos((x, 0.0, y_base+y_inc*3))
 
-    def __colour_channel_edit_callback(self, chn: ColourChannel):
-        pass
+    def __colour_picked_callback(self, colour: Colour):
+        n = 3
+        r, g, b, _ = colour
+        self.__r.update(r)
+        self.__g.update(g)
+        self.__b.update(b)
+        self.__cv_picked.colour = Colour(r, g, b, self.__cv_picked.colour.a)
 
+    def __colour_channel_slider_edit_callback(self, chn: ColourChannel, value: float):
+        if chn != self.__a:
+            self.__colour_picker.marker.hide()
+        
+        chn.update_entry(value)
+        self.__cv_picked.colour = Colour(self.__r.value, self.__g.value, self.__b.value, self.__a.value)
+
+    def __colour_channel_entry_edit_callback(self, chn: ColourChannel, value: float):
+        if chn != self.__a:
+            self.__colour_picker.marker.hide()
+        
+        chn.update_slider(value)
+        self.__cv_picked.colour = Colour(self.__r.value, self.__g.value, self.__b.value, self.__a.value)
