@@ -326,7 +326,7 @@ class ViewEditor():
                                             frameSize = (-1.1, 1.1, -2.0, 1.0))
 
         self.__colour_picker = ColourPicker(self.__base,
-                                            lambda col: print("Colour: " + str(col)),
+                                            self.__colour_picked_callback,
                                             parent=self.__window.frame,
                                             relief=DGG.SUNKEN,
                                             borderWidth=(.0, .0),
@@ -340,7 +340,6 @@ class ViewEditor():
         self.__cv_picked.frame.set_pos(-0.74, 0.0, -1.41)
         self.__cv_hovered = ColourView(self.__window.frame)
         self.__cv_hovered.frame.set_pos(-0.74, 0.0, -0.89)
-        self.__colour_picker.pick_colour_callback = self.__colour_picked_callback
 
         def update_cv_hovered(task):
             c = self.__colour_picker.colour_under_mouse()
@@ -365,6 +364,8 @@ class ViewEditor():
         self.__b.frame.set_pos((x, 0.0, y_base+y_inc*2))
         self.__a.frame.set_pos((x, 0.0, y_base+y_inc*3))
 
+        self.__dirty_rem_no_hide = 0
+
     def __colour_picked_callback(self, colour: Colour):
         n = 3
         r, g, b, _ = colour
@@ -372,17 +373,24 @@ class ViewEditor():
         self.__g.update(g)
         self.__b.update(b)
         self.__cv_picked.colour = Colour(r, g, b, self.__cv_picked.colour.a)
+        self.__dirty_rem_no_hide = 3 # something fishy is going on
 
     def __colour_channel_slider_edit_callback(self, chn: ColourChannel, value: float):
         if chn != self.__a:
-            self.__colour_picker.marker.hide()
+            if self.__dirty_rem_no_hide:
+                self.__dirty_rem_no_hide -= 1
+            else:
+                self.__colour_picker.marker.hide()
         
         chn.update_entry(value)
         self.__cv_picked.colour = Colour(self.__r.value, self.__g.value, self.__b.value, self.__a.value)
 
     def __colour_channel_entry_edit_callback(self, chn: ColourChannel, value: float):
         if chn != self.__a:
-            self.__colour_picker.marker.hide()
+            if self.__dirty_rem_no_hide:
+                self.__dirty_rem_no_hide -= 1
+            else:
+                self.__colour_picker.marker.hide()
         
         chn.update_slider(value)
         self.__cv_picked.colour = Colour(self.__r.value, self.__g.value, self.__b.value, self.__a.value)
