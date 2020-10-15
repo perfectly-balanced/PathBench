@@ -3,7 +3,7 @@ from direct.showbase.ShowBase import ShowBase
 from direct.gui.OnscreenImage import OnscreenImage
 from direct.gui.DirectGui import *
 
-from typing import Tuple, Union, Callable
+from typing import Tuple, Union, Callable, List
 import os
 import math
 
@@ -151,6 +151,7 @@ class ColourPicker:
     def marker(self) -> DirectFrame:
         return self.__marker
 
+
 class Window():
     __base: ShowBase
     __name: str
@@ -202,6 +203,7 @@ class Window():
     def frame(self) -> DirectFrame:
         return self.__frame
 
+
 class ColourView():
     __frame: DirectFrame
     __view: DirectFrame
@@ -235,6 +237,7 @@ class ColourView():
     @property
     def frame(self) -> DirectFrame:
         return self.__frame
+
 
 class ColourChannel():
     __slider_edit_callback: Callable[['ColourChannel', float], None]
@@ -307,27 +310,25 @@ class ColourChannel():
     def value(self) -> float:
         return self.__slider['value']
 
-class ViewEditor():
+
+class AdvancedColourPicker():
     __base: ShowBase
-    __window = Window
-    __colour_picker: ColourPicker
     __colour: Colour
+    __callback: Callable[[Colour], None]
 
-    def __init__(self, base: ShowBase):
+    __frame: DirectFrame
+    __colour_picker: ColourPicker
+
+    def __init__(self, base: ShowBase, parent: DirectFrame, callback: Callable[[Colour], None], colour: Colour = Colour(0.25, 0.5, 0.75, 1.0)):
         self.__base = base
-        self.__colour = Colour(0.25, 0.5, 0.75, 1.0)
+        self.__colour = colour
+        self.__callback = callback
 
-        self.__window = Window(self.__base, "view_editor", parent=self.__base.pixel2d,
-                                            relief=DGG.RAISED,
-                                            borderWidth=(0.0, 0.0),
-                                            frameColor=WINDOW_BG_COLOUR,
-                                            pos=(150, 0., -200),
-                                            scale=(150, 1., 150),
-                                            frameSize = (-1.1, 1.1, -2.0, 1.0))
-
+        self.__frame = DirectFrame(parent=parent)
+        
         self.__colour_picker = ColourPicker(self.__base,
                                             self.__colour_picked_callback,
-                                            parent=self.__window.frame,
+                                            parent=self.__frame,
                                             relief=DGG.SUNKEN,
                                             borderWidth=(.0, .0),
                                             image_scale=(1., 1., 1.),
@@ -336,9 +337,9 @@ class ViewEditor():
                                             scale=(1.0, 1.0, 0.75),
                                             pos=(0.0, 0.0, 0.15))
     
-        self.__cv_picked = ColourView(self.__window.frame, self.__colour)
+        self.__cv_picked = ColourView(self.__frame, self.__colour)
         self.__cv_picked.frame.set_pos(-0.74, 0.0, -1.41)
-        self.__cv_hovered = ColourView(self.__window.frame)
+        self.__cv_hovered = ColourView(self.__frame)
         self.__cv_hovered.frame.set_pos(-0.74, 0.0, -0.89)
 
         def update_cv_hovered(task):
@@ -348,7 +349,7 @@ class ViewEditor():
         self.__base.taskMgr.add(update_cv_hovered, 'update_cv_hovered')
 
         c = self.__colour
-        f = self.__window.frame
+        f = self.__frame
         sc = self.__colour_channel_slider_edit_callback
         ec = self.__colour_channel_entry_edit_callback
         self.__r = ColourChannel(f, "R", c[0], sc, ec)
@@ -374,6 +375,7 @@ class ViewEditor():
         self.__b.update(b)
         self.__cv_picked.colour = Colour(r, g, b, self.__cv_picked.colour.a)
         self.__dirty_rem_no_hide = 3 # something fishy is going on
+        self.__callback(self.__cv_picked.colour)
 
     def __colour_channel_slider_edit_callback(self, chn: ColourChannel, value: float):
         if chn != self.__a:
@@ -384,6 +386,7 @@ class ViewEditor():
         
         chn.update_entry(value)
         self.__cv_picked.colour = Colour(self.__r.value, self.__g.value, self.__b.value, self.__a.value)
+        self.__callback(self.__cv_picked.colour)
 
     def __colour_channel_entry_edit_callback(self, chn: ColourChannel, value: float):
         if chn != self.__a:
@@ -394,3 +397,118 @@ class ViewEditor():
         
         chn.update_slider(value)
         self.__cv_picked.colour = Colour(self.__r.value, self.__g.value, self.__b.value, self.__a.value)
+        self.__callback(self.__cv_picked.colour)
+    
+    @property
+    def frame(self) -> DirectFrame:
+        return self.__frame
+
+
+class ViewElement():
+    __name: str
+    __visibility_callback: Callable[[bool], None]
+    __colour_callback: Callable[[Colour], None]
+
+    __frame: DirectFrame
+
+    def __init__(self, name: str, visibility_callback: Callable[[bool], None], colour_callback: Callable[[Colour], None], parent: DirectFrame):
+        self.__visibility_callback = visibility_callback
+        self.__colour_callback = colour_callback
+
+        self.__frame = DirectFrame(parent=parent)
+
+    @property
+    def frame(self) -> DirectFrame:
+        return self.__frame
+
+class ViewEditor():
+    __base: ShowBase
+    __window: Window
+    __colour_picker: AdvancedColourPicker
+    __elements: List[ViewElement]
+
+    def __init__(self, base: ShowBase):
+        self.__base = base
+
+        self.__window = Window(self.__base, "view_editor", parent=self.__base.pixel2d,
+                               relief=DGG.RAISED,
+                               borderWidth=(0.0, 0.0),
+                               frameColor=WINDOW_BG_COLOUR,
+                               pos=(150, 0., -200),
+                               scale=(150, 1., 150),
+                               frameSize = (-1.1, 1.1, -7.0, 1.0))
+
+        self.__colour_picker = AdvancedColourPicker(self.__base, self.__window.frame, lambda x: print(x))
+
+        # spacer
+        DirectFrame(parent=self.__window.frame,
+                    borderWidth=(.0, .0),
+                    frameColor=WIDGET_BG_COLOUR,
+                    frameSize=(-1., 1., -0.01, 0.01),
+                    pos=(0.0, 0.0, -1.75))
+        
+        self.__elements = []
+        self.__elements.append(ViewElement("triangular wireframe", self.__set_triangular_wireframe_visibility, self.__set_triangular_wireframe_colour, self.__window.frame))
+        self.__elements.append(ViewElement("cubic wireframe", self.__set_cubic_wireframe_visibility, self.__set_cubic_wireframe_colour, self.__window.frame))
+        self.__elements.append(ViewElement("obstacles", self.__set_obstacles_visibility, self.__set_obstacles_colour, self.__window.frame))
+        self.__elements.append(ViewElement("traversables", self.__set_traversables_visibility, self.__set_traversables_colour, self.__window.frame))
+        self.__elements.append(ViewElement("start", self.__set_start_visibility, self.__set_start_colour, self.__window.frame))
+        self.__elements.append(ViewElement("goal", self.__set_goal_visibility, self.__set_goal_colour, self.__window.frame))
+        self.__elements.append(ViewElement("path", self.__set_path_visibility, self.__set_path_colour, self.__window.frame))
+        self.__elements.append(ViewElement("fringe", self.__set_fringe_visibility, self.__set_fringe_colour, self.__window.frame))
+        self.__elements.append(ViewElement("explored", self.__set_explored_visibility, self.__set_explored_colour, self.__window.frame))
+
+
+    def __set_triangular_wireframe_visibility(self, visible: bool) -> None:
+        pass
+
+    def __set_cubic_wireframe_visibility(self, visible: bool) -> None:
+        pass
+
+    def __set_obstacles_visibility(self, visible: bool) -> None:
+        pass
+    
+    def __set_traversables_visibility(self, visible: bool) -> None:
+        pass
+
+    def __set_start_visibility(self, visible: bool) -> None:
+        pass
+
+    def __set_goal_visibility(self, visible: bool) -> None:
+        pass
+
+    def __set_path_visibility(self, visible: bool) -> None:
+        pass
+
+    def __set_fringe_visibility(self, visible: bool) -> None:
+        pass
+    
+    def __set_explored_visibility(self, visible: bool) -> None:
+        pass
+
+    def __set_triangular_wireframe_colour(self, colour: Colour) -> None:
+        pass
+
+    def __set_cubic_wireframe_colour(self, colour: Colour) -> None:
+        pass
+
+    def __set_obstacles_colour(self, colour: Colour) -> None:
+        pass
+    
+    def __set_traversables_colour(self, colour: Colour) -> None:
+        pass
+
+    def __set_start_colour(self, colour: Colour) -> None:
+        pass
+
+    def __set_goal_colour(self, colour: Colour) -> None:
+        pass
+
+    def __set_path_colour(self, colour: Colour) -> None:
+        pass
+
+    def __set_fringe_colour(self, colour: Colour) -> None:
+        pass
+    
+    def __set_explored_colour(self, colour: Colour) -> None:
+        pass
