@@ -210,14 +210,17 @@ class ColourView():
     __colour: Union[Colour, None]
 
     def __init__(self, parent: DirectFrame, colour: Union[Colour, None] = None):
+        bg_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "colour_bg.png")
+
         self.__frame = DirectFrame(parent=parent,
                                   relief=DGG.SUNKEN,
+                                  image=bg_filename,
+                                  image_scale=(0.465, 1.0, 0.39),
                                   borderWidth=(0.05, 0.05),
-                                  frameColor=WIDGET_BG_COLOUR,
                                   frameSize=(-0.52, 0.52, -0.44, 0.44),
                                   scale=(0.5, 1.0, 0.5))
         self.__view = DirectFrame(parent=self.__frame,
-                                    frameColor=colour if colour != None else WINDOW_BG_COLOUR,
+                                    frameColor=colour if colour != None else Colour(0,0,0,0),
                                     frameSize=(-0.47, 0.47, -0.39, 0.39))
         self.__colour = colour
 
