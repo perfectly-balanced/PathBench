@@ -1,3 +1,4 @@
+from direct.gui.OnscreenText import OnscreenText
 from direct.showbase.ShowBaseGlobal import globalClock
 
 key_map = {
@@ -20,8 +21,8 @@ class Camera:
 
         # EVENTS #
         # Use the scroll mouse button/touchpad to zoom in and out
-        self.base.accept('wheel_up', lambda: self.cam.setY(self.cam.getY() + 90 * globalClock.getDt()))
-        self.base.accept('wheel_down', lambda: self.cam.setY(self.cam.getY() - 90 * globalClock.getDt()))
+        # self.base.accept('wheel_up', lambda: self.cam.setY(self.cam.getY() + 90 * globalClock.getDt()))
+        # self.base.accept('wheel_down', lambda: self.cam.setY(self.cam.getY() - 90 * globalClock.getDt()))
         # Use the arrow/awsd keys to move left, right, up and down
         self.base.accept('a', update_key_map, ["left", True])
         self.base.accept('a-up', update_key_map, ["left", False])
@@ -39,7 +40,7 @@ class Camera:
         self.base.accept('arrow_up-up', update_key_map, ["up", False])
         self.base.accept('arrow_down', update_key_map, ["down", True])
         self.base.accept('arrow_down-up', update_key_map, ["down", False])
-
+        self.base.accept('c', self.ShowCamPos)
         self.speed_l = 4
         self.speed_r = 4
         self.speed_u = 4
@@ -84,3 +85,9 @@ class Camera:
         self.cam.setY(pos_y)
 
         return task.cont
+
+    def ShowCamPos(self):
+        x = self.cam.getX()
+        y = self.cam.getY()
+        z = self.cam.getZ()
+        self.title = OnscreenText(text=str(x) + ":" + str(y) + ":" + str(z), style=1, fg=(1, 1, 0, 1), pos=(0, 0), scale=0.07)
