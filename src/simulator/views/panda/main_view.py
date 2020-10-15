@@ -1,8 +1,5 @@
 from direct.showbase.PythonUtil import clampScalar
 from direct.showbase.ShowBase import ShowBase
-from math import pi, sin, cos
-
-from direct.showbase.ShowBaseGlobal import globalClock
 from panda3d.core import PointLight, AmbientLight, LPoint3, WindowProperties, FrameBufferProperties, GraphicsPipe, Texture, GraphicsOutput, NodePath, PandaNode
 from panda3d.core import *
 
@@ -27,14 +24,6 @@ class Lighting(IntEnum):
 START_CUBE_COLOUR: Final = GREEN
 GOAL_CUBE_COLOUR: Final = RED
 
-key_map = {
-    "rotate": False
-}
-
-def update_key_map(key, state):
-    key_map[key] = state
-# heading = 0
-# pitch = 0
 class MainView(ShowBase):
     __start_pos: IntPoint3
     __goal_pos: IntPoint3
@@ -45,84 +34,20 @@ class MainView(ShowBase):
         # disables the default camera behaviour
         self.disable_mouse()
 
-       # self.__camera = Camera(self, self.cam)
 
         self.set_background_color(0, 0, 0.2, 1)
-        self.targetSize = 6.37800000E+06
 
-        # Pseudo-constants
-        self.titleString = "Panda3D: Orbital Camera v0.016"
-        self.renderRatio = 1.0e-6
-        self.degPerSecond = 60.0
-        self.minCameraDistance = 4.0
-        self.maxCameraDistance = 4000.0
-        self.zoomPerSecond = 1.8
-
-        # Init camera move variables
-        self.keyMap = {"left": 0, "right": 0, "up": 0, "down": 0, "pageup": 0, "pagedown": 0, "wheelup": 0,
-                       "wheeldown": 0, "mouse3": 0, "tab": 0}
-        self.angleLongitudeDegrees = 0.0
-        self.angleLatitudeDegrees = 0.0
-        self.cameraDistance = 10.0
-
-
-        #self.targetNode = self.render
-
+        # Creating the world origin as a dummy node
+        self.worldOrigin = self.render.attachNewNode("Origin")
 
         # MAP #
         self.__map_data = map_data
         self.__generate_map(lighting == Lighting.ARTIFICAL)
-
-        self.worldOrigin = self.render.attachNewNode("Origin")
         self.__map.reparentTo(self.worldOrigin)
+        self.__map.setPos(self.worldOrigin.getX() - len(self.__map_data) / 2, self.worldOrigin.getY() - len(self.__map_data) / 2, self.worldOrigin.getZ() - len(self.__map_data) / 2)
 
-
-        # Attach the camera to the map
-        self.targetNode = self.__map
-
-        # Setup down events for arrow keys : rotating camera latitude and longitude
-        self.accept("arrow_left", self.setKey, ["left",1])
-        self.accept("arrow_right", self.setKey, ["right",1])
-        self.accept("arrow_up", self.setKey, ["up",1])
-        self.accept("arrow_down", self.setKey, ["down",1])
-        self.accept("page_up", self.setKey, ["pageup",1])
-        self.accept("page_down", self.setKey, ["pagedown",1])
-        self.accept("arrow_left-up", self.setKey, ["left",0])
-        self.accept("arrow_right-up", self.setKey, ["right",0])
-        self.accept("arrow_up-up", self.setKey, ["up",0])
-        self.accept("arrow_down-up", self.setKey, ["down",0])
-        self.accept("page_up-up", self.setKey, ["pageup",0])
-        self.accept("page_down-up", self.setKey, ["pagedown",0])
-
-        # Setup events for mouse wheel
-        self.accept("wheel_up", self.setKey, ["wheelup",1])
-        self.accept("wheel_down", self.setKey, ["wheeldown",1])
-
-        # Setup events for the Right Mouse Button : rotating camera latitude and longitude
-        self.accept("mouse3", self.setKey, ["mouse3",1])
-        self.accept("mouse3-up", self.setKey, ["mouse3",0])
-
-        self.taskMgr.add(self.moveOrbitalCameraTask, "moveOrbitalCameraTask", sort=2)
-
-        # modelCenter = self.__map.getBounds().getCenter()
-        # self.cam.setPos(modelCenter)
-        #
-        # # dummy node for camera
-        # parentnode = self.render.attachNewNode('camparent')
-        # parentnode.reparentTo(self.__map)  # inherit transforms
-        # parentnode.setEffect(CompassEffect.make(self.render))  # NOT inherit rotation
-        #
-        # # the camera
-        # self.camera.reparentTo(parentnode)
-        # self.camera.lookAt(parentnode)
-        # self.camera.setY(-10)  # camera distance from model
-        #
-        # self.accept('space', update_key_map, ["rotate", True])
-        # self.accept('space-up', update_key_map, ["rotate", False])
-        # self.angle = 0
-        # self.taskMgr.add(self.update, "update")
-        # self.accept('wheel_up', lambda: self.camera.setY(self.camera.getY() + 200 * globalClock.getDt()))
-        # self.accept('wheel_down', lambda: self.camera.setY(self.camera.getY() - 200 * globalClock.getDt()))
+        # CAMERA #
+        self.__camera = Camera(self, self.cam, self.worldOrigin)
 
         # LIGHTING #
         self.__ambient = 0.5
@@ -251,7 +176,6 @@ class MainView(ShowBase):
         self.accept('mouse1', left_click)
         self.accept('mouse3', right_click)
 
-
         # GUI #
         self.__vs = ViewEditor(self)
 
@@ -334,22 +258,6 @@ class MainView(ShowBase):
         # ENABLE DEFAULT SHADOW SHADERS #
         self.__map.set_shader_auto()
 
-
-    # def update(self, task):
-    #     if (key_map["rotate"]):
-    #         self.angle += 1
-    #         self.__map.setH(self.angle)
-
-
-        #
-        # angleDegrees = task.time * 6.0
-        # angleRadians = angleDegrees * (pi / 180.0)
-        # self.camera.setPos(20 * sin(angleRadians), -20 * cos(angleRadians), 3)
-        # self.camera.setHpr(angleDegrees, 0, 0)
-
-      #  return task.cont
-
-
     def __custom_lighting(self) -> None:
         # preliminary capabilities check
         if not self.win.getGsg().get_supports_basic_shaders():
@@ -415,80 +323,3 @@ class MainView(ShowBase):
         self.__light_cam.node().get_lens().set_near_far(10, 1000)
         self.__light_cam.node().hideFrustum()
 
-        # Defines a procedure to move the camera by moving the world origin
-        # Always keeps the camera oriented towards the world origin
-
-    def moveOrbitalCameraTask(self, task):
-        # Get mouse
-        md = self.win.getPointer(0)
-        x = md.getX()
-        y = md.getY()
-
-        if (self.keyMap["mouse3"] != 0):
-            # Use mouse moves to change longitude and latitude
-            self.angleLongitudeDegrees = self.angleLongitudeDegrees - (x - self.lastMouseX) * 0.2
-            self.angleLatitudeDegrees = self.angleLatitudeDegrees - (y - self.lastMouseY) * 0.2
-
-        # Store latest mouse position for the next frame
-        self.lastMouseX = x
-        self.lastMouseY = y
-
-        # First compute new camera angles and distance
-        if (self.keyMap["left"] != 0):
-            self.angleLongitudeDegrees = self.angleLongitudeDegrees - self.degPerSecond * globalClock.getDt()
-        if (self.keyMap["right"] != 0):
-            self.angleLongitudeDegrees = self.angleLongitudeDegrees + self.degPerSecond * globalClock.getDt()
-        if (self.keyMap["up"] != 0):
-            self.angleLatitudeDegrees = self.angleLatitudeDegrees - self.degPerSecond * globalClock.getDt()
-        if (self.keyMap["down"] != 0):
-            self.angleLatitudeDegrees = self.angleLatitudeDegrees + self.degPerSecond * globalClock.getDt()
-        if (self.keyMap["pageup"] != 0 or self.keyMap["wheelup"] != 0):
-            self.cameraDistance = self.cameraDistance * (1 + (self.zoomPerSecond - 1) * globalClock.getDt())
-            self.setKey("wheelup", 0)
-        if (self.keyMap["pagedown"] != 0 or self.keyMap["wheeldown"] != 0):
-            self.cameraDistance = self.cameraDistance / (1 + (self.zoomPerSecond - 1) * globalClock.getDt())
-            self.setKey("wheeldown", 0)
-
-        # Limit angles to [-180;+180]x[-90;+90] and distance between set min and max
-        if (self.angleLongitudeDegrees > 180.0):
-            self.angleLongitudeDegrees = self.angleLongitudeDegrees - 360.0
-        if (self.angleLongitudeDegrees < -180.0):
-            self.angleLongitudeDegrees = self.angleLongitudeDegrees + 360.0
-
-        if (self.cameraDistance < self.minCameraDistance):
-            self.cameraDistance = self.minCameraDistance
-        if (self.cameraDistance > self.maxCameraDistance):
-            self.cameraDistance = self.maxCameraDistance
-
-        # Convert to Radians
-        angleLongitudeRadians = self.angleLongitudeDegrees * (pi / 180.0)
-        angleLatitudeRadians = self.angleLatitudeDegrees * (pi / 180.0)
-
-        # Compute the target object's position with respect to the camera
-        x = -self.cameraDistance * self.targetSize * sin(angleLongitudeRadians) * cos(angleLatitudeRadians)
-        y = self.cameraDistance * self.targetSize * cos(angleLongitudeRadians) * cos(angleLatitudeRadians)
-        z = self.cameraDistance * self.targetSize * sin(angleLatitudeRadians)
-
-        # Compute the world origin's position with respect to the camera
-        x = (x * self.renderRatio) - self.targetNode.getX(self.worldOrigin)
-        y = (y * self.renderRatio) - self.targetNode.getY(self.worldOrigin)
-        z = (z * self.renderRatio) - self.targetNode.getZ(self.worldOrigin)
-
-        # Apply the position
-        self.worldOrigin.setPos(x, y, z)
-
-        # Rotate the camera
-        self.camera.setHpr(self.angleLongitudeDegrees, self.angleLatitudeDegrees, 0)
-
-        # End task
-        return task.cont
-
-    def setKey(self, key, value):
-        # Store mouse position at the time of freeze
-        if (key == "mouse3"):
-            md = self.win.getPointer(0)
-            self.lastMouseX = md.getX()
-            self.lastMouseY = md.getY()
-        # Store key/button press/release
-
-        self.keyMap[key] = value
