@@ -8,6 +8,7 @@ import os
 import math
 
 from ..common import Colour
+from ..voxel_map import VoxelMap
 
 WINDOW_BG_COLOUR = Colour(0.5, 0.5, 0.5, 1.0)
 WIDGET_BG_COLOUR = Colour(0.3, 0.3, 0.3, 1.0)
@@ -523,18 +524,11 @@ class ViewEditor():
     __window: Window
     __colour_picker: AdvancedColourPicker
     __elements: List[ViewElement]
+    __map: VoxelMap
 
-    def __init__(self, base: ShowBase, traversables_map, traversables_map_wf, obstacles_map, obstacles_map_wf, traversables_map_mesh, traversables_map_wf_mesh, obstacles_map_mesh, obstacles_map_wf_mesh):
+    def __init__(self, base: ShowBase, map: VoxelMap):
         self.__base = base
-        self.traversables_map = traversables_map
-        self.traversables_map_wf = traversables_map_wf
-        self.obstacles_map = obstacles_map
-        self.obstacles_map_wf = obstacles_map_wf
-
-        self.traversables_map_mesh = traversables_map_mesh
-        self.traversables_map_wf_mesh = traversables_map_wf_mesh
-        self.obstacles_map_mesh = obstacles_map_mesh
-        self.obstacles_map_wf_mesh = obstacles_map_wf_mesh
+        self.__map = map
 
         self.__window = Window(self.__base, "view_editor", parent=self.__base.pixel2d,
                                relief=DGG.RAISED,
@@ -629,33 +623,33 @@ class ViewEditor():
 
     def __set_obstacles_triangular_wireframe_visibility(self, visible: bool) -> None:
         if visible:
-            self.obstacles_map_wf.show()
+            self.__map.obstacles_wf.show()
         else:
-            self.obstacles_map_wf.hide()
+            self.__map.obstacles_wf.hide()
 
     def __set_obstacles_square_wireframe_visibility(self, visible: bool) -> None:
         pass
         
     def __set_traversables_triangular_wireframe_visibility(self, visible: bool) -> None:
         if visible:
-            self.traversables_map_wf.show()
+            self.__map.traversables_wf.show()
         else:
-            self.traversables_map_wf.hide()
+            self.__map.traversables_wf.hide()
         
     def __set_traversables_square_wireframe_visibility(self, visible: bool) -> None:
         pass
 
     def __set_obstacles_visibility(self, visible: bool) -> None:
         if visible:
-            self.obstacles_map.show()
+            self.__map.obstacles.show()
         else:
-            self.obstacles_map.hide()
+            self.__map.obstacles.hide()
 
     def __set_traversables_visibility(self, visible: bool) -> None:
         if visible:
-            self.traversables_map.show()
+            self.__map.traversables.show()
         else:
-            self.traversables_map.hide()
+            self.__map.traversables.hide()
 
     def __set_start_visibility(self, visible: bool) -> None:
         """ TODO """
@@ -673,23 +667,22 @@ class ViewEditor():
         pass
 
     def __set_obstacles_triangular_wireframe_colour(self, colour: Colour) -> None:
-        self.obstacles_map_wf_mesh.default_colour = colour
+        self.__map.obstacles_wf_mesh.default_colour = colour
 
     def __set_obstacles_square_wireframe_colour(self, colour: Colour) -> None:
         pass
 
     def __set_traversables_triangular_wireframe_colour(self, colour: Colour) -> None:
-        self.traversables_map_wf_mesh.default_colour = colour
+        self.__map.traversables_wf_mesh.default_colour = colour
 
     def __set_traversables_square_wireframe_colour(self, colour: Colour) -> None:
         pass
 
     def __set_obstacles_colour(self, colour: Colour) -> None:
-        print("HERE")
-        self.obstacles_map_mesh.default_colour = colour
+        self.__map.obstacles_mesh.default_colour = colour
     
     def __set_traversables_colour(self, colour: Colour) -> None:
-        self.traversables_map_mesh.default_colour = colour
+        self.__map.traversables_mesh.default_colour = colour
 
     def __set_start_colour(self, colour: Colour) -> None:
         """ TODO """

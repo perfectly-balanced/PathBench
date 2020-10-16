@@ -42,8 +42,8 @@ class CubeMesh():
 
         self.__vertex = GeomVertexWriter(self.__vertex_data, 'vertex')
         self.__normal = GeomVertexWriter(self.__vertex_data, 'normal')
-        self.__colour = GeomVertexRewriter(self.__vertex_data, 'color')
         self.__texcoord = GeomVertexWriter(self.__vertex_data, 'texcoord')
+        self.__colour = GeomVertexRewriter(self.__vertex_data, 'color')
 
         self.__face_count = 0
 
