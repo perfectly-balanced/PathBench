@@ -248,7 +248,7 @@ class CubeMesh():
                     r, g, b, a = self.get_cube_colour(p)
 
                     def close(a, b):
-                        return math.isclose(a, b, rel_tol=1e-3)
+                        return math.isclose(a, b, rel_tol=1e-1)
 
                     # only change cube colour if it closely resembles
                     # the previous default colour.

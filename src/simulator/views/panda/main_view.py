@@ -41,10 +41,19 @@ class MainView(ShowBase):
         self.worldOrigin = self.render.attachNewNode("Origin")
 
         # MAP #
-        self.__map_data = map_data
+        self.__traversables_map_data = map_data
+
+        self.__obstacles_map_data = {}
+        for i in range(len(self.__traversables_map_data)):
+            self.__obstacles_map_data[i] = {}
+            for j in range(len(self.__traversables_map_data[i])):
+                self.__obstacles_map_data[i][j] = {}
+                for k in range(len(self.__traversables_map_data[i][j])):
+                    self.__obstacles_map_data[i][j][k] = False if self.__traversables_map_data[i][j][k] else True
+
         self.__generate_map(lighting == Lighting.ARTIFICAL)
         self.__map.reparentTo(self.worldOrigin)
-        self.__map.setPos(self.worldOrigin.getX() - len(self.__map_data) / 2, self.worldOrigin.getY() - len(self.__map_data) / 2, self.worldOrigin.getZ() - len(self.__map_data) / 2)
+        self.__map.setPos(self.worldOrigin.getX() - len(self.__traversables_map_data) / 2, self.worldOrigin.getY() - len(self.__traversables_map_data) / 2, self.worldOrigin.getZ() - len(self.__traversables_map_data) / 2)
 
         # CAMERA #
         self.__camera = Camera(self, self.cam, self.worldOrigin)
@@ -65,15 +74,15 @@ class MainView(ShowBase):
         # randomly initialise undefined positions
         if self.goal_pos == None or self.start_pos == None:
             map_sz = 0
-            for i in range(len(self.__map_data)):
-                for j in range(len(self.__map_data[i])):
-                    map_sz += len(self.__map_data[i][j])
+            for i in range(len(self.__traversables_map_data)):
+                for j in range(len(self.__traversables_map_data[i])):
+                    map_sz += len(self.__traversables_map_data[i][j])
 
             def randpos() -> IntPoint3:
                 def to_coord(n: int) -> IntPoint3:
-                    for i in range(len(self.__map_data)):
-                        for j in range(len(self.__map_data[i])):
-                            for k in range(len(self.__map_data[i][j])):
+                    for i in range(len(self.__traversables_map_data)):
+                        for j in range(len(self.__traversables_map_data[i])):
+                            for k in range(len(self.__traversables_map_data[i][j])):
                                 if n == 0:
                                     return (i, j, k)
                                 else:
@@ -81,7 +90,7 @@ class MainView(ShowBase):
 
                 def cube_exists(n: int) -> bool:
                     i, j, k = to_coord(n)
-                    return self.__map_data[i][j][k]
+                    return self.__traversables_map_data[i][j][k]
 
                 def gen() -> int:
                     return random.randint(0, map_sz-1)
@@ -114,10 +123,10 @@ class MainView(ShowBase):
         self.__map_cnp = self.__map.attach_new_node(self.__map_cn)
         self.__ctrav.add_collider(self.__map_cnp, self.__cqueue)
         
-        for x in range(len(self.__map_data)):
-            for y in range(len(self.__map_data[x])):
-                for z in range(len(self.__map_data[x][y])):
-                    if self.__map_mesh.cube_visible((x, y, z)):
+        for x in range(len(self.__traversables_map_data)):
+            for y in range(len(self.__traversables_map_data[x])):
+                for z in range(len(self.__traversables_map_data[x][y])):
+                    if self.__traversables_map_mesh.cube_visible((x, y, z)):
                         self.__map_cn.add_solid(CollisionBox(Point3(x,y,z), Point3(x+1, y+1, z-1)))
 
         # mouse picker
@@ -148,11 +157,11 @@ class MainView(ShowBase):
 
                     x, y, z = self.__cqueue.get_entry(0).getSurfacePoint(self.__map)
                     pos = [max(math.floor(x), 0), max(math.floor(y), 0), max(math.ceil(z), 0)]
-                    if pos[0] == len(self.__map_data):
+                    if pos[0] == len(self.__traversables_map_data):
                         pos[0] -= 1
-                    if pos[1] == len(self.__map_data[pos[0]]):
+                    if pos[1] == len(self.__traversables_map_data[pos[0]]):
                         pos[1] -= 1
-                    if pos[2] == len(self.__map_data[pos[0]][pos[1]]):
+                    if pos[2] == len(self.__traversables_map_data[pos[0]][pos[1]]):
                         pos[2] -= 1
                     pos = tuple(pos)
                     
@@ -177,7 +186,7 @@ class MainView(ShowBase):
         self.accept('mouse3', right_click)
 
         # GUI #
-        self.__vs = ViewEditor(self)
+        self.__vs = ViewEditor(self, self.__traversables_map, self.__traversables_map_wf, self.__obstacles_map, self.__obstacles_map_wf, self.__traversables_map_mesh, self.__traversables_map_wf_mesh, self.__obstacles_map_mesh, self.__obstacles_map_wf_mesh)
 
     @property
     def start_pos(self) -> str:
@@ -190,10 +199,10 @@ class MainView(ShowBase):
     @start_pos.setter
     def start_pos(self, value: IntPoint3) -> None:
         if self.__start_pos != None:
-            self.__map_mesh.reset_cube_colour(self.__start_pos)
+            self.__traversables_map_mesh.reset_cube_colour(self.__start_pos)
         self.__start_pos = value
         if self.__start_pos != None:
-            self.__map_mesh.set_cube_colour(self.__start_pos, START_CUBE_COLOUR)
+            self.__traversables_map_mesh.set_cube_colour(self.__start_pos, START_CUBE_COLOUR)
 
     @property
     def goal_pos(self) -> str:
@@ -206,34 +215,32 @@ class MainView(ShowBase):
     @goal_pos.setter
     def goal_pos(self, value: IntPoint3) -> None:
         if self.__goal_pos != None:
-            self.__map_mesh.reset_cube_colour(self.__goal_pos)
+            self.__traversables_map_mesh.reset_cube_colour(self.__goal_pos)
         self.__goal_pos = value
         if self.__goal_pos != None:
-            self.__map_mesh.set_cube_colour(self.__goal_pos, GOAL_CUBE_COLOUR)
-
-    @property
-    def map_mesh(self) -> str:
-        return 'map_mesh'
-
-    @map_mesh.getter
-    def map_mesh(self) -> CubeMesh:
-        return self.__map_mesh
+            self.__traversables_map_mesh.set_cube_colour(self.__goal_pos, GOAL_CUBE_COLOUR)
 
     def __generate_map(self, artificial_lighting: bool = False) -> None:
-        self.__map_mesh = CubeMesh(self.__map_data, '3D Voxel Map', artificial_lighting, default_colour = WHITE.with_alpha(0), hidden_faces = True)
-        self.__map = self.render.attach_new_node(self.__map_mesh.geom_node)
-        self.__map.set_transparency(TransparencyAttrib.M_alpha)
-        # the following can be used to override the alpha channel, makes entire object look ghostly
-        # self.__map.set_attrib(ColorBlendAttrib.make(ColorBlendAttrib.MAdd, ColorBlendAttrib.OIncomingAlpha, ColorBlendAttrib.OOne))
-        # self.__map.set_alpha_scale(0.15)
+        self.__map = self.render.attach_new_node("3D Voxel Map")
+
+        self.__traversables_map_mesh = CubeMesh(self.__traversables_map_data, '3D Voxel Traversables Map', artificial_lighting, default_colour = WHITE, hidden_faces = True)
+        self.__traversables_map = self.__map.attach_new_node(self.__traversables_map_mesh.geom_node)
+        self.__traversables_map.set_transparency(TransparencyAttrib.M_alpha)
 
         # Wireframe overlay
-        self.__wireframe_map_mesh = CubeMesh(self.__map_data, '3D Voxel Map Wireframe', artificial_lighting, default_colour = BLACK.with_alpha(0.2), hidden_faces = False)
-        self.__wireframe_map = self.__map.attach_new_node(self.__wireframe_map_mesh.geom_node)
-        self.__wireframe_map.setRenderModeWireframe()
+        self.__traversables_map_wf_mesh = CubeMesh(self.__traversables_map_data, '3D Voxel Traversables Map Wireframe', artificial_lighting, default_colour = BLACK, hidden_faces = False)
+        self.__traversables_map_wf = self.__map.attach_new_node(self.__traversables_map_wf_mesh.geom_node)
+        self.__traversables_map_wf.setRenderModeWireframe()
 
-        # self.__map_movement = self.__map.hprInterval(50, LPoint3(0, 360, 360))
-        # self.__map_movement.loop()
+        self.__obstacles_map_mesh = CubeMesh(self.__obstacles_map_data, '3D Voxel Obstacles Map', artificial_lighting, default_colour = WHITE, hidden_faces = True)
+        self.__obstacles_map = self.__map.attach_new_node(self.__obstacles_map_mesh.geom_node)
+        self.__obstacles_map.set_transparency(TransparencyAttrib.M_alpha)
+
+        # Wireframe overlay
+        self.__obstacles_map_wf_mesh = CubeMesh(self.__obstacles_map_data, '3D Voxel Obstacles Map Wireframe', artificial_lighting, default_colour = BLACK, hidden_faces = False)
+        self.__obstacles_map_wf = self.__map.attach_new_node(self.__obstacles_map_wf_mesh.geom_node)
+        self.__obstacles_map_wf.setRenderModeWireframe()
+
 
     def __basic_lighting(self) -> None:
         # POINT LIGHT #

@@ -1,7 +1,7 @@
 from panda3d.core import *
-from direct.showbase.ShowBase import ShowBase
 from direct.gui.OnscreenImage import OnscreenImage
 from direct.gui.DirectGui import *
+from direct.showbase.ShowBase import ShowBase
 
 from typing import Tuple, Union, Callable, List
 import os
@@ -437,9 +437,9 @@ class ViewElement():
 
     def __init__(self, name: str, visibility_callback: Callable[[bool], None], colour_callback: Callable[[Colour], None], parent: DirectFrame, visible: bool = True, colour: Colour = Colour(0.2, 0.3, 0.4, 0.5)):
         self.__name = name
-        self.__visibility_callback = visibility_callback
-        self.__colour_callback = colour_callback
         self.__visible = visible
+        self.__visibility_callback = None
+        self.__colour_callback = None
 
         self.__frame = DirectFrame(parent=parent, frameColor=WINDOW_BG_COLOUR)
 
@@ -472,6 +472,9 @@ class ViewElement():
         
         self.visible = self.__visible # trigger UI update
 
+        self.__visibility_callback = visibility_callback
+        self.__colour_callback = colour_callback
+
     def __toggle_visible(self):
         self.visible = not self.visible
 
@@ -494,20 +497,22 @@ class ViewElement():
     @colour.setter
     def colour(self, value: Colour) -> None:
         self.__cv.colour = value
-        self.__colour_callback(value)
+        if self.__colour_callback:
+            self.__colour_callback(value)
     
     @property
     def visible(self) -> str:
         return 'visible'
     
     @visible.getter
-    def visible(self) -> Colour:
+    def visible(self) -> bool:
         return self.__visible
     
     @visible.setter
     def visible(self, value: bool) -> None:
         self.__visible = value
-        self.__visibility_callback(value)
+        if self.__visibility_callback:
+            self.__visibility_callback(value)
         if self.__visible:
             self.__visibility_bar.hide()
         else:
@@ -519,8 +524,17 @@ class ViewEditor():
     __colour_picker: AdvancedColourPicker
     __elements: List[ViewElement]
 
-    def __init__(self, base: ShowBase):
+    def __init__(self, base: ShowBase, traversables_map, traversables_map_wf, obstacles_map, obstacles_map_wf, traversables_map_mesh, traversables_map_wf_mesh, obstacles_map_mesh, obstacles_map_wf_mesh):
         self.__base = base
+        self.traversables_map = traversables_map
+        self.traversables_map_wf = traversables_map_wf
+        self.obstacles_map = obstacles_map
+        self.obstacles_map_wf = obstacles_map_wf
+
+        self.traversables_map_mesh = traversables_map_mesh
+        self.traversables_map_wf_mesh = traversables_map_wf_mesh
+        self.obstacles_map_mesh = obstacles_map_mesh
+        self.obstacles_map_wf_mesh = obstacles_map_wf_mesh
 
         self.__window = Window(self.__base, "view_editor", parent=self.__base.pixel2d,
                                relief=DGG.RAISED,
@@ -551,10 +565,10 @@ class ViewEditor():
         self.__elements = []
         self.__elements.append(ViewElement("obstacles", self.__set_obstacles_visibility, self.__set_obstacles_colour, self.__window.frame))
         self.__elements.append(ViewElement("obstacles triangular wireframe", self.__set_obstacles_triangular_wireframe_visibility, self.__set_obstacles_triangular_wireframe_colour, self.__window.frame))
-        self.__elements.append(ViewElement("obstacles cubic wireframe", self.__set_obstacles_cubic_wireframe_visibility, self.__set_obstacles_cubic_wireframe_colour, self.__window.frame))
+        self.__elements.append(ViewElement("obstacles square wireframe", self.__set_obstacles_square_wireframe_visibility, self.__set_obstacles_square_wireframe_colour, self.__window.frame, False))
         self.__elements.append(ViewElement("traversables", self.__set_traversables_visibility, self.__set_traversables_colour, self.__window.frame))
         self.__elements.append(ViewElement("traversables triangular wireframe", self.__set_traversables_triangular_wireframe_visibility, self.__set_traversables_triangular_wireframe_colour, self.__window.frame))
-        self.__elements.append(ViewElement("traversables cubic wireframe", self.__set_traversables_cubic_wireframe_visibility, self.__set_traversables_cubic_wireframe_colour, self.__window.frame))
+        self.__elements.append(ViewElement("traversables square wireframe", self.__set_traversables_square_wireframe_visibility, self.__set_traversables_square_wireframe_colour, self.__window.frame, False))
         self.__elements.append(ViewElement("start", self.__set_start_visibility, self.__set_start_colour, self.__window.frame))
         self.__elements.append(ViewElement("goal", self.__set_goal_visibility, self.__set_goal_colour, self.__window.frame))
         self.__elements.append(ViewElement("path", self.__set_path_visibility, self.__set_path_colour, self.__window.frame))
@@ -578,6 +592,31 @@ class ViewEditor():
 
         self.__selected_cv_idx = 0
         self.__select_cv(0)
+
+        # default settings - testing #
+        self.OBSTACLES = self.__elements[0]
+        self.OBSTACLES_TRI_WF = self.__elements[1]
+        self.OBSTACLES_SQR_WF = self.__elements[2]
+        self.TRAVERSABLES = self.__elements[3]
+        self.TRAVERSABLES_TRI_WF = self.__elements[4]
+        self.TRAVERSABLES_SQR_WF = self.__elements[5]
+        self.START = self.__elements[6]
+        self.GOAL = self.__elements[7]
+        self.PATH = self.__elements[8]
+        self.FRINGE = self.__elements[9]
+        self.EXPLORED = self.__elements[10]
+
+        self.OBSTACLES.colour = Colour(0.8, 0.2, 0.2) # "obstacles"
+        self.OBSTACLES_TRI_WF.colour = Colour(0.0, 0.0, 0.0) # "obstacles triangular wireframe"
+        self.OBSTACLES_SQR_WF.colour = Colour(0.0, 0.0, 0.0) # "obstacles square wireframe"
+        self.TRAVERSABLES.colour = Colour(1.0, 1.0, 1.0) # "traversables"
+        self.TRAVERSABLES_TRI_WF.colour = Colour(0.0, 0.0, 0.0) # "traversables triangular wireframe"
+        self.TRAVERSABLES_SQR_WF.colour = Colour(0.0, 0.0, 0.0) # "traversables square wireframe"
+        self.START.colour = Colour(0.5, 0.0, 0.5) # "start"
+        self.GOAL.colour = Colour(0.0, 1.0, 0.0) # "goal"
+        self.PATH.colour = Colour(0.0, 1.0, 0.0) # "path"
+        self.FRINGE.colour = Colour(0.2, 0.2, 0.8) # "fringe"
+        self.EXPLORED.colour = Colour(0.4, 0.4, 0.4) # "explored"
     
     def __colour_picker_callback(self, colour: Colour) -> None:
         i = self.__selected_cv_idx
@@ -588,30 +627,41 @@ class ViewEditor():
         self.__selected_cv_outline.set_pos((-0.65, 1.0, -1.897 - 0.2 * i))
         self.__colour_picker.colour = self.__elements[i].colour
 
-
     def __set_obstacles_triangular_wireframe_visibility(self, visible: bool) -> None:
-        pass
+        if visible:
+            self.obstacles_map_wf.show()
+        else:
+            self.obstacles_map_wf.hide()
 
-    def __set_obstacles_cubic_wireframe_visibility(self, visible: bool) -> None:
+    def __set_obstacles_square_wireframe_visibility(self, visible: bool) -> None:
         pass
-
+        
     def __set_traversables_triangular_wireframe_visibility(self, visible: bool) -> None:
-        pass
-
-    def __set_traversables_cubic_wireframe_visibility(self, visible: bool) -> None:
+        if visible:
+            self.traversables_map_wf.show()
+        else:
+            self.traversables_map_wf.hide()
+        
+    def __set_traversables_square_wireframe_visibility(self, visible: bool) -> None:
         pass
 
     def __set_obstacles_visibility(self, visible: bool) -> None:
-        pass
-    
+        if visible:
+            self.obstacles_map.show()
+        else:
+            self.obstacles_map.hide()
+
     def __set_traversables_visibility(self, visible: bool) -> None:
-        pass
+        if visible:
+            self.traversables_map.show()
+        else:
+            self.traversables_map.hide()
 
     def __set_start_visibility(self, visible: bool) -> None:
-        pass
+        """ TODO """
 
     def __set_goal_visibility(self, visible: bool) -> None:
-        pass
+        """ TODO """
 
     def __set_path_visibility(self, visible: bool) -> None:
         pass
@@ -623,28 +673,29 @@ class ViewEditor():
         pass
 
     def __set_obstacles_triangular_wireframe_colour(self, colour: Colour) -> None:
-        pass
+        self.obstacles_map_wf_mesh.default_colour = colour
 
-    def __set_obstacles_cubic_wireframe_colour(self, colour: Colour) -> None:
+    def __set_obstacles_square_wireframe_colour(self, colour: Colour) -> None:
         pass
 
     def __set_traversables_triangular_wireframe_colour(self, colour: Colour) -> None:
-        pass
+        self.traversables_map_wf_mesh.default_colour = colour
 
-    def __set_traversables_cubic_wireframe_colour(self, colour: Colour) -> None:
+    def __set_traversables_square_wireframe_colour(self, colour: Colour) -> None:
         pass
 
     def __set_obstacles_colour(self, colour: Colour) -> None:
-        pass
+        print("HERE")
+        self.obstacles_map_mesh.default_colour = colour
     
     def __set_traversables_colour(self, colour: Colour) -> None:
-        pass
+        self.traversables_map_mesh.default_colour = colour
 
     def __set_start_colour(self, colour: Colour) -> None:
-        pass
+        """ TODO """
 
     def __set_goal_colour(self, colour: Colour) -> None:
-        pass
+        """ TODO """
 
     def __set_path_colour(self, colour: Colour) -> None:
         pass
