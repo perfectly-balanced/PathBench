@@ -100,6 +100,10 @@ class Size:
     @property
     def depth(self) -> int:
         return self._size.z
+
+    @property
+    def n_dim(self) -> int:
+        return self._size.n_dim
     
     def __getitem__(self, idx) -> int:
         return self._size[idx]
