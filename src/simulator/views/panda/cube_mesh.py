@@ -57,6 +57,14 @@ class CubeMesh():
         # value: (<face-index-left>, <face-index-right>, <face-index-back>, <face-index-front>, <face-index-bottom>, <face-index-top>)
         self.__cube_face_map = []
 
+        # List[List[List[bool]]]
+        self.__cube_default_coloured = []
+        self.__cube_default_coloured = [None for _ in self.structure]
+        for i in self.structure:
+            self.__cube_default_coloured[i] = [None for _ in self.structure[i]]
+            for j in self.structure[i]:
+                self.__cube_default_coloured[i][j] = [True for _ in self.structure[i][j]]
+
         # we only make visible faces: if there are two adjacent faces, they aren't added.
         self.__cube_face_map = [None for _ in self.structure]
         for i in self.structure:
@@ -112,6 +120,7 @@ class CubeMesh():
     def set_cube_colour(self, pos: IntPoint3, colour: Colour) -> None:
         x, y, z = pos
 
+        self.__cube_default_coloured[x][y][z] = False
         faces = self.__cube_face_map[x][y][z]
         for i in range(len(faces)):
             if faces[i] != None:
@@ -124,7 +133,10 @@ class CubeMesh():
                 self.__colour.addData4f(*c)
 
     def reset_cube_colour(self, pos: IntPoint3) -> None:
+        x, y, z = pos
+
         self.set_cube_colour(pos, self.default_colour)
+        self.__cube_default_coloured[x][y][z] = True
 
     @staticmethod
     def __attenuate_colour(colour: Colour, factor: Real) -> Colour:
@@ -234,29 +246,14 @@ class CubeMesh():
 
     @default_colour.setter
     def default_colour(self, value: Colour) -> None:
-        old_r, old_g, old_b, old_a = self.default_colour
         self.__default_colour = value
 
         # update colour of cubes that have old clear colour
         for i in self.structure:
             for j in self.structure[i]:
                 for k in self.structure[i][j]:
-                    if not self.structure[i][j][k]:
-                        continue
-                    p = (i, j, k)
-
-                    r, g, b, a = self.get_cube_colour(p)
-
-                    def close(a, b):
-                        return math.isclose(a, b, rel_tol=1e-1)
-
-                    # only change cube colour if it closely resembles
-                    # the previous default colour.
-                    if close(old_r, r) and \
-                       close(old_g, g) and \
-                       close(old_b, b) and \
-                       close(old_a, a):
-                        self.set_cube_colour(p, self.default_colour)
+                    if self.structure[i][j][k] and self.__cube_default_coloured[i][j][k]:
+                        self.reset_cube_colour((i, j, k))
     
     @property
     def structure(self) -> str:
