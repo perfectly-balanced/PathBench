@@ -405,7 +405,24 @@ class AdvancedColourPicker():
     @property
     def frame(self) -> DirectFrame:
         return self.__frame
-
+    
+    @property
+    def colour(self) -> str:
+        return 'colour'
+    
+    @colour.getter
+    def colour(self) -> Colour:
+        return self.self.__cv_picked.colour
+    
+    @colour.setter
+    def colour(self, value: Colour) -> None:
+        self.__colour_picker.marker.hide()
+        self.__cv_picked.colour = value
+        r, g, b, a = value
+        self.__r.update(r)
+        self.__g.update(g)
+        self.__b.update(b)
+        self.__a.update(a)
 
 class ViewElement():
     __name: str
@@ -463,6 +480,10 @@ class ViewElement():
         return self.__frame
 
     @property
+    def colour_view(self) -> ColourView:
+        return self.__cv
+
+    @property
     def colour(self) -> str:
         return 'colour'
     
@@ -509,7 +530,7 @@ class ViewEditor():
                                scale=(150, 1., 150),
                                frameSize = (-1.1, 1.1, -4.1, 1.0))
 
-        self.__colour_picker = AdvancedColourPicker(self.__base, self.__window.frame, lambda x: print(x))
+        self.__colour_picker = AdvancedColourPicker(self.__base, self.__window.frame, self.__colour_picker_callback)
 
         # spacer
         DirectFrame(parent=self.__window.frame,
@@ -518,6 +539,15 @@ class ViewEditor():
                     frameSize=(-1., 1., -0.01, 0.01),
                     pos=(0.0, 0.0, -1.75))
         
+        # selected colour view frame
+        self.__selected_cv_outline = DirectFrame(parent=self.__window.frame,
+                                                relief=DGG.SUNKEN,
+                                                frameColor=Colour(1),
+                                                borderWidth=(0.15, 0.15),
+                                                frameSize=(-0.62, 0.62, -0.54, 0.54),
+                                                scale=(0.18, 1.0, 0.18))
+
+        # view elements
         self.__elements = []
         self.__elements.append(ViewElement("obstacles", self.__set_obstacles_visibility, self.__set_obstacles_colour, self.__window.frame))
         self.__elements.append(ViewElement("obstacles triangular wireframe", self.__set_obstacles_triangular_wireframe_visibility, self.__set_obstacles_triangular_wireframe_colour, self.__window.frame))
@@ -533,6 +563,31 @@ class ViewEditor():
 
         for i in range(len(self.__elements)):
             self.__elements[i].frame.set_pos((0.0, 0.0, -1.9 - 0.2 * i))
+        
+        self.__cv_transparent_overlays = []
+        for i in range(len(self.__elements)):
+            self.__cv_transparent_overlays.append(DirectButton(parent=self.__window.frame,
+                                                relief=DGG.SUNKEN,
+                                                frameColor=Colour(0,0,0,0),
+                                                borderWidth=(0, 0),
+                                                frameSize=(-0.52, 0.52, -0.44, 0.44),
+                                                scale=(0.18, 1.0, 0.18),
+                                                pos=(-0.65, 1.0, -1.897 - 0.2 * i),
+                                                command=self.__select_cv,
+                                                extraArgs=[i]))
+
+        self.__selected_cv_idx = 0
+        self.__select_cv(0)
+    
+    def __colour_picker_callback(self, colour: Colour) -> None:
+        i = self.__selected_cv_idx
+        self.__elements[i].colour = colour
+
+    def __select_cv(self, i: int):
+        self.__selected_cv_idx = i
+        self.__selected_cv_outline.set_pos((-0.65, 1.0, -1.897 - 0.2 * i))
+        self.__colour_picker.colour = self.__elements[i].colour
+
 
     def __set_obstacles_triangular_wireframe_visibility(self, visible: bool) -> None:
         pass
