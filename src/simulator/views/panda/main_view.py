@@ -26,8 +26,6 @@ START_CUBE_COLOUR: Final = GREEN
 GOAL_CUBE_COLOUR: Final = RED
 
 class MainView(ShowBase):
-    __start_pos: IntPoint3
-    __goal_pos: IntPoint3
     __map: VoxelMap
 
     def __init__(self, map_data: List[List[List[bool]]], start_pos: IntPoint3 = None, goal_pos: IntPoint3 = None, lighting: Lighting = Lighting.ARTIFICAL) -> None:
@@ -43,7 +41,7 @@ class MainView(ShowBase):
         self.world_origin = self.render.attach_new_node("origin")
 
         # MAP #
-        self.__map = VoxelMap(map_data, self.world_origin, artificial_lighting=(lighting == Lighting.ARTIFICAL))
+        self.__map = VoxelMap(map_data, self.world_origin, start_pos=start_pos, goal_pos=goal_pos, artificial_lighting=(lighting == Lighting.ARTIFICAL))
         self.__map.root.set_pos(self.world_origin.getX() - len(self.map.traversables_data) / 2, self.world_origin.getY() - len(self.map.traversables_data) / 2, self.world_origin.getZ() - len(self.map.traversables_data) / 2)
 
         # CAMERA #
@@ -55,54 +53,6 @@ class MainView(ShowBase):
             self.__basic_lighting()
         elif lighting == Lighting.CUSTOM:
             self.__custom_lighting()
-
-        # initialise goal and origin #
-        self.__start_pos = None
-        self.__goal_pos = None
-        self.start_pos = start_pos
-        self.goal_pos = goal_pos
-
-        # randomly initialise undefined positions
-        if self.goal_pos == None or self.start_pos == None:
-            map_sz = 0
-            for i in range(len(self.map.traversables_data)):
-                for j in range(len(self.map.traversables_data[i])):
-                    map_sz += len(self.map.traversables_data[i][j])
-
-            def randpos() -> IntPoint3:
-                def to_coord(n: int) -> IntPoint3:
-                    for i in range(len(self.map.traversables_data)):
-                        for j in range(len(self.map.traversables_data[i])):
-                            for k in range(len(self.map.traversables_data[i][j])):
-                                if n == 0:
-                                    return (i, j, k)
-                                else:
-                                    n -= 1
-
-                def cube_exists(n: int) -> bool:
-                    i, j, k = to_coord(n)
-                    return self.map.traversables_data[i][j][k]
-
-                def gen() -> int:
-                    return random.randint(0, map_sz-1)
-
-                n = gen()
-
-                while not cube_exists(n):
-                    n = gen()
-                return to_coord(n)
-
-            if self.start_pos == None:
-                p = randpos()
-                while p == self.goal_pos:
-                    p = randpos()
-                self.start_pos = p
-
-            if self.goal_pos == None:
-                p = randpos()
-                while p == self.start_pos:
-                    p = randpos()
-                self.goal_pos = p
         
         # collision traverser & queue
         self.__ctrav = CollisionTraverser('ctrav')
@@ -166,12 +116,12 @@ class MainView(ShowBase):
         def left_click():
             p = on_click()
             if p != None:
-                self.goal_pos = p
+                self.map.goal_pos = p
         
         def right_click():
             p = on_click()
             if p != None:
-                self.start_pos = p
+                self.map.start_pos = p
 
         self.accept('mouse1', left_click)
         self.accept('mouse3', right_click)
@@ -186,38 +136,6 @@ class MainView(ShowBase):
     @map.getter
     def map(self) -> VoxelMap:
         return self.__map
-
-    @property
-    def start_pos(self) -> str:
-        return 'start_pos'
-
-    @start_pos.getter
-    def start_pos(self) -> IntPoint3:
-        return self.__start_pos
-
-    @start_pos.setter
-    def start_pos(self, value: IntPoint3) -> None:
-        if self.__start_pos != None:
-            self.map.traversables_mesh.reset_cube_colour(self.__start_pos)
-        self.__start_pos = value
-        if self.__start_pos != None:
-            self.map.traversables_mesh.set_cube_colour(self.__start_pos, START_CUBE_COLOUR)
-
-    @property
-    def goal_pos(self) -> str:
-        return 'goal_pos'
-
-    @goal_pos.getter
-    def goal_pos(self) -> IntPoint3:
-        return self.__goal_pos
-
-    @goal_pos.setter
-    def goal_pos(self, value: IntPoint3) -> None:
-        if self.__goal_pos != None:
-            self.map.traversables_mesh.reset_cube_colour(self.__goal_pos)
-        self.__goal_pos = value
-        if self.__goal_pos != None:
-            self.map.traversables_mesh.set_cube_colour(self.__goal_pos, GOAL_CUBE_COLOUR)
 
     def __basic_lighting(self) -> None:
         # POINT LIGHT #

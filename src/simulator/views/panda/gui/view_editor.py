@@ -652,10 +652,16 @@ class ViewEditor():
             self.__map.traversables.hide()
 
     def __set_start_visibility(self, visible: bool) -> None:
-        """ TODO """
+        if visible:
+            self.__map.start.show()
+        else:
+            self.__map.start.hide()
 
     def __set_goal_visibility(self, visible: bool) -> None:
-        """ TODO """
+        if visible:
+            self.__map.goal.show()
+        else:
+            self.__map.goal.hide()
 
     def __set_path_visibility(self, visible: bool) -> None:
         pass
@@ -685,10 +691,10 @@ class ViewEditor():
         self.__map.traversables_mesh.default_colour = colour
 
     def __set_start_colour(self, colour: Colour) -> None:
-        """ TODO """
+        self.__map.start_mesh.default_colour = colour
 
     def __set_goal_colour(self, colour: Colour) -> None:
-        """ TODO """
+        self.__map.goal_mesh.default_colour = colour
 
     def __set_path_colour(self, colour: Colour) -> None:
         pass
