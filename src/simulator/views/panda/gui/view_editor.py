@@ -7,7 +7,7 @@ from typing import Tuple, Union, Callable, List
 import os
 import math
 
-from ..common import Colour
+from ..common import Colour, WHITE, BLACK, TRANSPARENT
 from ..voxel_map import VoxelMap
 
 WINDOW_BG_COLOUR = Colour(0.5, 0.5, 0.5, 1.0)
@@ -221,7 +221,7 @@ class ColourView():
                                   frameSize=(-0.52, 0.52, -0.44, 0.44),
                                   scale=(0.5, 1.0, 0.5))
         self.__view = DirectFrame(parent=self.__frame,
-                                    frameColor=colour if colour != None else Colour(0,0,0,0),
+                                    frameColor=colour if colour != None else TRANSPARENT,
                                     frameSize=(-0.47, 0.47, -0.39, 0.39))
         self.__colour = colour
 
@@ -259,7 +259,7 @@ class ColourChannel():
         
         self.__label = DirectLabel(parent=self.__frame,
                                     text=text,
-                                    text_fg=Colour(1.0),
+                                    text_fg=WHITE,
                                     text_bg=WINDOW_BG_COLOUR,
                                     pos=(-0.5, 0.0, 0.0),
                                     scale=(0.1, 1.0, 0.1))
@@ -276,7 +276,7 @@ class ColourChannel():
 
         self.__entry = DirectEntry(parent=self.__frame,
                                    frameColor=WIDGET_BG_COLOUR,
-                                   text_fg=Colour(1.0),
+                                   text_fg=WHITE,
                                    initialText=str(value),
                                    scale=0.1,
                                    width=3,
@@ -450,7 +450,7 @@ class ViewElement():
         
         self.__label = DirectLabel(parent=self.__frame,
                                    text=self.__name,
-                                   text_fg=Colour(1.0),
+                                   text_fg=WHITE,
                                    text_bg=WINDOW_BG_COLOUR,
                                    borderWidth=(.0, .0),
                                    pos=(0.28, 0.0, -0.03),
@@ -459,14 +459,14 @@ class ViewElement():
         visibility_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "visible.png")
         self.__visibility_btn = DirectButton(parent=self.__frame,
                                              image=visibility_filename,
-                                             frameColor=Colour(0,0,0,0),
+                                             frameColor=TRANSPARENT,
                                              pos=(-0.92, 0.0, 0.0),
                                              scale=(0.09, 1.0, 0.06),
                                              command=self.__toggle_visible)
                                             
         self.__visibility_bar = DirectFrame(parent=self.__frame,
                                             borderWidth=(.0, .0),
-                                            frameColor=Colour(0.5),
+                                            frameColor=WINDOW_BG_COLOUR,
                                             frameSize=(-0.1, 0.1, -0.01, 0.01),
                                             pos=(-0.92, 0.0, 0.0),
                                             hpr=(40, 0, 40))
@@ -550,7 +550,7 @@ class ViewEditor():
         # selected colour view frame
         self.__selected_cv_outline = DirectFrame(parent=self.__window.frame,
                                                 relief=DGG.SUNKEN,
-                                                frameColor=Colour(1),
+                                                frameColor=WHITE,
                                                 borderWidth=(0.15, 0.15),
                                                 frameSize=(-0.62, 0.62, -0.54, 0.54),
                                                 scale=(0.18, 1.0, 0.18))
@@ -576,7 +576,7 @@ class ViewEditor():
         for i in range(len(self.__elements)):
             self.__cv_transparent_overlays.append(DirectButton(parent=self.__window.frame,
                                                 relief=DGG.SUNKEN,
-                                                frameColor=Colour(0,0,0,0),
+                                                frameColor=TRANSPARENT,
                                                 borderWidth=(0, 0),
                                                 frameSize=(-0.52, 0.52, -0.44, 0.44),
                                                 scale=(0.18, 1.0, 0.18),
@@ -601,11 +601,11 @@ class ViewEditor():
         self.EXPLORED = self.__elements[10]
 
         self.OBSTACLES.colour = Colour(0.8, 0.2, 0.2) # "obstacles"
-        self.OBSTACLES_TRI_WF.colour = Colour(0.0, 0.0, 0.0) # "obstacles triangular wireframe"
-        self.OBSTACLES_SQR_WF.colour = Colour(0.0, 0.0, 0.0) # "obstacles square wireframe"
+        self.OBSTACLES_TRI_WF.colour = BLACK # "obstacles triangular wireframe"
+        self.OBSTACLES_SQR_WF.colour = BLACK # "obstacles square wireframe"
         self.TRAVERSABLES.colour = Colour(1.0, 1.0, 1.0) # "traversables"
-        self.TRAVERSABLES_TRI_WF.colour = Colour(0.0, 0.0, 0.0) # "traversables triangular wireframe"
-        self.TRAVERSABLES_SQR_WF.colour = Colour(0.0, 0.0, 0.0) # "traversables square wireframe"
+        self.TRAVERSABLES_TRI_WF.colour = BLACK # "traversables triangular wireframe"
+        self.TRAVERSABLES_SQR_WF.colour = BLACK # "traversables square wireframe"
         self.START.colour = Colour(0.5, 0.0, 0.5) # "start"
         self.GOAL.colour = Colour(0.0, 1.0, 0.0) # "goal"
         self.PATH.colour = Colour(0.0, 1.0, 0.0) # "path"

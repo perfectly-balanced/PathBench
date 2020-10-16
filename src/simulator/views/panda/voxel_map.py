@@ -1,8 +1,9 @@
 from panda3d.core import NodePath, TransparencyAttrib
 from .cube_mesh import CubeMesh
-from .common import Colour, IntPoint3
+from .common import IntPoint3, Colour, TRANSPARENT
 
 from typing import List
+import random
 
 class VoxelMap():
     root: NodePath
@@ -42,6 +43,7 @@ class VoxelMap():
         self.traversables_wf_mesh = CubeMesh(self.traversables_data, name + '_traversables_wf', artificial_lighting, hidden_faces = True)
         self.traversables_wf = self.root.attach_new_node(self.traversables_wf_mesh.geom_node)
         self.traversables_wf.setRenderModeWireframe()
+        self.traversables_wf.setRenderModeThickness(2.2)
 
         self.obstacles_mesh = CubeMesh(self.obstacles_data, name + '_obstacles', artificial_lighting, hidden_faces = False)
         self.obstacles = self.root.attach_new_node(self.obstacles_mesh.geom_node)
@@ -49,6 +51,7 @@ class VoxelMap():
         self.obstacles_wf_mesh = CubeMesh(self.obstacles_data, name + '_obstacles_wf', artificial_lighting, hidden_faces = True)
         self.obstacles_wf = self.root.attach_new_node(self.obstacles_wf_mesh.geom_node)
         self.obstacles_wf.setRenderModeWireframe()
+        self.obstacles_wf.setRenderModeThickness(2.2)
 
         cube = {}
         for x in range(0, 1):
@@ -73,15 +76,15 @@ class VoxelMap():
         # randomly initialise undefined positions
         if self.goal_pos == None or self.start_pos == None:
             map_sz = 0
-            for i in range(len(self.map.traversables_data)):
-                for j in range(len(self.map.traversables_data[i])):
-                    map_sz += len(self.map.traversables_data[i][j])
+            for i in range(len(self.traversables_data)):
+                for j in range(len(self.traversables_data[i])):
+                    map_sz += len(self.traversables_data[i][j])
 
             def randpos() -> IntPoint3:
                 def to_coord(n: int) -> IntPoint3:
-                    for i in range(len(self.map.traversables_data)):
-                        for j in range(len(self.map.traversables_data[i])):
-                            for k in range(len(self.map.traversables_data[i][j])):
+                    for i in range(len(self.traversables_data)):
+                        for j in range(len(self.traversables_data[i])):
+                            for k in range(len(self.traversables_data[i][j])):
                                 if n == 0:
                                     return (i, j, k)
                                 else:
@@ -89,7 +92,7 @@ class VoxelMap():
 
                 def cube_exists(n: int) -> bool:
                     i, j, k = to_coord(n)
-                    return self.map.traversables_data[i][j][k]
+                    return self.traversables_data[i][j][k]
 
                 def gen() -> int:
                     return random.randint(0, map_sz-1)
@@ -126,9 +129,8 @@ class VoxelMap():
             self.traversables_mesh.reset_cube_colour(self.__start_pos)
         self.__start_pos = value
         if self.__start_pos != None:
-            self.traversables_mesh.set_cube_colour(self.__start_pos, Colour(0,0,0,0))
-            x, y, z = value
-            self.start.set_pos((x, y, z))
+            self.traversables_mesh.set_cube_colour(self.__start_pos, TRANSPARENT)
+            self.start.set_pos(value)
             self.start.show()
         else:
             self.start.hide()
@@ -146,9 +148,8 @@ class VoxelMap():
             self.traversables_mesh.reset_cube_colour(self.__goal_pos)
         self.__goal_pos = value
         if self.__goal_pos != None:
-            self.traversables_mesh.set_cube_colour(self.__goal_pos, Colour(0,0,0,0))
-            x, y, z = value
-            self.goal.set_pos((x, y, z))
+            self.traversables_mesh.set_cube_colour(self.__goal_pos, TRANSPARENT)
+            self.goal.set_pos(value)
             self.goal.show()
         else:
             self.goal.hide()
