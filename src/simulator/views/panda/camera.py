@@ -4,10 +4,10 @@ from math import pi, sin, cos
 
 
 key_map = {
-    "up1": False,
-    "down1": False,
-    "left1": False,
-    "right1": False,
+    "up1": 0,
+    "down1": 0,
+    "left1": 0,
+    "right1": 0,
     "left": 0,
     "right": 0,
     "up": 0,
@@ -34,7 +34,7 @@ class Camera:
         self.degPerSecond = 60.0
         self.minCameraDistance = 3.0
         self.maxCameraDistance = 4000.0
-        self.zoomPerSecond = 2.1
+        self.zoomPerSecond = 4
         self.angle_longitude_degrees = 0.0
         self.angle_latitude_degrees = 0.0
         self.camera_distance = 10.0
@@ -42,14 +42,14 @@ class Camera:
         # EVENTS #
 
         # Use the arrow keys to move left, right, up and down
-        self.base.accept('arrow_left', update_key_map, ["left1", True])
-        self.base.accept('arrow_left-up', update_key_map, ["left1", False])
-        self.base.accept('arrow_right', update_key_map, ["right1", True])
-        self.base.accept('arrow_right-up', update_key_map, ["right1", False])
-        self.base.accept('arrow_up', update_key_map, ["up1", True])
-        self.base.accept('arrow_up-up', update_key_map, ["up1", False])
-        self.base.accept('arrow_down', update_key_map, ["down1", True])
-        self.base.accept('arrow_down-up', update_key_map, ["down1", False])
+        self.base.accept('arrow_left', update_key_map, ["left1", 1])
+        self.base.accept('arrow_left-up', update_key_map, ["left1", 0])
+        self.base.accept('arrow_right', update_key_map, ["right1", 1])
+        self.base.accept('arrow_right-up', update_key_map, ["right1", 0])
+        self.base.accept('arrow_up', update_key_map, ["up1", 1])
+        self.base.accept('arrow_up-up', update_key_map, ["up1", 0])
+        self.base.accept('arrow_down', update_key_map, ["down1", 1])
+        self.base.accept('arrow_down-up', update_key_map, ["down1", 0])
 
         # Setup down events for arrow keys : rotating camera latitude and longitude
         self.base.accept("a", update_key_map, ["left", 1])
