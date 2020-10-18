@@ -536,16 +536,22 @@ class ViewEditor():
                                frameColor=WINDOW_BG_COLOUR,
                                pos=(150, 0., -200),
                                scale=(150, 1., 150),
-                               frameSize = (-1.1, 1.1, -4.1, 1.0))
+                               frameSize = (-1.1, 1.1, -6.1, 1.56))
 
         self.__colour_picker = AdvancedColourPicker(self.__base, self.__window.frame, self.__colour_picker_callback)
 
-        # spacer
+        # spacers
         DirectFrame(parent=self.__window.frame,
                     borderWidth=(.0, .0),
                     frameColor=WIDGET_BG_COLOUR,
                     frameSize=(-1., 1., -0.01, 0.01),
                     pos=(0.0, 0.0, -1.75))
+
+        DirectFrame(parent=self.__window.frame,
+                    borderWidth=(.0, .0),
+                    frameColor=WIDGET_BG_COLOUR,
+                    frameSize=(-1., 1., -0.01, 0.01),
+                    pos=(0.0, 0.0, 1.1))
         
         # selected colour view frame
         self.__selected_cv_outline = DirectFrame(parent=self.__window.frame,
@@ -554,6 +560,31 @@ class ViewEditor():
                                                 borderWidth=(0.15, 0.15),
                                                 frameSize=(-0.62, 0.62, -0.54, 0.54),
                                                 scale=(0.18, 1.0, 0.18))
+
+        self.heading = DirectLabel(parent=self.__window.frame,
+                                   text="Style Editor",
+                                   text_fg=WHITE,
+                                   text_bg=WINDOW_BG_COLOUR,
+                                   borderWidth=(.0, .0),
+                                   #pos=(10.9, 1.4, 3),
+                                   scale=(0.2, 3, 0.2))
+
+        self.heading.set_pos((0.0, 0.0, 1.27))
+
+
+        quit_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "quit.png")
+
+        self.btn = DirectButton(image=quit_filename,
+                           command=self.quit,
+                           pos=(0.9, 0.4, 1.32),
+                           parent=self.__window.frame,
+                           scale=0.1,
+                           frameColor=TRANSPARENT)
+
+        # Show or hide the Style Editor #
+        self.__base.accept('o', self.show)
+        self.__base.accept('q', self.quit)
+
 
         # view elements
         self.__elements = []
@@ -611,7 +642,13 @@ class ViewEditor():
         self.PATH.colour = Colour(0.0, 1.0, 0.0) # "path"
         self.FRINGE.colour = Colour(0.2, 0.2, 0.8) # "fringe"
         self.EXPLORED.colour = Colour(0.4, 0.4, 0.4) # "explored"
-    
+
+    def quit(self):
+        self.__window.frame.hide()
+
+    def show(self):
+        self.__window.frame.show()
+
     def __colour_picker_callback(self, colour: Colour) -> None:
         i = self.__selected_cv_idx
         self.__elements[i].colour = colour
