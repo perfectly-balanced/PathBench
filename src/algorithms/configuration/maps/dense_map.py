@@ -17,13 +17,21 @@ from structures import Point, Size
 if TYPE_CHECKING:
     from algorithms.configuration.maps.sparse_map import SparseMap
 
+#method for finding the dimensions of a list
+#TODO: insert checks to make sure the inserted grid is uniform
+def get_grid_dim(grid: List) -> List[int]:
+        if type(grid) is not list:
+            return []
+        else:
+            return [len(grid)] + get_grid_dim(grid[0])
 
 class DenseMap(Map):
     """
     This type of map is not memory efficient as it stores a grid of entities, but it
     is faster than :class:`SparseMap` as the collision detection is more efficient
     """
-    grid: List[List[int]]
+    grid: List
+    grid_dim: List[int]
 
     CLEAR_ID: int = 0
     WALL_ID: int = 1
@@ -31,29 +39,53 @@ class DenseMap(Map):
     GOAL_ID: int = 3
     EXTENDED_WALL: int = 4
 
-    def __init__(self, grid: Optional[List[List[int]]], services: Services = None) -> None:
+    def __init__(self, grid: Optional[List], services: Services = None) -> None:
         self.grid = None
+        #default to creating a size 0 2D map
         super().__init__(Size(0, 0), services)
 
         if not grid:
             return
 
+
+        self.grid_dim = get_grid_dim(grid)
+        #self.grid_dim.reverse()
         self.set_grid(grid)
 
-    def set_grid(self, grid: List[List[int]]) -> None:
+    def set_grid(self, grid: List) -> None:
         self.grid = grid
-        self.size = Size(len(grid[0]), len(grid))
 
-        for i in range(len(self.grid)):
-            for j in range(len(self.grid[i])):
-                if self.grid[i][j] == self.AGENT_ID:
-                    self.agent = Agent(Point(j, i))
-                if self.grid[i][j] == self.GOAL_ID:
-                    self.goal = Goal(Point(j, i))
-                if self.grid[i][j] == self.WALL_ID:
-                    self.obstacles.append(Obstacle(Point(j, i)))
-                if self.grid[i][j] == self.EXTENDED_WALL:
-                    self.obstacles.append(ExtendedWall(Point(j, i)))
+        flip_dim = copy.deepcopy(self.grid_dim)
+        flip_dim.reverse()
+        self.size = Size(*flip_dim)
+
+        #TODO:make this suck less. Also, change the order of grid so we dont have to flip it every time
+        if len(self.grid_dim) == 2:
+            for i in range(self.grid_dim[0]):
+                for j in range(self.grid_dim[1]):
+                    if self.grid[i][j] == self.AGENT_ID:
+                        self.agent = Agent(Point(j, i))
+                    if self.grid[i][j] == self.GOAL_ID:
+                        self.goal = Goal(Point(j, i))
+                    if self.grid[i][j] == self.WALL_ID:
+                        self.obstacles.append(Obstacle(Point(j, i)))
+                    if self.grid[i][j] == self.EXTENDED_WALL:
+                        self.obstacles.append(ExtendedWall(Point(j, i)))
+        elif len(self.grid_dim) == 3:
+            for i in range(self.grid_dim[0]):
+                for j in range(self.grid_dim[1]):
+                    for k in range(self.grid_dim[2]):
+                        if self.grid[i][j][k] == self.AGENT_ID:
+                            self.agent = Agent(Point(k, j, i))
+                        if self.grid[i][j][k] == self.GOAL_ID:
+                            self.goal = Goal(Point(k, j, i))
+                        if self.grid[i][j][k] == self.WALL_ID:
+                            self.obstacles.append(Obstacle(Point(k, j, i)))
+                        if self.grid[i][j][k] == self.EXTENDED_WALL:
+                            self.obstacles.append(ExtendedWall(Point(k, j, i)))
+        else:
+            raise ValueError("currently have not implemented map generation in dimensions > 3D")
+
 
     def extend_walls(self) -> None:
         """
