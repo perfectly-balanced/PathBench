@@ -534,9 +534,9 @@ class ViewEditor():
                                relief=DGG.RAISED,
                                borderWidth=(0.0, 0.0),
                                frameColor=WINDOW_BG_COLOUR,
-                               pos=(150, 0., -200),
+                               pos=(1900, 200, -350),
                                scale=(150, 1., 150),
-                               frameSize = (-1.1, 1.1, -6.1, 1.56))
+                               frameSize=(-1.1, 1.1, -5.82, 1.56))
 
         self.__colour_picker = AdvancedColourPicker(self.__base, self.__window.frame, self.__colour_picker_callback)
 
@@ -552,6 +552,12 @@ class ViewEditor():
                     frameColor=WIDGET_BG_COLOUR,
                     frameSize=(-1., 1., -0.01, 0.01),
                     pos=(0.0, 0.0, 1.1))
+
+        DirectFrame(parent=self.__window.frame,
+                    borderWidth=(.0, .0),
+                    frameColor=WIDGET_BG_COLOUR,
+                    frameSize=(-1., 1., -0.01, 0.01),
+                    pos=(0.0, 0.0, -4.1))
         
         # selected colour view frame
         self.__selected_cv_outline = DirectFrame(parent=self.__window.frame,
@@ -574,6 +580,7 @@ class ViewEditor():
 
         quit_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "quit.png")
 
+        # Quit button
         self.btn = DirectButton(image=quit_filename,
                            command=self.quit,
                            pos=(0.9, 0.4, 1.32),
@@ -584,7 +591,66 @@ class ViewEditor():
         # Show or hide the Style Editor #
         self.__base.accept('o', self.show)
         self.__base.accept('q', self.quit)
+        one_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "one.png")
+        two_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "two.png")
+        three_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "three.png")
+        four_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "four.png")
+        five_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "five.png")
+        six_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "six.png")
 
+        # state buttons
+        self.btn = DirectButton(image=one_filename,
+                                command=self.quit,
+                                pos=(-0.7, 0.4, -4.4),
+                                parent=self.__window.frame,
+                                scale=0.16,
+                                frameColor=TRANSPARENT)
+        self.btn = DirectButton(image=two_filename,
+                                command=self.quit,
+                                pos=(0, 0.4, -4.4),
+                                parent=self.__window.frame,
+                                scale=0.16,
+                                frameColor=TRANSPARENT)
+        self.btn = DirectButton(image=three_filename,
+                                command=self.quit,
+                                pos=(0.7, 0.4, -4.4),
+                                parent=self.__window.frame,
+                                scale=0.16,
+                                frameColor=TRANSPARENT)
+        self.btn = DirectButton(image=four_filename,
+                                command=self.quit,
+                                pos=(-0.7, 0.4, -4.9),
+                                parent=self.__window.frame,
+                                scale=0.16,
+                                frameColor=TRANSPARENT)
+        self.btn = DirectButton(image=five_filename,
+                                command=self.quit,
+                                pos=(0, 0.4, -4.9),
+                                parent=self.__window.frame,
+                                scale=0.16,
+                                frameColor=TRANSPARENT)
+        self.btn = DirectButton(image=six_filename,
+                                command=self.quit,
+                                pos=(0.7, 0.4, -4.9),
+                                parent=self.__window.frame,
+                                scale=0.16,
+                                frameColor=TRANSPARENT)
+        save_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "save2.png")
+        restore_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "restore1.png")
+
+        # save and restore
+        self.btn = DirectButton(image=save_filename,
+                                command=self.quit,
+                                pos=(-0.35, 0, -5.5),
+                                parent=self.__window.frame,
+                                scale=(0.5, 1.5, 0.18),
+                                frameColor=TRANSPARENT)
+        self.btn = DirectButton(image=restore_filename,
+                                command=self.quit,
+                                pos=(0.63, 0, -5.5),
+                                parent=self.__window.frame,
+                                scale=(0.23, 2.1, 0.18),
+                                frameColor=TRANSPARENT)
 
         # view elements
         self.__elements = []
