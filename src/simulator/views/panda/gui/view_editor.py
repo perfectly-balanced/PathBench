@@ -673,28 +673,28 @@ class ViewEditor():
         pass
 
     def __set_obstacles_triangular_wireframe_colour(self, colour: Colour) -> None:
-        self.__map.obstacles_wf_mesh.default_colour = colour
+        self.__map.obstacles_wf.set_color(LVecBase4f(*colour))
 
     def __set_obstacles_square_wireframe_colour(self, colour: Colour) -> None:
         pass
 
     def __set_traversables_triangular_wireframe_colour(self, colour: Colour) -> None:
-        self.__map.traversables_wf_mesh.default_colour = colour
+        self.__map.traversables_wf.set_color(LVecBase4f(*colour))
 
     def __set_traversables_square_wireframe_colour(self, colour: Colour) -> None:
         pass
 
     def __set_obstacles_colour(self, colour: Colour) -> None:
-        self.__map.obstacles_mesh.default_colour = colour
+        self.__map.obstacles.set_color(LVecBase4f(*colour))
     
     def __set_traversables_colour(self, colour: Colour) -> None:
         self.__map.traversables_mesh.default_colour = colour
 
     def __set_start_colour(self, colour: Colour) -> None:
-        self.__map.start_mesh.default_colour = colour
+        self.__map.start.set_color(LVecBase4f(*colour))
 
     def __set_goal_colour(self, colour: Colour) -> None:
-        self.__map.goal_mesh.default_colour = colour
+        self.__map.goal.set_color(LVecBase4f(*colour))
 
     def __set_path_colour(self, colour: Colour) -> None:
         pass
