@@ -101,13 +101,15 @@ class DenseMap(Map):
                             if dist <= self.agent.radius and self.grid[y][x] == DenseMap.CLEAR_ID:
                                 self.grid[y][x] = DenseMap.EXTENDED_WALL
                                 self.obstacles.append(ExtendedWall(Point(x, y)))
-                                visited[y][x] = True
+                                visited.add(Point(x, y))
 
-        visited: List[List[bool]] = [[False for _ in range(len(self.grid[i]))] for i in range(len(self.grid))]
+        visited: Set[Point] = set()
+        #visited: List[List[bool]] = [[False for _ in range(len(self.grid[i]))] for i in range(len(self.grid))]
 
-        for i in range(len(self.grid)):
-            for j in range(len(self.grid[i])):
-                if not visited[i][j]:
+        for i in range(self.grid_dim[0]):
+            for j in range(self.grid_dim[1]):
+                #Is there a better way to do this without constructing a point every time
+                if Point(j, i) not in visited:
                     if self.grid[i][j] == self.WALL_ID:
                         bounds: Set[Point] = self.get_obstacle_bound(Point(j, i), visited)
                         extend_obstacle_bound()
