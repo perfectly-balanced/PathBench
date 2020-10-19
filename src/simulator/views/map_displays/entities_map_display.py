@@ -13,7 +13,7 @@ from simulator.services.services import Services
 from simulator.views.map_displays.map_display import MapDisplay
 
 if TYPE_CHECKING:
-    from simulator.views.map_view import MapView
+    from simulator.views.map.map_view import MapView
 
 
 class EntitiesMapDisplay(MapDisplay):

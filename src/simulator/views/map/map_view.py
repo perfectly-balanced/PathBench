@@ -20,9 +20,9 @@ from simulator.views.map_displays.online_lstm_map_display import OnlineLSTMMapDi
 from simulator.views.view import View
 from structures import Point
 
-from .panda.camera import Camera
-from .panda.gui.view_editor import ViewEditor
-from .panda.voxel_map import VoxelMap
+from simulator.views.panda.gui.view_editor import ViewEditor
+from simulator.views.map.camera import Camera
+from simulator.views.map.voxel_map import VoxelMap
 
 from panda3d.core import NodePath
 
@@ -58,21 +58,14 @@ class MapView(View):
         # Creating the world origin as a dummy node
         self.__world = base.render.attach_new_node("world")
 
-        # TESTING - START #
-        import random
         map_data = {}
-        for x in range(0, 25):
+        for x in range(0, self._services.algorithm.map.size.width):
             map_data[x] = {}
-            for y in range(0, 25):
+            for y in range(0, self._services.algorithm.map.size.height):
                 map_data[x][y] = {}
-                for z in range(0, 25):
-                    map_data[x][y][z] = bool(random.getrandbits(1))
-
-        map_data[0][0][0] = False  # added for debugging purposes
-        map_data[0][0][1] = False  # added for debugging purposes
-        start_pos = Point(0, 0, 0)
-        goal_pos = Point(0, 0, 1)
-        # TESTING - END #
+                map_data[x][y][0] = not self._services.algorithm.map.is_agent_valid_pos(Point(x, y, 0))
+        start_pos = Point(*self._services.algorithm.map.agent.position, 0)
+        goal_pos = Point(*self._services.algorithm.map.goal.position, 0)
 
         # MAP #
         self.__map = VoxelMap(map_data, self.__world, start_pos=start_pos, goal_pos=goal_pos, artificial_lighting=True)

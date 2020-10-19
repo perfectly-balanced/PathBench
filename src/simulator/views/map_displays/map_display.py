@@ -31,7 +31,7 @@ class MapDisplay(View):
         return True
 
     def get_renderer_view(self) -> Optional['MapView']:
-        from simulator.views.map_view import MapView
+        from simulator.views.map.map_view import MapView
         if isinstance(self._root_view, MapView):
             return self._root_view
 

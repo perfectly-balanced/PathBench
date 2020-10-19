@@ -1,6 +1,6 @@
 from panda3d.core import NodePath, TransparencyAttrib, LVecBase3f
 from .cube_mesh import CubeMesh
-from .common import Colour, TRANSPARENT
+from .colour import Colour, TRANSPARENT
 
 from structures import Point
 

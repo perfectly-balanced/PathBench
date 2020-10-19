@@ -7,8 +7,8 @@ from typing import Tuple, Union, Callable, List
 import os
 import math
 
-from ..common import Colour, WHITE, BLACK, TRANSPARENT
-from ..voxel_map import VoxelMap
+from simulator.views.map.colour import Colour, WHITE, BLACK, TRANSPARENT
+from simulator.views.map.voxel_map import VoxelMap
 
 WINDOW_BG_COLOUR = Colour(0.5, 0.5, 0.5, 1.0)
 WIDGET_BG_COLOUR = Colour(0.3, 0.3, 0.3, 1.0)

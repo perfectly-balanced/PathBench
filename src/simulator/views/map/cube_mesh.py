@@ -7,7 +7,7 @@ from typing import List
 from numbers import Real
 import math
 
-from .common import Colour, WHITE
+from .colour import Colour, WHITE
 from structures import Point
 
 def normalise(*args):

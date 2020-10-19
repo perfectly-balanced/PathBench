@@ -1,5 +1,5 @@
 from simulator.controllers.controller import Controller
-from simulator.views.map_view import MapView
+from simulator.views.map.map_view import MapView
 from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.window_loaded_event import WindowLoadedEvent
 from simulator.services.debug import DebugLevel
@@ -9,7 +9,7 @@ from structures import Point
 from panda3d.core import CollisionTraverser, CollisionHandlerQueue, CollisionNode, BitMask32, CollisionBox, CollisionRay, Point3
 
 from direct.showbase.ShowBase import ShowBase
-from simulator.views.panda.voxel_map import VoxelMap
+from simulator.views.map.voxel_map import VoxelMap
 
 import math
 from typing import Optional

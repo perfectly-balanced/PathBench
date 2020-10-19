@@ -8,7 +8,7 @@ from simulator.models.map import Map
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
 from simulator.views.main_view import MainView
-from simulator.views.map_view import MapView
+from simulator.views.map.map_view import MapView
 from structures import Size
 
 """
