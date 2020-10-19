@@ -567,6 +567,13 @@ class ViewEditor():
                                                 borderWidth=(0.15, 0.15),
                                                 frameSize=(-0.62, 0.62, -0.54, 0.54),
                                                 scale=(0.18, 1.0, 0.18))
+        # selected state number frame
+        self.__selected_state_number = DirectFrame(parent=self.__window.frame,
+                                                 relief=DGG.SUNKEN,
+                                                 frameColor=WHITE,
+                                                 borderWidth=(0.15, 0.15),
+                                                 frameSize=(-0.62, 0.62, -0.54, 0.54),
+                                                 scale=(0.3, 2.0, 0.3))
 
         self.heading = DirectLabel(parent=self.__window.frame,
                                    text="Style Editor",
@@ -601,47 +608,57 @@ class ViewEditor():
 
         # state buttons
         self.btn1 = DirectButton(image=one_filename,
-                                 command=self.show_hide,
                                  pos=(-0.7, 0.4, -4.4),
                                  parent=self.__window.frame,
                                  scale=0.16,
-                                 frameColor=TRANSPARENT)
+                                 frameColor=TRANSPARENT,
+                                 command=self.__select_state_num_one,
+                                 extraArgs=[0])
+
 
 
         self.btn2 = DirectButton(image=two_filename,
-                                 command=self.show_hide,
                                  pos=(0, 0.4, -4.4),
                                  parent=self.__window.frame,
                                  scale=0.16,
-                                 frameColor=TRANSPARENT)
+                                 frameColor=TRANSPARENT,
+                                 command=self.__select_state_num_one,
+                                 extraArgs=[1])
+
 
         self.btn3 = DirectButton(image=three_filename,
-                                 command=self.show_hide,
                                  pos=(0.7, 0.4, -4.4),
                                  parent=self.__window.frame,
                                  scale=0.16,
-                                 frameColor=TRANSPARENT)
+                                 frameColor=TRANSPARENT,
+                                 command = self.__select_state_num_one,
+                                 extraArgs = [2])
+
 
         self.btn4 = DirectButton(image=four_filename,
-                                 command=self.show_hide,
                                  pos=(-0.7, 0.4, -4.9),
                                  parent=self.__window.frame,
                                  scale=0.16,
-                                 frameColor=TRANSPARENT)
+                                 frameColor=TRANSPARENT,
+                                 command=self.__select_state_num_two,
+                                 extraArgs=[0])
+
 
         self.btn5 = DirectButton(image=five_filename,
-                                 command=self.show_hide,
                                  pos=(0, 0.4, -4.9),
                                  parent=self.__window.frame,
                                  scale=0.16,
-                                 frameColor=TRANSPARENT)
+                                 frameColor=TRANSPARENT,
+                                 command=self.__select_state_num_two,
+                                 extraArgs=[1])
 
         self.btn6 = DirectButton(image=six_filename,
-                                 command=self.show_hide,
                                  pos=(0.7, 0.4, -4.9),
                                  parent=self.__window.frame,
                                  scale=0.16,
-                                 frameColor=TRANSPARENT)
+                                 frameColor=TRANSPARENT,
+                                 command = self.__select_state_num_two,
+                                 extraArgs = [2])
 
         save_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "save2.png")
         restore_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "restore1.png")
@@ -689,8 +706,13 @@ class ViewEditor():
                                                 command=self.__select_cv,
                                                 extraArgs=[i]))
 
+
         self.__selected_cv_idx = 0
         self.__select_cv(0)
+
+        self.__selected_sn_idx = 0
+        self.__select_state_num_one(0)
+
 
         # default settings - testing #
         self.OBSTACLES = self.__elements[0]
@@ -734,6 +756,14 @@ class ViewEditor():
         self.__selected_cv_idx = i
         self.__selected_cv_outline.set_pos((-0.65, 1.0, -1.897 - 0.2 * i))
         self.__colour_picker.colour = self.__elements[i].colour
+
+    def __select_state_num_one(self, i: int):
+        self.__selected_sn_idx = i
+        self.__selected_state_number.set_pos((-0.7 + i * 0.7, 0.4, -4.4))
+
+    def __select_state_num_two(self, i: int):
+        self.__selected_sn_idx = i
+        self.__selected_state_number.set_pos((-0.7 + i * 0.7, 0.4, -4.9))
 
     def __set_obstacles_triangular_wireframe_visibility(self, visible: bool) -> None:
         if visible:
