@@ -38,6 +38,7 @@ class DenseMap(Map):
         if grid is None:
             return
 
+        # Doesn't work with non-uniform grids
         self.set_grid(np.array(grid))
 
     def set_grid(self, grid: np.array) -> None:
@@ -45,7 +46,7 @@ class DenseMap(Map):
         #We transpose here to not worry about flipping coordinates later on
         self.grid = np.atleast_2d(np.transpose(grid))
 
-        self.size = Size(*(self.grid.shape))
+        self.size = Size(*self.grid.shape)
         for index in np.ndindex(*self.size):
             val: int = self.grid[index]
             if val == self.AGENT_ID:
@@ -53,7 +54,7 @@ class DenseMap(Map):
             elif val == self.GOAL_ID:
                 self.goal = Goal(Point(*index))
             elif val == self.WALL_ID:
-                self.obstacles.append(Obstacle(Point(*index)))
+                self.obstacles.append(Obstacle(Point(*index[::-1])))
             elif val == self.EXTENDED_WALL:
                 self.obstacles.append(ExtendedWall(Point(*index)))
 
@@ -61,6 +62,17 @@ class DenseMap(Map):
         """
         Method for extending the walls by agent radius
         """
+
+        #def extend_obstacle_bound() -> None:
+        #    for b in bounds:
+        #        for x in range(b.x - self.agent.radius, b.x + self.agent.radius + 1):
+        #            for y in range(b.y - self.agent.radius, b.y + self.agent.radius + 1):
+        #                if not self.is_out_of_bounds_pos(Point(x, y)):
+        #                    dist: Union[float, np.ndarray] = np.linalg.norm(np.array([x, y]) - np.array(b))
+        #                    if dist <= self.agent.radius and self.grid[y][x] == DenseMap.CLEAR_ID:
+        #                        self.grid[y][x] = DenseMap.EXTENDED_WALL
+        #                        self.obstacles.append(ExtendedWall(Point(x, y)))
+        #                        visited.add(Point(x, y))
 
         def extend_obstacle_bound() -> None:
             for b in bounds:
@@ -103,14 +115,14 @@ class DenseMap(Map):
             self.agent.position = to
         elif isinstance(entity, Goal):
             prev_pos = self.goal.position
-            self.grid[self.goal.position.x][self.goal.position.y] = self.CLEAR_ID
+            self.grid[self.goal.position.pos] = self.CLEAR_ID
             self.goal.position = to
         else:
             raise NotImplementedError()
 
-        self.grid[prev_pos.x][prev_pos.y] = self.CLEAR_ID
-        self.grid[self.goal.position.x][self.goal.position.y] = self.GOAL_ID
-        self.grid[self.agent.position.x][self.agent.position.y] = self.AGENT_ID
+        self.grid[prev_pos.pos] = self.CLEAR_ID
+        self.grid[self.goal.position.pos] = self.GOAL_ID
+        self.grid[self.agent.position.pos] = self.AGENT_ID
 
         for i in range(len(self.obstacles)):
             if self.obstacles[i].position == self.goal.position:
