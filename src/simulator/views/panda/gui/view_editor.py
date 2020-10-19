@@ -599,67 +599,6 @@ class ViewEditor():
         # Show or hide the Style Editor #
         self.__base.accept('v', self.show_hide)
 
-        one_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "one.png")
-        two_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "two.png")
-        three_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "three.png")
-        four_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "four.png")
-        five_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "five.png")
-        six_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "six.png")
-
-        # state buttons
-        self.btn1 = DirectButton(image=one_filename,
-                                 pos=(-0.7, 0.4, -4.4),
-                                 parent=self.__window.frame,
-                                 scale=0.16,
-                                 frameColor=TRANSPARENT,
-                                 command=self.__select_state_num_one,
-                                 extraArgs=[0])
-
-
-
-        self.btn2 = DirectButton(image=two_filename,
-                                 pos=(0, 0.4, -4.4),
-                                 parent=self.__window.frame,
-                                 scale=0.16,
-                                 frameColor=TRANSPARENT,
-                                 command=self.__select_state_num_one,
-                                 extraArgs=[1])
-
-
-        self.btn3 = DirectButton(image=three_filename,
-                                 pos=(0.7, 0.4, -4.4),
-                                 parent=self.__window.frame,
-                                 scale=0.16,
-                                 frameColor=TRANSPARENT,
-                                 command = self.__select_state_num_one,
-                                 extraArgs = [2])
-
-
-        self.btn4 = DirectButton(image=four_filename,
-                                 pos=(-0.7, 0.4, -4.9),
-                                 parent=self.__window.frame,
-                                 scale=0.16,
-                                 frameColor=TRANSPARENT,
-                                 command=self.__select_state_num_two,
-                                 extraArgs=[0])
-
-
-        self.btn5 = DirectButton(image=five_filename,
-                                 pos=(0, 0.4, -4.9),
-                                 parent=self.__window.frame,
-                                 scale=0.16,
-                                 frameColor=TRANSPARENT,
-                                 command=self.__select_state_num_two,
-                                 extraArgs=[1])
-
-        self.btn6 = DirectButton(image=six_filename,
-                                 pos=(0.7, 0.4, -4.9),
-                                 parent=self.__window.frame,
-                                 scale=0.16,
-                                 frameColor=TRANSPARENT,
-                                 command = self.__select_state_num_two,
-                                 extraArgs = [2])
-
         save_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "save2.png")
         restore_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "restore1.png")
 
@@ -706,13 +645,38 @@ class ViewEditor():
                                                 command=self.__select_cv,
                                                 extraArgs=[i]))
 
+        self.__state_btns = []
+        for i in range (0, 3):
+            num = os.path.join(os.path.join(os.path.dirname(os.path.dirname(
+                os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))),
+                                                     "data"), str(i + 1) + ".png")
+
+            self.__state_btns.append(DirectButton(image=num,
+                                 pos=(-0.7 + i * 0.7, 0.4, -4.4),
+                                 parent=self.__window.frame,
+                                 scale=0.16,
+                                 frameColor=TRANSPARENT,
+                                 command=self.__select_state_num_one,
+                                 extraArgs=[i]))
+        for i in range (0, 3):
+            num = os.path.join(os.path.join(os.path.dirname(os.path.dirname(
+                os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))),
+                "data"), str(i + 4) + ".png")
+            self.__state_btns.append(DirectButton(image=num,
+                                 pos=(-0.7 + i * 0.7, 0.4, -4.9),
+                                 parent=self.__window.frame,
+                                 scale=0.16,
+                                 frameColor=TRANSPARENT,
+                                 command = self.__select_state_num_two,
+                                 extraArgs = [i]))
+
+
+
 
         self.__selected_cv_idx = 0
         self.__select_cv(0)
-
         self.__selected_sn_idx = 0
         self.__select_state_num_one(0)
-
 
         # default settings - testing #
         self.OBSTACLES = self.__elements[0]
