@@ -17,21 +17,12 @@ from structures import Point, Size
 if TYPE_CHECKING:
     from algorithms.configuration.maps.sparse_map import SparseMap
 
-#method for finding the dimensions of a list
-#TODO: insert checks to make sure the inserted grid is uniform
-def get_grid_dim(grid: List) -> List[int]:
-        if type(grid) is not list:
-            return []
-        else:
-            return [len(grid)] + get_grid_dim(grid[0])
-
 class DenseMap(Map):
     """
     This type of map is not memory efficient as it stores a grid of entities, but it
     is faster than :class:`SparseMap` as the collision detection is more efficient
     """
-    grid: List
-    grid_dim: List[int]
+    grid: np.array
 
     CLEAR_ID: int = 0
     WALL_ID: int = 1
@@ -44,48 +35,27 @@ class DenseMap(Map):
         #default to creating a size 0 2D map
         super().__init__(Size(0, 0), services)
 
-        if not grid:
+        if grid is None:
             return
 
+        self.set_grid(np.array(grid))
 
-        self.grid_dim = get_grid_dim(grid)
-        #self.grid_dim.reverse()
-        self.set_grid(grid)
+    def set_grid(self, grid: np.array) -> None:
 
-    def set_grid(self, grid: List) -> None:
-        self.grid = grid
+        #We transpose here to not worry about flipping coordinates later on
+        self.grid = np.atleast_2d(np.transpose(grid))
 
-        flip_dim = copy.deepcopy(self.grid_dim)
-        flip_dim.reverse()
-        self.size = Size(*flip_dim)
-
-        #TODO:make this suck less. Also, change the order of grid so we dont have to flip it every time
-        if len(self.grid_dim) == 2:
-            for i in range(self.grid_dim[0]):
-                for j in range(self.grid_dim[1]):
-                    if self.grid[i][j] == self.AGENT_ID:
-                        self.agent = Agent(Point(j, i))
-                    if self.grid[i][j] == self.GOAL_ID:
-                        self.goal = Goal(Point(j, i))
-                    if self.grid[i][j] == self.WALL_ID:
-                        self.obstacles.append(Obstacle(Point(j, i)))
-                    if self.grid[i][j] == self.EXTENDED_WALL:
-                        self.obstacles.append(ExtendedWall(Point(j, i)))
-        elif len(self.grid_dim) == 3:
-            for i in range(self.grid_dim[0]):
-                for j in range(self.grid_dim[1]):
-                    for k in range(self.grid_dim[2]):
-                        if self.grid[i][j][k] == self.AGENT_ID:
-                            self.agent = Agent(Point(k, j, i))
-                        if self.grid[i][j][k] == self.GOAL_ID:
-                            self.goal = Goal(Point(k, j, i))
-                        if self.grid[i][j][k] == self.WALL_ID:
-                            self.obstacles.append(Obstacle(Point(k, j, i)))
-                        if self.grid[i][j][k] == self.EXTENDED_WALL:
-                            self.obstacles.append(ExtendedWall(Point(k, j, i)))
-        else:
-            raise ValueError("currently have not implemented map generation in dimensions > 3D")
-
+        self.size = Size(*(self.grid.shape))
+        for index in np.ndindex(*self.size):
+            val: int = self.grid[index]
+            if val == self.AGENT_ID:
+                self.agent = Agent(Point(*index))
+            elif val == self.GOAL_ID:
+                self.goal = Goal(Point(*index))
+            elif val == self.WALL_ID:
+                self.obstacles.append(Obstacle(Point(*index)))
+            elif val == self.EXTENDED_WALL:
+                self.obstacles.append(ExtendedWall(Point(*index)))
 
     def extend_walls(self) -> None:
         """
@@ -98,21 +68,26 @@ class DenseMap(Map):
                     for y in range(b.y - self.agent.radius, b.y + self.agent.radius + 1):
                         if not self.is_out_of_bounds_pos(Point(x, y)):
                             dist: Union[float, np.ndarray] = np.linalg.norm(np.array([x, y]) - np.array(b))
-                            if dist <= self.agent.radius and self.grid[y][x] == DenseMap.CLEAR_ID:
-                                self.grid[y][x] = DenseMap.EXTENDED_WALL
+                            if dist <= self.agent.radius and self.grid[x][y] == DenseMap.CLEAR_ID:
+                                self.grid[x][y] = DenseMap.EXTENDED_WALL
                                 self.obstacles.append(ExtendedWall(Point(x, y)))
                                 visited.add(Point(x, y))
 
         visited: Set[Point] = set()
         #visited: List[List[bool]] = [[False for _ in range(len(self.grid[i]))] for i in range(len(self.grid))]
 
-        for i in range(self.grid_dim[0]):
-            for j in range(self.grid_dim[1]):
-                #Is there a better way to do this without constructing a point every time
-                if Point(j, i) not in visited:
-                    if self.grid[i][j] == self.WALL_ID:
-                        bounds: Set[Point] = self.get_obstacle_bound(Point(j, i), visited)
-                        extend_obstacle_bound()
+        for index in np.ndindex(*self.size):
+            if (Point(index) not in visited) and (self.grid[index] == self.WALL_ID):
+                bounds: Set[Point] = self.get_obstacle_bound(Point(index), visited)
+                extend_obstacle_bound()
+        
+        #for i in range(self.grid_dim[0]):
+        #    for j in range(self.grid_dim[1]):
+        #        #Is there a better way to do this without constructing a point every time
+        #        if Point(j, i) not in visited:
+        #            if self.grid[i][j] == self.WALL_ID:
+        #                bounds: Set[Point] = self.get_obstacle_bound(Point(j, i), visited)
+        #                extend_obstacle_bound()
 
     def move(self, entity: Entity, to: Point, no_trace: bool = False) -> bool:
         """
@@ -128,14 +103,14 @@ class DenseMap(Map):
             self.agent.position = to
         elif isinstance(entity, Goal):
             prev_pos = self.goal.position
-            self.grid[self.goal.position.y][self.goal.position.x] = self.CLEAR_ID
+            self.grid[self.goal.position.x][self.goal.position.y] = self.CLEAR_ID
             self.goal.position = to
         else:
             raise NotImplementedError()
 
-        self.grid[prev_pos.y][prev_pos.x] = self.CLEAR_ID
-        self.grid[self.goal.position.y][self.goal.position.x] = self.GOAL_ID
-        self.grid[self.agent.position.y][self.agent.position.x] = self.AGENT_ID
+        self.grid[prev_pos.x][prev_pos.y] = self.CLEAR_ID
+        self.grid[self.goal.position.x][self.goal.position.y] = self.GOAL_ID
+        self.grid[self.agent.position.x][self.agent.position.y] = self.AGENT_ID
 
         for i in range(len(self.obstacles)):
             if self.obstacles[i].position == self.goal.position:
@@ -162,23 +137,26 @@ class DenseMap(Map):
         """
         if not super().is_agent_valid_pos(pos):
             return False
-        return self.grid[pos.y][pos.x] != self.WALL_ID and self.grid[pos.y][pos.x] != self.EXTENDED_WALL
+
+        return self.grid[pos.x][pos.y] != self.WALL_ID and self.grid[pos.x][pos.y] != self.EXTENDED_WALL
 
     def __str__(self) -> str:
         debug_level: DebugLevel = DebugLevel.BASIC
         if self._services is not None:
             debug_level = self._services.settings.simulator_write_debug_level
-
+        #flipping it back for the str repr
+        new_grid = np.transpose(self.grid)
+        
         res: str = "DenseMap: {\n\t\tsize: " + str(self.size) + \
                    ", \n\t\tagent: " + str(self.agent) + \
                    ", \n\t\tgoal: " + str(self.goal) + \
                    ", \n\t\tobstacles: " + str(len(self.obstacles))
         if debug_level == DebugLevel.HIGH or (self.size.width <= 20 and self.size.height <= 20):
             res += ", \n\t\tgrid: [\n"
-            for i in range(len(self.grid)):
+            for i in range(len(new_grid)):
                 res += "\t\t\t"
-                for j in range(len(self.grid[i])):
-                    res += str(self.grid[i][j]) + ", "
+                for j in range(len(new_grid[i])):
+                    res += str(new_grid[i][j]) + ", "
                 res += "\n"
             res += "\t\t]"
         return res + "\n\t}"
@@ -200,4 +178,4 @@ class DenseMap(Map):
             other: DenseMap = other.convert_to_dense_map()
         if not isinstance(other, DenseMap):
             return False
-        return self.grid == other.grid and super().__eq__(other)
+        return np.array_equal(self.grid, other.grid) and super().__eq__(other)
