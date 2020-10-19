@@ -1,9 +1,9 @@
 from simulator.services.event_manager.events.event import Event
 
 
-class InitializeEvent(Event):
+class InitialiseEvent(Event):
     """
-    Tells all listeners to initialize themselves.
+    Tells all listeners to initialise themselves.
     This includes loading libraries and resources.
 
     Avoid initializing such things within listener __init__ calls
@@ -12,4 +12,4 @@ class InitializeEvent(Event):
 
     def __init__(self) -> None:
         super().__init__()
-        self._name = "Initialize event"
+        self._name = "Initialise event"

@@ -1,6 +1,6 @@
 from simulator.models.model import Model
 from simulator.services.event_manager.events.event import Event
-from simulator.services.event_manager.events.initialize_event import InitializeEvent
+from simulator.services.event_manager.events.initialise_event import InitialiseEvent
 from simulator.services.event_manager.events.quit_event import QuitEvent
 from simulator.services.services import Services
 
@@ -38,7 +38,7 @@ class Main(Model):
         The loop ends when this object hears a QuitEvent in notify().
         """
         self.__running = True
-        self._services.ev_manager.post(InitializeEvent())
+        self._services.ev_manager.post(InitialiseEvent())
 
         self.__run_main_loop()
 

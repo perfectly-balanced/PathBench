@@ -28,7 +28,7 @@ class Algorithm(ABC):
 
     def set_condition(self, key_frame_condition: Condition) -> None:
         """
-        This method is used to initialize the debugging condition
+        This method is used to initialise the debugging condition
         :param key_frame_condition: The condition
         """
         if self.testing is not None:
