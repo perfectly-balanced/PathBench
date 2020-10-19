@@ -1,5 +1,7 @@
 from threading import Condition
 from typing import Dict, Any, List, Callable, Optional
+from operator import mul
+from functools import reduce
 
 import numpy as np
 
@@ -146,20 +148,16 @@ class BasicTesting:
         self._services.debug.write("Trace: " + str(results["trace"]), DebugLevel.MEDIUM)
 
     @staticmethod
-    def get_occupancy_percentage_grid(grid: List[List[int]], token: int) -> float:
+    def get_occupancy_percentage_grid(grid: np.array, token: int) -> float:
         """
         Searches for token in grid and returns the occupancy percentage of the token
         :param grid: The grid
         :param token: The search token
         :return: The percentage
         """
-        tokens: int = 0
-        width: int = len(grid)
-        height: int = 0 if width == 0 else len(grid[0])
-        for x in range(height):
-            for y in range(width):
-                tokens += grid[y][x] == token
-        return BasicTesting.get_occupancy_percentage_size(Size(width, height), tokens)
+        tokens: int = np.sum(grid == token)
+        
+        return BasicTesting.get_occupancy_percentage_size(Size(*grid.shape), tokens)
 
     @staticmethod
     def get_original_distance(mp: Map):
@@ -181,7 +179,7 @@ class BasicTesting:
         :param items_nr:  The number of items
         :return: The percentage
         """
-        return (items_nr / (size.width * size.height)) * 100
+        return (items_nr / reduce(mul, size, 1)) * 100
 
     @staticmethod
     def get_euclidean_distance_traveled(trace: List[Trace], agent: Agent) -> float:

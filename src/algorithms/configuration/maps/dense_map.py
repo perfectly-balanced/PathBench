@@ -31,15 +31,18 @@ class DenseMap(Map):
     EXTENDED_WALL: int = 4
 
     def __init__(self, grid: Optional[List], services: Services = None) -> None:
-        self.grid = None
-        #default to creating a size 0 2D map
-        super().__init__(Size(0, 0), services)
+        self.grid = None 
 
-        if grid is None:
+        arr_grid = None
+        if grid is not None:
+            arr_grid = np.atleast_2d(np.array(grid))
+            super().__init__(Size(*([0]*arr_grid.ndim)), services)
+        else:
+            super().__init__(Size(0, 0), services)
             return
 
         # Doesn't work with non-uniform grids
-        self.set_grid(np.array(grid))
+        self.set_grid(arr_grid)
 
     def set_grid(self, grid: np.array) -> None:
 
@@ -150,7 +153,7 @@ class DenseMap(Map):
         if not super().is_agent_valid_pos(pos):
             return False
 
-        return self.grid[pos.x][pos.y] != self.WALL_ID and self.grid[pos.x][pos.y] != self.EXTENDED_WALL
+        return self.grid[pos.pos] != self.WALL_ID and self.grid[pos.pos] != self.EXTENDED_WALL
 
     def __str__(self) -> str:
         debug_level: DebugLevel = DebugLevel.BASIC
