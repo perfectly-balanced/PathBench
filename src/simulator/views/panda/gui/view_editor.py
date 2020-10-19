@@ -2,6 +2,7 @@ from panda3d.core import *
 from direct.gui.OnscreenImage import OnscreenImage
 from direct.gui.DirectGui import *
 from direct.showbase.ShowBase import ShowBase
+import json
 
 from typing import Tuple, Union, Callable, List
 import os
@@ -603,14 +604,14 @@ class ViewEditor():
         restore_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "restore1.png")
 
         # save and restore
-        self.btn = DirectButton(image=save_filename,
+        self.btn_s = DirectButton(image=save_filename,
                                 command=self.show_hide,
                                 pos=(-0.35, 0, -5.5),
                                 parent=self.__window.frame,
                                 scale=(0.5, 1.5, 0.18),
                                 frameColor=TRANSPARENT)
-        self.btn = DirectButton(image=restore_filename,
-                                command=self.show_hide,
+        self.btn_r = DirectButton(image=restore_filename,
+                                command=self.load_state,
                                 pos=(0.63, 0, -5.5),
                                 parent=self.__window.frame,
                                 scale=(0.23, 2.1, 0.18),
@@ -645,6 +646,7 @@ class ViewEditor():
                                                 command=self.__select_cv,
                                                 extraArgs=[i]))
 
+        # Creating state buttons
         self.__state_btns = []
         for i in range (0, 3):
             num = os.path.join(os.path.join(os.path.dirname(os.path.dirname(
@@ -670,14 +672,6 @@ class ViewEditor():
                                  command = self.__select_state_num_two,
                                  extraArgs = [i]))
 
-
-
-
-        self.__selected_cv_idx = 0
-        self.__select_cv(0)
-        self.__selected_sn_idx = 0
-        self.__select_state_num_one(0)
-
         # default settings - testing #
         self.OBSTACLES = self.__elements[0]
         self.OBSTACLES_TRI_WF = self.__elements[1]
@@ -691,17 +685,75 @@ class ViewEditor():
         self.FRINGE = self.__elements[9]
         self.EXPLORED = self.__elements[10]
 
-        self.OBSTACLES.colour = Colour(0.8, 0.2, 0.2) # "obstacles"
-        self.OBSTACLES_TRI_WF.colour = BLACK # "obstacles triangular wireframe"
-        self.OBSTACLES_SQR_WF.colour = BLACK # "obstacles square wireframe"
-        self.TRAVERSABLES.colour = Colour(1.0, 1.0, 1.0) # "traversables"
-        self.TRAVERSABLES_TRI_WF.colour = BLACK # "traversables triangular wireframe"
-        self.TRAVERSABLES_SQR_WF.colour = BLACK # "traversables square wireframe"
-        self.START.colour = Colour(0.5, 0.0, 0.5) # "start"
-        self.GOAL.colour = Colour(0.0, 1.0, 0.0) # "goal"
-        self.PATH.colour = Colour(0.0, 1.0, 0.0) # "path"
-        self.FRINGE.colour = Colour(0.2, 0.2, 0.8) # "fringe"
-        self.EXPLORED.colour = Colour(0.4, 0.4, 0.4) # "explored"
+        self.__selected_cv_idx = 0
+        self.__select_cv(0)
+        self.__selected_sn_idx = 0
+        self.__select_state_num_one(0)
+
+
+        self.views = [{'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
+                  'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
+        'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
+        'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
+                  'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+
+                 {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
+                  'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
+                  'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
+                  'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
+                  'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+
+                 {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
+                  'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
+                  'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
+                  'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
+                  'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+
+                 {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
+                  'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
+                  'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
+                  'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
+                  'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+
+                 {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
+                  'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
+                  'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
+                  'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
+                  'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+
+                 {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
+                  'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
+                  'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
+                  'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
+                  'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]}
+                 ]
+
+        with open('state.txt', 'w') as outfile:
+            json.dump(self.views, outfile)
+
+
+    def load_state(self, i : int):
+        with open('state.txt') as json_file:
+            data = json.load(json_file)
+            state_nr = data[i]
+            self.OBSTACLES.colour = Colour(state_nr["OBSTACLES"][0], state_nr["OBSTACLES"][1], state_nr["OBSTACLES"][2])
+            self.OBSTACLES_TRI_WF.colour = Colour(state_nr["OBSTACLES_TRI_WF"][0], state_nr["OBSTACLES_TRI_WF"][1], state_nr["OBSTACLES_TRI_WF"][2])
+            self.OBSTACLES_SQR_WF.colour = Colour(state_nr["OBSTACLES_SQR_WF"][0], state_nr["OBSTACLES_SQR_WF"][1], state_nr["OBSTACLES_SQR_WF"][2])
+            self.TRAVERSABLES.colour = Colour(state_nr["TRAVERSABLES"][0], state_nr["TRAVERSABLES"][1], state_nr["TRAVERSABLES"][2])
+            self.TRAVERSABLES_TRI_WF.colour = Colour(state_nr["TRAVERSABLES_TRI_WF"][0], state_nr["TRAVERSABLES_TRI_WF"][1], state_nr["TRAVERSABLES_TRI_WF"][2])
+            self.TRAVERSABLES_SQR_WF.colour = Colour(state_nr["TRAVERSABLES_SQR_WF"][0], state_nr["TRAVERSABLES_SQR_WF"][1], state_nr["TRAVERSABLES_SQR_WF"][2])
+            self.START.colour = Colour(state_nr["START"][0], state_nr["START"][1], state_nr["START"][2])
+            self.GOAL.colour = Colour(state_nr["GOAL"][0], state_nr["GOAL"][1], state_nr["GOAL"][2])
+            self.PATH.colour = Colour(state_nr["PATH"][0], state_nr["PATH"][1], state_nr["PATH"][2])
+            self.FRINGE.colour = Colour(state_nr["FRINGE"][0], state_nr["FRINGE"][1], state_nr["FRINGE"][2])
+            self.EXPLORED.colour = Colour(state_nr["EXPLORED"][0], state_nr["EXPLORED"][1], state_nr["EXPLORED"][2])
+
+
+    # def save(self, i):
+    #     with open('state.txt') as json_file:
+    #         data = json.load(json_file)
+    #         state_nr = data[i]
+
 
     def show_hide(self):
         if not self.hidden:
@@ -724,6 +776,7 @@ class ViewEditor():
     def __select_state_num_one(self, i: int):
         self.__selected_sn_idx = i
         self.__selected_state_number.set_pos((-0.7 + i * 0.7, 0.4, -4.4))
+        self.load_state(i)
 
     def __select_state_num_two(self, i: int):
         self.__selected_sn_idx = i
