@@ -1,10 +1,6 @@
 from simulator.controllers.controller import Controller
-from simulator.models.model import Model
-from simulator.services.debug import DebugLevel
-from simulator.services.event_manager.events.keyboard_event import KeyboardEvent
-from simulator.services.event_manager.events.mouse_event import MouseEvent
-from simulator.services.event_manager.events.quit_event import QuitEvent
-from simulator.services.services import Services
+from simulator.services.event_manager.events.event import Event
+from simulator.services.event_manager.events.window_loaded_event import WindowLoadedEvent
 
 
 class KeyboardController(Controller):

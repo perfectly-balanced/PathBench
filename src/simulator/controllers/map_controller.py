@@ -1,6 +1,5 @@
 from simulator.controllers.controller import Controller
-from simulator.models.model import Model
-from simulator.services.services import Services
+from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.window_loaded_event import WindowLoadedEvent
 
 class MapController(Controller):
@@ -20,4 +19,4 @@ class MapController(Controller):
             self._services.window.accept("m", lambda: self._model.toggle_convert_map())
             self._services.window.accept("s", lambda: self._model.stop_algorithm())
             self._services.window.accept("r", lambda: self._model.resume_algorithm())
-            self._services.window.accept("p", lambda: self._services.ev_manager.post(TakeScreenshotEvent())
+            self._services.window.accept("p", lambda: self._services.ev_manager.post(TakeScreenshotEvent()))
