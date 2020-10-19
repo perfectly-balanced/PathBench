@@ -54,7 +54,7 @@ class DenseMap(Map):
             elif val == self.GOAL_ID:
                 self.goal = Goal(Point(*index))
             elif val == self.WALL_ID:
-                self.obstacles.append(Obstacle(Point(*index[::-1])))
+                self.obstacles.append(Obstacle(Point(*index)))
             elif val == self.EXTENDED_WALL:
                 self.obstacles.append(ExtendedWall(Point(*index)))
 
