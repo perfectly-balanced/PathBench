@@ -1,34 +1,23 @@
-from typing import Optional
-
-import pygame
-
 from simulator.controllers.controller import Controller
-from simulator.models.main import Main
-from simulator.services.event_manager.events.event import Event
-from simulator.services.event_manager.events.keyboard_event import KeyboardEvent
-from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
-
+from simulator.models.model import Model
+from simulator.services.services import Services
+from simulator.services.event_manager.events.window_loaded_event import WindowLoadedEvent
 
 class MapController(Controller):
     def notify(self, event: Event) -> None:
-        model: Optional[Main] = self._model
-        
-        if isinstance(event, KeyboardEvent):
-            if event.key == pygame.K_UP:
-                model.move_up()
-            if event.key == pygame.K_DOWN:
-                model.move_down()
-            if event.key == pygame.K_LEFT:
-                model.move_left()
-            if event.key == pygame.K_RIGHT:
-                model.move_right()
-            if event.key == pygame.K_c:
-                model.compute_trace()
-            if event.key == pygame.K_m:
-                model.toggle_convert_map()
-            if event.key == pygame.K_s:
-                model.stop_algorithm()
-            if event.key == pygame.K_r:
-                model.resume_algorithm()
-            if event.key == pygame.K_p:
-                self._services.ev_manager.post(TakeScreenshotEvent())
+        """
+        Receive events posted to the message queue.
+        """
+
+        super().notify(event)
+        if isinstance(event, WindowLoadedEvent):
+            self._services.window.accept("escape", lambda: self._services.ev_manager.post(QuitEvent()))
+            self._services.window.accept("arrow_up", lambda: self._model.move_up())
+            self._services.window.accept("arrow_down", lambda: self._model.move_down())
+            self._services.window.accept("arrow_left", lambda: self._model.move_left())
+            self._services.window.accept("arrow_right", lambda: self._model.move_right())
+            self._services.window.accept("c", lambda: self._model.compute_trace())
+            self._services.window.accept("m", lambda: self._model.toggle_convert_map())
+            self._services.window.accept("s", lambda: self._model.stop_algorithm())
+            self._services.window.accept("r", lambda: self._model.resume_algorithm())
+            self._services.window.accept("p", lambda: self._services.ev_manager.post(TakeScreenshotEvent())
