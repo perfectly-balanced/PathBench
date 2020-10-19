@@ -1,8 +1,6 @@
 from typing import Tuple, TypeVar, Final
 from numbers import Real, Integral
 
-IntPoint3 = Tuple[Integral, Integral, Integral]  # XYZ
-
 class Colour:
     """
     This tuple is used to describe an RGBA colour of an object.

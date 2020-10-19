@@ -1,6 +1,8 @@
-from panda3d.core import NodePath, TransparencyAttrib
+from panda3d.core import NodePath, TransparencyAttrib, LVecBase3f
 from .cube_mesh import CubeMesh
-from .common import IntPoint3, Colour, TRANSPARENT
+from .common import Colour, TRANSPARENT
+
+from structures import Point
 
 from typing import List
 import random
@@ -21,10 +23,10 @@ class VoxelMap():
     start_mesh: CubeMesh
     goal_mesh: CubeMesh
 
-    __start_pos: IntPoint3
-    __goal_pos: IntPoint3
+    __start_pos: Point
+    __goal_pos: Point
 
-    def __init__(self, data: List[List[List[bool]]], parent: NodePath, name: str = "voxel_map", start_pos: IntPoint3 = None, goal_pos: IntPoint3 = None, artificial_lighting: bool = False):
+    def __init__(self, data: List[List[List[bool]]], parent: NodePath, name: str = "voxel_map", start_pos: Point = None, goal_pos: Point = None, artificial_lighting: bool = False):
         self.obstacles_data = data
         self.traversables_data = {}
         for i in range(len(self.obstacles_data)):
@@ -80,8 +82,8 @@ class VoxelMap():
                 for j in range(len(self.traversables_data[i])):
                     map_sz += len(self.traversables_data[i][j])
 
-            def randpos() -> IntPoint3:
-                def to_coord(n: int) -> IntPoint3:
+            def randpos() -> Point:
+                def to_coord(n: int) -> Point:
                     for i in range(len(self.traversables_data)):
                         for j in range(len(self.traversables_data[i])):
                             for k in range(len(self.traversables_data[i][j])):
@@ -120,17 +122,17 @@ class VoxelMap():
         return 'start_pos'
 
     @start_pos.getter
-    def start_pos(self) -> IntPoint3:
+    def start_pos(self) -> Point:
         return self.__start_pos
 
     @start_pos.setter
-    def start_pos(self, value: IntPoint3) -> None:
+    def start_pos(self, value: Point) -> None:
         if self.__start_pos != None:
             self.traversables_mesh.reset_cube_colour(self.__start_pos)
         self.__start_pos = value
         if self.__start_pos != None:
             self.traversables_mesh.set_cube_colour(self.__start_pos, TRANSPARENT)
-            self.start.set_pos(value)
+            self.start.set_pos(LVecBase3f(*value))
             self.start.show()
         else:
             self.start.hide()
@@ -139,17 +141,17 @@ class VoxelMap():
         return 'goal_pos'
 
     @goal_pos.getter
-    def goal_pos(self) -> IntPoint3:
+    def goal_pos(self) -> Point:
         return self.__goal_pos
 
     @goal_pos.setter
-    def goal_pos(self, value: IntPoint3) -> None:
+    def goal_pos(self, value: Point) -> None:
         if self.__goal_pos != None:
             self.traversables_mesh.reset_cube_colour(self.__goal_pos)
         self.__goal_pos = value
         if self.__goal_pos != None:
             self.traversables_mesh.set_cube_colour(self.__goal_pos, TRANSPARENT)
-            self.goal.set_pos(value)
+            self.goal.set_pos(LVecBase3f(*value))
             self.goal.show()
         else:
             self.goal.hide()

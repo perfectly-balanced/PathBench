@@ -3,8 +3,6 @@ from weakref import WeakKeyDictionary
 
 from simulator.services.debug import DebugLevel
 from simulator.services.event_manager.events.event import Event
-from simulator.services.event_manager.events.keyboard_event import KeyboardEvent
-from simulator.services.event_manager.events.mouse_event import MouseEvent
 
 if TYPE_CHECKING:
     from simulator.services.services import Services
@@ -68,9 +66,7 @@ class EventManager:
         """
 
         self.__event_queue.append(event)
-        if not isinstance(event, MouseEvent) and not isinstance(event, KeyboardEvent):
-            # print the event (unless it is TickEvent)
-            self.__services.debug.write(str(event), DebugLevel.MEDIUM)
+        self.__services.debug.write(str(event), DebugLevel.MEDIUM)
 
     def tick(self) -> None:
         """

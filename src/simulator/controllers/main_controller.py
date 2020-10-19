@@ -2,12 +2,7 @@ from simulator.controllers.controller import Controller
 from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.window_loaded_event import WindowLoadedEvent
 
-
-class KeyboardController(Controller):
-    """
-    Handles keyboard input
-    """
-        
+class MainController(Controller):
     def notify(self, event: Event) -> None:
         """
         Receive events posted to the message queue.

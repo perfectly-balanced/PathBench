@@ -7,7 +7,8 @@ from typing import List
 from numbers import Real
 import math
 
-from .common import IntPoint3, Colour, WHITE
+from .common import Colour, WHITE
+from structures import Point
 
 def normalise(*args):
     v = LVector3(*args)
@@ -47,7 +48,7 @@ class CubeMesh():
 
         self.__face_count = 0
 
-        # List[IntPoint3]
+        # List[Point]
         # key: <face-index>
         # value: <cube-pos>
         self.__face_cube_map = []
@@ -101,7 +102,7 @@ class CubeMesh():
         self.__triangles.close_primitive()
         self.mesh.add_primitive(self.__triangles)
 
-    def get_cube_colour(self, pos: IntPoint3) -> Colour:
+    def get_cube_colour(self, pos: Point) -> Colour:
         x, y, z = pos
 
         faces = self.__cube_face_map[x][y][z]
@@ -117,7 +118,7 @@ class CubeMesh():
 
         return self.default_colour
 
-    def set_cube_colour(self, pos: IntPoint3, colour: Colour) -> None:
+    def set_cube_colour(self, pos: Point, colour: Colour) -> None:
         x, y, z = pos
 
         self.__cube_default_coloured[x][y][z] = False
@@ -132,7 +133,7 @@ class CubeMesh():
                 self.__colour.addData4f(*c)
                 self.__colour.addData4f(*c)
 
-    def reset_cube_colour(self, pos: IntPoint3) -> None:
+    def reset_cube_colour(self, pos: Point) -> None:
         x, y, z = pos
 
         self.set_cube_colour(pos, self.default_colour)
@@ -160,7 +161,7 @@ class CubeMesh():
         else:
             return colour
 
-    def __make_face(self, face: Face, pos: IntPoint3) -> None:
+    def __make_face(self, face: Face, pos: Point) -> None:
         colour = self.__face_colour(self.default_colour, face)
 
         def make(x1, y1, z1, x2, y2, z2) -> None:
@@ -263,7 +264,7 @@ class CubeMesh():
     def structure(self) -> List[List[List[bool]]]:
         return self.__structure
 
-    def cube_visible(self, pos: IntPoint3) -> bool:
+    def cube_visible(self, pos: Point) -> bool:
         x, y, z = pos
         for f in self.__cube_face_map[x][y][z]:
             if f != None:
