@@ -94,12 +94,16 @@ class MapController(Controller):
             p = self.__picker.pos
             if p != None:
                 self._services.debug.write("Moved agent to: " + str(p), DebugLevel.MEDIUM)
+                if self._services.algorithm.map.size.n_dim == 2:
+                    p = Point(p[0], p[1])
                 self._model.move(p)
         
         def right_click():
             p = self.__picker.pos
             if p != None:
                 self._services.debug.write("Moved goal to: " + str(p), DebugLevel.MEDIUM)
+                if self._services.algorithm.map.size.n_dim == 2:
+                    p = Point(p[0], p[1])
                 self._model.move_goal(p)
 
         base = self._services.window

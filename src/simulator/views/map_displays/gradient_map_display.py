@@ -8,7 +8,7 @@ from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
 from simulator.views.map_displays.map_display import MapDisplay
 from structures import Point
-
+from simulator.views.map.colour import Colour
 
 class GradientMapDisplay(MapDisplay):
     inverted: bool
@@ -53,7 +53,8 @@ class GradientMapDisplay(MapDisplay):
         return np.clip(clr, 0, 255)
 
     def render(self) -> bool:
-        return True # hacky: don't render
+        if self._map.size.n_dim == 3:
+            return True # hacky: don't render
 
         if not super().render():
             return False
@@ -69,7 +70,12 @@ class GradientMapDisplay(MapDisplay):
 
         for p in self.pts:
             clr = self.get_color(p[0], min_val, max_val)
-            self._root_view.render_pos(Entity(p[1]), clr)
+            c = list(clr)
+            for i in range(len(c)):
+                c[i] /= 255
+                c[i] = min(1, c[i])
+            c = Colour(*c)
+            self._root_view.render_pos(Entity(p[1]), c)
 
         return True
 

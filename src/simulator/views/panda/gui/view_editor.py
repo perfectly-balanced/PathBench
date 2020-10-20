@@ -536,6 +536,7 @@ class ViewEditor():
         self.__map = map
         self.hidden = False
 
+        self.state_num = 0
         self.__window = Window(self.__base, "view_editor", parent=self.__base.pixel2d,
                                relief=DGG.RAISED,
                                borderWidth=(0.0, 0.0),
@@ -581,7 +582,7 @@ class ViewEditor():
                                                  scale=(0.3, 2.0, 0.3))
 
         self.heading = DirectLabel(parent=self.__window.frame,
-                                   text="Style Editor",
+                                   text="View Editor",
                                    text_fg=WHITE,
                                    text_bg=WINDOW_BG_COLOUR,
                                    borderWidth=(.0, .0),
@@ -595,31 +596,46 @@ class ViewEditor():
 
         # Quit button
         self.btn = DirectButton(image=quit_filename,
-                                command=self.show_hide,
+                                command=self.__toggle_view_editor,
                                 pos=(0.9, 0.4, 1.32),
                                 parent=self.__window.frame,
                                 scale=0.1,
+                                pressEffect=1,
                                 frameColor=TRANSPARENT)
 
         # Show or hide the Style Editor #
-        self.__base.accept('v', self.show_hide)
+        self.__base.accept('v', self.__toggle_view_editor)
 
-        save_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "save2.png")
-        restore_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "restore1.png")
+        save_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "save60.png")
+        restore_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "restore60.png")
+        # self.__save_outline = DirectFrame(parent=self.__window.frame,
+        #                                          relief=DGG.SUNKEN,
+        #                                          frameColor=(0.3, 0.3, 0.3, 1.0),
+        #                                          pos=(-0.35, 0, -5.5),
+        #                                          borderWidth=(0.25, 0.15),
+        #                                          frameSize=(-0.62, 0.62, -0.54, 0.54),
+        #                                          scale=(0.18, 1.4, 0.18))
 
         # save and restore
-        self.btn_s = DirectButton(image=save_filename,
-                                command=self.show_hide,
-                                pos=(-0.35, 0, -5.5),
-                                parent=self.__window.frame,
-                                scale=(0.5, 1.5, 0.18),
-                                frameColor=TRANSPARENT)
-        self.btn_r = DirectButton(image=restore_filename,
-                                command=self.load_state,
-                                pos=(0.63, 0, -5.5),
-                                parent=self.__window.frame,
-                                scale=(0.23, 2.1, 0.18),
-                                frameColor=TRANSPARENT)
+        self.btn_s = DirectButton(#image =save_filename,
+                                 text = "Save",
+                                 text_fg=WHITE,
+                                 pressEffect = 1,
+                                 command=lambda: self.save_state(self.state_num),
+                                 pos=(-0.60, 0, -5.5),
+                                 parent=self.__window.frame,
+                                 scale=(0.20, 2.1, 0.15),
+                                 frameColor=TRANSPARENT)
+        
+        self.btn_r = DirectButton(#image=restore_filename,
+                                 text="Restore",
+                                 text_fg=WHITE,
+                                 pressEffect=1,
+                                 command=lambda: self.load_state(self.state_num),
+                                 pos=(0.50, 0, -5.5),
+                                 parent=self.__window.frame,
+                                 scale=(0.20, 2.1, 0.15),
+                                 frameColor=TRANSPARENT)
 
         # view elements
         self.__elements = []
@@ -689,7 +705,7 @@ class ViewEditor():
         self.FRINGE = self.__elements[9]
         self.EXPLORED = self.__elements[10]
 
-        self.views = [{'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
+        self.views = [{'OBSTACLES': [0.9254902601242065, 0.0, 1.0, 0.5], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
                   'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],'TRAVERSABLES': [1.0, 1.0, 1.0, 0.0],
         'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
         'START': [0.8, 0.0, 0.0, 1.0], 'GOAL': [0.0, 0.9, 0.0, 1.0], 'PATH': [1.0, 1.0, 1.0, 0.5],
@@ -726,8 +742,12 @@ class ViewEditor():
                   'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]}
                  ]
 
-        with open('state.txt', 'w') as outfile:
-            json.dump(self.views, outfile)
+        if os.path.isfile('state.json'):
+            with open('state.json', 'r') as json_file:
+                self.views = json.load(json_file)
+                # todo: actually check that structure is the same
+        else:
+            self.save_state()
 
         self.__selected_cv_idx = 0
         self.__select_cv(0)
@@ -735,29 +755,38 @@ class ViewEditor():
         self.__select_state_num_one(0)
 
     def load_state(self, i : int):
-        with open('state.txt', 'r') as json_file:
-            data = json.load(json_file)
-            state_nr = data[i]
-            self.OBSTACLES.colour = Colour(state_nr["OBSTACLES"][0], state_nr["OBSTACLES"][1], state_nr["OBSTACLES"][2], state_nr["OBSTACLES"][3])
-            self.OBSTACLES_TRI_WF.colour = Colour(state_nr["OBSTACLES_TRI_WF"][0], state_nr["OBSTACLES_TRI_WF"][1], state_nr["OBSTACLES_TRI_WF"][2], state_nr["OBSTACLES_TRI_WF"][3])
-            self.OBSTACLES_SQR_WF.colour = Colour(state_nr["OBSTACLES_SQR_WF"][0], state_nr["OBSTACLES_SQR_WF"][1], state_nr["OBSTACLES_SQR_WF"][2], state_nr["OBSTACLES_SQR_WF"][3])
-            self.TRAVERSABLES.colour = Colour(state_nr["TRAVERSABLES"][0], state_nr["TRAVERSABLES"][1], state_nr["TRAVERSABLES"][2], state_nr["TRAVERSABLES"][3])
-            self.TRAVERSABLES_TRI_WF.colour = Colour(state_nr["TRAVERSABLES_TRI_WF"][0], state_nr["TRAVERSABLES_TRI_WF"][1], state_nr["TRAVERSABLES_TRI_WF"][2], state_nr["TRAVERSABLES_TRI_WF"][3])
-            self.TRAVERSABLES_SQR_WF.colour = Colour(state_nr["TRAVERSABLES_SQR_WF"][0], state_nr["TRAVERSABLES_SQR_WF"][1], state_nr["TRAVERSABLES_SQR_WF"][2], state_nr["TRAVERSABLES_SQR_WF"][3])
-            self.START.colour = Colour(state_nr["START"][0], state_nr["START"][1], state_nr["START"][2], state_nr["START"][3])
-            self.GOAL.colour = Colour(state_nr["GOAL"][0], state_nr["GOAL"][1], state_nr["GOAL"][2], state_nr["GOAL"][3])
-            self.PATH.colour = Colour(state_nr["PATH"][0], state_nr["PATH"][1], state_nr["PATH"][2], state_nr["PATH"][3])
-            self.FRINGE.colour = Colour(state_nr["FRINGE"][0], state_nr["FRINGE"][1], state_nr["FRINGE"][2], state_nr["FRINGE"][3])
-            self.EXPLORED.colour = Colour(state_nr["EXPLORED"][0], state_nr["EXPLORED"][1], state_nr["EXPLORED"][2], state_nr["EXPLORED"][3])
+        state_nr = self.views[i]
+        self.OBSTACLES.colour = Colour(state_nr["OBSTACLES"][0], state_nr["OBSTACLES"][1], state_nr["OBSTACLES"][2], state_nr["OBSTACLES"][3])
+        self.OBSTACLES_TRI_WF.colour = Colour(state_nr["OBSTACLES_TRI_WF"][0], state_nr["OBSTACLES_TRI_WF"][1], state_nr["OBSTACLES_TRI_WF"][2], state_nr["OBSTACLES_TRI_WF"][3])
+        self.OBSTACLES_SQR_WF.colour = Colour(state_nr["OBSTACLES_SQR_WF"][0], state_nr["OBSTACLES_SQR_WF"][1], state_nr["OBSTACLES_SQR_WF"][2], state_nr["OBSTACLES_SQR_WF"][3])
+        self.TRAVERSABLES.colour = Colour(state_nr["TRAVERSABLES"][0], state_nr["TRAVERSABLES"][1], state_nr["TRAVERSABLES"][2], state_nr["TRAVERSABLES"][3])
+        self.TRAVERSABLES_TRI_WF.colour = Colour(state_nr["TRAVERSABLES_TRI_WF"][0], state_nr["TRAVERSABLES_TRI_WF"][1], state_nr["TRAVERSABLES_TRI_WF"][2], state_nr["TRAVERSABLES_TRI_WF"][3])
+        self.TRAVERSABLES_SQR_WF.colour = Colour(state_nr["TRAVERSABLES_SQR_WF"][0], state_nr["TRAVERSABLES_SQR_WF"][1], state_nr["TRAVERSABLES_SQR_WF"][2], state_nr["TRAVERSABLES_SQR_WF"][3])
+        self.START.colour = Colour(state_nr["START"][0], state_nr["START"][1], state_nr["START"][2], state_nr["START"][3])
+        self.GOAL.colour = Colour(state_nr["GOAL"][0], state_nr["GOAL"][1], state_nr["GOAL"][2], state_nr["GOAL"][3])
+        self.PATH.colour = Colour(state_nr["PATH"][0], state_nr["PATH"][1], state_nr["PATH"][2], state_nr["PATH"][3])
+        self.FRINGE.colour = Colour(state_nr["FRINGE"][0], state_nr["FRINGE"][1], state_nr["FRINGE"][2], state_nr["FRINGE"][3])
+        self.EXPLORED.colour = Colour(state_nr["EXPLORED"][0], state_nr["EXPLORED"][1], state_nr["EXPLORED"][2], state_nr["EXPLORED"][3])
+    
+    def save_state(self, i = None):
+        if i is not None:
+            state_nr = self.views[i]
+            state_nr["OBSTACLES"][0],state_nr["OBSTACLES"][1],state_nr["OBSTACLES"][2],state_nr["OBSTACLES"][3] = self.OBSTACLES.colour
+            state_nr["OBSTACLES_TRI_WF"][0], state_nr["OBSTACLES_TRI_WF"][1], state_nr["OBSTACLES_TRI_WF"][2], state_nr["OBSTACLES_TRI_WF"][3] = self.OBSTACLES_TRI_WF.colour
+            state_nr["OBSTACLES_SQR_WF"][0], state_nr["OBSTACLES_SQR_WF"][1], state_nr["OBSTACLES_SQR_WF"][2], state_nr["OBSTACLES_SQR_WF"][3] = self.OBSTACLES_SQR_WF.colour
+            state_nr["TRAVERSABLES"][0], state_nr["TRAVERSABLES"][1], state_nr["TRAVERSABLES"][2], state_nr["TRAVERSABLES"][3] = self.TRAVERSABLES.colour
+            state_nr["TRAVERSABLES_TRI_WF"][0], state_nr["TRAVERSABLES_TRI_WF"][1], state_nr["TRAVERSABLES_TRI_WF"][2], state_nr["TRAVERSABLES_TRI_WF"][3] = self.TRAVERSABLES_TRI_WF.colour
+            state_nr["TRAVERSABLES_SQR_WF"][0], state_nr["TRAVERSABLES_SQR_WF"][1], state_nr["TRAVERSABLES_SQR_WF"][2], state_nr["TRAVERSABLES_SQR_WF"][3] = self.OBSTACLES_SQR_WF.colour
+            state_nr["START"][0], state_nr["START"][1], state_nr["START"][2], state_nr["START"][3] = self.START.colour
+            state_nr["GOAL"][0], state_nr["GOAL"][1], state_nr["GOAL"][2], state_nr["GOAL"][3] = self.GOAL.colour
+            state_nr["PATH"][0], state_nr["PATH"][1], state_nr["PATH"][2], state_nr["PATH"][3] = self.PATH.colour
+            state_nr["FRINGE"][0], state_nr["FRINGE"][1], state_nr["FRINGE"][2], state_nr["FRINGE"][3] = self.FRINGE.colour
+            state_nr["EXPLORED"][0], state_nr["EXPLORED"][1], state_nr["EXPLORED"][2], state_nr["EXPLORED"][3] = self.EXPLORED.colour
 
+        with open('state.json', 'w') as json_file:
+            json.dump(self.views, json_file)
 
-    # def save(self, i):
-    #     with open('state.txt') as json_file:
-    #         data = json.load(json_file)
-    #         state_nr = data[i]
-
-
-    def show_hide(self):
+    def __toggle_view_editor(self):
         if not self.hidden:
             self.__window.frame.hide()
             self.hidden = True
@@ -779,10 +808,13 @@ class ViewEditor():
         self.__selected_sn_idx = i
         self.__selected_state_number.set_pos((-0.7 + i * 0.7, 0.4, -4.4))
         self.load_state(i)
+        self.state_num = i
 
     def __select_state_num_two(self, i: int):
         self.__selected_sn_idx = i
         self.__selected_state_number.set_pos((-0.7 + i * 0.7, 0.4, -4.9))
+        self.load_state(i)
+        self.state_num = i+3
 
     def __set_obstacles_triangular_wireframe_visibility(self, visible: bool) -> None:
         if visible:
