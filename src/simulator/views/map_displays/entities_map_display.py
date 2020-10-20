@@ -23,44 +23,35 @@ class EntitiesMapDisplay(MapDisplay):
         super().__init__(services, z_index=z_index, custom_map=custom_map)
         self.animation_step = 0
 
-    def render(self, screen: pygame.Surface) -> bool:
-        if not super().render(screen):
+    def render(self) -> bool:
+        if not super().render():
             return False
 
-        self.render_entities(screen)
+        self.render_entities()
         return True
 
-    def render_entities(self, screen: pygame.Surface) -> None:
-        self.render_obstacles(screen)
-        self.render_trace(screen)
-        self.render_agent(screen, self._map.agent)
-        self.render_goal(screen, self._map.goal)
+    def render_entities(self) -> None:
+        self.render_trace()
+        self.render_agent(self._map.agent)
+        self.render_goal(self._map.goal)
 
-    def render_trace(self, screen: pygame.Surface) -> None:
+    def render_trace(self) -> None:
         for trace_point in self._map.trace:
-            self.render_trace_point(screen, trace_point)
-        self.render_initial_position(screen, self._map)
+            self.render_trace_point(trace_point)
+        self.render_initial_position(self._map)
 
-    def render_obstacles(self, screen: pygame.Surface) -> None:
-        for obstacle in self._map.obstacles:
-            self.render_obstacle(screen, obstacle)
+    def render_agent(self, agent: Agent) -> None:
+        self.get_renderer_view().render_pos(agent, (255, 0, 0))
 
-    def render_obstacle(self, screen: pygame.Surface, obstacle: Obstacle) -> None:
-        color = (200, 200, 200) if isinstance(obstacle, ExtendedWall) else (0, 0, 0)
-        self.get_renderer_view().render_pos(screen, obstacle, color)
+    def render_goal(self, goal: Goal) -> None:
+        self.get_renderer_view().render_pos(goal, (0, 100, 0))
 
-    def render_agent(self, screen: pygame.Surface, agent: Agent) -> None:
-        self.get_renderer_view().render_pos(screen, agent, (255, 0, 0))
+    def render_trace_point(self, trace_point: Trace) -> None:
+        self.get_renderer_view().render_pos(trace_point, (0, 200, 0))
 
-    def render_goal(self, screen: pygame.Surface, goal: Goal) -> None:
-        self.get_renderer_view().render_pos(screen, goal, (0, 100, 0))
-
-    def render_trace_point(self, screen: pygame.Surface, trace_point: Trace) -> None:
-        self.get_renderer_view().render_pos(screen, trace_point, (0, 200, 0))
-
-    def render_initial_position(self, screen: pygame.Surface, grid: Map) -> None:
+    def render_initial_position(self, grid: Map) -> None:
         if len(grid.trace) >= 1:
-            self.get_renderer_view().render_pos(screen, Entity(grid.trace[0].position, grid.agent.radius), (150, 0, 0))
+            self.get_renderer_view().render_pos(Entity(grid.trace[0].position, grid.agent.radius), (150, 0, 0))
 
     def __lt__(self, other):
         return super().__lt__(other)

@@ -1,4 +1,3 @@
-import pygame
 from typing import Optional, Callable
 
 from algorithms.configuration.maps.map import Map
@@ -9,10 +8,10 @@ from simulator.views.view import View
 class MapDisplay(View):
     services: Services
     z_index: int
-    render_method: Optional[Callable[[pygame.Surface], None]]
+    render_method: Optional[Callable[[], None]]
     _map: Map
 
-    def __init__(self, services: Services, render_method: Optional[Callable[[pygame.Surface], None]] = None,
+    def __init__(self, services: Services, render_method: Optional[Callable[[], None]] = None,
                  z_index: int = 0, custom_map: Map = None) -> None:
         super().__init__(services, None, None)
         self.services = services
@@ -24,9 +23,9 @@ class MapDisplay(View):
         if custom_map:
             self._map = custom_map
 
-    def render(self, screen: pygame.Surface) -> bool:
+    def render(self) -> bool:
         if self.render_method is not None:
-            self.render_method(screen)
+            self.render_method()
 
         return True
 

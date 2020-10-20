@@ -89,7 +89,7 @@ class Map(Model):
             if self._services.settings.simulator_key_frame_speed > 0:
                 self._services.algorithm.instance.set_condition(self.key_frame_condition)
             self._services.algorithm.instance.find_path()
-            self._services.ev_manager.post(KeyFrameEvent())
+            self._services.ev_manager.post(KeyFrameEvent(is_first=True))
             self.key_frame_condition = None
             self.last_thread = None
 

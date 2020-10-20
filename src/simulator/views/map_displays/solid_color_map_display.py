@@ -21,8 +21,8 @@ class SolidColorMapDisplay(MapDisplay):
         self.color = color
         self.radius = radius
 
-    def render(self, screen: pygame.Surface) -> bool:
-        if not super().render(screen):
+    def render(self) -> bool:
+        if not super().render():
             return False
 
         points: Union[Set[Point], List[Entity]] = copy.deepcopy(self.points)
@@ -37,7 +37,7 @@ class SolidColorMapDisplay(MapDisplay):
         points = set(map(f, points))
 
         for point in points:
-            self._root_view.render_pos(screen, Entity(point, self.radius), self.color)
+            self._root_view.render_pos(Entity(point, self.radius), self.color)
 
         return True
 

@@ -52,8 +52,8 @@ class GradientMapDisplay(MapDisplay):
             clr = self.max_color - proc_dist * color_vec
         return np.clip(clr, 0, 255)
 
-    def render(self, screen: pygame.Surface) -> bool:
-        if not super().render(screen):
+    def render(self) -> bool:
+        if not super().render():
             return False
 
         if self.pts is None:
@@ -65,14 +65,9 @@ class GradientMapDisplay(MapDisplay):
             min_val = min(min_val, p[0])
             max_val = max(max_val, p[0])
 
-        if self.services.settings.simulator_grid_display:
-            for p in self.pts:
-                clr = self.get_color(p[0], min_val, max_val)
-                self._root_view.render_pos(screen, Entity(p[1]), clr)
-        else:
-            for p in self.pts:
-                clr = self.get_color(p[0], min_val, max_val)
-                screen.set_at(p[1], clr)
+        for p in self.pts:
+            clr = self.get_color(p[0], min_val, max_val)
+            self._root_view.render_pos(Entity(p[1]), clr)
 
         return True
 
