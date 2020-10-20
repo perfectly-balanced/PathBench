@@ -76,13 +76,15 @@ class MapView(View):
             map_data[x] = {}
             for y in range(0, self._services.algorithm.map.size.height):
                 map_data[x][y] = {}
-                map_data[x][y][0] = not self._services.algorithm.map.is_agent_valid_pos(Point(x, y, 0))
-
-        start_pos = self.__to_point3(self._services.algorithm.map.agent)
-        goal_pos = self.__to_point3(self._services.algorithm.map.goal)
+                if self._services.algorithm.map.size.n_dim == 2:
+                    map_data[x][y][0] = not self._services.algorithm.map.is_agent_valid_pos(Point(x, y))
+                else:
+                    # assume 3D
+                    for z in range(0, self._services.algorithm.map.size.depth):
+                        map_data[x][y][z] = not self._services.algorithm.map.is_agent_valid_pos(Point(x, y, z))
 
         # MAP #
-        self.__map = VoxelMap(map_data, self.__world, start_pos=start_pos, goal_pos=goal_pos, artificial_lighting=True)
+        self.__map = VoxelMap(map_data, self.__world, artificial_lighting=True)
 
         # map centering - todo: use tight bounds
         self.__map.root.set_pos(self.__world.getX() - len(self.map.traversables_data) / 2, self.__world.getY() - len(self.map.traversables_data) / 2, self.__world.getZ() - len(self.map.traversables_data) / 2)
@@ -91,7 +93,7 @@ class MapView(View):
         self.__cam = Camera(base, base.cam, self.__world)
 
         # GUI #
-        self.__vs = ViewEditor(base, self.map)
+        self.__vs = ViewEditor(self._services, self.map)
 
         self.update_view()
 
@@ -113,7 +115,7 @@ class MapView(View):
 
     def __get_displays(self) -> None:
         self.__displays = []
-        displays: List[MapDisplay] = [EntitiesMapDisplay(self._services)]
+        displays: List[MapDisplay] = [EntitiesMapDisplay(self.map, self._services)]
         # drop map displays if not compatible with display format
         displays += list(filter(lambda d: self._services.settings.simulator_grid_display or not isinstance(d, NumbersMapDisplay),
                                 self._services.algorithm.instance.get_display_info()))

@@ -53,6 +53,8 @@ class GradientMapDisplay(MapDisplay):
         return np.clip(clr, 0, 255)
 
     def render(self) -> bool:
+        return True # hacky: don't render
+
         if not super().render():
             return False
 

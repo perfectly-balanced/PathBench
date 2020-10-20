@@ -22,6 +22,8 @@ class SolidColorMapDisplay(MapDisplay):
         self.radius = radius
 
     def render(self) -> bool:
+        return True # hacky: don't render
+
         if not super().render():
             return False
 

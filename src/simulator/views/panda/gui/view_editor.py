@@ -8,6 +8,8 @@ from typing import Tuple, Union, Callable, List
 import os
 import math
 
+from simulator.services.services import Services
+from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
 from simulator.views.map.colour import Colour, WHITE, BLACK, TRANSPARENT
 from simulator.views.map.voxel_map import VoxelMap
 
@@ -521,14 +523,16 @@ class ViewElement():
             self.__visibility_bar.show()
 
 class ViewEditor():
+    __services: Services
     __base: ShowBase
     __window: Window
     __colour_picker: AdvancedColourPicker
     __elements: List[ViewElement]
     __map: VoxelMap
 
-    def __init__(self, base: ShowBase, map: VoxelMap):
-        self.__base = base
+    def __init__(self, services: Services, map: VoxelMap):
+        self.__services = services
+        self.__base = self.__services.window
         self.__map = map
         self.hidden = False
 
@@ -685,14 +689,8 @@ class ViewEditor():
         self.FRINGE = self.__elements[9]
         self.EXPLORED = self.__elements[10]
 
-        self.__selected_cv_idx = 0
-        self.__select_cv(0)
-        self.__selected_sn_idx = 0
-        self.__select_state_num_one(0)
-
-
         self.views = [{'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
-                  'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
+                  'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],'TRAVERSABLES': [1.0, 1.0, 1.0, 0.0],
         'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
         'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
                   'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
@@ -731,22 +729,26 @@ class ViewEditor():
         with open('state.txt', 'w') as outfile:
             json.dump(self.views, outfile)
 
+        self.__selected_cv_idx = 0
+        self.__select_cv(0)
+        self.__selected_sn_idx = 0
+        self.__select_state_num_one(0)
 
     def load_state(self, i : int):
-        with open('state.txt') as json_file:
+        with open('state.txt', 'r') as json_file:
             data = json.load(json_file)
             state_nr = data[i]
-            self.OBSTACLES.colour = Colour(state_nr["OBSTACLES"][0], state_nr["OBSTACLES"][1], state_nr["OBSTACLES"][2])
-            self.OBSTACLES_TRI_WF.colour = Colour(state_nr["OBSTACLES_TRI_WF"][0], state_nr["OBSTACLES_TRI_WF"][1], state_nr["OBSTACLES_TRI_WF"][2])
-            self.OBSTACLES_SQR_WF.colour = Colour(state_nr["OBSTACLES_SQR_WF"][0], state_nr["OBSTACLES_SQR_WF"][1], state_nr["OBSTACLES_SQR_WF"][2])
-            self.TRAVERSABLES.colour = Colour(state_nr["TRAVERSABLES"][0], state_nr["TRAVERSABLES"][1], state_nr["TRAVERSABLES"][2])
-            self.TRAVERSABLES_TRI_WF.colour = Colour(state_nr["TRAVERSABLES_TRI_WF"][0], state_nr["TRAVERSABLES_TRI_WF"][1], state_nr["TRAVERSABLES_TRI_WF"][2])
-            self.TRAVERSABLES_SQR_WF.colour = Colour(state_nr["TRAVERSABLES_SQR_WF"][0], state_nr["TRAVERSABLES_SQR_WF"][1], state_nr["TRAVERSABLES_SQR_WF"][2])
-            self.START.colour = Colour(state_nr["START"][0], state_nr["START"][1], state_nr["START"][2])
-            self.GOAL.colour = Colour(state_nr["GOAL"][0], state_nr["GOAL"][1], state_nr["GOAL"][2])
-            self.PATH.colour = Colour(state_nr["PATH"][0], state_nr["PATH"][1], state_nr["PATH"][2])
-            self.FRINGE.colour = Colour(state_nr["FRINGE"][0], state_nr["FRINGE"][1], state_nr["FRINGE"][2])
-            self.EXPLORED.colour = Colour(state_nr["EXPLORED"][0], state_nr["EXPLORED"][1], state_nr["EXPLORED"][2])
+            self.OBSTACLES.colour = Colour(state_nr["OBSTACLES"][0], state_nr["OBSTACLES"][1], state_nr["OBSTACLES"][2], state_nr["OBSTACLES"][3])
+            self.OBSTACLES_TRI_WF.colour = Colour(state_nr["OBSTACLES_TRI_WF"][0], state_nr["OBSTACLES_TRI_WF"][1], state_nr["OBSTACLES_TRI_WF"][2], state_nr["OBSTACLES_TRI_WF"][3])
+            self.OBSTACLES_SQR_WF.colour = Colour(state_nr["OBSTACLES_SQR_WF"][0], state_nr["OBSTACLES_SQR_WF"][1], state_nr["OBSTACLES_SQR_WF"][2], state_nr["OBSTACLES_SQR_WF"][3])
+            self.TRAVERSABLES.colour = Colour(state_nr["TRAVERSABLES"][0], state_nr["TRAVERSABLES"][1], state_nr["TRAVERSABLES"][2], state_nr["TRAVERSABLES"][3])
+            self.TRAVERSABLES_TRI_WF.colour = Colour(state_nr["TRAVERSABLES_TRI_WF"][0], state_nr["TRAVERSABLES_TRI_WF"][1], state_nr["TRAVERSABLES_TRI_WF"][2], state_nr["TRAVERSABLES_TRI_WF"][3])
+            self.TRAVERSABLES_SQR_WF.colour = Colour(state_nr["TRAVERSABLES_SQR_WF"][0], state_nr["TRAVERSABLES_SQR_WF"][1], state_nr["TRAVERSABLES_SQR_WF"][2], state_nr["TRAVERSABLES_SQR_WF"][3])
+            self.START.colour = Colour(state_nr["START"][0], state_nr["START"][1], state_nr["START"][2], state_nr["START"][3])
+            self.GOAL.colour = Colour(state_nr["GOAL"][0], state_nr["GOAL"][1], state_nr["GOAL"][2], state_nr["GOAL"][3])
+            self.PATH.colour = Colour(state_nr["PATH"][0], state_nr["PATH"][1], state_nr["PATH"][2], state_nr["PATH"][3])
+            self.FRINGE.colour = Colour(state_nr["FRINGE"][0], state_nr["FRINGE"][1], state_nr["FRINGE"][2], state_nr["FRINGE"][3])
+            self.EXPLORED.colour = Colour(state_nr["EXPLORED"][0], state_nr["EXPLORED"][1], state_nr["EXPLORED"][2], state_nr["EXPLORED"][3])
 
 
     # def save(self, i):
@@ -813,16 +815,12 @@ class ViewEditor():
             self.__map.traversables.hide()
 
     def __set_start_visibility(self, visible: bool) -> None:
-        if visible:
-            self.__map.start.show()
-        else:
-            self.__map.start.hide()
+        self.__map.agent_visible = visible
+        self.__services.ev_manager.post(KeyFrameEvent(is_first=True))
 
     def __set_goal_visibility(self, visible: bool) -> None:
-        if visible:
-            self.__map.goal.show()
-        else:
-            self.__map.goal.hide()
+        self.__map.goal_visible = visible
+        self.__services.ev_manager.post(KeyFrameEvent(is_first=True))
 
     def __set_path_visibility(self, visible: bool) -> None:
         pass
@@ -852,10 +850,12 @@ class ViewEditor():
         self.__map.traversables_mesh.default_colour = colour
 
     def __set_start_colour(self, colour: Colour) -> None:
-        self.__map.start.set_color(LVecBase4f(*colour))
+        self.__map._agent_colour = colour
+        self.__services.ev_manager.post(KeyFrameEvent(is_first=True))
 
     def __set_goal_colour(self, colour: Colour) -> None:
-        self.__map.goal.set_color(LVecBase4f(*colour))
+        self.__map._goal_colour = colour
+        self.__services.ev_manager.post(KeyFrameEvent(is_first=True))
 
     def __set_path_colour(self, colour: Colour) -> None:
         pass
