@@ -236,7 +236,6 @@ class Map:
         :param pos: The position
         :return: If the n dimensional position is out of bounds
         """
-        print(pos, self.size)
         return not all([pos[i] >= 0 and pos[i] < self.size[i] for i in range(self.size.n_dim)])
 
     def get_next_positions(self, pos: Point) -> List[Point]:
@@ -259,9 +258,7 @@ class Map:
         :return: A list of positions with move index
         """
         ns: List[Tuple[Point, int]] = []
-        print(pos)
         for idx, move in enumerate(self.ALL_POINTS_MOVE_VECTOR):
-            print(move)
             n: Point = self.apply_move(move, pos)
             if self.is_agent_valid_pos(n):
                 ns.append((n, idx))

@@ -50,7 +50,7 @@ class Maps:
 
     # grid_map_labyrinth: DenseMap = DenseMap([[[2, 0], [0, 0]], [[0, 1], [3, 0]]])
 
-    grid_map_labyrinth: DenseMap = DenseMap([[[0, 0, 0], [0, 0, 0], [2, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 3], [0, 0, 0], [0, 0, 0]]])
+    grid_map_labyrinth: DenseMap = DenseMap([[[0, 0, 0], [0, 0, 0], [2, 0, 0]], [[0, 0, 0], [0, 1, 0], [0, 0, 0]], [[0, 0, 3], [0, 0, 0], [0, 0, 0]]])
 
     """
     grid_map_labyrinth: DenseMap = DenseMap([
