@@ -692,7 +692,7 @@ class ViewEditor():
         self.views = [{'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
                   'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],'TRAVERSABLES': [1.0, 1.0, 1.0, 0.0],
         'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
-        'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
+        'START': [0.8, 0.0, 0.0, 1.0], 'GOAL': [0.0, 0.9, 0.0, 1.0], 'PATH': [1.0, 1.0, 1.0, 0.5],
                   'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
 
                  {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
@@ -823,7 +823,8 @@ class ViewEditor():
         self.__services.ev_manager.post(KeyFrameEvent(is_first=True))
 
     def __set_path_visibility(self, visible: bool) -> None:
-        pass
+        self.__map.trace_visible = visible
+        self.__services.ev_manager.post(KeyFrameEvent(is_first=True))
 
     def __set_fringe_visibility(self, visible: bool) -> None:
         pass
@@ -851,14 +852,15 @@ class ViewEditor():
 
     def __set_start_colour(self, colour: Colour) -> None:
         self.__map._agent_colour = colour
-        self.__services.ev_manager.post(KeyFrameEvent(is_first=True))
+        self.__services.ev_manager.post(KeyFrameEvent(refresh=True))
 
     def __set_goal_colour(self, colour: Colour) -> None:
         self.__map._goal_colour = colour
-        self.__services.ev_manager.post(KeyFrameEvent(is_first=True))
+        self.__services.ev_manager.post(KeyFrameEvent(refresh=True))
 
     def __set_path_colour(self, colour: Colour) -> None:
-        pass
+        self.__map._trace_colour = colour
+        self.__services.ev_manager.post(KeyFrameEvent(refresh=True))
 
     def __set_fringe_colour(self, colour: Colour) -> None:
         pass

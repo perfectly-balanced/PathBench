@@ -49,7 +49,7 @@ class MapView(View):
         if isinstance(event, WindowLoadedEvent):
             self.__init()
         elif isinstance(event, KeyFrameEvent):
-            if event.is_first:
+            if event.refresh:
                 self.__tc_reset()
             self.update_view()
         elif isinstance(event, TakeScreenshotEvent):
@@ -115,7 +115,7 @@ class MapView(View):
 
     def __get_displays(self) -> None:
         self.__displays = []
-        displays: List[MapDisplay] = [EntitiesMapDisplay(self.map, self._services)]
+        displays: List[MapDisplay] = [EntitiesMapDisplay(self.__map, self._services)]
         # drop map displays if not compatible with display format
         displays += list(filter(lambda d: self._services.settings.simulator_grid_display or not isinstance(d, NumbersMapDisplay),
                                 self._services.algorithm.instance.get_display_info()))
@@ -181,7 +181,7 @@ class MapView(View):
         self.__tc_previous = self.__tc_scratchpad
         self.__tc_scratchpad = {}
 
-    def render_pos(self, pe: Union[Point, Entity], colour) -> None:
+    def render_pos(self, pe: Union[Point, Entity], src: Colour) -> None:
         x, y, z = self.__to_point3(pe)
         if x not in self.__tc_scratchpad:
             self.__tc_scratchpad[x] = {}
@@ -190,10 +190,6 @@ class MapView(View):
         if z not in self.__tc_scratchpad[x][y]:
             self.__tc_scratchpad[x][y][z] = TRANSPARENT
         dst = self.__tc_scratchpad[x][y][z]
-        src = list(colour)
-        for i in range(len(src)):
-            src[i] /= 255
-        src = Colour(*src)
 
         wda = dst.a * (1 - src.a) # weighted dst alpha
         a = src.a + wda

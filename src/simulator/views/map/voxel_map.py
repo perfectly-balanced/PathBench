@@ -21,6 +21,8 @@ class VoxelMap():
 
     agent_visible: bool
     _agent_colour: Colour
+    trace_visible: bool
+    _trace_colour: Colour
     goal_visible: bool
     _goal_colour: Colour
 
@@ -54,9 +56,11 @@ class VoxelMap():
         self.obstacles_wf.setRenderModeThickness(2.2)
 
         self.agent_visible = True
-        self._agent_colour = TRANSPARENT
+        self._agent_colour = Colour(0.8, 0, 0)
         self.goal_visible = True
-        self._goal_colour = TRANSPARENT
+        self._goal_colour = Colour(0, 0.9, 0)
+        self.trace_visible = True
+        self._trace_colour = Colour(0, 0.9, 0)
 
     @property
     def agent_colour(self) -> str:
@@ -65,6 +69,14 @@ class VoxelMap():
     @agent_colour.getter
     def agent_colour(self):
         return self._agent_colour if self.agent_visible else TRANSPARENT
+
+    @property
+    def trace_colour(self) -> str:
+        return 'trace_colour'
+    
+    @trace_colour.getter
+    def trace_colour(self):
+        return self._trace_colour if self.trace_visible else TRANSPARENT
 
     @property
     def goal_colour(self) -> str:

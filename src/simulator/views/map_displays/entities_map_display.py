@@ -44,17 +44,17 @@ class EntitiesMapDisplay(MapDisplay):
         self.render_initial_position(self._map)
 
     def render_agent(self, agent: Agent) -> None:
-        self.get_renderer_view().render_pos(agent, (150, 0, 0))
+        self.get_renderer_view().render_pos(agent, self.__map.agent_colour)
 
     def render_goal(self, goal: Goal) -> None:
-        self.get_renderer_view().render_pos(goal, (0, 200, 0))
+        self.get_renderer_view().render_pos(goal, self.__map.goal_colour)
 
     def render_trace_point(self, trace_point: Trace) -> None:
-        self.get_renderer_view().render_pos(trace_point, (0, 200, 0))
+        self.get_renderer_view().render_pos(trace_point, self.__map.trace_colour)
 
     def render_initial_position(self, grid: Map) -> None:
         if len(grid.trace) >= 1:
-            self.get_renderer_view().render_pos(Entity(grid.trace[0].position, grid.agent.radius), (150, 0, 0))
+            self.get_renderer_view().render_pos(Entity(grid.trace[0].position, grid.agent.radius), self.__map.agent_colour)
 
     def __lt__(self, other):
         return super().__lt__(other)
