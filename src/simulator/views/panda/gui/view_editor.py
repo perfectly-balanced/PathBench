@@ -579,7 +579,7 @@ class ViewEditor():
                                                  frameColor=WHITE,
                                                  borderWidth=(0.15, 0.15),
                                                  frameSize=(-0.62, 0.62, -0.54, 0.54),
-                                                 scale=(0.3, 2.0, 0.3))
+                                                 scale=(0.3, 2.0, 0.35))
 
         self.heading = DirectLabel(parent=self.__window.frame,
                                    text="View Editor",
@@ -606,30 +606,34 @@ class ViewEditor():
         # Show or hide the Style Editor #
         self.__base.accept('v', self.__toggle_view_editor)
 
-        save_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "save60.png")
-        restore_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "restore60.png")
-        # self.__save_outline = DirectFrame(parent=self.__window.frame,
-        #                                          relief=DGG.SUNKEN,
-        #                                          frameColor=(0.3, 0.3, 0.3, 1.0),
-        #                                          pos=(-0.35, 0, -5.5),
-        #                                          borderWidth=(0.25, 0.15),
-        #                                          frameSize=(-0.62, 0.62, -0.54, 0.54),
-        #                                          scale=(0.18, 1.4, 0.18))
+        self.__save_outline = DirectFrame(parent=self.__window.frame,
+                                                 frameColor=WHITE,
+                                                 pos=(-0.57, 0, -5.45),
+                                                 borderWidth=(0.25, 0.15),
+                                                 frameSize=(-0.62, 0.62, -0.54, 0.54),
+                                                 scale=(0.50, 2.1, 0.25))
+
+        self.__quit_outline = DirectFrame(parent=self.__window.frame,
+                                          frameColor=WHITE,
+                                          pos=(0.50, 0, -5.45),
+                                          borderWidth=(0.25, 0.15),
+                                          frameSize=(-0.62, 0.62, -0.54, 0.54),
+                                          scale=(0.65, 2.1, 0.25))
 
         # save and restore
-        self.btn_s = DirectButton(#image =save_filename,
+        self.btn_s = DirectButton(
                                  text = "Save",
-                                 text_fg=WHITE,
+                                 text_fg=(0.3, 0.3, 0.3, 1.0),
                                  pressEffect = 1,
                                  command=lambda: self.save_state(self.state_num),
-                                 pos=(-0.60, 0, -5.5),
+                                 pos=(-0.575, 0, -5.5),
                                  parent=self.__window.frame,
                                  scale=(0.20, 2.1, 0.15),
                                  frameColor=TRANSPARENT)
         
-        self.btn_r = DirectButton(#image=restore_filename,
+        self.btn_r = DirectButton(
                                  text="Restore",
-                                 text_fg=WHITE,
+                                 text_fg=(0.3, 0.3, 0.3, 1.0),
                                  pressEffect=1,
                                  command=lambda: self.load_state(self.state_num),
                                  pos=(0.50, 0, -5.5),
@@ -690,7 +694,7 @@ class ViewEditor():
                                  scale=0.16,
                                  frameColor=TRANSPARENT,
                                  command = self.__select_state_num_two,
-                                 extraArgs = [i]))
+                                 extraArgs=[i+3]))
 
         # default settings - testing #
         self.OBSTACLES = self.__elements[0]
@@ -812,9 +816,9 @@ class ViewEditor():
 
     def __select_state_num_two(self, i: int):
         self.__selected_sn_idx = i
-        self.__selected_state_number.set_pos((-0.7 + i * 0.7, 0.4, -4.9))
+        self.__selected_state_number.set_pos((-0.7 + (i-3) * 0.7, 0.4, -4.9))
         self.load_state(i)
-        self.state_num = i+3
+        self.state_num = i
 
     def __set_obstacles_triangular_wireframe_visibility(self, visible: bool) -> None:
         if visible:
