@@ -91,6 +91,7 @@ class GUI:
         #"Long Wall": (Maps.grid_map_labyrinth2, True),
         "Long Wall": (Maps.grid_map_one_obstacle1, True),
         "Labyrinth": (Maps.grid_map_labyrinth, True),
+        "3D Example": (Maps.grid_map_3d_example, True),
         "vin test 8x8": (Maps.grid_map_small_one_obstacle2, True),
         "vin test 8x8 -2": (Maps.grid_map_small_one_obstacle, True),
         "vin test 8x8 -3": (Maps.grid_map_small_one_obstacle3, True),

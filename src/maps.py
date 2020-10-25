@@ -51,12 +51,13 @@ class Maps:
     grid_map_3d_no_obstacles: DenseMap = DenseMap([[[2, 0], [0, 0]], [[0, 0], [3, 0]]])
     
     grid_map_3d_one_obstacle: DenseMap = DenseMap([[[2, 0], [0, 0]], [[0, 1], [3, 0]]])
+
+    grid_map_3d_complex_with_obstacles: DenseMap = DenseMap([[[0, 0, 0], [0, 1, 0], [2, 0, 0]], [[0, 1, 0], [0, 1, 0], [1, 0, 0]], [[0, 0, 3], [0, 0, 0], [0, 1, 0]]])
     
     # grid_map_labyrinth: DenseMap = DenseMap([[[0, 0, 0], [0, 0, 0], [2, 0, 0]], [[0, 0, 0], [0, 1, 0], [0, 0, 0]], [[0, 0, 3], [0, 0, 0], [0, 0, 0]]])
-    # grid_map_3d_complex_with_obstacles
-    grid_map_labyrinth: DenseMap = DenseMap([[[0, 0, 0], [0, 1, 0], [2, 0, 0]], [[0, 1, 0], [0, 1, 0], [1, 0, 0]], [[0, 0, 3], [0, 0, 0], [0, 1, 0]]])
     
-    """
+    grid_map_3d_example:  DenseMap = DenseMap([[[0, 0, 0], [0, 0, 0], [2, 0, 0]], [[0, 0, 0], [0, 1, 0], [0, 0, 0]], [[0, 0, 3], [0, 0, 0], [0, 0, 0]]])
+    
     grid_map_labyrinth: DenseMap = DenseMap([
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -78,7 +79,7 @@ class Maps:
         [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ])
-    """
+    
 
     grid_map_labyrinth2: DenseMap = DenseMap([
         #0 is free space; 1 is obstacle; 2 is starting location; 3 is goal location 
