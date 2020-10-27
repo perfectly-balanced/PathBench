@@ -4,10 +4,8 @@ from panda3d.core import CollisionTraverser, CollisionHandlerQueue, CollisionNod
 from direct.showbase.ShowBase import ShowBase
 
 from structures import Point
-from utility.utils import exclude_from_dict
-from simulator.controllers.controller import Controller
 
-class CubeMapPicker(Controller):
+class CubeMapPicker():
     __name: str
     __base: ShowBase
     __data: List[List[List[bool]]]
@@ -27,13 +25,11 @@ class CubeMapPicker(Controller):
     # constants
     COLLIDE_MASK: Final = BitMask32.bit(1)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **exclude_from_dict(kwargs, ["node_path", "data", "name"])) 
-    
-        self.__name = kwargs["name"] if "name" in kwargs else "cube_map_picker"
-        self.__data = kwargs["data"]
-        self.__np = kwargs["node_path"]
-        self.__base = self._services.graphics.window
+    def __init__(self, base: ShowBase, np: NodePath, data: List[List[List[bool]]], name: str = "cube_map_picker"):    
+        self.__base = base
+        self.__name = name
+        self.__data = data
+        self.__np = np
 
         # collision traverser & queue
         self.__ctrav = CollisionTraverser(self.name + '_ctrav')
@@ -99,7 +95,7 @@ class CubeMapPicker(Controller):
         pos = Point(*pos)          
         return pos
     
-    def destroy(self):
+    def destroy(self) -> None:
         self.__cqueue.clearEntries()
         self.__ctrav.clear_colliders()
         self.__np.remove_node()

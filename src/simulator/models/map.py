@@ -67,6 +67,9 @@ class Map(Model):
 
     def resume_algorithm(self) -> None:
         self.key_frame_is_paused = False
+    
+    def toggle_pause_algorithm(self) -> None:
+        self.key_frame_is_paused = not self.key_frame_is_paused
 
     def tick(self) -> None:
         if self._services.settings.simulator_key_frame_speed > 0 and self.key_frame_condition is not None and \

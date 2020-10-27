@@ -19,7 +19,7 @@ class MapController(Controller, DirectObject):
     def __init__(self, map_view: MapView, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.__picker = CubeMapPicker(self._services, self._model, node_path=map_view.map.traversables, data=map_view.map.traversables_data)
+        self.__picker = CubeMapPicker(self._services.graphics.window, map_view.map.traversables, map_view.map.traversables_data)
         self.__camera = CameraController(self._services, self._model, origin=map_view.world)
 
         def left_click():
@@ -40,17 +40,12 @@ class MapController(Controller, DirectObject):
 
         self.accept('mouse1', left_click)
         self.accept('mouse3', right_click)
-        self.accept("arrow_up", lambda: self._model.move_up())
-        self.accept("arrow_down", lambda: self._model.move_down())
-        self.accept("arrow_left", lambda: self._model.move_left())
-        self.accept("arrow_right", lambda: self._model.move_right())
         self.accept("c", lambda: self._model.compute_trace())
         self.accept("m", lambda: self._model.toggle_convert_map())
-        self.accept("x", lambda: self._model.stop_algorithm())
-        self.accept("z", lambda: self._model.resume_algorithm())
+        self.accept("x", lambda: self._model.toggle_pause_algorithm())
         self.accept("p", lambda: self._services.ev_manager.post(TakeScreenshotEvent()))
 
-    def destroy(self):
+    def destroy(self) -> None:
         self.ignore_all()
         self.__camera.destroy()
         self.__picker.destroy()

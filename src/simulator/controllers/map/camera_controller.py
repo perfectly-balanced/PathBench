@@ -180,5 +180,5 @@ class CameraController(Controller, DirectObject):
         z = self.__cam.getZ()
         self.title = OnscreenText(text=str(x) + ":" + str(y) + ":" + str(z), style=1, fg=(1, 1, 0, 1), pos=(0, 0), scale=0.07)
 
-    def destroy(self):
+    def destroy(self) -> None:
         self.ignore_all()

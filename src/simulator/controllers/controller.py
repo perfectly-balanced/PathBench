@@ -18,3 +18,6 @@ class Controller:
 
     def notify(self, event: Event) -> None:
         pass
+
+    def destroy(self) -> None:
+        pass
