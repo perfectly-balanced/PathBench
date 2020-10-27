@@ -135,8 +135,8 @@ class MapView(View):
             heappush(self.__displays, (display.z_index, display))
 
     def __render_displays(self) -> None:
-        for node in self.__line_ls:
-            self.__line_ls.remove(node)
+        for np in self.__line_ls:
+            np.remove_node()
         self.__line_ls.clear()
         while len(self.__displays) > 0:
             display: MapDisplay
@@ -255,7 +255,7 @@ class MapView(View):
         self.__nsteps = 17
         self.__thickness = 1.5
         self.__rad = 0.06
-        self.__colour = (0, 0, 255)
+        self.__colour = (1, 1, 1)
 
     def draw_circle(self, p: Point):
         self.__line_segs_used = True
@@ -272,4 +272,4 @@ class MapView(View):
             x = math.cos(a) * self.__rad + x
             y = math.sin(a) * self.__rad + y
             #z = math.sin(a) * self.__rad + z
-            ls.drawTo(x, y, z)g
+            ls.drawTo(x, y, z)
