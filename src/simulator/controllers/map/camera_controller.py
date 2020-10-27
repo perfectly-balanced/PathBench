@@ -52,28 +52,28 @@ class CameraController(Controller, DirectObject):
         self.__base.disable_mouse()
 
         # Use the arrow keys to move left, right, up and down
-        self.__base.accept('arrow_left', self.update_key_map, ["left1", 1])
-        self.__base.accept('arrow_left-up', self.update_key_map, ["left1", 0])
-        self.__base.accept('arrow_right', self.update_key_map, ["right1", 1])
-        self.__base.accept('arrow_right-up', self.update_key_map, ["right1", 0])
-        self.__base.accept('arrow_up', self.update_key_map, ["up1", 1])
-        self.__base.accept('arrow_up-up', self.update_key_map, ["up1", 0])
-        self.__base.accept('arrow_down', self.update_key_map, ["down1", 1])
-        self.__base.accept('arrow_down-up', self.update_key_map, ["down1", 0])
+        self.accept('arrow_left', self.update_key_map, ["left1", 1])
+        self.accept('arrow_left-up', self.update_key_map, ["left1", 0])
+        self.accept('arrow_right', self.update_key_map, ["right1", 1])
+        self.accept('arrow_right-up', self.update_key_map, ["right1", 0])
+        self.accept('arrow_up', self.update_key_map, ["up1", 1])
+        self.accept('arrow_up-up', self.update_key_map, ["up1", 0])
+        self.accept('arrow_down', self.update_key_map, ["down1", 1])
+        self.accept('arrow_down-up', self.update_key_map, ["down1", 0])
 
         # Setup down events for arrow keys : rotating camera latitude and longitude
-        self.__base.accept("a", self.update_key_map, ["left", 1])
-        self.__base.accept("d", self.update_key_map, ["right", 1])
-        self.__base.accept("w", self.update_key_map, ["up", 1])
-        self.__base.accept("s", self.update_key_map, ["down", 1])
-        self.__base.accept("a-up", self.update_key_map, ["left", 0])
-        self.__base.accept("d-up", self.update_key_map, ["right", 0])
-        self.__base.accept("w-up", self.update_key_map, ["up", 0])
-        self.__base.accept("s-up", self.update_key_map, ["down", 0])
+        self.accept("a", self.update_key_map, ["left", 1])
+        self.accept("d", self.update_key_map, ["right", 1])
+        self.accept("w", self.update_key_map, ["up", 1])
+        self.accept("s", self.update_key_map, ["down", 1])
+        self.accept("a-up", self.update_key_map, ["left", 0])
+        self.accept("d-up", self.update_key_map, ["right", 0])
+        self.accept("w-up", self.update_key_map, ["up", 0])
+        self.accept("s-up", self.update_key_map, ["down", 0])
 
         # Use the scroll mouse button/touchpad to zoom in and out
-        self.__base.accept("wheel_up", self.update_key_map, ["wheelup", 1])
-        self.__base.accept("wheel_down", self.update_key_map, ["wheeldown", 1])
+        self.accept("wheel_up", self.update_key_map, ["wheelup", 1])
+        self.accept("wheel_down", self.update_key_map, ["wheeldown", 1])
 
         self.__base.taskMgr.add(self.move_orbital_camera_task, "move_orbital_camera_task")
 
