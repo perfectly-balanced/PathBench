@@ -14,7 +14,7 @@ from constants import DATA_PATH
 from simulator.services.services import Services
 from simulator.views.map.data.voxel_map import VoxelMap
 
-from simulator.views.map.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
+from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
 
 class ColourPicker:
     pick_colour_callback: Callable[[Tuple[float, float, float, float]], None]

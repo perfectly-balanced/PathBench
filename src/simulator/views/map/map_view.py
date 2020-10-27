@@ -19,7 +19,7 @@ from simulator.views.map_displays.online_lstm_map_display import OnlineLSTMMapDi
 from simulator.views.view import View
 from structures import Point, Colour, TRANSPARENT
 
-from simulator.views.map.gui.view_editor import ViewEditor
+from simulator.views.gui.view_editor import ViewEditor
 from simulator.views.map.camera import Camera
 from simulator.views.map.data.voxel_map import VoxelMap
 
