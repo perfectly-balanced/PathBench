@@ -22,7 +22,14 @@ from simulator.views.gui.view_editor import ViewEditor
 from simulator.views.map.data.voxel_map import VoxelMap
 
 from panda3d.core import NodePath
+from pandac.PandaModules import LineSegs
+from panda3d.core import GeomNode
 import math
+
+cos = math.cos
+sin = math.sin
+pi = math.pi
+
 
 class MapView(View):
     __displays: List[Any]
@@ -30,12 +37,12 @@ class MapView(View):
     __world: NodePath
     __map: VoxelMap
     __vs: ViewEditor
-    
+
     __tc_previous: List[List[List[Colour]]]
     __tc_scratchpad: List[List[List[Colour]]]
 
     def __init__(self, services: Services, model: Model, root_view: Optional[View]) -> None:
-        super().__init__(services, model, root_view)        
+        super().__init__(services, model, root_view)
         self.__displays = []
         self.__tc_previous = {}
         self.__tc_scratchpad = {}
@@ -110,8 +117,9 @@ class MapView(View):
         self.__displays = []
         displays: List[MapDisplay] = [EntitiesMapDisplay(self.__map, self._services)]
         # drop map displays if not compatible with display format
-        displays += list(filter(lambda d: self._services.settings.simulator_grid_display or not isinstance(d, NumbersMapDisplay),
-                                self._services.algorithm.instance.get_display_info()))
+        displays += list(
+            filter(lambda d: self._services.settings.simulator_grid_display or not isinstance(d, NumbersMapDisplay),
+                   self._services.algorithm.instance.get_display_info()))
         for display in displays:
             display._model = self._model
             self.add_child(display)
@@ -121,8 +129,8 @@ class MapView(View):
         while len(self.__displays) > 0:
             display: MapDisplay
             _, display = heappop(self.__displays)
-            display.render() # update simulated map data (colours)
-        
+            display.render()  # update simulated map data (colours)
+
         # update actual viewable map data
         # lazily update mesh data, maybe this is actually slower
         """
@@ -184,12 +192,12 @@ class MapView(View):
             self.__tc_scratchpad[x][y][z] = TRANSPARENT
         dst = self.__tc_scratchpad[x][y][z]
 
-        wda = dst.a * (1 - src.a) # weighted dst alpha
+        wda = dst.a * (1 - src.a)  # weighted dst alpha
         a = src.a + wda
         r = (src.r * src.a + dst.r * wda) / a
         g = (src.g * src.a + dst.g * wda) / a
         b = (src.b * src.a + dst.b * wda) / a
-        
+
         self.__tc_scratchpad[x][y][z] = Colour(r, g, b, a)
 
     def update_view(self) -> None:
@@ -198,3 +206,44 @@ class MapView(View):
 
     def take_screenshot(self) -> None:
         self._services.resources.screenshots_dir.append(lambda fn: self._services.graphics.window.win.save_screenshot(fn))
+
+    def draw_line(self, p1: Point, p2: Point):
+        x1, y1 = p1
+        x2, y2 = p2
+        lines = LineSegs()
+        lines.moveTo(x1, y1, 0)
+        lines.drawTo(x2, y2, 0)
+        lines.setThickness(1.5)
+        node = lines.create()
+        np = NodePath(node)
+        np.reparentTo(self.__world)
+
+    def get_center(self, p: Point):
+        x, y = p
+        x -=x*0.5
+        y -=y*0.5
+        return Point(x,y)
+
+    def draw_circle(self, p: Point):
+        x, y = p
+        angle_degs = 360
+        nsteps = 17
+        thickness = 1.5
+        rad = 0.06
+        colour = (1, 1, 1)
+        ls = LineSegs()
+        ls.set_thickness(thickness)
+        ls.set_color(*colour)
+
+        angle_rads = angle_degs * (pi / 180.0)
+
+        for i in range(nsteps + 1):
+            a = angle_rads * i / nsteps
+            y = math.sin(a) * rad + y
+            x = math.cos(a) * rad + x
+
+            ls.drawTo(x, y, 0)
+
+        node = ls.create()
+        np = NodePath(node)
+        np.reparentTo(self.__world)
