@@ -10,6 +10,7 @@ from panda3d.core import CollisionTraverser, CollisionHandlerQueue, CollisionNod
 
 from direct.showbase.ShowBase import ShowBase
 from simulator.views.map.data.voxel_map import VoxelMap
+from .camera_controller import CameraController
 
 import math
 from typing import Optional
@@ -80,15 +81,18 @@ class MapTraversablesPicker():
 
 class MapController(Controller):
     __picker: Optional[MapTraversablesPicker]
+    __camera: Optional[CameraController]
     __view: MapView
 
     def __init__(self, view: MapView, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__view = view
         self.__picker = None
+        self.__camera = None
     
     def __init(self):
         self.__picker = MapTraversablesPicker(self._services.graphics.window, self.__view.map)
+        self.__camera = CameraController(self._services, self._model, origin=self.__view.world)
 
         def left_click():
             p = self.__picker.pos

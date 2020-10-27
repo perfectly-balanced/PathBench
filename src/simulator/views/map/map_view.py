@@ -20,7 +20,6 @@ from simulator.views.view import View
 from structures import Point, Colour, TRANSPARENT
 
 from simulator.views.gui.view_editor import ViewEditor
-from simulator.views.map.camera import Camera
 from simulator.views.map.data.voxel_map import VoxelMap
 
 from panda3d.core import NodePath
@@ -31,7 +30,6 @@ class MapView(View):
 
     __world: NodePath
     __map: VoxelMap
-    __cam: Camera
     __vs: ViewEditor
     
     __tc_previous: List[List[List[Colour]]]
@@ -82,11 +80,8 @@ class MapView(View):
                         map_data[x][y][z] = not self._services.algorithm.map.is_agent_valid_pos(Point(x, y, z))
 
         # MAP #
-        self.__map = VoxelMap(self._services, map_data, self.__world, artificial_lighting=True)
+        self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
         self.__center(self.__map.root)
-
-        # CAMERA #
-        self.__cam = Camera(base, base.cam, self.world)
 
         # GUI #
         self.__vs = ViewEditor(self._services, self.map)

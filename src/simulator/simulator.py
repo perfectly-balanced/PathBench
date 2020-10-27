@@ -2,7 +2,7 @@ from typing import Optional
 
 from algorithms.basic_testing import BasicTesting
 from simulator.controllers.main_controller import MainController
-from simulator.controllers.map_controller import MapController
+from simulator.controllers.map.map_controller import MapController
 from simulator.models.main import Main
 from simulator.models.map import Map
 from simulator.services.debug import DebugLevel
