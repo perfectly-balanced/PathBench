@@ -38,7 +38,7 @@ class GraphMapDisplay(MapDisplay):
 
     def __render_node(self, current: 'Vertex') -> None:
         pt = self.get_renderer_view().get_center(current.position)
-        self.get_renderer_view().draw_circle(pt)
+        self.get_renderer_view().draw_sphere(pt)
 
     def __lt__(self, other):
         return super().__lt__(other)

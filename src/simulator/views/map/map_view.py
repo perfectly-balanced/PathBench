@@ -2,9 +2,10 @@ from time import sleep
 
 from heapq import heappush, heappop
 from typing import List, Any, Tuple, Optional, Union
+import os
 
 import pygame
-
+from constants import DATA_PATH
 
 from algorithms.configuration.entities.entity import Entity
 from simulator.models.model import Model
@@ -93,10 +94,11 @@ class MapView(View):
         if isinstance(v, Entity):
             v = v.position
         return Point(*v, 0) if len(v) == 2 else v
-    
+
     def __center(self, np: NodePath):
         (x1, y1, z1), (x2, y2, z2) = np.get_tight_bounds()
-        np.set_pos(self.world.getX() - (x2 - x1) / 2, self.world.getY() - (y2 - y1) / 2, self.world.getZ() - (z2 - z1) / 2)
+        np.set_pos(self.world.getX() - (x2 - x1) / 2, self.world.getY() - (y2 - y1) / 2,
+                   self.world.getZ() - (z2 - z1) / 2)
 
     @property
     def world(self) -> str:
@@ -230,7 +232,8 @@ class MapView(View):
         self.__render_displays()
 
     def take_screenshot(self) -> None:
-        self._services.resources.screenshots_dir.append(lambda fn: self._services.graphics.window.win.save_screenshot(fn))
+        self._services.resources.screenshots_dir.append(
+            lambda fn: self._services.graphics.window.win.save_screenshot(fn))
 
     def draw_line(self, color, p1: Point, p2: Point):
         self.__line_segs_used = True
@@ -241,7 +244,6 @@ class MapView(View):
         lines.moveTo(x1, y1, 0)
         lines.drawTo(x2, y2, 0)
         lines.setThickness(1.5)
-
 
     def get_center(self, p: Point):
         x, y = p
@@ -266,10 +268,19 @@ class MapView(View):
         ls.set_color(*self.__colour)
         x, y, z = self.__to_point3(p)
 
-
         for i in range(self.__nsteps + 1):
             a = self.__angle_rads * i / self.__nsteps
             x = math.cos(a) * self.__rad + x
             y = math.sin(a) * self.__rad + y
-            #z = math.sin(a) * self.__rad + z
+            # z = math.sin(a) * self.__rad + z
             ls.drawTo(x, y, z)
+
+    def draw_sphere(self, p: Point):
+        x, y, z = self.__to_point3(p)
+        sphere = loader.loadModel("models/smiley.egg")
+        sphere_tex = loader.loadTexture(os.path.join(DATA_PATH, "white.jpg"))
+        sphere.setTexture(sphere_tex, 1)
+        sphere.setColor(0.7, 0.4, 0.4)
+        sphere.reparentTo(self.map.root)
+        sphere.setScale(0.2)
+        sphere.setPos(x, y, z)
