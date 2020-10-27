@@ -1,4 +1,3 @@
-import pygame
 from typing import TYPE_CHECKING
 
 from algorithms.configuration.maps.map import Map

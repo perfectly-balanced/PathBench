@@ -1,5 +1,5 @@
-import copy
 from typing import Set, Union, Tuple, List
+import copy
 
 from algorithms.configuration.entities.entity import Entity
 from algorithms.configuration.maps.map import Map
