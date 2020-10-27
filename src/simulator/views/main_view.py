@@ -41,7 +41,6 @@ class MainView(View):
             self._services.graphics.window.quit()
 
     def initialise(self) -> None:
-        self._services.graphics.init("PathBench", size=self._services.settings.simulator_window_size)
         self.__frame_timer = Timer()
 
     def tick(self) -> None:

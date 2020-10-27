@@ -54,12 +54,6 @@ class Simulator:
         """
         Starts simulator with graphics
         """
-
-        if self.__services.settings.simulator_grid_display or self.__services.algorithm.map is None:
-            self.__services.settings.simulator_window_size = Size(900, 900)
-        else:
-            self.__services.settings.simulator_window_size = self.__services.algorithm.map.size
-
         # init models
         self.__main = Main(self.__services)
         self.__map = Map(self.__services)

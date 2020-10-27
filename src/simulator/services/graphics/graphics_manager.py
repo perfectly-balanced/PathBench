@@ -9,19 +9,8 @@ class GraphicsManager(Service):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.__initialised = False
-        self.__window = None
-    
-    def init(self, *args, **kwargs) -> None:
-        assert not self.__initialised
-
-        self.__window = Window(*args, **kwargs)
+        self.__window = Window("PathBench")
         self._services.ev_manager.post(GraphicsLoadedEvent())
-
-        self.__initialised = True
-
-    @property
-    def initialised(self) -> bool:
-        return self.__initialised
 
     @property
     def window(self) -> Window:
