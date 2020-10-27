@@ -39,11 +39,7 @@ class SolidColorMapDisplay(MapDisplay):
 
         points = set(map(f, points))
 
-        c = list(self.color)
-        for i in range(len(c)):
-            c[i] /= 255
-            c[i] = min(1, c[i])
-        c = Colour(*c)
+        c = self._root_view.to_col3f(self.color)
 
         for point in points:
             self._root_view.render_pos(Entity(point, self.radius), c)

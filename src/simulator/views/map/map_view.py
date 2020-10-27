@@ -3,6 +3,8 @@ from time import sleep
 from heapq import heappush, heappop
 from typing import List, Any, Tuple, Optional, Union
 
+import pygame
+
 from algorithms.configuration.entities.entity import Entity
 from simulator.models.model import Model
 from simulator.services.debug import DebugLevel
@@ -181,6 +183,13 @@ class MapView(View):
 
         self.__tc_previous = self.__tc_scratchpad
         self.__tc_scratchpad = {}
+
+    def to_col3f(self, col: Union[pygame.Color, List[int]]):
+        c = list(col)
+        for i in range(len(c)):
+            c[i] /= 255
+            c[i] = min(1, c[i])
+        return Colour(*c)
 
     def render_pos(self, pe: Union[Point, Entity], src: Colour) -> None:
         x, y, z = self.__to_point3(pe)
