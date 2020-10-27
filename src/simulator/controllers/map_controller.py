@@ -9,7 +9,7 @@ from structures import Point
 from panda3d.core import CollisionTraverser, CollisionHandlerQueue, CollisionNode, BitMask32, CollisionBox, CollisionRay, Point3
 
 from direct.showbase.ShowBase import ShowBase
-from simulator.views.map.voxel_map import VoxelMap
+from simulator.views.map.data.voxel_map import VoxelMap
 
 import math
 from typing import Optional

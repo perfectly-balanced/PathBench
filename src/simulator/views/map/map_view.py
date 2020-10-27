@@ -17,12 +17,11 @@ from simulator.views.map_displays.map_display import MapDisplay
 from simulator.views.map_displays.numbers_map_display import NumbersMapDisplay
 from simulator.views.map_displays.online_lstm_map_display import OnlineLSTMMapDisplay
 from simulator.views.view import View
-from structures import Point
+from structures import Point, Colour, TRANSPARENT
 
-from simulator.views.panda.gui.view_editor import ViewEditor
+from simulator.views.map.gui.view_editor import ViewEditor
 from simulator.views.map.camera import Camera
-from simulator.views.map.voxel_map import VoxelMap
-from simulator.views.map.colour import Colour, TRANSPARENT
+from simulator.views.map.data.voxel_map import VoxelMap
 
 from panda3d.core import NodePath
 import math
@@ -59,6 +58,10 @@ class MapView(View):
         if isinstance(v, Entity):
             v = v.position
         return Point(*v, 0) if len(v) == 2 else v
+    
+    def __center(self, np: NodePath):
+        (x1, y1, z1), (x2, y2, z2) = np.get_tight_bounds()
+        np.set_pos(self.world.getX() - (x2 - x1) / 2, self.world.getY() - (y2 - y1) / 2, self.world.getZ() - (z2 - z1) / 2)
 
     def __init(self):
         base = self._services.window
@@ -68,7 +71,7 @@ class MapView(View):
 
         base.set_background_color(0, 0, 0.2, 1)
 
-        # Creating the world origin as a dummy node
+        # world (dummy node)
         self.__world = base.render.attach_new_node("world")
 
         map_data = {}
@@ -85,17 +88,23 @@ class MapView(View):
 
         # MAP #
         self.__map = VoxelMap(map_data, self.__world, artificial_lighting=True)
-
-        # map centering - todo: use tight bounds
-        self.__map.root.set_pos(self.__world.getX() - len(self.map.traversables_data) / 2, self.__world.getY() - len(self.map.traversables_data) / 2, self.__world.getZ() - len(self.map.traversables_data) / 2)
+        self.__center(self.__map.root)
 
         # CAMERA #
-        self.__cam = Camera(base, base.cam, self.__world)
+        self.__cam = Camera(base, base.cam, self.world)
 
         # GUI #
         self.__vs = ViewEditor(self._services, self.map)
 
         self.update_view()
+
+    @property
+    def world(self) -> str:
+        return 'world'
+
+    @world.getter
+    def world(self) -> NodePath:
+        return self.__world
 
     @property
     def map(self) -> str:

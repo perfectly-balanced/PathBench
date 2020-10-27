@@ -2,13 +2,13 @@ from panda3d.core import Texture, GeomNode
 from panda3d.core import GeomVertexFormat, GeomVertexData
 from panda3d.core import Geom, GeomTriangles, GeomVertexWriter, GeomVertexRewriter
 from panda3d.core import LVector3, Vec3, Vec4
+
 from enum import IntEnum, unique, Enum
 from typing import List
 from numbers import Real
 import math
 
-from .colour import Colour, WHITE
-from structures import Point
+from structures import Point, Colour, WHITE
 
 def normalise(*args):
     v = LVector3(*args)

@@ -2,16 +2,17 @@ from panda3d.core import *
 from direct.gui.OnscreenImage import OnscreenImage
 from direct.gui.DirectGui import *
 from direct.showbase.ShowBase import ShowBase
-import json
 
-from typing import Tuple, Union, Callable, List
 import os
 import math
+import json
+from typing import Tuple, Union, Callable, List
+
+from structures import Colour, WHITE, BLACK, TRANSPARENT
 
 from simulator.services.services import Services
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
-from simulator.views.map.colour import Colour, WHITE, BLACK, TRANSPARENT
-from simulator.views.map.voxel_map import VoxelMap
+from simulator.views.map.data.voxel_map import VoxelMap
 
 WINDOW_BG_COLOUR = Colour(0.5, 0.5, 0.5, 1.0)
 WIDGET_BG_COLOUR = Colour(0.3, 0.3, 0.3, 1.0)

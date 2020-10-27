@@ -11,7 +11,7 @@ from algorithms.configuration.entities.trace import Trace
 from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
 from simulator.views.map_displays.map_display import MapDisplay
-from simulator.views.map.voxel_map import VoxelMap
+from simulator.views.map.data.voxel_map import VoxelMap
 
 if TYPE_CHECKING:
     from simulator.views.map.map_view import MapView
