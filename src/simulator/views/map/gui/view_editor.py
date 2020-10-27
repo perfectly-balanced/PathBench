@@ -9,31 +9,13 @@ import json
 from typing import Tuple, Union, Callable, List
 
 from structures import Colour, WHITE, BLACK, TRANSPARENT
+from constants import DATA_PATH
 
 from simulator.services.services import Services
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
 from simulator.views.map.data.voxel_map import VoxelMap
 
-WINDOW_BG_COLOUR = Colour(0.5, 0.5, 0.5, 1.0)
-WIDGET_BG_COLOUR = Colour(0.3, 0.3, 0.3, 1.0)
-
-def make_arc(angle_degs = 360, nsteps = 16, thickness = 2, colour = (1,1,1)):
-    ls = LineSegs()
-    ls.set_thickness(thickness)
-    ls.set_color(*colour)
-
-    angle_rads = deg2Rad(angle_degs)
-
-    for i in range(nsteps + 1):
-        a = angle_rads * i / nsteps
-        y = math.sin(a)
-        x = math.cos(a)
-
-        ls.drawTo(x, 0, y)
-
-    node = ls.create()
-    return NodePath(node)
-
+from simulator.views.map.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
 
 class ColourPicker:
     pick_colour_callback: Callable[[Tuple[float, float, float, float]], None]
@@ -52,7 +34,7 @@ class ColourPicker:
         self.pick_colour_callback = pick_colour_callback
 
         # PALETTE #
-        palette_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "colour_palette.png")
+        palette_filename = os.path.join(DATA_PATH, "colour_palette.png")
         self.__palette_img = PNMImage(Filename.fromOsSpecific(palette_filename))
         self.__palette_size = (self.__palette_img.getReadXSize(), self.__palette_img.getReadYSize())
         self.__palette_frame = DirectFrame(image=palette_filename, **kwargs)
@@ -215,7 +197,7 @@ class ColourView():
     __colour: Union[Colour, None]
 
     def __init__(self, parent: DirectFrame, colour: Union[Colour, None] = None):
-        bg_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "colour_bg.png")
+        bg_filename = os.path.join(DATA_PATH, "colour_bg.png")
 
         self.__frame = DirectFrame(parent=parent,
                                   relief=DGG.SUNKEN,
@@ -460,7 +442,7 @@ class ViewElement():
                                    pos=(0.28, 0.0, -0.03),
                                    scale=(0.1, 1.0, 0.1))
 
-        visibility_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "visible.png")
+        visibility_filename = os.path.join(DATA_PATH, "visible.png")
         self.__visibility_btn = DirectButton(parent=self.__frame,
                                              image=visibility_filename,
                                              frameColor=TRANSPARENT,
@@ -593,7 +575,7 @@ class ViewEditor():
         self.heading.set_pos((0.0, 0.0, 1.27))
 
 
-        quit_filename = os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))), "data"), "quit.png")
+        quit_filename = os.path.join(DATA_PATH, "quit.png")
 
         # Quit button
         self.btn = DirectButton(image=quit_filename,
@@ -674,9 +656,7 @@ class ViewEditor():
         # Creating state buttons
         self.__state_btns = []
         for i in range (0, 3):
-            num = os.path.join(os.path.join(os.path.dirname(os.path.dirname(
-                os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))),
-                                                     "data"), str(i + 1) + ".png")
+            num = os.path.join(DATA_PATH, str(i + 1) + ".png")
 
             self.__state_btns.append(DirectButton(image=num,
                                  pos=(-0.7 + i * 0.7, 0.4, -4.4),
@@ -686,9 +666,7 @@ class ViewEditor():
                                  command=self.__select_state_num_one,
                                  extraArgs=[i]))
         for i in range (0, 3):
-            num = os.path.join(os.path.join(os.path.dirname(os.path.dirname(
-                os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))),
-                "data"), str(i + 4) + ".png")
+            num = os.path.join(DATA_PATH, str(i + 4) + ".png")
             self.__state_btns.append(DirectButton(image=num,
                                  pos=(-0.7 + i * 0.7, 0.4, -4.9),
                                  parent=self.__window.frame,
