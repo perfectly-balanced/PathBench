@@ -412,8 +412,8 @@ class AdvancedColourPicker():
 
 class ViewElement():
     __name: str
-    __visibility_callback: Callable[[bool], None]
-    __colour_callback: Callable[[Colour], None]
+    __visibility_callback: Callable[[str, bool], None]
+    __colour_callback: Callable[[str, Colour], None]
     __visible: bool
 
     __frame: DirectFrame
@@ -421,7 +421,7 @@ class ViewElement():
     __cv: ColourView
     __visibility_btn: DirectFrame
 
-    def __init__(self, name: str, visibility_callback: Callable[[bool], None], colour_callback: Callable[[Colour], None], parent: DirectFrame, visible: bool = True, colour: Colour = Colour(0.2, 0.3, 0.4, 0.5)):
+    def __init__(self, name: str, visibility_callback: Callable[[str, bool], None], colour_callback: Callable[[str, Colour], None], parent: DirectFrame, visible: bool = True, colour: Colour = Colour(0.2, 0.3, 0.4, 0.5)):
         self.__name = name
         self.__visible = visible
         self.__visibility_callback = None
@@ -465,6 +465,10 @@ class ViewElement():
         self.visible = not self.visible
 
     @property
+    def name(self) -> str:
+        return self.__name
+
+    @property
     def frame(self) -> DirectFrame:
         return self.__frame
 
@@ -484,7 +488,7 @@ class ViewElement():
     def colour(self, value: Colour) -> None:
         self.__cv.colour = value
         if self.__colour_callback:
-            self.__colour_callback(value)
+            self.__colour_callback(self.name, value)
     
     @property
     def visible(self) -> str:
@@ -498,7 +502,7 @@ class ViewElement():
     def visible(self, value: bool) -> None:
         self.__visible = value
         if self.__visibility_callback:
-            self.__visibility_callback(value)
+            self.__visibility_callback(self.name, value)
         if self.__visible:
             self.__visibility_bar.hide()
         else:
@@ -510,12 +514,12 @@ class ViewEditor():
     __window: Window
     __colour_picker: AdvancedColourPicker
     __elements: List[ViewElement]
-    __map: VoxelMap
+    __voxel_map: VoxelMap
 
-    def __init__(self, services: Services, map: VoxelMap):
+    def __init__(self, services: Services, voxel_map: VoxelMap):
         self.__services = services
         self.__base = self.__services.window
-        self.__map = map
+        self.__voxel_map = voxel_map
         self.hidden = False
 
         self.state_num = 0
@@ -625,17 +629,8 @@ class ViewEditor():
 
         # view elements
         self.__elements = []
-        self.__elements.append(ViewElement("obstacles", self.__set_obstacles_visibility, self.__set_obstacles_colour, self.__window.frame))
-        self.__elements.append(ViewElement("obstacles triangular wireframe", self.__set_obstacles_triangular_wireframe_visibility, self.__set_obstacles_triangular_wireframe_colour, self.__window.frame))
-        self.__elements.append(ViewElement("obstacles square wireframe", self.__set_obstacles_square_wireframe_visibility, self.__set_obstacles_square_wireframe_colour, self.__window.frame, False))
-        self.__elements.append(ViewElement("traversables", self.__set_traversables_visibility, self.__set_traversables_colour, self.__window.frame))
-        self.__elements.append(ViewElement("traversables triangular wireframe", self.__set_traversables_triangular_wireframe_visibility, self.__set_traversables_triangular_wireframe_colour, self.__window.frame))
-        self.__elements.append(ViewElement("traversables square wireframe", self.__set_traversables_square_wireframe_visibility, self.__set_traversables_square_wireframe_colour, self.__window.frame, False))
-        self.__elements.append(ViewElement("start", self.__set_start_visibility, self.__set_start_colour, self.__window.frame))
-        self.__elements.append(ViewElement("goal", self.__set_goal_visibility, self.__set_goal_colour, self.__window.frame))
-        self.__elements.append(ViewElement("path", self.__set_path_visibility, self.__set_path_colour, self.__window.frame))
-        self.__elements.append(ViewElement("fringe", self.__set_fringe_visibility, self.__set_fringe_colour, self.__window.frame))
-        self.__elements.append(ViewElement("explored", self.__set_explored_visibility, self.__set_explored_colour, self.__window.frame))
+        for name, dc in self.__voxel_map.colours.items():
+            self.__elements.append(ViewElement(name, self.__voxel_map.set_visibility, self.__voxel_map.set_colour, self.__window.frame, colour=dc()))
 
         for i in range(len(self.__elements)):
             self.__elements[i].frame.set_pos((0.0, 0.0, -1.9 - 0.2 * i))
@@ -674,6 +669,7 @@ class ViewEditor():
                                  command = self.__select_state_num_two,
                                  extraArgs=[i+3]))
 
+        """
         # default settings - testing #
         self.OBSTACLES = self.__elements[0]
         self.OBSTACLES_TRI_WF = self.__elements[1]
@@ -686,6 +682,7 @@ class ViewEditor():
         self.PATH = self.__elements[8]
         self.FRINGE = self.__elements[9]
         self.EXPLORED = self.__elements[10]
+        """
 
         self.views = [{'OBSTACLES': [0.9254902601242065, 0.0, 1.0, 0.5], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
                   'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],'TRAVERSABLES': [1.0, 1.0, 1.0, 0.0],
@@ -738,6 +735,7 @@ class ViewEditor():
 
     def load_state(self, i : int):
         state_nr = self.views[i]
+        """
         self.OBSTACLES.colour = Colour(state_nr["OBSTACLES"][0], state_nr["OBSTACLES"][1], state_nr["OBSTACLES"][2], state_nr["OBSTACLES"][3])
         self.OBSTACLES_TRI_WF.colour = Colour(state_nr["OBSTACLES_TRI_WF"][0], state_nr["OBSTACLES_TRI_WF"][1], state_nr["OBSTACLES_TRI_WF"][2], state_nr["OBSTACLES_TRI_WF"][3])
         self.OBSTACLES_SQR_WF.colour = Colour(state_nr["OBSTACLES_SQR_WF"][0], state_nr["OBSTACLES_SQR_WF"][1], state_nr["OBSTACLES_SQR_WF"][2], state_nr["OBSTACLES_SQR_WF"][3])
@@ -749,10 +747,12 @@ class ViewEditor():
         self.PATH.colour = Colour(state_nr["PATH"][0], state_nr["PATH"][1], state_nr["PATH"][2], state_nr["PATH"][3])
         self.FRINGE.colour = Colour(state_nr["FRINGE"][0], state_nr["FRINGE"][1], state_nr["FRINGE"][2], state_nr["FRINGE"][3])
         self.EXPLORED.colour = Colour(state_nr["EXPLORED"][0], state_nr["EXPLORED"][1], state_nr["EXPLORED"][2], state_nr["EXPLORED"][3])
-    
+        """
+
     def save_state(self, i = None):
         if i is not None:
             state_nr = self.views[i]
+            """
             state_nr["OBSTACLES"][0],state_nr["OBSTACLES"][1],state_nr["OBSTACLES"][2],state_nr["OBSTACLES"][3] = self.OBSTACLES.colour
             state_nr["OBSTACLES_TRI_WF"][0], state_nr["OBSTACLES_TRI_WF"][1], state_nr["OBSTACLES_TRI_WF"][2], state_nr["OBSTACLES_TRI_WF"][3] = self.OBSTACLES_TRI_WF.colour
             state_nr["OBSTACLES_SQR_WF"][0], state_nr["OBSTACLES_SQR_WF"][1], state_nr["OBSTACLES_SQR_WF"][2], state_nr["OBSTACLES_SQR_WF"][3] = self.OBSTACLES_SQR_WF.colour
@@ -764,6 +764,7 @@ class ViewEditor():
             state_nr["PATH"][0], state_nr["PATH"][1], state_nr["PATH"][2], state_nr["PATH"][3] = self.PATH.colour
             state_nr["FRINGE"][0], state_nr["FRINGE"][1], state_nr["FRINGE"][2], state_nr["FRINGE"][3] = self.FRINGE.colour
             state_nr["EXPLORED"][0], state_nr["EXPLORED"][1], state_nr["EXPLORED"][2], state_nr["EXPLORED"][3] = self.EXPLORED.colour
+            """
 
         with open('state.json', 'w') as json_file:
             json.dump(self.views, json_file)
@@ -797,81 +798,3 @@ class ViewEditor():
         self.__selected_state_number.set_pos((-0.7 + (i-3) * 0.7, 0.4, -4.9))
         self.load_state(i)
         self.state_num = i
-
-    def __set_obstacles_triangular_wireframe_visibility(self, visible: bool) -> None:
-        if visible:
-            self.__map.obstacles_wf.show()
-        else:
-            self.__map.obstacles_wf.hide()
-
-    def __set_obstacles_square_wireframe_visibility(self, visible: bool) -> None:
-        pass
-        
-    def __set_traversables_triangular_wireframe_visibility(self, visible: bool) -> None:
-        if visible:
-            self.__map.traversables_wf.show()
-        else:
-            self.__map.traversables_wf.hide()
-        
-    def __set_traversables_square_wireframe_visibility(self, visible: bool) -> None:
-        pass
-
-    def __set_obstacles_visibility(self, visible: bool) -> None:
-        if visible:
-            self.__map.obstacles.show()
-        else:
-            self.__map.obstacles.hide()
-
-    def __set_traversables_visibility(self, visible: bool) -> None:
-        if visible:
-            self.__map.traversables.show()
-        else:
-            self.__map.traversables.hide()
-
-    def __set_start_visibility(self, visible: bool) -> None:
-        self.__map.colours[VoxelMap.AGENT].visible = visible
-
-    def __set_goal_visibility(self, visible: bool) -> None:
-        self.__map.colours[VoxelMap.GOAL].visible = visible
-
-    def __set_path_visibility(self, visible: bool) -> None:
-        self.__map.colours[VoxelMap.TRACE].visible = visible
-
-    def __set_fringe_visibility(self, visible: bool) -> None:
-        pass
-    
-    def __set_explored_visibility(self, visible: bool) -> None:
-        pass
-
-    def __set_obstacles_triangular_wireframe_colour(self, colour: Colour) -> None:
-        self.__map.obstacles_wf.set_color(LVecBase4f(*colour))
-
-    def __set_obstacles_square_wireframe_colour(self, colour: Colour) -> None:
-        pass
-
-    def __set_traversables_triangular_wireframe_colour(self, colour: Colour) -> None:
-        self.__map.traversables_wf.set_color(LVecBase4f(*colour))
-
-    def __set_traversables_square_wireframe_colour(self, colour: Colour) -> None:
-        pass
-
-    def __set_obstacles_colour(self, colour: Colour) -> None:
-        self.__map.obstacles.set_color(LVecBase4f(*colour))
-    
-    def __set_traversables_colour(self, colour: Colour) -> None:
-        self.__map.traversables_mesh.default_colour = colour
-
-    def __set_start_colour(self, colour: Colour) -> None:
-        self.__map.colours[VoxelMap.AGENT].colour = colour
-
-    def __set_goal_colour(self, colour: Colour) -> None:
-        self.__map.colours[VoxelMap.GOAL].colour = colour
-
-    def __set_path_colour(self, colour: Colour) -> None:
-        self.__map.colours[VoxelMap.TRACE].colour = colour
-
-    def __set_fringe_colour(self, colour: Colour) -> None:
-        pass
-    
-    def __set_explored_colour(self, colour: Colour) -> None:
-        pass

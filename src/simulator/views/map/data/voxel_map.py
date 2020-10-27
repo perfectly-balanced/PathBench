@@ -1,4 +1,4 @@
-from panda3d.core import NodePath, TransparencyAttrib, LVecBase3f
+from panda3d.core import NodePath, TransparencyAttrib, LVecBase4f
 
 from simulator.services.services import Services
 from simulator.views.map.data.map_data import MapData
@@ -20,6 +20,10 @@ class VoxelMap(MapData):
     obstacles_mesh: CubeMesh
     obstacles_wf_mesh: CubeMesh
 
+    TRAVERSABLES: str = "traversables"
+    TRAVERSABLES_WF: str = "traversables_wf"
+    OBSTACLES: str = "obstacles"
+    OBSTACLES_WF: str = "obstacles_wf"
     AGENT: str = "agent"
     TRACE: str = "trace"
     GOAL: str = "goal"
@@ -52,6 +56,22 @@ class VoxelMap(MapData):
         self.obstacles_wf.setRenderModeWireframe()
         self.obstacles_wf.setRenderModeThickness(2.2)
 
+        self.add_colour(VoxelMap.TRAVERSABLES, Colour(1), callback=self.__traversables_colour_callback)
+        self.add_colour(VoxelMap.TRAVERSABLES_WF, Colour(0), callback=lambda dc: self.__mesh_colour_callback(dc, self.traversables_wf))
+        self.add_colour(VoxelMap.OBSTACLES, Colour(0), callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles))
+        self.add_colour(VoxelMap.OBSTACLES_WF, Colour(1), callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles_wf))
+        
         self.add_colour(VoxelMap.AGENT, Colour(0.8, 0, 0))
         self.add_colour(VoxelMap.TRACE, Colour(0, 0.9, 0))
         self.add_colour(VoxelMap.GOAL, Colour(0, 0.9, 0))
+
+    def __traversables_colour_callback(self, dc: DynamicColour) -> None:
+        self.traversables_mesh.default_colour = dc()
+        self._dynamic_colour_callback(dc)
+
+    def __mesh_colour_callback(self, dc: DynamicColour, np: NodePath) -> None:
+        if dc.visible:
+            np.show()
+        else:
+            np.hide()
+        np.set_color(LVecBase4f(*dc()))
