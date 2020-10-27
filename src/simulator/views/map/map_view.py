@@ -28,10 +28,6 @@ from pandac.PandaModules import LineSegs
 from panda3d.core import GeomNode
 import math
 
-cos = math.cos
-sin = math.sin
-pi = math.pi
-
 
 class MapView(View):
     __displays: List[Any]
@@ -42,12 +38,22 @@ class MapView(View):
 
     __tc_previous: List[List[List[Colour]]]
     __tc_scratchpad: List[List[List[Colour]]]
+    __line_ls: List[Any]
+    __line_segs_used: bool
+    __angle_degs: float
+    __angle_rads: float
+    __nsteps: int
+    __thickness: float
+    __rad = float
+    __colour: Colour
 
     def __init__(self, services: Services, model: Model, root_view: Optional[View]) -> None:
         super().__init__(services, model, root_view)
         self.__displays = []
         self.__tc_previous = {}
         self.__tc_scratchpad = {}
+        self.__line_ls = []
+        self.__line_segs_used = False
 
         # world (dummy node)
         self.__world = self._services.graphics.window.render.attach_new_node("world")
@@ -128,10 +134,19 @@ class MapView(View):
             heappush(self.__displays, (display.z_index, display))
 
     def __render_displays(self) -> None:
+        # for node in self.__line_ls:
+        #     self.__line_ls.remove(node)
+        self.__line_ls.clear()
         while len(self.__displays) > 0:
             display: MapDisplay
             _, display = heappop(self.__displays)
+            self.__line_segs = LineSegs()
+            self.__line_segs_used = False
             display.render()  # update simulated map data (colours)
+            if self.__line_segs_used:
+                n = self.__line_segs.create()
+                np = self.map.root.attach_new_node(n)
+                self.__line_ls.append(np)
 
         # update actual viewable map data
         # lazily update mesh data, maybe this is actually slower
@@ -217,41 +232,42 @@ class MapView(View):
         self._services.resources.screenshots_dir.append(lambda fn: self._services.graphics.window.win.save_screenshot(fn))
 
     def draw_line(self, p1: Point, p2: Point):
+        self.__line_segs_used = True
         x1, y1 = p1
         x2, y2 = p2
-        lines = LineSegs()
+        lines = self.__line_segs
         lines.moveTo(x1, y1, 0)
         lines.drawTo(x2, y2, 0)
         lines.setThickness(1.5)
 
-        n = lines.create()
-        self.map.root.attach_new_node(n)
 
     def get_center(self, p: Point):
         x, y = p
         x += 0.5
         y += 0.5
-        return Point(x,y)
+        return Point(x, y)
+
+    def setup_circle(self):
+        self.__angle_degs = 360
+        self.__angle_rads = self.__angle_degs * (math.pi / 180.0)
+        self.__nsteps = 17
+        self.__thickness = 1.5
+        self.__rad = 0.06
+        self.__colour = (0, 0, 255)
 
     def draw_circle(self, p: Point):
-        x, y = p
-        angle_degs = 360
-        nsteps = 17
-        thickness = 1.5
-        rad = 0.06
-        colour = (1, 1, 1)
-        ls = LineSegs()
-        ls.set_thickness(thickness)
-        ls.set_color(*colour)
+        self.__line_segs_used = True
+        self.setup_circle()
 
-        angle_rads = angle_degs * (pi / 180.0)
+        ls = self.__line_segs
+        ls.set_thickness(self.__thickness)
+        ls.set_color(*self.__colour)
+        x, y, z = self.__to_point3(p)
 
-        for i in range(nsteps + 1):
-            a = angle_rads * i / nsteps
-            y = math.sin(a) * rad + y
-            x = math.cos(a) * rad + x
+        for i in range(self.__nsteps + 1):
+            a = self.__angle_rads * i / self.__nsteps
+            x = math.cos(a) * self.__rad + x
+            y = math.sin(a) * self.__rad + y
+            z = math.sin(a) * self.__rad + z
+            ls.drawTo(x, y, z)
 
-            ls.drawTo(x, y, 0)
-
-        n = ls.create()
-        self.map.root.attach_new_node(n)
