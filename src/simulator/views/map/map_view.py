@@ -5,6 +5,7 @@ from typing import List, Any, Tuple, Optional, Union
 
 import pygame
 
+
 from algorithms.configuration.entities.entity import Entity
 from simulator.models.model import Model
 from simulator.services.debug import DebugLevel
@@ -134,8 +135,8 @@ class MapView(View):
             heappush(self.__displays, (display.z_index, display))
 
     def __render_displays(self) -> None:
-        # for node in self.__line_ls:
-        #     self.__line_ls.remove(node)
+        for node in self.__line_ls:
+            self.__line_ls.remove(node)
         self.__line_ls.clear()
         while len(self.__displays) > 0:
             display: MapDisplay
@@ -231,11 +232,12 @@ class MapView(View):
     def take_screenshot(self) -> None:
         self._services.resources.screenshots_dir.append(lambda fn: self._services.graphics.window.win.save_screenshot(fn))
 
-    def draw_line(self, p1: Point, p2: Point):
+    def draw_line(self, color, p1: Point, p2: Point):
         self.__line_segs_used = True
         x1, y1 = p1
         x2, y2 = p2
         lines = self.__line_segs
+        lines.set_color(*self.to_col3f(color))
         lines.moveTo(x1, y1, 0)
         lines.drawTo(x2, y2, 0)
         lines.setThickness(1.5)
@@ -264,10 +266,10 @@ class MapView(View):
         ls.set_color(*self.__colour)
         x, y, z = self.__to_point3(p)
 
+
         for i in range(self.__nsteps + 1):
             a = self.__angle_rads * i / self.__nsteps
             x = math.cos(a) * self.__rad + x
             y = math.sin(a) * self.__rad + y
-            z = math.sin(a) * self.__rad + z
-            ls.drawTo(x, y, z)
-
+            #z = math.sin(a) * self.__rad + z
+            ls.drawTo(x, y, z)g

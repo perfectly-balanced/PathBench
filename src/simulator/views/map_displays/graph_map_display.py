@@ -34,8 +34,7 @@ class GraphMapDisplay(MapDisplay):
         first_point = self.get_renderer_view().get_center(current.position)
         for parent in current.parents:
             second_point = self.get_renderer_view().get_center(parent.position)
-            self.get_renderer_view().draw_line(first_point, second_point)
-
+            self.get_renderer_view().draw_line((0, 0, 200), first_point, second_point)
 
     def __render_node(self, current: 'Vertex') -> None:
         pt = self.get_renderer_view().get_center(current.position)
