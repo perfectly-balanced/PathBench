@@ -8,6 +8,7 @@ from simulator.views.map.map_view import MapView
 from simulator.controllers.controller import Controller
 from simulator.controllers.map.cube_map_picker import CubeMapPicker
 from simulator.controllers.map.camera_controller import CameraController
+from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
 
 import math
 from typing import Optional

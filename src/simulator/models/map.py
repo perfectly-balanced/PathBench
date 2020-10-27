@@ -113,6 +113,3 @@ class Map(Model):
         self._services.debug.write("Done converting. Total time: " + str(timer.stop()), DebugLevel.BASIC)
         self._services.debug.write(self._services.algorithm.map, DebugLevel.MEDIUM)
         self._services.ev_manager.post(KeyFrameEvent())
-
-    def save_screenshot(self, screenshot: pygame.Surface) -> None:
-        self._services.resources.screenshots_dir.append(screenshot)

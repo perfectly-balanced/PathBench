@@ -197,7 +197,4 @@ class MapView(View):
         self.__render_displays()
 
     def take_screenshot(self) -> None:
-        """
-        self._model.save_screenshot(image)
-        """
-        print("TODO: take_screenshot")
+        self._services.resources.screenshots_dir.append(lambda fn: self._services.graphics.window.win.save_screenshot(fn))

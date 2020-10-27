@@ -169,9 +169,14 @@ class ScreenshotsDir(ImagesDir):
     def __init__(self, services: Services, name: str, parent: str):
         super().__init__(services, name, parent)
 
-    def append(self, screenshot: pygame.Surface) -> None:
-        file_name: str = "screenshot_" + str(self._get_next_index())
-        self.save(file_name, screenshot)
+    @staticmethod
+    def __taker(dir: Directory, name: str, take_and_save: Callable[[str], None]) -> None:
+        name = dir._add_extension(name, "png")
+        take_and_save(dir._full_path() + name)
+
+    def append(self, take_and_save: Callable[[str], None]) -> None:
+        name: str = "screenshot_" + str(self._get_next_index())
+        Atlas.save(self, name, take_and_save, ScreenshotsDir.__taker)
         self._increment_index()
 
 
