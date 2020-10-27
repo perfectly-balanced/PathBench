@@ -7,18 +7,18 @@ from algorithms.configuration.entities.entity import Entity
 from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
 from simulator.views.map_displays.map_display import MapDisplay
-from structures import Point, Colour
+from structures import Point, Colour, DynamicColour
 
 class GradientMapDisplay(MapDisplay):
     inverted: bool
     pts: List[Tuple[Union[int, float], Point]]
-    min_color: np.ndarray
-    max_color: np.ndarray
+    min_color: DynamicColour
+    max_color: DynamicColour
 
     def __init__(self, services: Services, grid: List[List[Union[int, float]]] = None,
                  pts: List[Tuple[Union[int, float], Point]] = None,
-                 min_color: np.ndarray = np.array([150., 150., 0.]),
-                 max_color=np.array([150., 0., 0.]), z_index=50, inverted: bool = False, custom_map: Map = None) -> None:
+                 min_color: DynamicColour = None,
+                 max_color: DynamicColour = None, z_index=50, inverted: bool = False, custom_map: Map = None) -> None:
         super().__init__(services, z_index=z_index, custom_map=custom_map)
 
         self.pts = None
@@ -29,6 +29,8 @@ class GradientMapDisplay(MapDisplay):
         if pts:
             self.pts = pts
 
+        assert min_color is not None
+        assert max_color is not None
         self.min_color = min_color
         self.max_color = max_color
         self.inverted = inverted
@@ -43,18 +45,19 @@ class GradientMapDisplay(MapDisplay):
 
         return ret
 
-    def get_color(self, val: float, min_val: float, max_val: float) -> np.ndarray:
+    def get_colour(self, val: float, min_val: float, max_val: float) -> Colour:
+        cmin = self.min_color()
+        cmax = self.max_color()
+
         proc_dist: float = (val - min_val) / ((max_val - min_val) if (max_val - min_val) != 0 else 1)
-        color_vec: np.ndarray = self.max_color - self.min_color
-        clr = self.min_color + proc_dist * color_vec
+        proc_dist_clr = Colour(proc_dist, proc_dist, proc_dist, proc_dist)
+        clr_vec: Colour = cmax - cmin
+        clr = cmin + proc_dist_clr * clr_vec
         if self.inverted:
-            clr = self.max_color - proc_dist * color_vec
-        return np.clip(clr, 0, 255)
+            clr = cmax - proc_dist_clr * clr_vec
+        return clr
 
     def render(self) -> bool:
-        if self._map.size.n_dim == 3:
-            return True # hacky: don't render
-
         if not super().render():
             return False
 
@@ -68,13 +71,8 @@ class GradientMapDisplay(MapDisplay):
             max_val = max(max_val, p[0])
 
         for p in self.pts:
-            clr = self.get_color(p[0], min_val, max_val)
-            c = list(clr)
-            for i in range(len(c)):
-                c[i] /= 255
-                c[i] = min(1, c[i])
-            c = Colour(*c)
-            self._root_view.render_pos(Entity(p[1]), c)
+            clr = self.get_colour(p[0], min_val, max_val)
+            self._root_view.render_pos(Entity(p[1]), clr)
 
         return True
 

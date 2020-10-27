@@ -214,7 +214,7 @@ class MapView(View):
         if y not in self.__tc_scratchpad[x]:
             self.__tc_scratchpad[x][y] = {}
         if z not in self.__tc_scratchpad[x][y]:
-            self.__tc_scratchpad[x][y][z] = TRANSPARENT
+            self.__tc_scratchpad[x][y][z] = self.map.colours["traversables"].colour # use raw colour
         dst = self.__tc_scratchpad[x][y][z]
 
         wda = dst.a * (1 - src.a)  # weighted dst alpha

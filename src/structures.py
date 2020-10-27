@@ -242,7 +242,27 @@ class Colour:
     
     def __ne__(self, other: object) -> bool:
         return not (self == other)
+
+    def __apply_arithmetic_op(self, other: 'Colour', op: Callable[[float, float], float]) -> 'Colour':
+        def clamp(x: float) -> float:
+            return max(0, min(x, 1))
+
+        r, g, b, a = self.__data
+        ro, go, bo, ao = other.__data
+        return Colour(clamp(op(r, ro)), clamp(op(g, go)), clamp(op(b, bo)), clamp(op(a, ao)))
+
+    def __add__(self, other: 'Colour') -> 'Colour':
+        return self.__apply_arithmetic_op(other, lambda a, b: (a + b))
+
+    def __sub__(self, other: 'Colour') -> 'Colour':
+        return self.__apply_arithmetic_op(other, lambda a, b: (a - b))
+
+    def __mul__(self, other: 'Colour') -> 'Colour':
+        return self.__apply_arithmetic_op(other, lambda a, b: (a * b))
     
+    def __truediv__(self, other: 'Colour') -> 'Colour':
+        return self.__apply_arithmetic_op(other, lambda a, b: (a / b))
+
     def __repr__(self) -> str:
         return f"Colour({', '.join(str(i) for i in self.__data)})"
     

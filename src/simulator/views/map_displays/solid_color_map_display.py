@@ -1,30 +1,26 @@
 import copy
-import pygame
 from typing import Set, Union, Tuple, List
 
 from algorithms.configuration.entities.entity import Entity
 from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
 from simulator.views.map_displays.map_display import MapDisplay
-from structures import Point, Colour
+from structures import Point, Colour, DynamicColour
 
 
 class SolidColorMapDisplay(MapDisplay):
     radius: int
     points: Union[Set[Point], List[Entity]]
-    color: pygame.Color
+    colour: DynamicColour
 
     def __init__(self, services: Services, points: Union[Set[Point], List[Entity]],
-                 color: Union[pygame.Color, Tuple[int, int, int]], z_index=50, radius=0, custom_map: Map = None) -> None:
+                 colour: DynamicColour, z_index=50, radius=0, custom_map: Map = None) -> None:
         super().__init__(services, z_index=z_index, custom_map=custom_map)
         self.points = points
-        self.color = color
+        self.colour = colour
         self.radius = radius
 
     def render(self) -> bool:
-        if self._map.size.n_dim == 3:
-            return True # hacky: don't render
-
         if not super().render():
             return False
 
@@ -39,12 +35,11 @@ class SolidColorMapDisplay(MapDisplay):
 
         points = set(map(f, points))
 
-        c = self._root_view.to_col3f(self.color)
-
+        c = self.colour()
         for point in points:
             self._root_view.render_pos(Entity(point, self.radius), c)
 
         return True
 
     def __lt__(self, other: 'SolidColorMapDisplay') -> bool:
-        return tuple(self.color) < tuple(other.color)
+        return tuple(*self.colour) < tuple(*other.colour)
