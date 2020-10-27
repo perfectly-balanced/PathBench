@@ -1,6 +1,6 @@
 from simulator.services.service import Service
 from simulator.services.graphics.window import Window
-from simulator.services.event_manager.events.window_loaded_event import WindowLoadedEvent
+from simulator.services.event_manager.events.graphics_loaded_event import GraphicsLoadedEvent
 
 class GraphicsManager(Service):
     __initialised: bool
@@ -15,7 +15,7 @@ class GraphicsManager(Service):
         assert not self.__initialised
 
         self.__window = Window(*args, **kwargs)
-        self._services.ev_manager.post(WindowLoadedEvent())
+        self._services.ev_manager.post(GraphicsLoadedEvent())
 
         self.__initialised = True
 

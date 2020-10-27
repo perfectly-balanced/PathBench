@@ -8,7 +8,7 @@ from simulator.models.model import Model
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
 from simulator.services.event_manager.events.event import Event
-from simulator.services.event_manager.events.window_loaded_event import WindowLoadedEvent
+from simulator.services.event_manager.events.graphics_loaded_event import GraphicsLoadedEvent
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
 from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
 
@@ -45,7 +45,7 @@ class MapView(View):
 
     def notify(self, event: Event) -> None:
         super().notify(event)
-        if isinstance(event, WindowLoadedEvent):
+        if isinstance(event, GraphicsLoadedEvent):
             self.__init()
         elif isinstance(event, KeyFrameEvent):
             if event.refresh:

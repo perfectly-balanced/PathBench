@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from simulator.services.debug import Debug
 from simulator.services.event_manager.event_manager import EventManager
@@ -19,7 +19,7 @@ class Services:
     __debug: Debug
     __ev_manager: EventManager
     __algorithm_runner: 'AlgorithmRunner'
-    __graphics: 'GraphicsManager'
+    __graphics: Optional['GraphicsManager']
     __resources_dir: 'Resources'
     __torch: 'Torch'
 
@@ -42,11 +42,13 @@ class Services:
         self.__settings = config
         self.__debug = Debug(self)
         self.__ev_manager = EventManager(self)
-        self.__graphics = GraphicsManager(self)
-        self.__resources_dir = Resources(self)
+        self.__resources_dir = Resources(self)        
         self.__torch = Torch(self)
         self.__algorithm_runner = AlgorithmRunner(self)
         self.__algorithm_runner.reset_algorithm()
+
+        if self.__settings.simulator_graphics:
+            self.__graphics = GraphicsManager(self)
 
     @property
     def debug(self) -> str:

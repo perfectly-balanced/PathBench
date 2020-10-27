@@ -1,7 +1,7 @@
 from simulator.controllers.controller import Controller
 from simulator.views.map.map_view import MapView
 from simulator.services.event_manager.events.event import Event
-from simulator.services.event_manager.events.window_loaded_event import WindowLoadedEvent
+from simulator.services.event_manager.events.graphics_loaded_event import GraphicsLoadedEvent
 from simulator.services.debug import DebugLevel
 
 from structures import Point
@@ -125,5 +125,5 @@ class MapController(Controller):
         """
 
         super().notify(event)
-        if isinstance(event, WindowLoadedEvent):
+        if isinstance(event, GraphicsLoadedEvent):
             self.__init()
