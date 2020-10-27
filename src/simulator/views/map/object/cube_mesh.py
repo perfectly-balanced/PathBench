@@ -59,7 +59,6 @@ class CubeMesh():
         self.__cube_face_map = []
 
         # List[List[List[bool]]]
-        self.__cube_default_coloured = []
         self.__cube_default_coloured = [None for _ in self.structure]
         for i in self.structure:
             self.__cube_default_coloured[i] = [None for _ in self.structure[i]]
@@ -133,11 +132,18 @@ class CubeMesh():
                 self.__colour.addData4f(*c)
                 self.__colour.addData4f(*c)
 
-    def reset_cube_colour(self, pos: Point) -> None:
+    def reset_cube(self, pos: Point) -> None:
         x, y, z = pos
 
         self.set_cube_colour(pos, self.default_colour)
         self.__cube_default_coloured[x][y][z] = True
+    
+    def reset_all_cubes(self) -> None:
+        for i in self.structure:
+            for j in self.structure[i]:
+                for k in self.structure[i][j]:
+                    if self.structure[i][j][k] and not self.__cube_default_coloured[i][j][k]:
+                        self.reset_cube((i, j, k))
 
     @staticmethod
     def __attenuate_colour(colour: Colour, factor: Real) -> Colour:
@@ -254,7 +260,7 @@ class CubeMesh():
             for j in self.structure[i]:
                 for k in self.structure[i][j]:
                     if self.structure[i][j][k] and self.__cube_default_coloured[i][j][k]:
-                        self.reset_cube_colour((i, j, k))
+                        self.reset_cube((i, j, k))
     
     @property
     def structure(self) -> str:

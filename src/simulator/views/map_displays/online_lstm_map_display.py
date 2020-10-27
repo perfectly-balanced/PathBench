@@ -78,10 +78,8 @@ class OnlineLSTMMapDisplay(MapDisplay):
         vec = origin + np.matmul(rot_mat, unit_vector)
         self.__render_line(origin, Point(*vec), color)
 
-    def __render_line(self, p1: Point, p2: Point, color: Union[pygame.Color, Tuple[int, int, int]]):
-        first_point = self.get_renderer_view().get_center(p1)
-        second_point = self.get_renderer_view().get_center(p2)
-        self.get_renderer_view().draw_line(color, first_point, second_point)
+    def __render_line(self, p1: Point, p2: Point, colour: Union[pygame.Color, Tuple[int, int, int]]):
+        self.get_renderer_view().draw_line(self.get_renderer_view().to_col3f(colour), p1, p2)
 
     def __lt__(self, other):
         return super().__lt__(other)

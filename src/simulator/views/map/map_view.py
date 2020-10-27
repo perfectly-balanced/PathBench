@@ -20,7 +20,7 @@ from simulator.views.map_displays.map_display import MapDisplay
 from simulator.views.map_displays.numbers_map_display import NumbersMapDisplay
 from simulator.views.map_displays.online_lstm_map_display import OnlineLSTMMapDisplay
 from simulator.views.view import View
-from structures import Point, Colour, TRANSPARENT
+from structures import Point, Colour, TRANSPARENT, WHITE
 
 from simulator.views.gui.view_editor import ViewEditor
 from simulator.views.map.data.voxel_map import VoxelMap
@@ -119,10 +119,7 @@ class MapView(View):
     def __tc_reset(self) -> None:
         self.__tc_scratchpad = {}
         self.__tc_previous = {}
-        for x in self.map.traversables_mesh.structure:
-            for y in self.map.traversables_mesh.structure[x]:
-                for z in self.map.traversables_mesh.structure[x][y]:
-                    self.map.traversables_mesh.reset_cube_colour(Point(x, y, z))
+        self.map.traversables_mesh.reset_all_cubes()
 
     def __get_displays(self) -> None:
         self.__displays = []
@@ -135,7 +132,7 @@ class MapView(View):
             display._model = self._model
             self.add_child(display)
             heappush(self.__displays, (display.z_index, display))
-
+    
     def __render_displays(self) -> None:
         for np in self.__line_ls:
             np.remove_node()
@@ -144,8 +141,9 @@ class MapView(View):
             display: MapDisplay
             _, display = heappop(self.__displays)
             self.__line_segs = LineSegs()
+            self.__line_segs.set_thickness(2)
             self.__line_segs_used = False
-            display.render()  # update simulated map data (colours)
+            display.render()
             if self.__line_segs_used:
                 n = self.__line_segs.create()
                 np = self.map.root.attach_new_node(n)
@@ -197,7 +195,7 @@ class MapView(View):
                     if not should_reset:
                         should_reset = z not in self.__tc_scratchpad[x][y]
                     if should_reset:
-                        self.map.traversables_mesh.reset_cube_colour(Point(x, y, z))
+                        self.map.traversables_mesh.reset_cube(Point(x, y, z))
 
         self.__tc_previous = self.__tc_scratchpad
         self.__tc_scratchpad = {}
@@ -235,48 +233,27 @@ class MapView(View):
         self._services.resources.screenshots_dir.append(
             lambda fn: self._services.graphics.window.win.save_screenshot(fn))
 
-    def draw_line(self, color, p1: Point, p2: Point):
-        self.__line_segs_used = True
-        x1, y1 = p1
-        x2, y2 = p2
-        lines = self.__line_segs
-        lines.set_color(*self.to_col3f(color))
-        lines.moveTo(x1, y1, 0)
-        lines.drawTo(x2, y2, 0)
-        lines.setThickness(1.5)
-
-    def get_center(self, p: Point):
-        x, y = p
+    def cube_center(self, p: Point) -> Point:
+        x, y, z = self.__to_point3(p)
         x += 0.5
         y += 0.5
-        return Point(x, y)
+        # z -= 0.5
+        return Point(x, y, z)
 
-    def setup_circle(self):
-        self.__angle_degs = 360
-        self.__angle_rads = self.__angle_degs * (math.pi / 180.0)
-        self.__nsteps = 17
-        self.__thickness = 1.5
-        self.__rad = 0.06
-        self.__colour = (1, 1, 1)
-
-    def draw_circle(self, p: Point):
+    @property
+    def line_segs(self) -> LineSegs:
         self.__line_segs_used = True
-        self.setup_circle()
+        return self.__line_segs
 
-        ls = self.__line_segs
-        ls.set_thickness(self.__thickness)
-        ls.set_color(*self.__colour)
-        x, y, z = self.__to_point3(p)
+    def draw_line(self, colour: Colour, p1: Point, p2: Point):
+        ls = self.line_segs
+        ls.set_color(*colour)
 
-        for i in range(self.__nsteps + 1):
-            a = self.__angle_rads * i / self.__nsteps
-            x = math.cos(a) * self.__rad + x
-            y = math.sin(a) * self.__rad + y
-            # z = math.sin(a) * self.__rad + z
-            ls.drawTo(x, y, z)
+        ls.moveTo(*self.cube_center(p1))
+        ls.drawTo(*self.cube_center(p2))
 
     def draw_sphere(self, p: Point):
-        x, y, z = self.__to_point3(p)
+        x, y, z = self.cube_center(p)
         sphere = loader.loadModel("models/smiley.egg")
         sphere_tex = loader.loadTexture(os.path.join(DATA_PATH, "white.jpg"))
         sphere.setTexture(sphere_tex, 1)
@@ -284,3 +261,20 @@ class MapView(View):
         sphere.reparentTo(self.map.root)
         sphere.setScale(0.2)
         sphere.setPos(x, y, z)
+    
+    def make_arc(self, p: Point, angle_degs = 360, nsteps = 16, radius: float = 0.06, colour: Colour = WHITE):
+        ls = self.line_segs
+        ls.set_color(*colour)
+
+        angle_rads = angle_degs * (math.pi / 180.0)
+        x, y, z = self.cube_center(p)
+
+        ls.move_to(x + radius, y, z)
+        for i in range(nsteps + 1):
+            a = angle_rads * i / nsteps
+            ty = math.sin(a) * radius + y
+            tx = math.cos(a) * radius + x
+            ls.draw_to(tx, ty, z)
+
+    def draw_circle(self, p: Point):
+        return self.make_arc(p)
