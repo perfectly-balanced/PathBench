@@ -12,7 +12,6 @@ from structures import Colour, WHITE, BLACK, TRANSPARENT
 from constants import DATA_PATH
 
 from simulator.services.services import Services
-from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
 from simulator.views.map.data.voxel_map import VoxelMap
 
 from simulator.views.map.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
@@ -830,16 +829,13 @@ class ViewEditor():
             self.__map.traversables.hide()
 
     def __set_start_visibility(self, visible: bool) -> None:
-        self.__map.agent_visible = visible
-        self.__services.ev_manager.post(KeyFrameEvent(is_first=True))
+        self.__map.colours[VoxelMap.AGENT].visible = visible
 
     def __set_goal_visibility(self, visible: bool) -> None:
-        self.__map.goal_visible = visible
-        self.__services.ev_manager.post(KeyFrameEvent(is_first=True))
+        self.__map.colours[VoxelMap.GOAL].visible = visible
 
     def __set_path_visibility(self, visible: bool) -> None:
-        self.__map.trace_visible = visible
-        self.__services.ev_manager.post(KeyFrameEvent(is_first=True))
+        self.__map.colours[VoxelMap.TRACE].visible = visible
 
     def __set_fringe_visibility(self, visible: bool) -> None:
         pass
@@ -866,16 +862,13 @@ class ViewEditor():
         self.__map.traversables_mesh.default_colour = colour
 
     def __set_start_colour(self, colour: Colour) -> None:
-        self.__map._agent_colour = colour
-        self.__services.ev_manager.post(KeyFrameEvent(refresh=True))
+        self.__map.colours[VoxelMap.AGENT].colour = colour
 
     def __set_goal_colour(self, colour: Colour) -> None:
-        self.__map._goal_colour = colour
-        self.__services.ev_manager.post(KeyFrameEvent(refresh=True))
+        self.__map.colours[VoxelMap.GOAL].colour = colour
 
     def __set_path_colour(self, colour: Colour) -> None:
-        self.__map._trace_colour = colour
-        self.__services.ev_manager.post(KeyFrameEvent(refresh=True))
+        self.__map.colours[VoxelMap.TRACE].colour = colour
 
     def __set_fringe_colour(self, colour: Colour) -> None:
         pass

@@ -69,8 +69,6 @@ class MapView(View):
         # disables the default camera behaviour
         base.disable_mouse()
 
-        base.set_background_color(0, 0, 0.2, 1)
-
         # world (dummy node)
         self.__world = base.render.attach_new_node("world")
 
@@ -87,7 +85,7 @@ class MapView(View):
                         map_data[x][y][z] = not self._services.algorithm.map.is_agent_valid_pos(Point(x, y, z))
 
         # MAP #
-        self.__map = VoxelMap(map_data, self.__world, artificial_lighting=True)
+        self.__map = VoxelMap(self._services, map_data, self.__world, artificial_lighting=True)
         self.__center(self.__map.root)
 
         # CAMERA #
