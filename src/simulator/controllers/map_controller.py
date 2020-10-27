@@ -88,7 +88,7 @@ class MapController(Controller):
         self.__picker = None
     
     def __init(self):
-        self.__picker = MapTraversablesPicker(self._services.window, self.__view.map)
+        self.__picker = MapTraversablesPicker(self._services.graphics.window, self.__view.map)
 
         def left_click():
             p = self.__picker.pos
@@ -106,7 +106,7 @@ class MapController(Controller):
                     p = Point(p[0], p[1])
                 self._model.move_goal(p)
 
-        base = self._services.window
+        base = self._services.graphics.window
         base.accept('mouse1', left_click)
         base.accept('mouse3', right_click)
         base.accept("arrow_up", lambda: self._model.move_up())

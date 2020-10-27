@@ -5,7 +5,7 @@ from simulator.services.event_manager.event_manager import EventManager
 
 if TYPE_CHECKING:
     from algorithms.configuration.configuration import Configuration
-    from simulator.services.window import Window
+    from simulator.services.graphics.graphics_manager import GraphicsManager
     from simulator.services.algorithm_runner import AlgorithmRunner
     from simulator.services.resources.resources import Resources
     from simulator.services.torch import Torch
@@ -19,7 +19,7 @@ class Services:
     __debug: Debug
     __ev_manager: EventManager
     __algorithm_runner: 'AlgorithmRunner'
-    __window: 'Window'
+    __graphics: 'GraphicsManager'
     __resources_dir: 'Resources'
     __torch: 'Torch'
 
@@ -27,14 +27,14 @@ class Services:
         self.__settings = None
         self.__debug = None
         self.__ev_manager = None
-        self.__window = None
+        self.__graphics = None
         self.__algorithm_runner = None
         self.__resources_dir = None
         self.__torch = None
         self.__setup(config)
 
     def __setup(self, config: 'Configuration') -> None:
-        from simulator.services.window import Window
+        from simulator.services.graphics.graphics_manager import GraphicsManager
         from simulator.services.algorithm_runner import AlgorithmRunner
         from simulator.services.resources.resources import Resources
         from simulator.services.torch import Torch
@@ -42,7 +42,7 @@ class Services:
         self.__settings = config
         self.__debug = Debug(self)
         self.__ev_manager = EventManager(self)
-        self.__window = Window(self)
+        self.__graphics = GraphicsManager(self)
         self.__resources_dir = Resources(self)
         self.__torch = Torch(self)
         self.__algorithm_runner = AlgorithmRunner(self)
@@ -65,12 +65,12 @@ class Services:
         return self.__ev_manager
 
     @property
-    def window(self) -> str:
-        return 'window'
+    def graphics(self) -> str:
+        return 'graphics'
 
-    @window.getter
-    def window(self) -> 'Window':
-        return self.__window
+    @graphics.getter
+    def graphics(self) -> 'GraphicsManager':
+        return self.__graphics
 
     @property
     def settings(self) -> str:

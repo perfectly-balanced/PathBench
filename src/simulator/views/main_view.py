@@ -6,7 +6,6 @@ from simulator.services.event_manager.events.event import Event
 from simulator.services.services import Services
 from simulator.services.timer import Timer
 from simulator.services.event_manager.events.quit_event import QuitEvent
-from simulator.services.event_manager.events.window_loaded_event import WindowLoadedEvent
 from simulator.views.view import View
 
 
@@ -39,15 +38,10 @@ class MainView(View):
         super().notify(event)
         if isinstance(event, QuitEvent):
             self._initialised = False
-            self._services.window.quit()
+            self._services.graphics.window.quit()
 
     def initialise(self) -> None:
-        """
-        Set up the self.services.window graphical display and loads graphical resources.
-        """
-
-        self._services.window.init("PathBench", size=self._services.settings.simulator_window_size)
-        self._services.ev_manager.post(WindowLoadedEvent())
+        self._services.graphics.init("PathBench", size=self._services.settings.simulator_window_size)
         self.__frame_timer = Timer()
 
     def tick(self) -> None:
@@ -70,5 +64,5 @@ class MainView(View):
             child.update()
 
         # update window
-        self._services.window.update()
+        self._services.graphics.window.update()
         self.__frame_count += 1

@@ -64,7 +64,7 @@ class MapView(View):
         np.set_pos(self.world.getX() - (x2 - x1) / 2, self.world.getY() - (y2 - y1) / 2, self.world.getZ() - (z2 - z1) / 2)
 
     def __init(self):
-        base = self._services.window
+        base = self._services.graphics.window
 
         # disables the default camera behaviour
         base.disable_mouse()

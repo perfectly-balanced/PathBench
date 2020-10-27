@@ -518,7 +518,7 @@ class ViewEditor():
 
     def __init__(self, services: Services, voxel_map: VoxelMap):
         self.__services = services
-        self.__base = self.__services.window
+        self.__base = self.__services.graphics.window
         self.__voxel_map = voxel_map
         self.hidden = False
 

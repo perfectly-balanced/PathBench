@@ -22,7 +22,7 @@ class MapData:
         self.root.set_transparency(TransparencyAttrib.M_alpha)
 
         self.colours = {}
-        self.add_colour(MapData.BG, Colour(0, 0, 0.2, 1), callback=lambda dc: self._services.window.set_background_color(*dc()))
+        self.add_colour(MapData.BG, Colour(0, 0, 0.2, 1), callback=lambda dc: self._services.graphics.window.set_background_color(*dc()))
 
     @property
     def root(self) -> str:

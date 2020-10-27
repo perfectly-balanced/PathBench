@@ -10,4 +10,4 @@ class MainController(Controller):
 
         super().notify(event)
         if isinstance(event, WindowLoadedEvent):
-            self._services.window.accept("escape", lambda: self._services.ev_manager.post(QuitEvent()))
+            self._services.graphics.window.accept("escape", lambda: self._services.ev_manager.post(QuitEvent()))
