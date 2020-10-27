@@ -25,9 +25,9 @@ from structures import Point, Colour, TRANSPARENT, WHITE
 from simulator.views.gui.view_editor import ViewEditor
 from simulator.views.map.data.voxel_map import VoxelMap
 
-from panda3d.core import NodePath
-from pandac.PandaModules import LineSegs
-from panda3d.core import GeomNode
+from panda3d.core import NodePath, GeomNode, Geom, LineSegs
+from direct.showutil import BuildGeometry
+
 import math
 
 
@@ -40,8 +40,9 @@ class MapView(View):
 
     __tc_previous: List[List[List[Colour]]]
     __tc_scratchpad: List[List[List[Colour]]]
-    __line_ls: List[Any]
-    __line_segs_used: bool
+    __draw_nps: List[NodePath]
+    __circles: List[Tuple[int, float, Geom]]
+    __line_segs: LineSegs
     __angle_degs: float
     __angle_rads: float
     __nsteps: int
@@ -54,8 +55,10 @@ class MapView(View):
         self.__displays = []
         self.__tc_previous = {}
         self.__tc_scratchpad = {}
-        self.__line_ls = []
-        self.__line_segs_used = False
+        self.__draw_nps = []
+        self.__circles = []
+        self.__line_segs = LineSegs()
+        self.__line_segs.set_thickness(2)
 
         # world (dummy node)
         self.__world = self._services.graphics.window.render.attach_new_node("world")
@@ -134,20 +137,17 @@ class MapView(View):
             heappush(self.__displays, (display.z_index, display))
     
     def __render_displays(self) -> None:
-        for np in self.__line_ls:
+        for np in self.__draw_nps:
             np.remove_node()
-        self.__line_ls.clear()
+        self.__draw_nps.clear()
         while len(self.__displays) > 0:
             display: MapDisplay
             _, display = heappop(self.__displays)
-            self.__line_segs = LineSegs()
-            self.__line_segs.set_thickness(2)
-            self.__line_segs_used = False
             display.render()
-            if self.__line_segs_used:
+            if not self.__line_segs.is_empty():
                 n = self.__line_segs.create()
                 np = self.map.root.attach_new_node(n)
-                self.__line_ls.append(np)
+                self.__draw_nps.append(np)
 
         # update actual viewable map data
         # lazily update mesh data, maybe this is actually slower
@@ -237,7 +237,10 @@ class MapView(View):
         x, y, z = self.__to_point3(p)
         x += 0.5
         y += 0.5
-        # z -= 0.5
+        if self._services.algorithm.map.size.n_dim == 3:
+            z -= 0.5
+        else:
+            z = 0
         return Point(x, y, z)
 
     @property
@@ -245,22 +248,22 @@ class MapView(View):
         self.__line_segs_used = True
         return self.__line_segs
 
-    def draw_line(self, colour: Colour, p1: Point, p2: Point):
+    def draw_line(self, colour: Colour, p1: Point, p2: Point) -> None:
         ls = self.line_segs
         ls.set_color(*colour)
 
-        ls.moveTo(*self.cube_center(p1))
-        ls.drawTo(*self.cube_center(p2))
+        ls.move_to(*self.cube_center(p1))
+        ls.draw_to(*self.cube_center(p2))
 
-    def draw_sphere(self, p: Point, colour: Colour = WHITE):
+    def draw_sphere(self, p: Point, colour: Colour = WHITE) -> None:
         x, y, z = self.cube_center(p)
-        sphere = loader.loadModel("models/misc/sphere.egg")
-        sphere.setColor(*colour)
-        sphere.reparentTo(self.map.root)
-        sphere.setScale(0.2)
-        sphere.setPos(x, y, z)
+        sphere = loader.load_model("models/misc/sphere.egg")
+        sphere.set_color(*colour)
+        sphere.reparent_to(self.map.root)
+        sphere.set_scale(0.2)
+        sphere.set_pos(x, y, z)
     
-    def make_arc(self, p: Point, angle_degs = 360, nsteps = 16, radius: float = 0.06, colour: Colour = WHITE):
+    def make_arc(self, p: Point, angle_degs = 360, nsteps = 16, radius: float = 0.06, colour: Colour = WHITE) -> None:
         ls = self.line_segs
         ls.set_color(*colour)
 
@@ -274,5 +277,23 @@ class MapView(View):
             tx = math.cos(a) * radius + x
             ls.draw_to(tx, ty, z)
 
-    def draw_circle(self, p: Point):
-        return self.make_arc(p)
+    def draw_circle(self, p: Point, *args, **kwargs) -> None:
+        self.make_arc(p, 360, *args, **kwargs)
+
+    def draw_circle_filled(self, p: Point, nsteps = 16, radius: float = 0.06, colour: Colour = WHITE) -> None:
+        gn = GeomNode("circle")
+        
+        exists: bool = False
+        for cn, cr, cg in self.__circles:
+            if cn == nsteps and cr == radius:
+                exists = True
+                gn.add_geom(cg)
+                break
+        if not exists:
+            self.__circles.append((nsteps, radius, BuildGeometry.addCircle(gn, nsteps, radius, colour)))
+
+        np = self.map.root.attach_new_node(gn)
+        np.set_pos(*self.cube_center(p))
+        np.set_color(*colour)
+
+        self.__draw_nps.append(np)

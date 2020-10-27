@@ -38,7 +38,7 @@ class GraphMapDisplay(MapDisplay):
             self.get_renderer_view().draw_line(GraphMapDisplay.COLOUR, current.position, parent.position)
 
     def __render_node(self, current: 'Vertex') -> None:
-        self.get_renderer_view().draw_sphere(current.position)
+        self.get_renderer_view().draw_circle_filled(current.position)
 
     def __lt__(self, other):
         return super().__lt__(other)
