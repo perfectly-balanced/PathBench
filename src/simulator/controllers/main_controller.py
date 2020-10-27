@@ -10,4 +10,9 @@ class MainController(Controller):
 
         super().notify(event)
         if isinstance(event, GraphicsLoadedEvent):
-            self._services.graphics.window.accept("escape", lambda: self._services.ev_manager.post(QuitEvent()))
+            window = self._services.graphics.window
+
+            window.accept("escape", lambda: self._services.ev_manager.post(QuitEvent()))
+
+            # disables the default camera behaviour
+            window.disable_mouse()

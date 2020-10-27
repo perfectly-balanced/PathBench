@@ -66,9 +66,6 @@ class MapView(View):
     def __init(self):
         base = self._services.graphics.window
 
-        # disables the default camera behaviour
-        base.disable_mouse()
-
         # world (dummy node)
         self.__world = base.render.attach_new_node("world")
 
