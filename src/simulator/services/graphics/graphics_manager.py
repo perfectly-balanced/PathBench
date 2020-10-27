@@ -1,6 +1,5 @@
 from simulator.services.service import Service
 from simulator.services.graphics.window import Window
-from simulator.services.event_manager.events.graphics_loaded_event import GraphicsLoadedEvent
 
 class GraphicsManager(Service):
     __initialised: bool
@@ -10,7 +9,6 @@ class GraphicsManager(Service):
         super().__init__(*args, **kwargs)
         self.__initialised = False
         self.__window = Window("PathBench")
-        self._services.ev_manager.post(GraphicsLoadedEvent())
 
     @property
     def window(self) -> Window:

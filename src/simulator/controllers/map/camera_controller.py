@@ -4,13 +4,14 @@ from direct.showbase.DirectObject import DirectObject
 from direct.showbase.ShowBase import ShowBase
 from math import pi, sin, cos
 
+from utility.utils import exclude_from_dict
 from simulator.controllers.controller import Controller
 
 class CameraController(Controller, DirectObject):
     __base: ShowBase
 
     def __init__(self, *args, **kwargs):
-        Controller.__init__(self, *args, **{key: t[key] for key in kwargs if key not in ["camera", "origin"]})
+        Controller.__init__(self, *args, **exclude_from_dict(kwargs, ["camera", "origin"]))
 
         self.__base = self._services.graphics.window
         self.__cam = kwargs["camera"] if "camera" in kwargs else self.__base.cam
@@ -46,6 +47,9 @@ class CameraController(Controller, DirectObject):
         self.angle = 0
 
         # EVENTS #
+
+        # disables the default camera behaviour
+        self.__base.disable_mouse()
 
         # Use the arrow keys to move left, right, up and down
         self.__base.accept('arrow_left', self.update_key_map, ["left1", 1])

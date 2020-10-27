@@ -8,7 +8,6 @@ from simulator.models.model import Model
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
 from simulator.services.event_manager.events.event import Event
-from simulator.services.event_manager.events.graphics_loaded_event import GraphicsLoadedEvent
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
 from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
 
@@ -41,31 +40,8 @@ class MapView(View):
         self.__tc_previous = {}
         self.__tc_scratchpad = {}
 
-    def notify(self, event: Event) -> None:
-        super().notify(event)
-        if isinstance(event, GraphicsLoadedEvent):
-            self.__init()
-        elif isinstance(event, KeyFrameEvent):
-            if event.refresh:
-                self.__tc_reset()
-            self.update_view()
-        elif isinstance(event, TakeScreenshotEvent):
-            self.take_screenshot()
-
-    def __to_point3(self, v: Union[Point, Entity]):
-        if isinstance(v, Entity):
-            v = v.position
-        return Point(*v, 0) if len(v) == 2 else v
-    
-    def __center(self, np: NodePath):
-        (x1, y1, z1), (x2, y2, z2) = np.get_tight_bounds()
-        np.set_pos(self.world.getX() - (x2 - x1) / 2, self.world.getY() - (y2 - y1) / 2, self.world.getZ() - (z2 - z1) / 2)
-
-    def __init(self):
-        base = self._services.graphics.window
-
         # world (dummy node)
-        self.__world = base.render.attach_new_node("world")
+        self.__world = self._services.graphics.window.render.attach_new_node("world")
 
         map_data = {}
         for x in range(0, self._services.algorithm.map.size.width):
@@ -87,6 +63,24 @@ class MapView(View):
         self.__vs = ViewEditor(self._services, self.map)
 
         self.update_view()
+
+    def notify(self, event: Event) -> None:
+        super().notify(event)
+        if isinstance(event, KeyFrameEvent):
+            if event.refresh:
+                self.__tc_reset()
+            self.update_view()
+        elif isinstance(event, TakeScreenshotEvent):
+            self.take_screenshot()
+
+    def __to_point3(self, v: Union[Point, Entity]):
+        if isinstance(v, Entity):
+            v = v.position
+        return Point(*v, 0) if len(v) == 2 else v
+    
+    def __center(self, np: NodePath):
+        (x1, y1, z1), (x2, y2, z2) = np.get_tight_bounds()
+        np.set_pos(self.world.getX() - (x2 - x1) / 2, self.world.getY() - (y2 - y1) / 2, self.world.getZ() - (z2 - z1) / 2)
 
     @property
     def world(self) -> str:
