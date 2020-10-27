@@ -214,14 +214,14 @@ class MapView(View):
         lines.moveTo(x1, y1, 0)
         lines.drawTo(x2, y2, 0)
         lines.setThickness(1.5)
-        node = lines.create()
-        np = NodePath(node)
-        np.reparentTo(self.__world)
+
+        n = lines.create()
+        self.map.root.attach_new_node(n)
 
     def get_center(self, p: Point):
         x, y = p
-        x -=x*0.5
-        y -=y*0.5
+        x += 0.5
+        y += 0.5
         return Point(x,y)
 
     def draw_circle(self, p: Point):
@@ -244,6 +244,5 @@ class MapView(View):
 
             ls.drawTo(x, y, 0)
 
-        node = ls.create()
-        np = NodePath(node)
-        np.reparentTo(self.__world)
+        n = ls.create()
+        self.map.root.attach_new_node(n)
