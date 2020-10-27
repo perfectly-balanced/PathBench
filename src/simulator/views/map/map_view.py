@@ -252,12 +252,10 @@ class MapView(View):
         ls.moveTo(*self.cube_center(p1))
         ls.drawTo(*self.cube_center(p2))
 
-    def draw_sphere(self, p: Point):
+    def draw_sphere(self, p: Point, colour: Colour = WHITE):
         x, y, z = self.cube_center(p)
-        sphere = loader.loadModel("models/smiley.egg")
-        sphere_tex = loader.loadTexture(os.path.join(DATA_PATH, "white.jpg"))
-        sphere.setTexture(sphere_tex, 1)
-        sphere.setColor(0.7, 0.4, 0.4)
+        sphere = loader.loadModel("models/misc/sphere.egg")
+        sphere.setColor(*colour)
         sphere.reparentTo(self.map.root)
         sphere.setScale(0.2)
         sphere.setPos(x, y, z)
