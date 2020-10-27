@@ -5,6 +5,8 @@ from direct.showbase.ShowBase import ShowBase
 
 from structures import Point
 
+import math
+
 class CubeMapPicker():
     __name: str
     __base: ShowBase
