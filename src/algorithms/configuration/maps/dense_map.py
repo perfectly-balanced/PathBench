@@ -64,18 +64,6 @@ class DenseMap(Map):
         Method for extending the walls by agent radius
         """
 
-        #def extend_obstacle_bound() -> None:
-        #    for b in bounds:
-        #        for x in range(b.x - self.agent.radius, b.x + self.agent.radius + 1):
-        #            for y in range(b.y - self.agent.radius, b.y + self.agent.radius + 1):
-        #                if not self.is_out_of_bounds_pos(Point(x, y)):
-        #                    dist: Union[float, np.ndarray] = np.linalg.norm(np.array([x, y]) - np.array(b))
-        #                    if dist <= self.agent.radius and self.grid[y][x] == DenseMap.CLEAR_ID:
-        #                        self.grid[y][x] = DenseMap.EXTENDED_WALL
-        #                        self.obstacles.append(ExtendedWall(Point(x, y)))
-        #                        visited.add(Point(x, y))
-
-
         def extend_obstacle_bound() -> None:
             for b in bounds:
                 for index in np.ndindex(*(len(self.size) * [self.agent.radius + 1])):
@@ -90,20 +78,11 @@ class DenseMap(Map):
                 
 
         visited: Set[Point] = set()
-        #visited: List[List[bool]] = [[False for _ in range(len(self.grid[i]))] for i in range(len(self.grid))]
 
         for index in np.ndindex(*self.size):
             if (Point(*index) not in visited) and (self.grid[index] == self.WALL_ID):
                 bounds: Set[Point] = self.get_obstacle_bound(Point(*index), visited)
                 extend_obstacle_bound()
-        
-        #for i in range(self.grid_dim[0]):
-        #    for j in range(self.grid_dim[1]):
-        #        #Is there a better way to do this without constructing a point every time
-        #        if Point(j, i) not in visited:
-        #            if self.grid[i][j] == self.WALL_ID:
-        #                bounds: Set[Point] = self.get_obstacle_bound(Point(j, i), visited)
-        #                extend_obstacle_bound()
 
     def at(self, p: Point) -> int:
         return self.grid[p.pos]
