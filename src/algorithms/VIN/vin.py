@@ -40,7 +40,7 @@ from domains.gridworld import *
 from generators.obstacle_gen import *
 import time
 from astar.astar2 import main as astar
-from domains.cached_maps import Maps
+from maps import Maps
 
 ###############################################
 def main(grid):  # or this? 
