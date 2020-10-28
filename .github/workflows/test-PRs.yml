@@ -36,12 +36,8 @@ jobs:
         flake8 . --count --exit-zero --ignore=E226,E30,E41 --show-source --statistics --max-line-length=180 --exclude="src/analyzer/,src/algorithms/"
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Run tests with coverage
+    - name: Run tests with coverage and upload
       run: |
-        cd tests/ && coverage run run_tests.py --cov-report=xml
-    - name: Upload codecov report
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        env_vars: PYTHON
-        file: tests/.coverage
+        cd tests/
+        coverage run run_tests.py --cov-report=xml
+        bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }} -e PYTHON
