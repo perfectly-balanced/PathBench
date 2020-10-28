@@ -219,7 +219,6 @@ class Map:
         if goal is None:
             goal = self.goal
 
-        #TODO: check this, i dont think it makes sense
         return all(map(lambda pos: pos[0] == pos[1], zip(goal.position, pos)))
 
     def is_agent_in_goal_radius(self, agent_pos: Point = None, goal: Goal = None) -> bool:
