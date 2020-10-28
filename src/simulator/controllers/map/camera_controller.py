@@ -1,3 +1,5 @@
+import math
+
 from direct.showbase.ShowBaseGlobal import globalClock
 from direct.showbase.DirectObject import DirectObject
 from direct.showbase.ShowBase import ShowBase
@@ -37,16 +39,22 @@ class CameraController(Controller, DirectObject):
             "up": 0,
             "down": 0,
             "wheelup": 0,
-            "wheeldown": 0
+            "wheeldown": 0,
+            "left_rot": 0,
+            "right_rot": 0,
+            "up_tilt": 0,
+            "down_tilt": 0,
         }
 
-        self.speed = 20
+        self.speed = 40
         self.angle = 0
 
         # EVENTS #
 
         # disables the default camera behaviour
         self.__base.disable_mouse()
+        # self.__cam.lookAt(self.__origin)
+
         # Use the arrow keys to move left, right, up and down
         self.accept('arrow_left', self.update_key_map, ["left1", 1])
         self.accept('arrow_left-up', self.update_key_map, ["left1", 0])
@@ -58,28 +66,37 @@ class CameraController(Controller, DirectObject):
         self.accept('arrow_down-up', self.update_key_map, ["down1", 0])
 
         # Setup down events for arrow keys : rotating camera latitude and longitude
-        self.accept("a", self.update_key_map, ["left", 1])
-        self.accept("d", self.update_key_map, ["right", 1])
-        self.accept("w", self.update_key_map, ["up", 1])
-        self.accept("s", self.update_key_map, ["down", 1])
-        self.accept("a-up", self.update_key_map, ["left", 0])
-        self.accept("d-up", self.update_key_map, ["right", 0])
-        self.accept("w-up", self.update_key_map, ["up", 0])
-        self.accept("s-up", self.update_key_map, ["down", 0])
+        self.accept("a", self.update_key_map, ["left_rot", 1])
+        self.accept("d", self.update_key_map, ["right_rot", 1])
+        self.accept("w", self.update_key_map, ["up_tilt", 1])
+        self.accept("s", self.update_key_map, ["down_tilt", 1])
+        self.accept("a-up", self.update_key_map, ["left_rot", 0])
+        self.accept("d-up", self.update_key_map, ["right_rot", 0])
+        self.accept("w-up", self.update_key_map, ["up_tilt", 0])
+        self.accept("s-up", self.update_key_map, ["down_tilt", 0])
+
+        # # Orbital movement
+        # self.accept("f", self.update_key_map, ["left", 1])
+        # self.accept("h", self.update_key_map, ["right", 1])
+        # self.accept("t", self.update_key_map, ["up", 1])
+        # self.accept("g", self.update_key_map, ["down", 1])
+        # self.accept("f-up", self.update_key_map, ["left", 0])
+        # self.accept("h-up", self.update_key_map, ["right", 0])
+        # self.accept("t-up", self.update_key_map, ["up", 0])
+        # self.accept("g-up", self.update_key_map, ["down", 0])
 
         # Use the scroll mouse button/touchpad to zoom in and out
         self.accept("wheel_up", self.update_key_map, ["wheelup", 1])
         self.accept("wheel_down", self.update_key_map, ["wheeldown", 1])
 
-        self.__base.taskMgr.add(self.move_orbital_camera_task, "move_orbital_camera_task")
+        self.__base.taskMgr.add(self.move_camera_task, "move_orbital_camera_task")
 
     def update_key_map(self, key: str, state: int) -> None:
         self.key_map[key] = state
 
-    # Defines a procedure to move the camera by moving the world origin
-    # Always keeps the camera oriented towards the world origin
-    def move_orbital_camera_task(self, task):
-        if self.is_wasd() or self.is_scroll():
+    def move_camera_task(self, task):
+
+        if self.is_orbital():
             # First compute new camera angles and distance
             if self.key_map["left"] != 0:
                 self.longitude_deg = self.longitude_deg - self.deg_per_sec * globalClock.getDt()
@@ -89,12 +106,19 @@ class CameraController(Controller, DirectObject):
                 self.latitude_deg = self.latitude_deg - self.deg_per_sec * globalClock.getDt()
             if self.key_map["down"] != 0:
                 self.latitude_deg = self.latitude_deg + self.deg_per_sec * globalClock.getDt()
-            if self.key_map["wheelup"] != 0:
-                self.dist = self.dist * (1 + (self.zoom_per_sec - 1) * globalClock.getDt())
-                self.update_key_map("wheelup", 0)
-            if self.key_map["wheeldown"] != 0:
-                self.dist = self.dist / (1 + (self.zoom_per_sec - 1) * globalClock.getDt())
-                self.update_key_map("wheeldown", 0)
+            # if self.key_map["wheelup"] != 0:
+            #     self.dist = self.dist * (1 + (self.zoom_per_sec - 1) * globalClock.getDt())
+            #    #   pos_y = self.__cam.getY()
+            #    #   pos_y -= self.speed * dt
+            #    #
+            #    #   self.__cam.setY(pos_y)
+            #     self.update_key_map("wheelup", 0)
+            # if self.key_map["wheeldown"] != 0:
+            #     # pos_y = self.__cam.getY()
+            #     # pos_y += self.speed * dt
+            #     # self.__cam.setY(pos_y)
+            #     self.dist = self.dist / (1 + (self.zoom_per_sec - 1) * globalClock.getDt())
+            #     self.update_key_map("wheeldown", 0)
 
             if self.longitude_deg > 180.0:
                 self.longitude_deg = self.longitude_deg - 360.0
@@ -128,34 +152,47 @@ class CameraController(Controller, DirectObject):
             dt = globalClock.getDt()
             pos_h = self.__cam.getH()
             pos_p = self.__cam.getP()
-            pos_x = self.__cam.getX()
-            pos_y = self.__cam.getY()
-            pos_z = self.__cam.getZ()
-            if (self.key_map["left1"]):
-                pos_x -= self.speed * dt
 
-            if (self.key_map["right1"]):
-                pos_x += self.speed * dt
+            # alter the angle
+            if (self.key_map["left_rot"]):
+                pos_h += self.speed * dt
+                self.__cam.setH(pos_h)
+            if (self.key_map["right_rot"]):
+                pos_h -= self.speed * dt
+                self.__cam.setH(pos_h)
+            if (self.key_map["up_tilt"]):
+                pos_p += self.speed * dt
+                self.__cam.setP(pos_p)
+            if (self.key_map["down_tilt"]):
+                pos_p -= self.speed * dt
+                self.__cam.setP(pos_p)
 
+            # move horizontally or vertically
             if (self.key_map["up1"]):
-                pos_z += self.speed * dt
+                self.__cam.setZ(self.__cam, 1.5)
 
             if (self.key_map["down1"]):
-                pos_z -= self.speed * dt
+                self.__cam.setZ(self.__cam, -1.5)
 
+            if (self.key_map["left1"]):
+                self.__cam.setX(self.__cam, -1.5)
 
-            self.__cam.setX(pos_x)
-            self.__cam.setZ(pos_z)
+            if (self.key_map["right1"]):
+                self.__cam.setX(self.__cam, 1.5)
 
-        # End task
+            # zoom in direction of the camera
+            if (self.key_map["wheelup"]):
+                self.__cam.setY(self.__cam, -6)
+                self.update_key_map("wheelup", 0)
+            if (self.key_map["wheeldown"]):
+                self.__cam.setY(self.__cam, 6)
+                self.update_key_map("wheeldown", 0)
+
         return task.cont
 
     def destroy(self) -> None:
         self.ignore_all()
 
-    def is_wasd(self):
+    def is_orbital(self):
         return self.key_map["left"] != 0 or self.key_map["right"] != 0 or self.key_map["up"] != 0 or self.key_map[
             "down"] != 0
-
-    def is_scroll(self):
-        return self.key_map["wheelup"] != 0 or self.key_map["wheeldown"] != 0
