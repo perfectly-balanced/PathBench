@@ -108,8 +108,8 @@ class DenseMap(Map):
 
         self.grid[prev_pos.pos] = self.CLEAR_ID
         self.grid[self.goal.position.pos] = self.GOAL_ID
-        self.grid[self.agent.position.pos] = self.AGENT_ID
-        
+        self.grid[self.agent.position.pos] = self.AGENT_ID        
+
         for i in range(len(self.obstacles)):
             if self.obstacles[i].position == self.goal.position:
                 del self.obstacles[i]
@@ -169,21 +169,6 @@ class DenseMap(Map):
         else:
             res += f", grid: Size({', '.join(i for i in new_grid.shape)})"
         return res + "\n\t}"
-
-    def __get_grid_string__(grid: np.array) -> str:
-
-        self.size = Size(*self.grid.shape)
-        for index in np.ndindex(*self.size):
-            val: int = self.grid[index]
-            if val == self.AGENT_ID:
-                self.agent = Agent(Point(*index))
-            elif val == self.GOAL_ID:
-                self.goal = Goal(Point(*index))
-            elif val == self.WALL_ID:
-                self.obstacles.append(Obstacle(Point(*index)))
-            elif val == self.EXTENDED_WALL:
-                self.obstacles.append(ExtendedWall(Point(*index)))
-        return ""
 
     def __copy__(self) -> 'DenseMap':
         return copy.deepcopy(self)
