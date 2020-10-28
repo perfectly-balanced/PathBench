@@ -1,4 +1,8 @@
-from typing import Tuple, Final, Optional, Callable
+from typing import Tuple, Optional, Callable
+try:
+    from typing import Final
+except ImportError:
+    Final = 'Final[Colour]'
 import torch
 import copy
 
