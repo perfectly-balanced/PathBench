@@ -251,7 +251,6 @@ class TestDenseMap3D(unittest.TestCase):
             [[DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.WALL_ID], [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL]],
             [[DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID], [DenseMap.GOAL_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID]]
         ])
-        print(str(map1))
         self.assertEqual("""DenseMap: {
                 size: Size(3, 2, 2), 
                 agent: Agent: {position: Point(0, 1, 0), radius: 0}, 
