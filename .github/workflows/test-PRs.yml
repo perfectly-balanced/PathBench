@@ -5,7 +5,7 @@ name: Run Python Tests
 
 on:
   push:
-    branches: [ '**' ]
+    branches: [ 'master' ]
   pull_request:
     branches: [ '**' ]
 
