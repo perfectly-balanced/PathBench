@@ -54,7 +54,7 @@ class OnlineLSTMMapDisplay(MapDisplay):
     """
 
     def __render_arc(self, p1: Point, p2: Point, colour: Colour):
-        raise RuntimeError("not implemented")
+        raise NotImplementedError
 
     def __render_line(self, p1: Point, p2: Point, colour: Colour):
         self.get_renderer_view().draw_line(colour, p1, p2)
