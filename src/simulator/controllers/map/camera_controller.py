@@ -132,21 +132,20 @@ class CameraController(Controller, DirectObject):
             pos_y = self.__cam.getY()
             pos_z = self.__cam.getZ()
             if (self.key_map["left1"]):
-                pos_h += self.speed * dt
+                pos_x -= self.speed * dt
 
             if (self.key_map["right1"]):
-                pos_h -= self.speed * dt
+                pos_x += self.speed * dt
 
             if (self.key_map["up1"]):
-                pos_p += self.speed * dt
+                pos_z += self.speed * dt
 
             if (self.key_map["down1"]):
-                pos_p -= self.speed * dt
+                pos_z -= self.speed * dt
 
 
-            self.__cam.setH(pos_h)
-            self.__cam.setP(pos_p)
-            self.__cam.setY(pos_y)
+            self.__cam.setX(pos_x)
+            self.__cam.setZ(pos_z)
 
         # End task
         return task.cont
