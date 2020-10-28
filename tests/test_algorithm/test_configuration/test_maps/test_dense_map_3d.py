@@ -211,7 +211,7 @@ class TestDenseMap3D(unittest.TestCase):
             [[DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.WALL_ID], [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL]],
             [[DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID], [DenseMap.GOAL_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID]]
         ])
-        # TODO: this position should be (0, 1, 0) - transposed?
+        # TODO: this position should be (1, 1, 0) - transposed?
         self.assertTrue(map1.is_goal_reached(Point(0, 1, 1)))
 
     def test_is_goal_reached_false(self) -> None:
