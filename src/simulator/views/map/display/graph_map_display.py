@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
-from simulator.views.map_displays.map_display import MapDisplay
+from simulator.views.map.display.map_display import MapDisplay
 from structures import Colour, RED
 
 if TYPE_CHECKING:

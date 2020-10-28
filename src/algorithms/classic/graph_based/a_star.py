@@ -8,9 +8,9 @@ from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.entities.goal import Goal
 from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
-from simulator.views.map_displays.gradient_map_display import GradientMapDisplay
-from simulator.views.map_displays.map_display import MapDisplay
-from simulator.views.map_displays.solid_color_map_display import SolidColorMapDisplay
+from simulator.views.map.display.gradient_map_display import GradientMapDisplay
+from simulator.views.map.display.map_display import MapDisplay
+from simulator.views.map.display.solid_color_map_display import SolidColorMapDisplay
 from structures import Point, Colour, BLUE, DynamicColour
 
 from memory_profiler import profile

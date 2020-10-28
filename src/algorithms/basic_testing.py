@@ -13,7 +13,7 @@ from algorithms.configuration.maps.sparse_map import SparseMap
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
 from simulator.services.timer import Timer
-from simulator.views.map_displays.map_display import MapDisplay
+from simulator.views.map.display.map_display import MapDisplay
 from structures import Size, Point
 
 

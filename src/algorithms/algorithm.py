@@ -6,9 +6,9 @@ from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.entities.goal import Goal
 from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
-from simulator.views.map_displays.entities_map_display import EntitiesMapDisplay
-from simulator.views.map_displays.map_display import MapDisplay
-from simulator.views.map_displays.solid_color_map_display import SolidColorMapDisplay
+from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
+from simulator.views.map.display.map_display import MapDisplay
+from simulator.views.map.display.solid_color_map_display import SolidColorMapDisplay
 from structures import Point
 
 

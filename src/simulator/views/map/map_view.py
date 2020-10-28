@@ -14,10 +14,10 @@ from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
 from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
 
-from simulator.views.map_displays.entities_map_display import EntitiesMapDisplay
-from simulator.views.map_displays.map_display import MapDisplay
-from simulator.views.map_displays.numbers_map_display import NumbersMapDisplay
-from simulator.views.map_displays.online_lstm_map_display import OnlineLSTMMapDisplay
+from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
+from simulator.views.map.display.map_display import MapDisplay
+from simulator.views.map.display.numbers_map_display import NumbersMapDisplay
+from simulator.views.map.display.online_lstm_map_display import OnlineLSTMMapDisplay
 from simulator.views.view import View
 from structures import Point, Colour, TRANSPARENT, WHITE
 
