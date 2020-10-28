@@ -252,15 +252,18 @@ class TestDenseMap3D(unittest.TestCase):
             [[DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID], [DenseMap.GOAL_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID]]
         ])
         self.assertEqual("""DenseMap: {
-                size: Size(3, 2, 2), 
-                agent: Agent: {position: Point(0, 1, 0), radius: 0}, 
-                goal: Goal: {position: Point(0, 1, 1), radius: 0}, 
-                obstacles: 6, 
-                grid: [
-                        [0 1 1], [2 0 4], 
-                        [1 1 1], [3 0 0], 
-                ]
-        }""", str(map1))
+		size: Size(3, 2, 2), 
+		agent: Agent: {position: Point(0, 1, 0), radius: 0}, 
+		goal: Goal: {position: Point(0, 1, 1), radius: 0}, 
+		obstacles: 6, 
+		grid: [
+			0, 1, 1, 
+			2, 0, 4, 
+
+			1, 1, 1, 
+			3, 0, 0, 
+		]
+	}""", str(map1))
 
     def test_str_debug_level_3(self) -> None:
         service: Services = Mock()

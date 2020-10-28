@@ -148,7 +148,7 @@ class DenseMap(Map):
                    ", \n\t\tagent: " + str(self.agent) + \
                    ", \n\t\tgoal: " + str(self.goal) + \
                    ", \n\t\tobstacles: " + str(len(self.obstacles))
-        if debug_level == DebugLevel.HIGH or (self.size.width <= 20 and self.size.height <= 20):
+        if self.size.n_dim == 2 and (debug_level == DebugLevel.HIGH or (self.size.width <= 20 and self.size.height <= 20)):
             res += ", \n\t\tgrid: [\n"
             for i in range(len(new_grid)):
                 res += "\t\t\t"
@@ -156,6 +156,18 @@ class DenseMap(Map):
                     res += str(new_grid[i][j]) + ", "
                 res += "\n"
             res += "\t\t]"
+        elif self.size.n_dim == 3 and (debug_level == DebugLevel.HIGH or (self.size.width <= 5 and self.size.height <= 5 and self.size.depth <= 5)):
+            res += ", \n\t\tgrid: [\n"
+            for i in range(len(new_grid)):
+                for j in range(len(new_grid[i])):
+                    res += "\t\t\t"
+                    for k in range(len(new_grid[i][j])):
+                        res += str(new_grid[i][j][k]) + ", "
+                    res += "\n"
+                res += "\n"
+            res = res[:-1] + "\t\t]"
+        else:
+            res += f", grid: Size({', '.join(i for i in new_grid.shape)})"
         return res + "\n\t}"
 
     def __get_grid_string__(grid: np.array) -> str:
