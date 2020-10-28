@@ -62,7 +62,7 @@ class SparseMap(Map):
         Converts current map into a :class:`DenseMap`
         :return: The converted map
         """
-        grid: np.array = np.zeros(self.size)
+        grid: np.array = np.zeros(self.size, dtype=np.int32)
         should_optimize: bool = len(self.obstacles) > 20
 
         for obstacle in self.obstacles:
@@ -81,7 +81,7 @@ class SparseMap(Map):
 
         grid[self.agent.position.pos] = DenseMap.AGENT_ID
         grid[self.goal.position.pos] = DenseMap.GOAL_ID
-        dense_map: DenseMap = DenseMap(grid, self._services)
+        dense_map: DenseMap = DenseMap(grid, self._services, transpose=False)
         dense_map.agent = copy.deepcopy(self.agent)
         dense_map.goal = copy.deepcopy(self.goal)
         dense_map.trace = copy.deepcopy(self.trace)
@@ -101,7 +101,7 @@ class SparseMap(Map):
                 return False
         return True
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         debug_level: DebugLevel = DebugLevel.BASIC
         if self._services is not None:
             debug_level = self._services.settings.simulator_write_debug_level
@@ -109,7 +109,7 @@ class SparseMap(Map):
         obst_str: str = "{\n\t\t\tsize: " + str(len(self.obstacles))
         if debug_level == DebugLevel.HIGH or len(self.obstacles) <= 10:
             obst_str += ", \n\t\t\tentities: [\n"
-            for obst in self.obstacles:
+            for obst in sorted(self.obstacles, key=lambda o: o.position[::-1]):
                 obst_str += "\t\t\t\t" + str(obst) + ", \n"
             obst_str += "\t\t\t]"
         obst_str += "\n\t\t}"

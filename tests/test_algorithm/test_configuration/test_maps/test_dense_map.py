@@ -221,7 +221,6 @@ class TestDenseMap(unittest.TestCase):
         ])
         self.assertTrue(map1.is_agent_valid_pos(Point(1, 1)))
         self.assertTrue(map1.is_agent_valid_pos(Point(0, 1)))
-        import pdb; pdb.set_trace()
         self.assertTrue(map1.is_agent_valid_pos(Point(3, 2)))
 
     def test_is_valid_position_invalid(self) -> None:
@@ -262,6 +261,7 @@ class TestDenseMap(unittest.TestCase):
             Goal(Point(4, 3), 1)
         ).convert_to_dense_map()
         map1._services = service
+        
         self.assertEqual("""DenseMap: {
 		size: Size(30, 30), 
 		agent: Agent: {position: Point(1, 2), radius: 1}, 

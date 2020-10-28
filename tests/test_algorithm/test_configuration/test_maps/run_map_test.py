@@ -5,4 +5,4 @@ import test_dense_map as tst
 
 t = tst.TestDenseMap()
 
-t.test_is_valid_position_normal()
+t.test_convert_to_sparse_map()

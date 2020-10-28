@@ -24,7 +24,10 @@ class DenseMap(Map):
     """
     grid: np.array
 
-    def __init__(self, grid: Optional[List], services: Services = None) -> None:
+    #The transpose flag is set to true as a default for the initialization, as that is 
+    #how we are storing internally, but it will be set to false when we are simply translating from sparsemap
+    #When we create more map views, we should set it to false
+    def __init__(self, grid: Optional[List], services: Services = None, transpose: bool = True) -> None:
         self.grid = None 
 
         arr_grid = None
@@ -36,13 +39,13 @@ class DenseMap(Map):
             return
 
         # Doesn't work with non-uniform grids
-        self.set_grid(arr_grid)
+        self.set_grid(arr_grid, transpose)
 
-    def set_grid(self, grid: np.array) -> None:
+    def set_grid(self, grid: np.array, transpose) -> None:
 
         #We transpose here to not worry about flipping coordinates later on
         #Please take care I'm not sure why everythng works but it does atm
-        self.grid = np.transpose(grid)
+        self.grid = np.transpose(grid) if transpose else grid
 
         self.size = Size(*self.grid.shape)
         for index in np.ndindex(*self.size):
@@ -87,8 +90,8 @@ class DenseMap(Map):
         #visited: List[List[bool]] = [[False for _ in range(len(self.grid[i]))] for i in range(len(self.grid))]
 
         for index in np.ndindex(*self.size):
-            if (Point(index) not in visited) and (self.grid[index] == self.WALL_ID):
-                bounds: Set[Point] = self.get_obstacle_bound(Point(index), visited)
+            if (Point(*index) not in visited) and (self.grid[index] == self.WALL_ID):
+                bounds: Set[Point] = self.get_obstacle_bound(Point(*index), visited)
                 extend_obstacle_bound()
         
         #for i in range(self.grid_dim[0]):
@@ -153,7 +156,7 @@ class DenseMap(Map):
 
         return self.at(pos) != self.WALL_ID and self.at(pos) != self.EXTENDED_WALL
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         debug_level: DebugLevel = DebugLevel.BASIC
         if self._services is not None:
             debug_level = self._services.settings.simulator_write_debug_level
@@ -178,7 +181,7 @@ class DenseMap(Map):
         return copy.deepcopy(self)
 
     def __deepcopy__(self, memo: Dict) -> 'DenseMap':
-        dense_map = DenseMap(copy.deepcopy(self.grid))
+        dense_map = DenseMap(copy.deepcopy(self.grid), transpose=False)
         dense_map.trace = copy.deepcopy(self.trace)
         dense_map.agent = copy.deepcopy(self.agent)
         dense_map.goal = copy.deepcopy(self.goal)
@@ -191,4 +194,4 @@ class DenseMap(Map):
             other: DenseMap = other.convert_to_dense_map()
         if not isinstance(other, DenseMap):
             return False
-        return np.array_equal(self.grid, other.grid)
+        return np.array_equal(self.grid, other.grid) and super().__eq__(other)
