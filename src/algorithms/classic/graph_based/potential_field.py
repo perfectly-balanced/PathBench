@@ -12,10 +12,10 @@ from algorithms.configuration.entities.goal import Goal
 from algorithms.configuration.maps.map import Map
 from algorithms.configuration.entities.obstacle import Obstacle
 from simulator.services.services import Services
-from simulator.views.map_displays.gradient_map_display import GradientMapDisplay
-from simulator.views.map_displays.map_display import MapDisplay
-from simulator.views.map_displays.numbers_map_display import NumbersMapDisplay
-from simulator.views.map_displays.solid_color_map_display_pot import SolidColorMapDisplaypot
+from simulator.views.map.display.gradient_map_display import GradientMapDisplay
+from simulator.views.map.display.map_display import MapDisplay
+from simulator.views.map.display.numbers_map_display import NumbersMapDisplay
+from simulator.views.map.display.solid_color_map_display_pot import SolidColorMapDisplaypot
 from structures import Point
 import copy
 
@@ -50,7 +50,7 @@ class PotentialField(Algorithm):
             #                                    min_color=PotentialField.STEP_GRID_MIN_COLOR,
             #                                    max_color=PotentialField.STEP_GRID_MAX_COLOR),
         
-            #NumbersMapDisplay(self._services, copy.deepcopy(self.step_grid)) +
+            NumbersMapDisplay(self._services, copy.deepcopy(self.step_grid)),
             SolidColorMapDisplaypot(self._services, self.pmapheat, z_index=50, pmaplst=self.pmapnew)
         ]
 
@@ -61,7 +61,6 @@ class PotentialField(Algorithm):
         
         #SolidColorMapDisplaypot(self._services, self.pmapheat, z_index=50, pmaplst=pmapnew)
         # ]
-
 
         return display_info
 
@@ -234,7 +233,7 @@ class PotentialField(Algorithm):
 
         rx, ry = [grid.agent.position.x], [grid.agent.position.y]
         #print('rx,ry',rx,ry)
-        motion = grid.EIGHT_POINTS_MOVE_VECTOR
+        motion = grid.ALL_POINTS_MOVE_VECTOR
         visited=[]
         lst = grid.obstacles
         for ob in lst:

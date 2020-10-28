@@ -37,7 +37,6 @@ class Configuration:
     simulator_key_frame_speed: int
     simulator_key_frame_skip: int
     simulator_write_debug_level: DebugLevel
-    simulator_window_size: Size
     #VIN
     simulator_vin_plot: bool
     simulator_vin_weights: int
@@ -76,7 +75,6 @@ class Configuration:
         self.simulator_key_frame_speed = 0
         self.simulator_key_frame_skip = 0
         self.simulator_write_debug_level = DebugLevel.NONE
-        self.simulator_window_size = Size(200, 200)
 
 
         # Generator

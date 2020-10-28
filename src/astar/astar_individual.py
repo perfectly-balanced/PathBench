@@ -21,7 +21,7 @@ class AStarPlanner:
 
     def __init__(self, ox, oy, reso, rr):
         """
-        Initialize grid map for a star planning
+        Initialise grid map for a star planning
 
         ox: x position list of Obstacles [m]
         oy: y position list of Obstacles [m]

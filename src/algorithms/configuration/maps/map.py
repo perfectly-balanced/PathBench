@@ -3,6 +3,7 @@ from typing import List, Optional, Set, Dict, Callable, TypeVar, Union, Tuple
 
 import math
 import numpy as np
+from itertools import product
 
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.entity import Entity
@@ -11,11 +12,13 @@ from algorithms.configuration.entities.obstacle import Obstacle
 from algorithms.configuration.entities.trace import Trace
 from simulator.services.services import Services
 from structures import Point, Size
+from algorithms.configuration.maps.bresenhams_algo import bresenhamline
 
 
 class Map:
     """
-    This class represents the environment in which the agent can move.
+    This class represents the environment in which the agent can move 
+    with dimensions corresponding to the agent.
     It contains 1 agent, 1 goal and multiple obstacles.
     All maps must inherit this class.
     """
@@ -28,23 +31,35 @@ class Map:
     _services: Optional[Services]
     __cached_move_costs: List[float] = []
 
-    EIGHT_POINTS_MOVE_VECTOR: List[Point] = [
-        Point(1, 0),
-        Point(1, -1),
-        Point(0, -1),
-        Point(-1, -1),
-        Point(-1, 0),
-        Point(-1, 1),
-        Point(0, 1),
-        Point(1, 1),
-    ]
 
-    FOUR_POINTS_MOVE_VECTOR: List[Point] = [
-        Point(1, 0),
-        Point(0, -1),
-        Point(-1, 0),
-        Point(0, 1),
-    ]
+    def init_direction_vectors(self):
+        """
+        This function generates the neighbouring coordinates using the cartesian product.
+        We must remove the first coordinate as this represents all zeros.
+        Example Input: n dimensions = 2:
+        Output: [(1, 0), (-1, 0), (1, 1), ...]
+        """
+
+        self.ALL_POINTS_MOVE_VECTOR: List[Point] = \
+            list(map(lambda x : Point(*x),
+                product(*[(0, -1, 1) for i in range(self.size.n_dim)])
+            ))[1:]
+        
+        """
+        This does the same as the above without generating diagonal coordinates.
+        First we generate the positive direct neighbouring coordinates.
+        We concatenate this to the negative coordinates and convert to a list of Points.
+        """
+        POSITIVE_DIRECT_POINTS_DIMENSIONS: List[List[int]] = [
+            [1 if i == pos else 0 for i in range(self.size.n_dim)] 
+                for pos in range(self.size.n_dim) 
+        ]
+
+        ALL_DIRECT_POINTS_DIMENSIONS: List[List[int]] = POSITIVE_DIRECT_POINTS_DIMENSIONS + \
+            list(map(lambda x : [-i for i in x], POSITIVE_DIRECT_POINTS_DIMENSIONS))
+
+        self.DIRECT_POINTS_MOVE_VECTOR: List[Point] = \
+            list(map(lambda x : Point(*x), ALL_DIRECT_POINTS_DIMENSIONS))
 
     def __init__(self, size: Size, services: Services = None) -> None:
         """
@@ -57,58 +72,65 @@ class Map:
         self.agent: None
         self.goal: None
         self.obstacles = []
+        self.init_direction_vectors()
 
-    def get_obstacle_bound(self, obstacle_start_point: Point, visited: Optional[List[List[bool]]] = None) -> Set[Point]:
+    def get_obstacle_bound(self, obstacle_start_point: Point, visited: Optional[Set[Point]] = None) -> Set[Point]:
         """
         Method for finding the bound of an obstacle by doing a fill
         :param obstacle_start_point: The obstacle location
         :param visited: Can pass own visited set so that we do not visit those nodes again
         :return: Obstacle bound
         """
+        # modified initialisation of visited set for n dimensional nodes
         if visited is None:
-            visited = [[False for _ in range(self.size.width)] for _ in range(self.size.height)]
+            #visited = [False for _ in range(self.size.width)]
 
+            #for i in range(self.dim - 1):
+            #    visited = [visited for _ in range(self.size[i + 1])]
+            visited: Set[Point] = set()
+                         
         if self.is_agent_valid_pos(obstacle_start_point):
             self._services.debug.write_error("NextPos should be invalid")
         st: List[Point] = [obstacle_start_point]
         bounds: Set[Point] = set()
         while len(st) > 0:
             next_node: Point = st.pop()
-            visited[next_node.y][next_node.x] = True
+            # modified update of visited set for n dimensional nodes
+            visited.add(next_node)
             obstacle_count: int = 0
             for n in self.get_neighbours(next_node):
                 if self.is_agent_valid_pos(n):
                     continue
                 obstacle_count += 1
-                if not visited[n.y][n.x]:
+                # same as above for neighbouring nodes
+                if not n in visited:
                     st.append(n)
-            if obstacle_count < len(self.EIGHT_POINTS_MOVE_VECTOR):
+            if obstacle_count < len(self.ALL_POINTS_MOVE_VECTOR):
                 # we are on the edge
                 bounds.add(next_node)
         return bounds
 
-    @staticmethod
-    def get_move_index(direction: List[float]) -> int:
+    def get_move_index(self, direction: List[float]) -> int:
         """
         Method for getting the move index from a direction
         :param direction: The direction
-        :return: The index corresponding to :ref:`EIGHT_POINTS_MOVE_VECTOR`
+        :return: The index corresponding to :ref:`ALL_POINTS_MOVE_VECTOR`
         """
         # because pygame has inverted y
-        true_direction: List[float] = [direction[0], -direction[1]]
-        angle: float = np.arctan2(true_direction[1], true_direction[0])
-        angle += 2 * np.pi if angle < 0 else 0
-        return int(
-            np.round(angle / (2 * np.pi / len(Map.EIGHT_POINTS_MOVE_VECTOR))) % len(Map.EIGHT_POINTS_MOVE_VECTOR))
+        rounded_point = self.get_move_along_dir(self, direction)
+        return self.ALL_POINTS_MOVE_VECTOR.index(rounded_point)
 
-    @staticmethod
-    def get_move_along_dir(direction: List[float]) -> Point:
+    def get_move_along_dir(self, direction: List[float]) -> Point:
         """
         Method for getting the movement direction from a normal direction
         :param direction: The true direction
-        :return: The :ref:`EIGHT_POINTS_MOVE_VECTOR` point
+        :return: The :ref:`ALL_POINTS_MOVE_VECTOR` point
         """
-        return Map.EIGHT_POINTS_MOVE_VECTOR[Map.get_move_index(direction)]
+        dir_length = math.sqrt(sum(i*i for i in direction))
+        norm_direction = list(map(lambda i: i/dir_length, direction))
+        rounded_direction = list(map(lambda i: round(i), norm_direction))
+        rounded_point = Point(*rounded_direction)
+        return rounded_point
 
     def reset(self) -> None:
         """
@@ -156,66 +178,21 @@ class Map:
             n=0
             for next_pos in line:
                 if not self.move(self.agent, next_pos, no_trace):
-                    if n == 0:
-                        continue     
-                    if n is not 0: 
+                    if n != 0: 
                         return False         
             return True        
 
     def get_line_sequence(self, frm: Point, to: Point) -> List[Point]:
         '''
         Bresenham's line algorithm:
-        Given coordinate of two points A(x1, y1) and B(x2, y2). The task to find all the intermediate points required for 
-        drawing line AB .
+        Given coordinate of two n dimensional points. The task to find all the intermediate points required for 
+        drawing line AB.
         '''
-
-        x1 = frm.x
-        y1 = frm.y
-        x2 = to.x
-        y2 = to.y
-
-        steep = math.fabs(y2 - y1) > math.fabs(x2 - x1)
-        if steep:
-            x1, y1 = y1, x1
-            x2, y2 = y2, x2
-
-        # takes left to right
-        also_steep = x1 > x2
-        if also_steep:
-            x1, x2 = x2, x1
-            y1, y2 = y2, y1
-
-        dx = x2 - x1
-        dy = math.fabs(y2 - y1)
-        error = 0.0
-        delta_error = 0.0
-        # Default if dx is zero
-        if dx != 0:
-            delta_error = math.fabs(dy / dx)
-
-        y_step = 1 if y1 < y2 else -1
-
-        y = y1
-        ret = []
-        for x in range(x1, x2):
-            p = Point(y, x) if steep else Point(x, y)
-            if len(ret) != 0:
-                if ret[-1].x - p.x != 0 and ret[-1].y - p.y != 0:
-                    # make it not directionally conditioned
-                    if ret[-1].x > p.x:
-                        ret.append(Point(ret[-1].x, p.y))
-                    else:
-                        ret.append(Point(p.x, ret[-1].y))
-            ret.append(p)
-            error += delta_error
-            if error >= 0.5:
-                y += y_step
-                error -= 1
-        if also_steep:  # because we took the left to right instead
-            ret.reverse()
-        return ret + [to]
-
-
+        start = np.array([[to[i] for i in range(self.size.n_dim)]])
+        end = np.array([frm[i] for i in range(self.size.n_dim)])
+        coord_list = bresenhamline(start, end)
+        sequence = list(map(lambda x : Point(*list(x)), coord_list)) + [to]
+        return sequence
 
     def is_valid_line_sequence(self, line_sequence: List[Point]) -> bool:
         for pt in line_sequence:
@@ -231,15 +208,16 @@ class Map:
         :return: If the goal has been reached from the given position
         """
 
-        if not goal:
+        if goal is None:
             goal = self.goal
 
-        return pos.x == goal.position.x and pos.y == goal.position.y
+        return all(map(lambda pos: pos[0] == pos[1], zip(goal.position, pos)))
 
+    # check if this is compatible with n dimensions
     def is_agent_in_goal_radius(self, agent_pos: Point = None, goal: Goal = None) -> bool:
-        if not agent_pos:
+        if agent_pos is None:
             agent_pos = self.agent.position
-        if not goal:
+        if goal is None:
             goal = self.goal
         dist: np.ndarray = np.linalg.norm(np.array(agent_pos) - np.array(goal.position))
         return dist <= (goal.radius + self.agent.radius) or dist < 0.0001
@@ -254,20 +232,20 @@ class Map:
 
     def is_out_of_bounds_pos(self, pos: Point) -> bool:
         """
-        Checks if the position is out of bounds
+        Checks if the n dimensional position is out of bounds
         :param pos: The position
-        :return: If the position is out of bounds
+        :return: If the n dimensional position is out of bounds
         """
-        return pos.x < 0 or pos.x >= self.size.width or pos.y < 0 or pos.y >= self.size.height
+        return not all([pos[i] >= 0 and pos[i] < self.size[i] for i in range(self.size.n_dim)])
 
     def get_next_positions(self, pos: Point) -> List[Point]:
         """
-        Returns the next available positions valid from the agent point of view given 8-point connectivity
+        Returns the next available positions valid from the agent point of view given x-point connectivity
         :param pos: The position
         :return: A list of positions
         """
         ns: List[Point] = []
-        for move in self.EIGHT_POINTS_MOVE_VECTOR:
+        for move in self.ALL_POINTS_MOVE_VECTOR:
             n: Point = self.apply_move(move, pos)
             if self.is_agent_valid_pos(n):
                 ns.append(n)
@@ -275,12 +253,12 @@ class Map:
 
     def get_next_positions_with_move_index(self, pos: Point) -> List[Tuple[Point, int]]:
         """
-        Returns the next available positions valid from the agent point of view given 8-point connectivity
+        Returns the next available positions valid from the agent point of view given x-point connectivity
         :param pos: The position
         :return: A list of positions with move index
         """
         ns: List[Tuple[Point, int]] = []
-        for idx, move in enumerate(self.EIGHT_POINTS_MOVE_VECTOR):
+        for idx, move in enumerate(self.ALL_POINTS_MOVE_VECTOR):
             n: Point = self.apply_move(move, pos)
             if self.is_agent_valid_pos(n):
                 ns.append((n, idx))
@@ -288,12 +266,12 @@ class Map:
 
     def get_neighbours(self, pos: Point) -> List[Point]:
         """
-        Returns the neighbours (8-point connectivity)
+        Returns the neighbours (x-point connectivity based on how many dimensions there are)
         :param pos: The position
         :return: The neighbours
         """
         ns: List[Point] = []
-        for move in self.EIGHT_POINTS_MOVE_VECTOR:
+        for move in self.ALL_POINTS_MOVE_VECTOR:
             n: Point = self.apply_move(move, pos)
             if not self.is_out_of_bounds_pos(n):
                 ns.append(n)
@@ -301,12 +279,12 @@ class Map:
 
     def get_neighbours_with_move_index(self, pos: Point) -> List[Tuple[Point, int]]:
         """
-        Returns the neighbours (8-point connectivity) with move index
+        Returns the neighbours (x-point connectivity) with move index
         :param pos: The position
         :return: The neighbours with move index
         """
         ns: List[Tuple[Point, int]] = []
-        for idx, move in enumerate(self.EIGHT_POINTS_MOVE_VECTOR):
+        for idx, move in enumerate(self.ALL_POINTS_MOVE_VECTOR):
             n: Point = self.apply_move(move, pos)
             if not self.is_out_of_bounds_pos(n):
                 ns.append((n, idx))
@@ -314,12 +292,12 @@ class Map:
 
     def get_four_point_neighbours(self, pos: Point) -> List[Point]:
         """
-        Returns the neighbours (4-point connectivity)
+        Returns the direct neighbours (not including diagonal ones)
         :param pos: the position
         :return: The neighbours
         """
         ns: List[Point] = []
-        for move in self.FOUR_POINTS_MOVE_VECTOR:
+        for move in self.DIRECT_POINTS_MOVE_VECTOR:
             n: Point = self.apply_move(move, pos)
             if not self.is_out_of_bounds_pos(n):
                 ns.append(n)
@@ -344,6 +322,7 @@ class Map:
             ret.append(f(self))
 
         return ret[:-1]
+        
 
     @staticmethod
     def apply_move(move: Point, pos: Point) -> Point:
@@ -353,7 +332,7 @@ class Map:
         :param pos: The source
         :return: The destination after applying the move
         """
-        return Point(pos.x + move.x, pos.y + move.y)
+        return Point(*list(map(lambda pos: pos[0] + pos[1], zip(pos, move))))
 
     def get_movement_cost(self, frm: Union[Point, Entity] = None, to: Union[Point, Entity] = None) -> float:
         if frm is None:
@@ -372,7 +351,8 @@ class Map:
 
     def get_movement_cost_from_index(self, idx: int) -> float:
         if not self.__cached_move_costs:
-            self.__cached_move_costs = list(map(lambda p: self.get_movement_cost(Point(0, 0), p), self.EIGHT_POINTS_MOVE_VECTOR))
+            zeros = Point(*[0 for i in range(self.size.n_dim)])
+            self.__cached_move_costs = list(map(lambda p: self.get_movement_cost(zeros, p), self.ALL_POINTS_MOVE_VECTOR))
         return self.__cached_move_costs[idx]
 
     @staticmethod

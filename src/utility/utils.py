@@ -32,3 +32,7 @@ def print_stats(epoch, avg_loss, avg_error, num_batches, time_duration):
 
 def print_header():
     print(fmt_row(10, ["Epoch", "Train Loss", "Train Error", "Epoch Time"]))
+
+
+def exclude_from_dict(dict, keys):
+    return {key: t[key] for key in dict if key not in keys}

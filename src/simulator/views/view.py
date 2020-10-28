@@ -3,14 +3,14 @@ from typing import List, Optional
 
 from simulator.models.model import Model
 from simulator.services.event_manager.events.event import Event
-from simulator.services.event_manager.events.initialize_event import InitializeEvent
+from simulator.services.event_manager.events.initialise_event import InitialiseEvent
 from simulator.services.services import Services
 
 
 class View:
     _services: Services
     _model: Optional[Model]
-    _initialized: bool
+    _initialised: bool
     _root_view: Optional['View']
     _children: List['View']
 
@@ -20,14 +20,14 @@ class View:
         model (GameEngine): a strong reference to the game Model.
 
         Attributes:
-        initialized (bool): self.services.render_engine is ready to draw.
+        initialised (bool): self.services.render_engine is ready to draw.
         screen (self.services.render_engine.Surface): the screen surface.
         clock (self.services.render_engine.time.Clock): keeps the fps constant.
         """
         self._services = services
         self._services.ev_manager.register_listener(self)
         self._model = model
-        self._initialized = False
+        self._initialised = False
         self._root_view = root_view
         self._children = []
 
@@ -47,12 +47,12 @@ class View:
             self._root_view.remove_child(self)
 
     def notify(self, event: Event) -> None:
-        if isinstance(event, InitializeEvent):
-            self.initialize()
-            self._initialized = True
+        if isinstance(event, InitialiseEvent):
+            self.initialise()
+            self._initialised = True
 
-    def initialize(self) -> None:
+    def initialise(self) -> None:
         pass
 
-    def render(self, screen: pygame.Surface) -> None:
+    def update(self) -> None:
         pass

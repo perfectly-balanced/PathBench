@@ -1,4 +1,3 @@
-import pygame
 from heapq import heappush, heappop
 from typing import Set, List, Tuple, Optional, Dict
 
@@ -9,10 +8,10 @@ from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.entities.goal import Goal
 from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
-from simulator.views.map_displays.gradient_map_display import GradientMapDisplay
-from simulator.views.map_displays.map_display import MapDisplay
-from simulator.views.map_displays.solid_color_map_display import SolidColorMapDisplay
-from structures import Point
+from simulator.views.map.display.gradient_map_display import GradientMapDisplay
+from simulator.views.map.display.map_display import MapDisplay
+from simulator.views.map.display.solid_color_map_display import SolidColorMapDisplay
+from structures import Point, Colour, BLUE, DynamicColour
 
 from memory_profiler import profile
 
@@ -22,9 +21,9 @@ Heap duplicates https://www.redblobgames.com/pathfinding/a-star/implementation.h
 
 
 class AStar(Algorithm):
-    PQ_COLOR_HIGH: np.ndarray = (0, 0, 255)
-    PQ_COLOR_LOW: np.ndarray = np.array(pygame.Color("#ADD8E6")[:3])  # (0, 0, 255)
-    VISITED_COLOR: np.ndarray = np.array(pygame.Color("#777a7f")[:3])
+    PQ_COLOUR_HIGH: Colour = BLUE
+    PQ_COLOUR_LOW: Colour = Colour(0.27, 0.33, 0.35, 0.2)
+    VISITED_COLOUR: Colour = Colour(0.19, 0.19, 0.2, 0.8)
 
     class InternalMemory:
         priority_queue: List[Tuple[int, Point]]
@@ -52,10 +51,9 @@ class AStar(Algorithm):
         Read super description
         """
         return super().set_display_info() + [
-            SolidColorMapDisplay(self._services, self.mem.visited, self.VISITED_COLOR, z_index=50),
-            # SolidColorMapDisplay(self._services, set(map(lambda el: el[1], self.mem.priority_queue)), (0, 0, 255)),
+            SolidColorMapDisplay(self._services, self.mem.visited, DynamicColour(self.VISITED_COLOUR), z_index=50),
             GradientMapDisplay(self._services, pts=self.mem.priority_queue,
-                               min_color=self.PQ_COLOR_LOW, max_color=self.PQ_COLOR_HIGH, z_index=49, inverted=True),
+                               min_color=DynamicColour(self.PQ_COLOUR_LOW), max_color=DynamicColour(self.PQ_COLOUR_HIGH), z_index=49, inverted=True),
         ]
 
     # noinspection PyUnusedLocal
@@ -124,7 +122,7 @@ class AStar(Algorithm):
         """
         trace = []
         pos = goal.position
-        while self.mem.back_pointer[pos]:
+        while self.mem.back_pointer[pos] is not None:
             trace.append(pos)
             pos = self.mem.back_pointer[pos]
         return trace

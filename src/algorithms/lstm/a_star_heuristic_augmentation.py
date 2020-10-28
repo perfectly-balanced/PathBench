@@ -11,8 +11,8 @@ from algorithms.configuration.entities.trace import Trace
 from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
 from simulator.services.algorithm_runner import AlgorithmRunner
 from simulator.services.services import Services
-from simulator.views.map_displays.gradient_map_display import GradientMapDisplay
-from simulator.views.map_displays.map_display import MapDisplay
+from simulator.views.map.display.gradient_map_display import GradientMapDisplay
+from simulator.views.map.display.map_display import MapDisplay
 from structures import Point
 
 

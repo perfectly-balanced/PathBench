@@ -68,6 +68,9 @@ class Map(Model):
     def resume_algorithm(self) -> None:
         self.key_frame_is_paused = False
 
+    def toggle_pause_algorithm(self) -> None:
+        self.key_frame_is_paused = not self.key_frame_is_paused
+
     def tick(self) -> None:
         if self._services.settings.simulator_key_frame_speed > 0 and self.key_frame_condition is not None and \
                 not self.key_frame_is_paused:
@@ -89,7 +92,7 @@ class Map(Model):
             if self._services.settings.simulator_key_frame_speed > 0:
                 self._services.algorithm.instance.set_condition(self.key_frame_condition)
             self._services.algorithm.instance.find_path()
-            self._services.ev_manager.post(KeyFrameEvent())
+            self._services.ev_manager.post(KeyFrameEvent(is_first=True))
             self.key_frame_condition = None
             self.last_thread = None
 
@@ -110,6 +113,3 @@ class Map(Model):
         self._services.debug.write("Done converting. Total time: " + str(timer.stop()), DebugLevel.BASIC)
         self._services.debug.write(self._services.algorithm.map, DebugLevel.MEDIUM)
         self._services.ev_manager.post(KeyFrameEvent())
-
-    def save_screenshot(self, screenshot: pygame.Surface) -> None:
-        self._services.resources.screenshots_dir.append(screenshot)

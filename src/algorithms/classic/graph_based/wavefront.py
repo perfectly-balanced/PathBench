@@ -8,9 +8,9 @@ from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.goal import Goal
 from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
-from simulator.views.map_displays.gradient_map_display import GradientMapDisplay
-from simulator.views.map_displays.map_display import MapDisplay
-from simulator.views.map_displays.numbers_map_display import NumbersMapDisplay
+from simulator.views.map.display.gradient_map_display import GradientMapDisplay
+from simulator.views.map.display.map_display import MapDisplay
+from simulator.views.map.display.numbers_map_display import NumbersMapDisplay
 from structures import Point
 import copy
 

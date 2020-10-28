@@ -8,14 +8,14 @@ from typing import BinaryIO, Callable, Any
 from simulator.services.debug import DebugLevel
 from simulator.services.service import Service
 from simulator.services.services import Services
-
+from simulator.services.resources.smart_unpickle import load as smart_load
 
 class Directory(Service):
     _name: str
     _parent: str
 
     def __init__(self, services: Services, name: str, parent: str, create: bool = False,
-                 overwrite: bool = True) -> None: #Toggle overwrite: to True or False to enable overwriting of generated maps
+                 overwrite: bool = True) -> None:  # Toggle overwrite: to True or False to enable overwriting of generated maps
         super().__init__(services)
 
         if name:
@@ -60,6 +60,7 @@ class Directory(Service):
             self._services.debug.write("Loaded [{}]".format(self._full_path() + name), DebugLevel.LOW)
         else:
             self._services.debug.write("File not found [{}]".format(self._full_path() + name), DebugLevel.LOW)
+            raise RuntimeError("File not found, consider running from src/")
         return obj
 
     def exists(self, name: str, extension: str) -> bool:
@@ -78,8 +79,9 @@ class Directory(Service):
         if not os.path.isfile(directory + file_name):
             return None
         handle: BinaryIO
+
         with open(directory + file_name, 'rb') as handle:
-            return pickle.load(handle)
+            return smart_load(handle)
 
     @staticmethod
     def _add_extension(file_name: str, extension: str) -> str:

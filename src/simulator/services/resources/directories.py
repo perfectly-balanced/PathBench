@@ -132,7 +132,7 @@ class MapsDir(Directory):
 
     def get_atlas(self, atlas_name: str) -> Atlas:
         return Atlas(self._services, atlas_name, self._full_path())
-        
+
 class HouseExpoDir(Directory):
     @staticmethod
     def _default_save(dir: 'Directory', name: str, obj: Any):
@@ -150,7 +150,7 @@ class HouseExpoDir(Directory):
 
     def save(self, name: str, obj: Any, path: str):
         Directory._pickle(obj, name, path)
-    
+
     # def save(self, name: str, obj: pygame.Surface,
     #          save_function: Callable[['Directory', str, pygame.Surface], None] = None) -> None:
     #     super().save(name, obj, HouseExpoDir._image_default_save)
@@ -169,12 +169,16 @@ class ScreenshotsDir(ImagesDir):
     def __init__(self, services: Services, name: str, parent: str):
         super().__init__(services, name, parent)
 
-    def append(self, screenshot: pygame.Surface) -> None:
-        file_name: str = "screenshot_" + str(self._get_next_index())
-        self.save(file_name, screenshot)
+    @staticmethod
+    def __taker(dir: Directory, name: str, take_and_save: Callable[[str], None]) -> None:
+        name = dir._add_extension(name, "png")
+        take_and_save(dir._full_path() + name)
+
+    def append(self, take_and_save: Callable[[str], None]) -> None:
+        name: str = "screenshot_" + str(self._get_next_index())
+        Atlas.save(self, name, take_and_save, ScreenshotsDir.__taker)
         self._increment_index()
 
 
 class TrainingDataDir(Directory):
     pass
-

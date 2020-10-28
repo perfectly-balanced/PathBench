@@ -4,7 +4,7 @@ from memory_profiler import profile
 import numpy as np
 
 from algorithms.algorithm import Algorithm
-from simulator.views.map_displays.map_display import MapDisplay
+from simulator.views.map.display.map_display import MapDisplay
 from structures import Point
 
 import sys

@@ -1,7 +1,7 @@
 from typing import List
 from algorithms.algorithm import Algorithm
-from simulator.views.map_displays.graph_map_display import GraphMapDisplay
-from simulator.views.map_displays.map_display import MapDisplay
+from simulator.views.map.display.graph_map_display import GraphMapDisplay
+from simulator.views.map.display.map_display import MapDisplay
 
 
 class SampleBasedAlgorithm(Algorithm):

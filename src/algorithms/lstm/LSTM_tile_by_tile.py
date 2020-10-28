@@ -13,8 +13,8 @@ from algorithms.configuration.maps.map import Map
 from algorithms.lstm.ML_model import MLModel, SingleTensorDataset, PackedDataset
 from algorithms.lstm.map_processing import MapProcessing
 from simulator.services.services import Services
-from simulator.views.map_displays.entities_map_display import EntitiesMapDisplay
-from simulator.views.map_displays.online_lstm_map_display import OnlineLSTMMapDisplay
+from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
+from simulator.views.map.display.online_lstm_map_display import OnlineLSTMMapDisplay
 from structures import Point
 
 

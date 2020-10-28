@@ -1,14 +1,14 @@
 from typing import Optional
 
 from algorithms.basic_testing import BasicTesting
-from simulator.controllers.keyboard_controller import KeyboardController
-from simulator.controllers.map_controller import MapController
+from simulator.controllers.main_controller import MainController
+from simulator.controllers.map.map_controller import MapController
 from simulator.models.main import Main
 from simulator.models.map import Map
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
 from simulator.views.main_view import MainView
-from simulator.views.map_view import MapView
+from simulator.views.map.map_view import MapView
 from structures import Size
 
 """
@@ -23,7 +23,7 @@ class Simulator:
     __services: Services
     __main: Main
     __map: Map
-    __keyboard_controller: KeyboardController
+    __main_controller: MainController
     __map_controller: MapController
     __main_view: MainView
     __map_view: MapView
@@ -34,7 +34,7 @@ class Simulator:
 
         self.__main = None
         self.__map = None
-        self.__keyboard_controller = None
+        self.__main_controller = None
         self.__map_controller = None
         self.__main_view = None
         self.__map_view = None
@@ -54,23 +54,17 @@ class Simulator:
         """
         Starts simulator with graphics
         """
-
-        if self.__services.settings.simulator_grid_display or self.__services.algorithm.map is None:
-            self.__services.settings.simulator_window_size = Size(900, 900)
-        else:
-            self.__services.settings.simulator_window_size = self.__services.algorithm.map.size
-
         # init models
         self.__main = Main(self.__services)
         self.__map = Map(self.__services)
 
-        # init controllers
-        self.__keyboard_controller = KeyboardController(self.__services, self.__main)
-        self.__map_controller = MapController(self.__services, self.__map)
-
         # init views
         self.__main_view = MainView(self.__services, self.__main, None)
         self.__map_view = MapView(self.__services, self.__map, self.__main_view)
+
+        # init controllers
+        self.__main_controller = MainController(self.__services, self.__main)
+        self.__map_controller = MapController(self.__map_view, self.__services, self.__map)
 
         self.__services.debug.write("", DebugLevel.BASIC, timestamp=False)
         self.display_help()
@@ -91,7 +85,7 @@ class Simulator:
         Displays the help panel at init
         """
         self.__services.debug.write(
-"""Important runtime commands:
+            """Important runtime commands:
     * escape - exit the simulator
     * c - find the path between the agent and goal
     * mouse click - moves agent to mouse location 

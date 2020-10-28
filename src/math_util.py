@@ -1550,7 +1550,7 @@ class Arcball(object):
 
     """
     def __init__(self, initial=None):
-        """Initialize virtual trackball control.
+        """Initialise virtual trackball control.
 
         initial : quaternion or rotation matrix
 
