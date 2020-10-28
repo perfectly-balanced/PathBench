@@ -133,17 +133,14 @@ class TestDenseMap3D(unittest.TestCase):
         ])
         self.assertNotEqual(map1, map2)
 
-    # TODO: sort out sparse map stuff (currently 2D)
     def test_ne_sparse(self) -> None:
         map1: DenseMap = DenseMap([
-            [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL],
-            [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
+            [[DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID], [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL]],
+            [[DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID], [DenseMap.GOAL_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID]]
         ])
         map2: DenseMap = DenseMap([
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID, DenseMap.CLEAR_ID],
-            [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL],
+            [[DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID], [DenseMap.AGENT_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL]],
+            [[DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID], [DenseMap.GOAL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID]]
         ]).convert_to_sparse_map()
         self.assertNotEqual(map1, map2)
 
@@ -155,24 +152,21 @@ class TestDenseMap3D(unittest.TestCase):
         map2: int = 3
         self.assertNotEqual(map1, map2)
     
-    # TODO: sort out sparse map stuff (currently 2D)
     def test_eq_sparse_map(self) -> None:
         map1: DenseMap = DenseMap([
-            [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID],
-            [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
+            [[DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID], [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID]],
+            [[DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID], [DenseMap.GOAL_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID]]
         ])
         map2: SparseMap = SparseMap(
-            Size(4, 3),
-            Agent(Point(0, 1)),
-            [Obstacle(Point(0, 0)), Obstacle(Point(1, 0)), Obstacle(Point(2, 0)), Obstacle(Point(3, 0))],
-            Goal(Point(3, 2))
+            Size(3, 2, 2),
+            Agent(Point(0, 1, 0)),
+            [Obstacle(Point(0, 0, 0)), Obstacle(Point(1, 0, 0))],
+            Goal(Point(0, 1, 1))
         )
         self.assertEqual(map1, map2)
 
-    # TODO: sort out sparse map stuff (currently 2D)
     def test_convert_to_sparse_map(self) -> None:
-        map1: DenseMap = Maps.grid_map_labyrinth
+        map1: DenseMap = Maps.grid_map_3d_example
         map2: SparseMap = map1.convert_to_sparse_map()
         self.assertEqual(map1, map2)
     
