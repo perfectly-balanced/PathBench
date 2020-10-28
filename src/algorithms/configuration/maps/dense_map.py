@@ -77,7 +77,6 @@ class DenseMap(Map):
 
 
         def extend_obstacle_bound() -> None:
-            print("hello")
             for b in bounds:
                 for x in range(b.x - self.agent.radius, b.x + self.agent.radius + 1):
                     for y in range(b.y - self.agent.radius, b.y + self.agent.radius + 1):
