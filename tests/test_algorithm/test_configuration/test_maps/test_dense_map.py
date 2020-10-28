@@ -164,9 +164,11 @@ class TestDenseMap(unittest.TestCase):
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         map1.move_agent(Point(1, 1))
+        #print("map 1: " + str(map1) + "map 2: " + str(map2))
         self.assertEqual(Point(1, 1), map1.agent.position)
         self.assertEqual(DenseMap.AGENT_ID, map1.at(Point(1, 1)))
         self.assertTrue([Trace(Point(1, 1))], map1.trace)
+        #self.assertEqual(map1, map2)
 
     def test_move_agent_no_trace(self) -> None:
         map1: DenseMap = DenseMap([

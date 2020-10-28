@@ -127,12 +127,11 @@ class DenseMap(Map):
         self.grid[prev_pos.pos] = self.CLEAR_ID
         self.grid[self.goal.position.pos] = self.GOAL_ID
         self.grid[self.agent.position.pos] = self.AGENT_ID
-
+        
         for i in range(len(self.obstacles)):
             if self.obstacles[i].position == self.goal.position:
                 del self.obstacles[i]
                 break
-
         return True
 
     def convert_to_sparse_map(self) -> 'SparseMap':
