@@ -16,6 +16,8 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7, 3.8]
+    env:
+      PYTHON: ${{ matrix.python-version }}
 
     steps:
     - uses: actions/checkout@v2
@@ -41,3 +43,4 @@ jobs:
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
+        env_vars: PYTHON
