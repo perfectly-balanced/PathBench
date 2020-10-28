@@ -15,7 +15,7 @@ class Directory(Service):
     _parent: str
 
     def __init__(self, services: Services, name: str, parent: str, create: bool = False,
-                 overwrite: bool = True) -> None: #Toggle overwrite: to True or False to enable overwriting of generated maps
+                 overwrite: bool = True) -> None:  # Toggle overwrite: to True or False to enable overwriting of generated maps
         super().__init__(services)
 
         if name:

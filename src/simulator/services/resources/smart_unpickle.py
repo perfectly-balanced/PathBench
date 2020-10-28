@@ -1,4 +1,6 @@
-import structures, torch, dill
+import structures
+import torch
+import dill
 import algorithms.configuration.maps.dense_map
 from typing import NamedTuple
 
@@ -9,6 +11,7 @@ class Size(NamedTuple):
 class Point(NamedTuple, torch.Tensor):
     x: int
     y: int
+
 
 DenseMap = algorithms.configuration.maps.dense_map.DenseMap
 
@@ -48,9 +51,9 @@ def recursive_replace_loaded_objects(obj, depth=3):
 def load(fp):
     old_classes = tuple([eval(i) for i in names])
     exec(", ".join(i for i in names) + " = " + ", ".join(i.split(".")[-1] for i in names))
-    
+
     loaded_obj = dill.load(fp, ignore=True)
 
     exec(", ".join(i for i in names) + " = old_classes")
-    
+
     return recursive_replace_loaded_objects(loaded_obj)

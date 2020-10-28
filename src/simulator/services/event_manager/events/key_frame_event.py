@@ -14,7 +14,7 @@ class KeyFrameEvent(Event):
             self.__refresh = self.is_first
         else:
             self.__refresh = refresh
-    
+
     @property
     def is_first(self) -> bool:
         return self.__is_first

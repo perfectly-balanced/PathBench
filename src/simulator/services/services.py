@@ -42,7 +42,7 @@ class Services:
         self.__settings = config
         self.__debug = Debug(self)
         self.__ev_manager = EventManager(self)
-        self.__resources_dir = Resources(self)        
+        self.__resources_dir = Resources(self)
         self.__torch = Torch(self)
         self.__algorithm_runner = AlgorithmRunner(self)
         self.__algorithm_runner.reset_algorithm()

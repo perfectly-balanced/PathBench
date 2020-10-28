@@ -1,4 +1,4 @@
-from simulator.services.resources.directories import ModelDir, CacheDir, ImagesDir, MapsDir,HouseExpoDir, ScreenshotsDir, \
+from simulator.services.resources.directories import ModelDir, CacheDir, ImagesDir, MapsDir, HouseExpoDir, ScreenshotsDir, \
     TrainingDataDir
 from simulator.services.resources.directory import Directory
 from simulator.services.services import Services

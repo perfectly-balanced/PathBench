@@ -132,7 +132,7 @@ class MapsDir(Directory):
 
     def get_atlas(self, atlas_name: str) -> Atlas:
         return Atlas(self._services, atlas_name, self._full_path())
-        
+
 class HouseExpoDir(Directory):
     @staticmethod
     def _default_save(dir: 'Directory', name: str, obj: Any):
@@ -150,7 +150,7 @@ class HouseExpoDir(Directory):
 
     def save(self, name: str, obj: Any, path: str):
         Directory._pickle(obj, name, path)
-    
+
     # def save(self, name: str, obj: pygame.Surface,
     #          save_function: Callable[['Directory', str, pygame.Surface], None] = None) -> None:
     #     super().save(name, obj, HouseExpoDir._image_default_save)
@@ -182,4 +182,3 @@ class ScreenshotsDir(ImagesDir):
 
 class TrainingDataDir(Directory):
     pass
-

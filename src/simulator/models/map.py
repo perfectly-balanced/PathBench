@@ -67,7 +67,7 @@ class Map(Model):
 
     def resume_algorithm(self) -> None:
         self.key_frame_is_paused = False
-    
+
     def toggle_pause_algorithm(self) -> None:
         self.key_frame_is_paused = not self.key_frame_is_paused
 

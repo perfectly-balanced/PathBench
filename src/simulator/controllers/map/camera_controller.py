@@ -36,7 +36,7 @@ class CameraController(Controller, DirectObject):
             "right": 0,
             "up": 0,
             "down": 0,
-            "wheelup":0,
+            "wheelup": 0,
             "wheeldown": 0
         }
 
