@@ -4,7 +4,6 @@ from heapq import heappush, heappop
 from typing import List, Any, Tuple, Optional, Union
 import os
 
-import pygame
 from constants import DATA_PATH
 
 from algorithms.configuration.entities.entity import Entity
@@ -200,13 +199,6 @@ class MapView(View):
 
         self.__tc_previous = self.__tc_scratchpad
         self.__tc_scratchpad = {}
-
-    def to_col3f(self, col: Union[pygame.Color, List[int]]):
-        c = list(col)
-        for i in range(len(c)):
-            c[i] /= 255
-            c[i] = min(1, c[i])
-        return Colour(*c)
 
     def render_pos(self, pe: Union[Point, Entity], src: Colour) -> None:
         x, y, z = self.__to_point3(pe)
