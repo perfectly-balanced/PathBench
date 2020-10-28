@@ -69,15 +69,14 @@ class SparseMap(Map):
             total_radius: int = self.agent.radius + obstacle.radius
             if should_optimize:
                 total_radius = obstacle.radius
-            for x in range(obstacle.position.x - total_radius, obstacle.position.x + total_radius + 1):
-                for y in range(obstacle.position.y - total_radius, obstacle.position.y + total_radius + 1):
-                    if not self.is_out_of_bounds_pos(Point(x, y)):
-                        dist: Union[float, np.ndarray] = np.linalg.norm(np.array([x, y]) - np.array(obstacle.position))
-                        if not should_optimize and \
-                                dist <= obstacle.radius + self.agent.radius and grid[x][y] == DenseMap.CLEAR_ID:
-                            grid[x][y] = DenseMap.EXTENDED_WALL
-                        if dist <= obstacle.radius:
-                            grid[x][y] = DenseMap.WALL_ID
+            for index in np.ndindex(*(len(self.size) * [total_radius*2 + 1])):
+                p = [elem + obstacle.position[i] - total_radius for i, elem in enumerate(index)]
+                if not self.is_out_of_bounds_pos(Point(*p)):
+                    dist: Union[float, np.ndarray] = np.linalg.norm(np.array(p) - np.array(obstacle.position))
+                    if (not should_optimize) and (dist <= obstacle.radius + self.agent.radius) and (grid[tuple(p)] == DenseMap.CLEAR_ID):
+                        grid[tuple(p)] = DenseMap.EXTENDED_WALL
+                    if dist <= obstacle.radius:
+                        grid[tuple(p)] = DenseMap.WALL_ID
 
         grid[self.agent.position.pos] = DenseMap.AGENT_ID
         grid[self.goal.position.pos] = DenseMap.GOAL_ID
