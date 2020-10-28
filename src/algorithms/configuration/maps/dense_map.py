@@ -78,14 +78,16 @@ class DenseMap(Map):
 
         def extend_obstacle_bound() -> None:
             for b in bounds:
-                for x in range(b.x - self.agent.radius, b.x + self.agent.radius + 1):
-                    for y in range(b.y - self.agent.radius, b.y + self.agent.radius + 1):
-                        if not self.is_out_of_bounds_pos(Point(x, y)):
-                            dist: Union[float, np.ndarray] = np.linalg.norm(np.array([x, y]) - np.array(b))
-                            if dist <= self.agent.radius and self.grid[x][y] == DenseMap.CLEAR_ID:
-                                self.grid[x][y] = DenseMap.EXTENDED_WALL
-                                self.obstacles.append(ExtendedWall(Point(x, y)))
-                                visited.add(Point(x, y))
+                for index in np.ndindex(*(len(self.size) * [self.agent.radius + 1])):
+                    for sign in [-1, 1]:
+                        p = [sign*elem + b[i] for i, elem in enumerate(index)]
+                        if not self.is_out_of_bounds_pos(Point(*p)):
+                            dist: Union[float, np.ndarray] = np.linalg.norm(np.array(p) - np.array(b))
+                            if dist <= self.agent.radius and self.at(Point(*p)) == DenseMap.CLEAR_ID:
+                                self.grid[p] = DenseMap.EXTENDED_WALL
+                                self.obstacles.append(ExtendedWall(Point(*p)))
+                                visited.add(Point(*p))
+                
 
         visited: Set[Point] = set()
         #visited: List[List[bool]] = [[False for _ in range(len(self.grid[i]))] for i in range(len(self.grid))]
