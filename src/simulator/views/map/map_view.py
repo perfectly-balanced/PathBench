@@ -24,8 +24,9 @@ from structures import Point, Colour, TRANSPARENT, WHITE
 
 from simulator.views.gui.view_editor import ViewEditor
 from simulator.views.map.data.voxel_map import VoxelMap
+from simulator.views.map.object.cube_mesh import Face
 
-from panda3d.core import NodePath, GeomNode, Geom, LineSegs
+from panda3d.core import NodePath, GeomNode, Geom, LineSegs, TextNode
 from direct.showutil import BuildGeometry
 
 import math
@@ -295,5 +296,20 @@ class MapView(View):
         np = self.map.root.attach_new_node(gn)
         np.set_pos(*self.cube_center(p))
         np.set_color(*colour)
+
+        self.__draw_nps.append(np)
+    
+    def render_text(self, p: Point, text: str, colour: Colour = WHITE, scale: float = 0.4) -> None:
+        center = self.cube_center(p)
+
+        offset, hpr = Point(-0.25, 0, 0), (0,-90,0)
+
+        n = TextNode('text')
+        n.set_text(text)
+        np = self.map.root.attach_new_node(n)
+        np.set_scale(scale)
+        np.set_color(*colour)
+        np.set_pos(*(center + offset))
+        np.set_hpr(*hpr)
 
         self.__draw_nps.append(np)
