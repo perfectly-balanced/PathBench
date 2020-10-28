@@ -31,7 +31,7 @@ class MapData:
     @root.getter
     def root(self) -> NodePath:
         return self.__root
-    
+
     @property
     def name(self) -> str:
         return 'name'
@@ -53,7 +53,7 @@ class MapData:
         if invoke_callback:
             callback(dc)
         return dc
-    
+
     def set_visibility(self, name: str, visible: bool) -> None:
         self.colours[name].visible = visible
 

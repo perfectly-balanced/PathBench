@@ -135,7 +135,7 @@ class MapView(View):
             display._model = self._model
             self.add_child(display)
             heappush(self.__displays, (display.z_index, display))
-    
+
     def __render_displays(self) -> None:
         for np in self.__draw_nps:
             np.remove_node()
@@ -207,7 +207,7 @@ class MapView(View):
         if y not in self.__tc_scratchpad[x]:
             self.__tc_scratchpad[x][y] = {}
         if z not in self.__tc_scratchpad[x][y]:
-            self.__tc_scratchpad[x][y][z] = self.map.colours["traversables"].colour # use raw colour
+            self.__tc_scratchpad[x][y][z] = self.map.colours["traversables"].colour  # use raw colour
         dst = self.__tc_scratchpad[x][y][z]
 
         wda = dst.a * (1 - src.a)  # weighted dst alpha
@@ -256,8 +256,8 @@ class MapView(View):
         np.set_scale(scale)
 
         self.__draw_nps.append(np)
-    
-    def make_arc(self, p: Point, angle_degs = 360, nsteps = 16, radius: float = 0.06, colour: Colour = WHITE) -> None:
+
+    def make_arc(self, p: Point, angle_degs=360, nsteps=16, radius: float = 0.06, colour: Colour = WHITE) -> None:
         ls = self.line_segs
         ls.set_color(*colour)
 
@@ -274,9 +274,9 @@ class MapView(View):
     def draw_circle(self, p: Point, *args, **kwargs) -> None:
         self.make_arc(p, 360, *args, **kwargs)
 
-    def draw_circle_filled(self, p: Point, nsteps = 16, radius: float = 0.06, colour: Colour = WHITE) -> None:
+    def draw_circle_filled(self, p: Point, nsteps=16, radius: float = 0.06, colour: Colour = WHITE) -> None:
         gn = GeomNode("circle")
-        
+
         exists: bool = False
         for cn, cr, cg in self.__circles:
             if cn == nsteps and cr == radius:
@@ -291,11 +291,11 @@ class MapView(View):
         np.set_color(*colour)
 
         self.__draw_nps.append(np)
-    
+
     def render_text(self, p: Point, text: str, colour: Colour = WHITE, scale: float = 0.4) -> None:
         center = self.cube_center(p)
 
-        offset, hpr = Point(-0.25, 0, 0), (0,-90,0)
+        offset, hpr = Point(-0.25, 0, 0), (0, -90, 0)
 
         n = TextNode('text')
         n.set_text(text)

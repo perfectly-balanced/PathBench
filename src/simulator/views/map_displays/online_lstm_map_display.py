@@ -54,15 +54,15 @@ class OnlineLSTMMapDisplay(MapDisplay):
     """
 
     def __render_arc(self, p1: Point, p2: Point, colour: Colour):
-        import pygame # todo: port this to Panda3D
+        import pygame  # todo: port this to Panda3D
 
         point = self.get_renderer_view().get_center(p1)
         size = 100
         area = pygame.Rect(point[0] - size / 2, point[1] - size / 2, size, size)
         dir = p2.to_tensor() - p1.to_tensor()
-        angle = torch.atan2(-dir[1], dir[0]) # pygame
+        angle = torch.atan2(-dir[1], dir[0])  # pygame
         angle %= 2 * np.pi
-        
+
         self.services.render_engine.draw_arc(color, area, 0, angle, 2)
 
     def __render_line(self, p1: Point, p2: Point, colour: Colour):

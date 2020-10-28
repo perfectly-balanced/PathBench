@@ -23,7 +23,7 @@ class SolidColorMapDisplaypot(MapDisplay):
         self.color6 = Colour(0.6, 0.6, 1.0)
         self.large = max(pmaplst)
         self.small = min(pmaplst)
-        self.range=(self.large-self.small)/6
+        self.range = (self.large-self.small)/6
 
         assert self._map.size.n_dim == 2, "Unsupported map dimension, expected 2D"
 
@@ -40,7 +40,7 @@ class SolidColorMapDisplaypot(MapDisplay):
                 pt = pt.position
             return pt
 
-        points = set(map(f, points))        
+        points = set(map(f, points))
 
         for point in points:
             if point[1] < self.small+(self.range*1):
@@ -54,5 +54,5 @@ class SolidColorMapDisplaypot(MapDisplay):
             elif point[1] < self.small+(self.range*5):
                 self._root_view.render_pos(Entity(point[0], self.radius), self.color2)
             elif point[1] < self.small+(self.range*6):
-                self._root_view.render_pos(Entity(point[0], self.radius), self.color1)    
+                self._root_view.render_pos(Entity(point[0], self.radius), self.color1)
         return True

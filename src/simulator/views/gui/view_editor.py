@@ -67,7 +67,7 @@ class ColourPicker:
             return (*self.__palette_img.getXel(int(x), int(y)), 1.0)
         else:
             return None
-        
+
     def __update_marker_colour(self) -> Tuple[float, float, float, float]:
         c = self.colour_under_marker()
         if c is None:
@@ -106,7 +106,7 @@ class ColourPicker:
 
         w, h = self.__palette_size
         screen = self.__base.pixel2d
-        
+
         img_scale = self.__palette_frame['image_scale']
         sx = self.__palette_frame.getSx(screen) * img_scale[0]
         sy = self.__palette_frame.getSz(screen) * img_scale[2]
@@ -132,7 +132,7 @@ class ColourPicker:
     @property
     def frame(self) -> DirectFrame:
         return self.__palette_frame
-    
+
     @property
     def marker(self) -> DirectFrame:
         return self.__marker
@@ -141,7 +141,7 @@ class ColourPicker:
 class Window():
     __base: ShowBase
     __name: str
-    
+
     __frame: DirectFrame
     __drag_start: Point2
     __drag_offset: Vec2
@@ -184,7 +184,7 @@ class Window():
 
     def __stop_drag(self, *args):
         self.__base.taskMgr.remove('drag_' + self.__name)
-    
+
     @property
     def frame(self) -> DirectFrame:
         return self.__frame
@@ -199,21 +199,21 @@ class ColourView():
         bg_filename = os.path.join(DATA_PATH, "colour_bg.png")
 
         self.__frame = DirectFrame(parent=parent,
-                                  relief=DGG.SUNKEN,
-                                  image=bg_filename,
-                                  image_scale=(0.465, 1.0, 0.39),
-                                  borderWidth=(0.05, 0.05),
-                                  frameSize=(-0.52, 0.52, -0.44, 0.44),
-                                  scale=(0.5, 1.0, 0.5))
+                                   relief=DGG.SUNKEN,
+                                   image=bg_filename,
+                                   image_scale=(0.465, 1.0, 0.39),
+                                   borderWidth=(0.05, 0.05),
+                                   frameSize=(-0.52, 0.52, -0.44, 0.44),
+                                   scale=(0.5, 1.0, 0.5))
         self.__view = DirectFrame(parent=self.__frame,
-                                    frameColor=colour if colour != None else TRANSPARENT,
-                                    frameSize=(-0.47, 0.47, -0.39, 0.39))
+                                  frameColor=colour if colour != None else TRANSPARENT,
+                                  frameSize=(-0.47, 0.47, -0.39, 0.39))
         self.__colour = colour
 
     @property
     def colour(self) -> str:
         return 'colour'
-    
+
     @colour.getter
     def colour(self) -> Union[Colour, None]:
         return self.__colour
@@ -222,7 +222,7 @@ class ColourView():
     def colour(self, value) -> None:
         self.__colour = value
         self.__view['frameColor'] = value if value != None else WINDOW_BG_COLOUR
-    
+
     @property
     def frame(self) -> DirectFrame:
         return self.__frame
@@ -241,23 +241,23 @@ class ColourChannel():
         self.__frame = DirectFrame(parent=parent)
         self.__slider_edit_callback = slider_edit_callback
         self.__entry_edit_callback = entry_edit_callback
-        
+
         self.__label = DirectLabel(parent=self.__frame,
-                                    text=text,
-                                    text_fg=WHITE,
-                                    text_bg=WINDOW_BG_COLOUR,
-                                    pos=(-0.5, 0.0, 0.0),
-                                    scale=(0.1, 1.0, 0.1))
-        
+                                   text=text,
+                                   text_fg=WHITE,
+                                   text_bg=WINDOW_BG_COLOUR,
+                                   pos=(-0.5, 0.0, 0.0),
+                                   scale=(0.1, 1.0, 0.1))
+
         self.__slider = DirectSlider(parent=self.__frame,
-                                    orientation=DGG.HORIZONTAL,
-                                    borderWidth=(0.0, 0.0),
-                                    frameColor=WIDGET_BG_COLOUR,
-                                    frameSize=(-1.0, 1.0, -0.4, 0.4),
-                                    thumb_frameSize=(-0.075, 0.075, -0.2, 0.2),
-                                    value=value,
-                                    pos=(0.05, 0.0, 0.0255),
-                                    scale=(0.45, 1.0, 0.5))
+                                     orientation=DGG.HORIZONTAL,
+                                     borderWidth=(0.0, 0.0),
+                                     frameColor=WIDGET_BG_COLOUR,
+                                     frameSize=(-1.0, 1.0, -0.4, 0.4),
+                                     thumb_frameSize=(-0.075, 0.075, -0.2, 0.2),
+                                     value=value,
+                                     pos=(0.05, 0.0, 0.0255),
+                                     scale=(0.45, 1.0, 0.5))
 
         self.__entry = DirectEntry(parent=self.__frame,
                                    frameColor=WIDGET_BG_COLOUR,
@@ -280,7 +280,7 @@ class ColourChannel():
     @property
     def frame(self) -> DirectFrame:
         return self.__frame
-    
+
     def update_slider(self, value: float):
         self.__unset_callbacks()
         self.__slider['value'] = value
@@ -314,7 +314,7 @@ class AdvancedColourPicker():
         self.__callback = callback
 
         self.__frame = DirectFrame(parent=parent)
-        
+
         self.__colour_picker = ColourPicker(self.__base,
                                             self.__colour_picked_callback,
                                             parent=self.__frame,
@@ -325,7 +325,7 @@ class AdvancedColourPicker():
                                             frameSize=(-1., 1., -1., 1.),
                                             scale=(1.0, 1.0, 0.75),
                                             pos=(0.0, 0.0, 0.15))
-    
+
         self.__cv_picked = ColourView(self.__frame, self.__colour)
         self.__cv_picked.frame.set_pos(-0.74, 0.0, -1.41)
         self.__cv_hovered = ColourView(self.__frame)
@@ -363,7 +363,7 @@ class AdvancedColourPicker():
         self.__g.update(g)
         self.__b.update(b)
         self.__cv_picked.colour = Colour(r, g, b, self.__cv_picked.colour.a)
-        self.__dirty_rem_no_hide = 3 # something fishy is going on
+        self.__dirty_rem_no_hide = 3  # something fishy is going on
         self.__callback(self.__cv_picked.colour)
 
     def __colour_channel_slider_edit_callback(self, chn: ColourChannel, value: float):
@@ -372,7 +372,7 @@ class AdvancedColourPicker():
                 self.__dirty_rem_no_hide -= 1
             else:
                 self.__colour_picker.marker.hide()
-        
+
         chn.update_entry(value)
         self.__cv_picked.colour = Colour(self.__r.value, self.__g.value, self.__b.value, self.__a.value)
         self.__callback(self.__cv_picked.colour)
@@ -383,23 +383,23 @@ class AdvancedColourPicker():
                 self.__dirty_rem_no_hide -= 1
             else:
                 self.__colour_picker.marker.hide()
-        
+
         chn.update_slider(value)
         self.__cv_picked.colour = Colour(self.__r.value, self.__g.value, self.__b.value, self.__a.value)
         self.__callback(self.__cv_picked.colour)
-    
+
     @property
     def frame(self) -> DirectFrame:
         return self.__frame
-    
+
     @property
     def colour(self) -> str:
         return 'colour'
-    
+
     @colour.getter
     def colour(self) -> Colour:
         return self.self.__cv_picked.colour
-    
+
     @colour.setter
     def colour(self, value: Colour) -> None:
         self.__colour_picker.marker.hide()
@@ -432,7 +432,7 @@ class ViewElement():
         self.__cv = ColourView(self.__frame, colour)
         self.__cv.frame.set_scale((0.15, 1.0, 0.15))
         self.__cv.frame.set_pos((-0.65, 1.0, 0.0))
-        
+
         self.__label = DirectLabel(parent=self.__frame,
                                    text=self.__name,
                                    text_fg=WHITE,
@@ -448,15 +448,15 @@ class ViewElement():
                                              pos=(-0.92, 0.0, 0.0),
                                              scale=(0.09, 1.0, 0.06),
                                              command=self.__toggle_visible)
-                                            
+
         self.__visibility_bar = DirectFrame(parent=self.__frame,
                                             borderWidth=(.0, .0),
                                             frameColor=WINDOW_BG_COLOUR,
                                             frameSize=(-0.1, 0.1, -0.01, 0.01),
                                             pos=(-0.92, 0.0, 0.0),
                                             hpr=(40, 0, 40))
-        
-        self.visible = self.__visible # trigger UI update
+
+        self.visible = self.__visible  # trigger UI update
 
         self.__visibility_callback = visibility_callback
         self.__colour_callback = colour_callback
@@ -479,25 +479,25 @@ class ViewElement():
     @property
     def colour(self) -> str:
         return 'colour'
-    
+
     @colour.getter
     def colour(self) -> Colour:
         return self.__cv.colour
-    
+
     @colour.setter
     def colour(self, value: Colour) -> None:
         self.__cv.colour = value
         if self.__colour_callback:
             self.__colour_callback(self.name, value)
-    
+
     @property
     def visible(self) -> str:
         return 'visible'
-    
+
     @visible.getter
     def visible(self) -> bool:
         return self.__visible
-    
+
     @visible.setter
     def visible(self, value: bool) -> None:
         self.__visible = value
@@ -551,21 +551,21 @@ class ViewEditor():
                     frameColor=WIDGET_BG_COLOUR,
                     frameSize=(-1., 1., -0.01, 0.01),
                     pos=(0.0, 0.0, -4.1))
-        
+
         # selected colour view frame
         self.__selected_cv_outline = DirectFrame(parent=self.__window.frame,
-                                                relief=DGG.SUNKEN,
-                                                frameColor=WHITE,
-                                                borderWidth=(0.15, 0.15),
-                                                frameSize=(-0.62, 0.62, -0.54, 0.54),
-                                                scale=(0.18, 1.0, 0.18))
-        # selected state number frame
-        self.__selected_state_number = DirectFrame(parent=self.__window.frame,
                                                  relief=DGG.SUNKEN,
                                                  frameColor=WHITE,
                                                  borderWidth=(0.15, 0.15),
                                                  frameSize=(-0.62, 0.62, -0.54, 0.54),
-                                                 scale=(0.3, 2.0, 0.35))
+                                                 scale=(0.18, 1.0, 0.18))
+        # selected state number frame
+        self.__selected_state_number = DirectFrame(parent=self.__window.frame,
+                                                   relief=DGG.SUNKEN,
+                                                   frameColor=WHITE,
+                                                   borderWidth=(0.15, 0.15),
+                                                   frameSize=(-0.62, 0.62, -0.54, 0.54),
+                                                   scale=(0.3, 2.0, 0.35))
 
         self.heading = DirectLabel(parent=self.__window.frame,
                                    text="View Editor",
@@ -576,7 +576,6 @@ class ViewEditor():
                                    scale=(0.2, 3, 0.2))
 
         self.heading.set_pos((0.0, 0.0, 1.27))
-
 
         quit_filename = os.path.join(DATA_PATH, "quit.png")
 
@@ -593,11 +592,11 @@ class ViewEditor():
         self.__base.accept('v', self.__toggle_view_editor)
 
         self.__save_outline = DirectFrame(parent=self.__window.frame,
-                                                 frameColor=WHITE,
-                                                 pos=(-0.57, 0, -5.45),
-                                                 borderWidth=(0.25, 0.15),
-                                                 frameSize=(-0.62, 0.62, -0.54, 0.54),
-                                                 scale=(0.50, 2.1, 0.25))
+                                          frameColor=WHITE,
+                                          pos=(-0.57, 0, -5.45),
+                                          borderWidth=(0.25, 0.15),
+                                          frameSize=(-0.62, 0.62, -0.54, 0.54),
+                                          scale=(0.50, 2.1, 0.25))
 
         self.__quit_outline = DirectFrame(parent=self.__window.frame,
                                           frameColor=WHITE,
@@ -608,24 +607,24 @@ class ViewEditor():
 
         # save and restore
         self.btn_s = DirectButton(
-                                 text = "Save",
-                                 text_fg=(0.3, 0.3, 0.3, 1.0),
-                                 pressEffect = 1,
-                                 command=lambda: self.save_state(self.state_num),
-                                 pos=(-0.575, 0, -5.5),
-                                 parent=self.__window.frame,
-                                 scale=(0.20, 2.1, 0.15),
-                                 frameColor=TRANSPARENT)
-        
+            text="Save",
+            text_fg=(0.3, 0.3, 0.3, 1.0),
+            pressEffect=1,
+            command=lambda: self.save_state(self.state_num),
+            pos=(-0.575, 0, -5.5),
+            parent=self.__window.frame,
+            scale=(0.20, 2.1, 0.15),
+            frameColor=TRANSPARENT)
+
         self.btn_r = DirectButton(
-                                 text="Restore",
-                                 text_fg=(0.3, 0.3, 0.3, 1.0),
-                                 pressEffect=1,
-                                 command=lambda: self.load_state(self.state_num),
-                                 pos=(0.50, 0, -5.5),
-                                 parent=self.__window.frame,
-                                 scale=(0.20, 2.1, 0.15),
-                                 frameColor=TRANSPARENT)
+            text="Restore",
+            text_fg=(0.3, 0.3, 0.3, 1.0),
+            pressEffect=1,
+            command=lambda: self.load_state(self.state_num),
+            pos=(0.50, 0, -5.5),
+            parent=self.__window.frame,
+            scale=(0.20, 2.1, 0.15),
+            frameColor=TRANSPARENT)
 
         # view elements
         self.__elements = []
@@ -634,40 +633,40 @@ class ViewEditor():
 
         for i in range(len(self.__elements)):
             self.__elements[i].frame.set_pos((0.0, 0.0, -1.9 - 0.2 * i))
-        
+
         self.__cv_transparent_overlays = []
         for i in range(len(self.__elements)):
             self.__cv_transparent_overlays.append(DirectButton(parent=self.__window.frame,
-                                                relief=DGG.SUNKEN,
-                                                frameColor=TRANSPARENT,
-                                                borderWidth=(0, 0),
-                                                frameSize=(-0.52, 0.52, -0.44, 0.44),
-                                                scale=(0.18, 1.0, 0.18),
-                                                pos=(-0.65, 1.0, -1.897 - 0.2 * i),
-                                                command=self.__select_cv,
-                                                extraArgs=[i]))
+                                                               relief=DGG.SUNKEN,
+                                                               frameColor=TRANSPARENT,
+                                                               borderWidth=(0, 0),
+                                                               frameSize=(-0.52, 0.52, -0.44, 0.44),
+                                                               scale=(0.18, 1.0, 0.18),
+                                                               pos=(-0.65, 1.0, -1.897 - 0.2 * i),
+                                                               command=self.__select_cv,
+                                                               extraArgs=[i]))
 
         # Creating state buttons
         self.__state_btns = []
-        for i in range (0, 3):
+        for i in range(0, 3):
             num = os.path.join(DATA_PATH, str(i + 1) + ".png")
 
             self.__state_btns.append(DirectButton(image=num,
-                                 pos=(-0.7 + i * 0.7, 0.4, -4.4),
-                                 parent=self.__window.frame,
-                                 scale=0.16,
-                                 frameColor=TRANSPARENT,
-                                 command=self.__select_state_num_one,
-                                 extraArgs=[i]))
-        for i in range (0, 3):
+                                                  pos=(-0.7 + i * 0.7, 0.4, -4.4),
+                                                  parent=self.__window.frame,
+                                                  scale=0.16,
+                                                  frameColor=TRANSPARENT,
+                                                  command=self.__select_state_num_one,
+                                                  extraArgs=[i]))
+        for i in range(0, 3):
             num = os.path.join(DATA_PATH, str(i + 4) + ".png")
             self.__state_btns.append(DirectButton(image=num,
-                                 pos=(-0.7 + i * 0.7, 0.4, -4.9),
-                                 parent=self.__window.frame,
-                                 scale=0.16,
-                                 frameColor=TRANSPARENT,
-                                 command = self.__select_state_num_two,
-                                 extraArgs=[i+3]))
+                                                  pos=(-0.7 + i * 0.7, 0.4, -4.9),
+                                                  parent=self.__window.frame,
+                                                  scale=0.16,
+                                                  frameColor=TRANSPARENT,
+                                                  command=self.__select_state_num_two,
+                                                  extraArgs=[i+3]))
 
         """
         # default settings - testing #
@@ -685,41 +684,41 @@ class ViewEditor():
         """
 
         self.views = [{'OBSTACLES': [0.9254902601242065, 0.0, 1.0, 0.5], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
-                  'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],'TRAVERSABLES': [1.0, 1.0, 1.0, 0.0],
-        'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
-        'START': [0.8, 0.0, 0.0, 1.0], 'GOAL': [0.0, 0.9, 0.0, 1.0], 'PATH': [1.0, 1.0, 1.0, 0.5],
-                  'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+                       'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.0],
+                       'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
+                       'START': [0.8, 0.0, 0.0, 1.0], 'GOAL': [0.0, 0.9, 0.0, 1.0], 'PATH': [1.0, 1.0, 1.0, 0.5],
+                       'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
 
-                 {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
-                  'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
-                  'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
-                  'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
-                  'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+                      {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
+                       'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
+                       'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
+                       'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
+                       'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
 
-                 {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
-                  'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
-                  'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
-                  'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
-                  'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+                      {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
+                       'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
+                       'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
+                       'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
+                       'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
 
-                 {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
-                  'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
-                  'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
-                  'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
-                  'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+                      {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
+                       'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
+                       'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
+                       'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
+                       'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
 
-                 {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
-                  'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
-                  'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
-                  'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
-                  'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+                      {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
+                       'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
+                       'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
+                       'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
+                       'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
 
-                 {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
-                  'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
-                  'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
-                  'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
-                  'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]}
-                 ]
+                      {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
+                       'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
+                       'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
+                       'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
+                       'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]}
+                      ]
 
         if os.path.isfile('state.json'):
             with open('state.json', 'r') as json_file:
@@ -733,7 +732,7 @@ class ViewEditor():
         self.__selected_sn_idx = 0
         self.__select_state_num_one(0)
 
-    def load_state(self, i : int):
+    def load_state(self, i: int):
         state_nr = self.views[i]
         """
         self.OBSTACLES.colour = Colour(state_nr["OBSTACLES"][0], state_nr["OBSTACLES"][1], state_nr["OBSTACLES"][2], state_nr["OBSTACLES"][3])
@@ -749,7 +748,7 @@ class ViewEditor():
         self.EXPLORED.colour = Colour(state_nr["EXPLORED"][0], state_nr["EXPLORED"][1], state_nr["EXPLORED"][2], state_nr["EXPLORED"][3])
         """
 
-    def save_state(self, i = None):
+    def save_state(self, i=None):
         if i is not None:
             state_nr = self.views[i]
             """
@@ -776,7 +775,6 @@ class ViewEditor():
         else:
             self.__window.frame.show()
             self.hidden = False
-
 
     def __colour_picker_callback(self, colour: Colour) -> None:
         i = self.__selected_cv_idx

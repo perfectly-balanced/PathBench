@@ -85,7 +85,7 @@ class Simulator:
         Displays the help panel at init
         """
         self.__services.debug.write(
-"""Important runtime commands:
+            """Important runtime commands:
     * escape - exit the simulator
     * c - find the path between the agent and goal
     * mouse click - moves agent to mouse location 

@@ -39,19 +39,19 @@ class VoxelMap(MapData):
                 self.traversables_data[i][j] = {}
                 for k in range(len(self.obstacles_data[i][j])):
                     self.traversables_data[i][j][k] = False if self.obstacles_data[i][j][k] else True
-                    
-        self.traversables_mesh = CubeMesh(self.traversables_data, self.name + '_traversables', artificial_lighting, hidden_faces = True)
+
+        self.traversables_mesh = CubeMesh(self.traversables_data, self.name + '_traversables', artificial_lighting, hidden_faces=True)
         self.traversables = self.root.attach_new_node(self.traversables_mesh.geom_node)
 
-        self.traversables_wf_mesh = CubeMesh(self.traversables_data, self.name + '_traversables_wf', artificial_lighting, hidden_faces = True)
+        self.traversables_wf_mesh = CubeMesh(self.traversables_data, self.name + '_traversables_wf', artificial_lighting, hidden_faces=True)
         self.traversables_wf = self.root.attach_new_node(self.traversables_wf_mesh.geom_node)
         self.traversables_wf.setRenderModeWireframe()
         self.traversables_wf.setRenderModeThickness(2.2)
 
-        self.obstacles_mesh = CubeMesh(self.obstacles_data, self.name + '_obstacles', artificial_lighting, hidden_faces = True)
+        self.obstacles_mesh = CubeMesh(self.obstacles_data, self.name + '_obstacles', artificial_lighting, hidden_faces=True)
         self.obstacles = self.root.attach_new_node(self.obstacles_mesh.geom_node)
 
-        self.obstacles_wf_mesh = CubeMesh(self.obstacles_data, self.name + '_obstacles_wf', artificial_lighting, hidden_faces = True)
+        self.obstacles_wf_mesh = CubeMesh(self.obstacles_data, self.name + '_obstacles_wf', artificial_lighting, hidden_faces=True)
         self.obstacles_wf = self.root.attach_new_node(self.obstacles_wf_mesh.geom_node)
         self.obstacles_wf.setRenderModeWireframe()
         self.obstacles_wf.setRenderModeThickness(2.2)
@@ -60,7 +60,7 @@ class VoxelMap(MapData):
         self.add_colour(VoxelMap.TRAVERSABLES_WF, Colour(0), callback=lambda dc: self.__mesh_colour_callback(dc, self.traversables_wf))
         self.add_colour(VoxelMap.OBSTACLES, Colour(0), callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles))
         self.add_colour(VoxelMap.OBSTACLES_WF, Colour(1), callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles_wf))
-        
+
         self.add_colour(VoxelMap.AGENT, Colour(0.8, 0, 0))
         self.add_colour(VoxelMap.TRACE, Colour(0, 0.9, 0))
         self.add_colour(VoxelMap.GOAL, Colour(0, 0.9, 0))

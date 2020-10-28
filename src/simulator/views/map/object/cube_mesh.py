@@ -137,7 +137,7 @@ class CubeMesh():
 
         self.set_cube_colour(pos, self.default_colour)
         self.__cube_default_coloured[x][y][z] = True
-    
+
     def reset_all_cubes(self) -> None:
         for i in self.structure:
             for j in self.structure[i]:
@@ -261,11 +261,11 @@ class CubeMesh():
                 for k in self.structure[i][j]:
                     if self.structure[i][j][k] and self.__cube_default_coloured[i][j][k]:
                         self.reset_cube((i, j, k))
-    
+
     @property
     def structure(self) -> str:
         return 'structure'
-    
+
     @structure.getter
     def structure(self) -> List[List[List[bool]]]:
         return self.__structure
