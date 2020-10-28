@@ -10,8 +10,6 @@ from simulator.services.service import Service
 from simulator.services.services import Services
 from simulator.services.resources.smart_unpickle import load as smart_load
 
-from typing import NamedTuple
-
 class Directory(Service):
     _name: str
     _parent: str
