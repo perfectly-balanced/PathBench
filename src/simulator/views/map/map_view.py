@@ -248,13 +248,14 @@ class MapView(View):
         ls.move_to(*self.cube_center(p1))
         ls.draw_to(*self.cube_center(p2))
 
-    def draw_sphere(self, p: Point, colour: Colour = WHITE) -> None:
-        x, y, z = self.cube_center(p)
-        sphere = loader.load_model("models/misc/sphere.egg")
-        sphere.set_color(*colour)
-        sphere.reparent_to(self.map.root)
-        sphere.set_scale(0.2)
-        sphere.set_pos(x, y, z)
+    def draw_sphere(self, p: Point, colour: Colour = WHITE, scale: float = 0.2) -> None:
+        np = loader.load_model("models/misc/sphere.egg")
+        np.set_color(*colour)
+        np.reparent_to(self.map.root)
+        np.set_pos(*self.cube_center(p))
+        np.set_scale(scale)
+
+        self.__draw_nps.append(np)
     
     def make_arc(self, p: Point, angle_degs = 360, nsteps = 16, radius: float = 0.06, colour: Colour = WHITE) -> None:
         ls = self.line_segs
