@@ -7,7 +7,7 @@ from entities.agent import Agent
 from entities.entity import Entity
 from entities.goal import Goal
 from entities.obstacle import Obstacle
-from domains.dense_map import DenseMap
+from algorithms.configuration.maps.dense_map import DenseMap
 from domains.map import Map
 # from simulator.services.debug import DebugLevel
 # from simulator.services.services import Services
