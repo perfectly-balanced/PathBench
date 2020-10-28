@@ -44,3 +44,4 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         env_vars: PYTHON
+        file: tests/.coverage
