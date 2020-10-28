@@ -17,7 +17,7 @@ class TestMap(unittest.TestCase):
         ])
         map1.reset()
         self.assertEqual([], map1.trace)
-        self.assertEqual(Point(0, 1), map1.agent.position)
+        self.assertEqual(map1.at(Point(0, 1)), map1.AGENT_ID)
 
     def test_reset_normal(self) -> None:
         map1: DenseMap = DenseMap([
@@ -28,7 +28,7 @@ class TestMap(unittest.TestCase):
         map1.move_agent(Point(1, 1))
         map1.reset()
         self.assertEqual([], map1.trace)
-        self.assertEqual(Point(0, 1), map1.agent.position)
+        self.assertEqual(map1.at(Point(0, 1)), map1.AGENT_ID)
 
     def test_neighbours_bounds(self) -> None:
         map1: DenseMap = DenseMap([

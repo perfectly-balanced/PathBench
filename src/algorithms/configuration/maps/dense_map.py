@@ -24,12 +24,6 @@ class DenseMap(Map):
     """
     grid: np.array
 
-    CLEAR_ID: int = 0
-    WALL_ID: int = 1
-    AGENT_ID: int = 2
-    GOAL_ID: int = 3
-    EXTENDED_WALL: int = 4
-
     def __init__(self, grid: Optional[List], services: Services = None) -> None:
         self.grid = None 
 
@@ -48,8 +42,7 @@ class DenseMap(Map):
 
         #We transpose here to not worry about flipping coordinates later on
         #Please take care I'm not sure why everythng works but it does atm
-        np.transpose(grid)
-        self.grid = grid
+        self.grid = np.transpose(grid)
 
         self.size = Size(*self.grid.shape)
         for index in np.ndindex(*self.size):
@@ -106,6 +99,9 @@ class DenseMap(Map):
         #                bounds: Set[Point] = self.get_obstacle_bound(Point(j, i), visited)
         #                extend_obstacle_bound()
 
+    def at(self, p: Point) -> int:
+        return self.grid[p.pos]
+
     def move(self, entity: Entity, to: Point, no_trace: bool = False) -> bool:
         """
         Read super description
@@ -155,7 +151,7 @@ class DenseMap(Map):
         if not super().is_agent_valid_pos(pos):
             return False
 
-        return self.grid[pos.pos] != self.WALL_ID and self.grid[pos.pos] != self.EXTENDED_WALL
+        return self.at(pos) != self.WALL_ID and self.at(pos) != self.EXTENDED_WALL
 
     def __str__(self) -> str:
         debug_level: DebugLevel = DebugLevel.BASIC
@@ -195,4 +191,4 @@ class DenseMap(Map):
             other: DenseMap = other.convert_to_dense_map()
         if not isinstance(other, DenseMap):
             return False
-        return np.array_equal(self.grid, other.grid) and super().__eq__(other)
+        return np.array_equal(self.grid, other.grid)

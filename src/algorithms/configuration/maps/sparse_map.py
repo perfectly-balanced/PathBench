@@ -29,6 +29,16 @@ class SparseMap(Map):
         self.obstacles = obstacles
         self.goal = goal
 
+    def at(self, p: Point) -> int:
+        if self.agent.position == p:
+            return self.AGENT_ID
+        elif p in [o.position for o in self.obstacles]:
+            return self.WALL_ID
+        elif self.goal.position == p:
+            return self.GOAL_ID
+        else:
+            return self.CLEAR_ID
+
     def move(self, entity: Entity, to: Point, no_trace: bool = False) -> bool:
         """
         Read super description
@@ -52,7 +62,7 @@ class SparseMap(Map):
         Converts current map into a :class:`DenseMap`
         :return: The converted map
         """
-        grid: List[List[int]] = [[0 for _ in range(self.size.width)] for _ in range(self.size.height)]
+        grid: np.array = np.zeros(self.size)
         should_optimize: bool = len(self.obstacles) > 20
 
         for obstacle in self.obstacles:
@@ -64,13 +74,13 @@ class SparseMap(Map):
                     if not self.is_out_of_bounds_pos(Point(x, y)):
                         dist: Union[float, np.ndarray] = np.linalg.norm(np.array([x, y]) - np.array(obstacle.position))
                         if not should_optimize and \
-                                dist <= obstacle.radius + self.agent.radius and grid[y][x] == DenseMap.CLEAR_ID:
-                            grid[y][x] = DenseMap.EXTENDED_WALL
+                                dist <= obstacle.radius + self.agent.radius and grid[x][y] == DenseMap.CLEAR_ID:
+                            grid[x][y] = DenseMap.EXTENDED_WALL
                         if dist <= obstacle.radius:
-                            grid[y][x] = DenseMap.WALL_ID
+                            grid[x][y] = DenseMap.WALL_ID
 
-        grid[self.agent.position.y][self.agent.position.x] = DenseMap.AGENT_ID
-        grid[self.goal.position.y][self.goal.position.x] = DenseMap.GOAL_ID
+        grid[self.agent.position.pos] = DenseMap.AGENT_ID
+        grid[self.goal.position.pos] = DenseMap.GOAL_ID
         dense_map: DenseMap = DenseMap(grid, self._services)
         dense_map.agent = copy.deepcopy(self.agent)
         dense_map.goal = copy.deepcopy(self.goal)
