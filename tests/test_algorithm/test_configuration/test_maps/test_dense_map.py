@@ -234,13 +234,14 @@ class TestDenseMap(unittest.TestCase):
         self.assertFalse(map1.is_agent_valid_pos(Point(1, 0)))
         self.assertFalse(map1.is_agent_valid_pos(Point(0, 0)))
         self.assertFalse(map1.is_agent_valid_pos(Point(-1, -1)))
-
+    
     def test_str(self) -> None:
         map1: DenseMap = DenseMap([
             [DenseMap.EXTENDED_WALL, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
             [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
+        print(str(map1))
         self.assertEqual("""DenseMap: {
 		size: Size(4, 3), 
 		agent: Agent: {position: Point(0, 1), radius: 0}, 

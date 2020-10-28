@@ -177,6 +177,21 @@ class DenseMap(Map):
             res += "\t\t]"
         return res + "\n\t}"
 
+    def __get_grid_string__(grid: np.array) -> str:
+
+        self.size = Size(*self.grid.shape)
+        for index in np.ndindex(*self.size):
+            val: int = self.grid[index]
+            if val == self.AGENT_ID:
+                self.agent = Agent(Point(*index))
+            elif val == self.GOAL_ID:
+                self.goal = Goal(Point(*index))
+            elif val == self.WALL_ID:
+                self.obstacles.append(Obstacle(Point(*index)))
+            elif val == self.EXTENDED_WALL:
+                self.obstacles.append(ExtendedWall(Point(*index)))
+        return ""
+
     def __copy__(self) -> 'DenseMap':
         return copy.deepcopy(self)
 
