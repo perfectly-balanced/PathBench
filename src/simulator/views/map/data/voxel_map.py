@@ -67,7 +67,7 @@ class VoxelMap(MapData):
 
     def __traversables_colour_callback(self, dc: DynamicColour) -> None:
         self.traversables_mesh.default_colour = dc()
-        self._dynamic_colour_callback(dc)
+        self._colour_update_callback(dc)
 
     def __mesh_colour_callback(self, dc: DynamicColour, np: NodePath) -> None:
         if dc.visible:

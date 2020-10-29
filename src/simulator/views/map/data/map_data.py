@@ -2,6 +2,8 @@ from panda3d.core import NodePath, TransparencyAttrib, LVecBase3f
 
 from structures import DynamicColour, Colour, TRANSPARENT
 from simulator.services.services import Services
+from simulator.services.event_manager.events.event import Event
+from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
 
 from typing import Optional, Callable, Dict
@@ -10,19 +12,26 @@ class MapData:
     _services: Services
     __name: str
     __root: NodePath
-    colours: Dict[str, DynamicColour]
+    __colour_callbacks: Dict[str, Callable[[DynamicColour], None]]
 
     BG: str = "background"
 
     def __init__(self, services: Services, parent: NodePath, name: str = "map"):
         self._services = services
         self.__name = name
+        self.__colour_callbacks = {}
+
+        self._services.ev_manager.register_listener(self)
 
         self.__root = parent.attach_new_node(self.name)
         self.root.set_transparency(TransparencyAttrib.M_alpha)
 
-        self.colours = {}
         self.add_colour(MapData.BG, Colour(0, 0, 0.2, 1), callback=lambda dc: self._services.graphics.window.set_background_color(*dc()))
+    
+    def notify(self, event: Event) -> None:
+        if isinstance(event, ColourUpdateEvent):
+            if event.colour.name in self.__colour_callbacks:
+                self.__colour_callbacks[event.colour.name](event.colour)
 
     @property
     def root(self) -> str:
@@ -40,22 +49,15 @@ class MapData:
     def name(self) -> NodePath:
         return self.__name
 
-    def _dynamic_colour_callback(self, colour: DynamicColour) -> None:
+    def _colour_update_callback(self, colour: DynamicColour) -> None:
         self._services.ev_manager.post(KeyFrameEvent(refresh=True))
 
     def add_colour(self, name: str, default_colour: Colour, default_visible: bool = True, invoke_callback: bool = True, callback: Optional[Callable[[DynamicColour], None]] = None) -> DynamicColour:
         if callback is None:
-            callback = self._dynamic_colour_callback
-        if name not in self.colours:
-            dc = self.colours[name] = DynamicColour(default_colour, name, callback, default_visible)
-        else:
-            dc = self.colours[name]
+            callback = self._colour_update_callback
+        if name not in self.__colour_callbacks:
+            self.__colour_callbacks[name] = callback
+        dc = self._services.state.add_colour(name, default_colour, default_visible)
         if invoke_callback:
             callback(dc)
         return dc
-
-    def set_visibility(self, name: str, visible: bool) -> None:
-        self.colours[name].visible = visible
-
-    def set_colour(self, name: str, colour: Colour) -> None:
-        self.colours[name].colour = colour

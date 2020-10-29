@@ -126,7 +126,7 @@ class MapView(View):
 
     def __get_displays(self) -> None:
         self.__displays = []
-        displays: List[MapDisplay] = [EntitiesMapDisplay(self.__map, self._services)]
+        displays: List[MapDisplay] = [EntitiesMapDisplay(self._services)]
         # drop map displays if not compatible with display format
         displays += list(
             filter(lambda d: self._services.settings.simulator_grid_display or not isinstance(d, NumbersMapDisplay),
@@ -207,7 +207,7 @@ class MapView(View):
         if y not in self.__tc_scratchpad[x]:
             self.__tc_scratchpad[x][y] = {}
         if z not in self.__tc_scratchpad[x][y]:
-            self.__tc_scratchpad[x][y][z] = self.map.colours["traversables"].colour  # use raw colour
+            self.__tc_scratchpad[x][y][z] = self._services.state.effective_view.colours["traversables"].colour  # use raw colour
         dst = self.__tc_scratchpad[x][y][z]
 
         wda = dst.a * (1 - src.a)  # weighted dst alpha

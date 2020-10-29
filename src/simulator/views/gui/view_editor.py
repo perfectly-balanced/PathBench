@@ -761,10 +761,10 @@ class ViewEditor():
         self.__services.state.apply_effective_view()
     
     def __update_visibility(self, name: str, visible: bool) -> None:
-        self.__services.state.effective_view.colours[n].visible = visible
+        self.__services.state.effective_view.colours[name].visible = visible
 
     def __update_colour(self, name: str, colour: Colour) -> None:
-        self.__services.state.effective_view.colours[n].colour = colour
+        self.__services.state.effective_view.colours[name].colour = colour
 
     def __toggle_view_editor(self):
         if not self.hidden:

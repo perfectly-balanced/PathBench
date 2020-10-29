@@ -26,19 +26,18 @@ class PersistentStateView():
     
     def __colour_callback(self, colour: DynamicColour) -> None:
         if self.index == self.state.view_idx:
-            self.state.colours[colour.name].set_all(colour.colour, colour.visible)
+            self.state.effective_view.colours[colour.name].set_all(colour.colour, colour.visible)
         self.__services.ev_manager.post(ColourUpdateEvent(colour, self))
 
-    def _add_colour(self, name: str, colour: Colour, visible: bool, invoke_callback: bool = True) -> DynamicColour:
+    def _add_colour(self, name: str, colour: Colour, visible: bool) -> DynamicColour:
         if name in self.colours:
             return self.colours[name]
         dc = self.colours[name] = DynamicColour(colour, name, self.__colour_callback, visible)
-        if invoke_callback:
-            self.__colour_callback(dc)
+        self.__colour_callback(dc)
         return dc
 
     def _from_view(self, other: 'PersistentStateView') -> None:
-        self.colours = dict(filter(lambda n: n in other.colours, self.colours))
+        self.colours = {k: v for k, v in self.colours.items() if k in other.colours}
         for n, c in other.colours.items():
             if n not in self.colours:
                 self._add_colour(n, c.colour, c.visible)
@@ -56,8 +55,8 @@ class PersistentStateView():
         dc = data["colours"] = {}
         for n, c in self.colours.items():
             dc[n] = {}
-            dc[n]["colour"] = tuple(*c.colour)
-            dc[n]["visible"] = tuple(*c.visible)
+            dc[n]["colour"] = tuple(c.colour)
+            dc[n]["visible"] = c.visible
         return data
 
     @property
