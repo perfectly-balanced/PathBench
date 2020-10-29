@@ -12,6 +12,7 @@ from structures import Colour, WHITE, BLACK, TRANSPARENT
 from constants import DATA_PATH
 
 from simulator.services.services import Services
+from simulator.services.persistent_state import PersistentState
 from simulator.services.event_manager.events.new_colour_event import NewColourEvent
 from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
 
@@ -727,25 +728,16 @@ class ViewEditor():
 
         # Creating view selectors
         self.__view_selectors = []
-        for i in range(0, 3):
+        for i in range(0, PersistentState.MAX_VIEWS):
             num = os.path.join(DATA_PATH, str(i + 1) + ".png")
 
             self.__view_selectors.append(DirectButton(image=num,
-                                                      pos=(-0.7 + i * 0.7, 0.4, -4.4),
+                                                      pos=(-0.7 + (i % 3) * 0.7, 0.4, -4.4 - 0.5 * (i // 3)),
                                                       parent=self.__window.frame,
                                                       scale=0.16,
                                                       frameColor=TRANSPARENT,
                                                       command=lambda v: setattr(self, "view_idx", v),
                                                       extraArgs=[i]))
-        for i in range(0, 3):
-            num = os.path.join(DATA_PATH, str(i + 4) + ".png")
-            self.__view_selectors.append(DirectButton(image=num,
-                                                      pos=(-0.7 + i * 0.7, 0.4, -4.9),
-                                                      parent=self.__window.frame,
-                                                      scale=0.16,
-                                                      frameColor=TRANSPARENT,
-                                                      command=lambda v: setattr(self, "view_idx", v),
-                                                      extraArgs=[i+3]))
 
         self.__elems = []
         self.__reset()
@@ -765,10 +757,7 @@ class ViewEditor():
             self.__elems[i].frame.set_pos((0.15, 0.0, -0.2 * i))
         self.__elems_frame["canvasSize"] = (-0.95, 0.95, -0.2 * len(self.__elems) + 0.1, 0.1)
 
-        if self.view_idx < 3:
-            self.__selected_view_outline.set_pos((-0.7 + self.view_idx * 0.7, 0.4, -4.4))
-        else:
-            self.__selected_view_outline.set_pos((-0.7 + (self.view_idx - 3) * 0.7, 0.4, -4.9))
+        self.__selected_view_outline.set_pos((-0.7 + (self.view_idx % 3) * 0.7, 0.4, -4.4 - 0.5 * (self.view_idx // 3)))
 
         self.__select_cv(self.__elems[0] if self.__elems else None)
 
