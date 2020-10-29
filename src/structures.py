@@ -323,6 +323,12 @@ class DynamicColour:
         if self.__callback is not None:
             self.__callback(self)
     
+    def set_all(self, colour: Colour, visible: bool) -> None:
+        self.__colour = colour
+        self.__visible = visible
+        if self.__callback is not None:
+            self.__callback(self)
+    
     def __repr__(self) -> str:
         return f"DynamicColour(colour={self.__colour}, visible={self.visible})"
 
