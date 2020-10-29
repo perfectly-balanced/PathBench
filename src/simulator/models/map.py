@@ -1,4 +1,3 @@
-import pygame
 from threading import Thread, Condition
 
 from algorithms.configuration.maps.sparse_map import SparseMap

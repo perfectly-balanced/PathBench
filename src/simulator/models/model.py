@@ -5,7 +5,7 @@ from simulator.services.services import Services
 class Model:
     """
     The model base class
-    All controllers should inherit from this class
+    All logic should inherit from this class
     """
 
     _services: Services

@@ -18,6 +18,7 @@ class Services:
     __settings: 'Configuration'
     __debug: Debug
     __ev_manager: EventManager
+    __state: 'PersistentState'
     __algorithm_runner: 'AlgorithmRunner'
     __graphics: Optional['GraphicsManager']
     __resources_dir: 'Resources'
@@ -27,6 +28,7 @@ class Services:
         self.__settings = None
         self.__debug = None
         self.__ev_manager = None
+        self.__state = None
         self.__graphics = None
         self.__algorithm_runner = None
         self.__resources_dir = None
@@ -37,11 +39,13 @@ class Services:
         from simulator.services.graphics.graphics_manager import GraphicsManager
         from simulator.services.algorithm_runner import AlgorithmRunner
         from simulator.services.resources.resources import Resources
+        from simulator.services.persistent_state import PersistentState
         from simulator.services.torch import Torch
 
         self.__settings = config
         self.__debug = Debug(self)
         self.__ev_manager = EventManager(self)
+        self.__state = PersistentState(self)
         self.__resources_dir = Resources(self)
         self.__torch = Torch(self)
         self.__algorithm_runner = AlgorithmRunner(self)
@@ -49,6 +53,14 @@ class Services:
 
         if self.__settings.simulator_graphics:
             self.__graphics = GraphicsManager(self)
+
+    @property
+    def state(self) -> str:
+        return 'state'
+
+    @state.getter
+    def state(self) -> 'PersistentState':
+        return self.__state
 
     @property
     def debug(self) -> str:

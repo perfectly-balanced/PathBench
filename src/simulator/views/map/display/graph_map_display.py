@@ -12,11 +12,15 @@ if TYPE_CHECKING:
 class GraphMapDisplay(MapDisplay):
     __graph: 'Graph'
 
-    COLOUR: Colour = RED
+    edge_colour: Colour
+    node_colour: Colour
 
     def __init__(self, services: Services, graph: 'Graph', custom_map: Map = None) -> None:
         super().__init__(services, z_index=250, custom_map=custom_map)
         self.__graph = graph
+
+        self.edge_colour = self._services.state.add_colour("graph edge", RED)
+        self.node_colour = self._services.state.add_colour("graph node", RED)
 
     def render(self) -> bool:
         if not super().render():
@@ -34,13 +38,13 @@ class GraphMapDisplay(MapDisplay):
 
     def __render_edge(self, current: 'Vertex'):
         for parent in current.parents:
-            self.get_renderer_view().draw_line(GraphMapDisplay.COLOUR, current.position, parent.position)
+            self.get_renderer_view().draw_line(self.edge_colour(), current.position, parent.position)
 
     def __render_node(self, current: 'Vertex') -> None:
         if self._map.size.n_dim == 2:
-            self.get_renderer_view().draw_circle_filled(current.position, colour=GraphMapDisplay.COLOUR)
+            self.get_renderer_view().draw_circle_filled(current.position, colour=self.node_colour())
         else:
-            self.get_renderer_view().draw_sphere(current.position, colour=GraphMapDisplay.COLOUR)
+            self.get_renderer_view().draw_sphere(current.position, colour=self.node_colour())
 
     def __lt__(self, other):
         return super().__lt__(other)

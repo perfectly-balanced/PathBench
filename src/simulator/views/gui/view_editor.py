@@ -12,8 +12,8 @@ from structures import Colour, WHITE, BLACK, TRANSPARENT
 from constants import DATA_PATH
 
 from simulator.services.services import Services
-from simulator.views.map.data.voxel_map import VoxelMap
-
+from simulator.services.persistent_state import PersistentState
+from simulator.services.event_manager.events.new_colour_event import NewColourEvent
 from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
 
 class ColourPicker:
@@ -28,9 +28,12 @@ class ColourPicker:
     __marker: DirectFrame
     __marker_center: DirectFrame
 
+    enabled: bool
+
     def __init__(self, base: ShowBase, pick_colour_callback: Callable[[Tuple[float, float, float, float]], None], **kwargs) -> None:
         self.__base = base
         self.pick_colour_callback = pick_colour_callback
+        self.enabled = True
 
         # PALETTE #
         palette_filename = os.path.join(DATA_PATH, "colour_palette.png")
@@ -126,8 +129,9 @@ class ColourPicker:
         return self.__colour_at(pointer.getX(), -pointer.getY())
 
     def __pick(self, *args):
-        self.__update_marker_pos()
-        self.pick_colour_callback(self.__update_marker_colour())
+        if self.enabled:
+            self.__update_marker_pos()
+            self.pick_colour_callback(self.__update_marker_colour())
 
     @property
     def frame(self) -> DirectFrame:
@@ -136,7 +140,6 @@ class ColourPicker:
     @property
     def marker(self) -> DirectFrame:
         return self.__marker
-
 
 class Window():
     __base: ShowBase
@@ -227,6 +230,14 @@ class ColourView():
     def frame(self) -> DirectFrame:
         return self.__frame
 
+    @property
+    def view(self) -> DirectFrame:
+        return self.__view
+
+    def destroy(self) -> None:
+        self.__view.destroy()
+        self.__frame.destroy()
+
 
 class ColourChannel():
     __slider_edit_callback: Callable[['ColourChannel', float], None]
@@ -236,6 +247,8 @@ class ColourChannel():
     __label: DirectLabel
     __slider: DirectSlider
     __entry: DirectEntry
+    __disable_frame_overlay: DirectButton
+    __enabled: bool
 
     def __init__(self, parent: DirectFrame, text: str, value: float, slider_edit_callback: Callable[['ColourChannel', float], None], entry_edit_callback: Callable[['ColourChannel', float], None]):
         self.__frame = DirectFrame(parent=parent)
@@ -267,6 +280,14 @@ class ColourChannel():
                                    width=3,
                                    pos=(0.55, 0.0, -0.01105))
 
+        self.__disable_frame_overlay = DirectButton(parent=self.__frame,
+                                                    frameColor=TRANSPARENT,
+                                                    borderWidth=(0.0, 0.0),
+                                                    frameSize=(-0.6, 0.9, -0.2, 0.2),
+                                                    suppressMouse=True)
+        self.__disable_frame_overlay.hide()
+        self.__enabled = True
+
         self.__set_callbacks()
 
     def __unset_callbacks(self):
@@ -282,11 +303,15 @@ class ColourChannel():
         return self.__frame
 
     def update_slider(self, value: float):
+        if not self.__enabled:
+            return
         self.__unset_callbacks()
         self.__slider['value'] = value
         self.__set_callbacks()
 
     def update_entry(self, value: float):
+        if not self.__enabled:
+            return
         self.__unset_callbacks()
         self.__entry.enterText(f'{value:.3f}')
         self.__set_callbacks()
@@ -299,6 +324,24 @@ class ColourChannel():
     def value(self) -> float:
         return self.__slider['value']
 
+    @property
+    def enabled(self) -> str:
+        return 'enabled'
+
+    @enabled.setter
+    def enabled(self, enabled: bool) -> None:
+        if self.__enabled == enabled:
+            return
+        self.__enabled = enabled
+        if enabled:
+            self.__disable_frame_overlay.hide()
+        else:
+            self.__disable_frame_overlay.show()
+
+    @enabled.getter
+    def enabled(self) -> bool:
+        return self.__enabled
+
 
 class AdvancedColourPicker():
     __base: ShowBase
@@ -307,11 +350,20 @@ class AdvancedColourPicker():
 
     __frame: DirectFrame
     __colour_picker: ColourPicker
+    __cv_picked: ColourView
+    __cv_hovered: ColourView
+    __r: ColourChannel
+    __g: ColourChannel
+    __b: ColourChannel
+    __a: ColourChannel
+    __dirty_rem_no_hide: int
+    __enabled: bool
 
     def __init__(self, base: ShowBase, parent: DirectFrame, callback: Callable[[Colour], None], colour: Colour = Colour(0.25, 0.5, 0.75, 1.0)):
         self.__base = base
         self.__colour = colour
         self.__callback = callback
+        self.__enabled = True
 
         self.__frame = DirectFrame(parent=parent)
 
@@ -410,28 +462,61 @@ class AdvancedColourPicker():
         self.__b.update(b)
         self.__a.update(a)
 
+    @property
+    def enabled(self) -> str:
+        return 'enabled'
+
+    @enabled.setter
+    def enabled(self, enabled: bool) -> None:
+        if self.__enabled == enabled:
+            return
+        self.__enabled = enabled
+        if not enabled:
+            self.colour = WINDOW_BG_COLOUR
+        self.__colour_picker.enabled = enabled
+        self.__r.enabled = enabled
+        self.__g.enabled = enabled
+        self.__b.enabled = enabled
+        self.__a.enabled = enabled
+
+    @enabled.getter
+    def enabled(self) -> bool:
+        return self.__enabled
+
 class ViewElement():
     __name: str
     __visibility_callback: Callable[[str, bool], None]
     __colour_callback: Callable[[str, Colour], None]
+    __cv_clicked_callback: Callable[['ViewElement'], None]
     __visible: bool
 
     __frame: DirectFrame
     __label: DirectLabel
     __cv: ColourView
-    __visibility_btn: DirectFrame
+    __cv_btn: DirectButton
+    __visibility_btn: DirectButton
+    __visibility_bar: DirectFrame
 
-    def __init__(self, name: str, visibility_callback: Callable[[str, bool], None], colour_callback: Callable[[str, Colour], None], parent: DirectFrame, visible: bool = True, colour: Colour = Colour(0.2, 0.3, 0.4, 0.5)):
+    def __init__(self, name: str, visibility_callback: Callable[[str, bool], None], colour_callback: Callable[[str, Colour], None], cv_clicked_callback: Callable[['ViewElement'], None], parent: DirectFrame, visible: bool = True, colour: Colour = Colour(0.2, 0.3, 0.4, 0.5)):
         self.__name = name
         self.__visible = visible
         self.__visibility_callback = None
         self.__colour_callback = None
+        self.__cv_clicked_callback = None
 
         self.__frame = DirectFrame(parent=parent, frameColor=WINDOW_BG_COLOUR)
 
         self.__cv = ColourView(self.__frame, colour)
         self.__cv.frame.set_scale((0.15, 1.0, 0.15))
         self.__cv.frame.set_pos((-0.65, 1.0, 0.0))
+
+        self.__cv_btn = DirectButton(parent=self.__cv.frame,
+                                     frameColor=TRANSPARENT,
+                                     borderWidth=(0, 0),
+                                     frameSize=self.__cv.view["frameSize"],
+                                     scale=self.__cv.view["scale"],
+                                     pos=self.__cv.view["pos"],
+                                     command=self.__cv_clicked)
 
         self.__label = DirectLabel(parent=self.__frame,
                                    text=self.__name,
@@ -460,9 +545,14 @@ class ViewElement():
 
         self.__visibility_callback = visibility_callback
         self.__colour_callback = colour_callback
+        self.__cv_clicked_callback = cv_clicked_callback
 
     def __toggle_visible(self):
         self.visible = not self.visible
+
+    def __cv_clicked(self):
+        if self.__cv_clicked_callback:
+            self.__cv_clicked_callback(self)
 
     @property
     def name(self) -> str:
@@ -508,21 +598,28 @@ class ViewElement():
         else:
             self.__visibility_bar.show()
 
+    def destroy(self) -> None:
+        self.__visibility_bar.destroy()
+        self.__visibility_btn.destroy()
+        self.__cv_btn.destroy()
+        self.__cv.destroy()
+        self.__label.destroy()
+        self.__frame.destroy()
+
+
 class ViewEditor():
     __services: Services
     __base: ShowBase
     __window: Window
     __colour_picker: AdvancedColourPicker
-    __elements: List[ViewElement]
-    __voxel_map: VoxelMap
+    __elems: List[ViewElement]
 
-    def __init__(self, services: Services, voxel_map: VoxelMap):
+    def __init__(self, services: Services):
         self.__services = services
+        self.__services.ev_manager.register_listener(self)
         self.__base = self.__services.graphics.window
-        self.__voxel_map = voxel_map
         self.hidden = False
 
-        self.state_num = 0
         self.__window = Window(self.__base, "view_editor", parent=self.__base.pixel2d,
                                relief=DGG.RAISED,
                                borderWidth=(0.0, 0.0),
@@ -552,15 +649,22 @@ class ViewEditor():
                     frameSize=(-1., 1., -0.01, 0.01),
                     pos=(0.0, 0.0, -4.1))
 
+        # ViewElements listing
+        self.__elems_frame = DirectScrolledFrame(parent=self.__window.frame,
+                                                 frameColor=WINDOW_BG_COLOUR,
+                                                 frameSize=(-1, 1, -1.125, 1.1),
+                                                 pos=(0, 0, -2.9),
+                                                 autoHideScrollBars=True)
+
         # selected colour view frame
-        self.__selected_cv_outline = DirectFrame(parent=self.__window.frame,
+        self.__selected_cv_outline = DirectFrame(parent=self.__elems_frame.getCanvas(),
                                                  relief=DGG.SUNKEN,
                                                  frameColor=WHITE,
                                                  borderWidth=(0.15, 0.15),
                                                  frameSize=(-0.62, 0.62, -0.54, 0.54),
                                                  scale=(0.18, 1.0, 0.18))
-        # selected state number frame
-        self.__selected_state_number = DirectFrame(parent=self.__window.frame,
+        # selected view frame
+        self.__selected_view_outline = DirectFrame(parent=self.__window.frame,
                                                    relief=DGG.SUNKEN,
                                                    frameColor=WHITE,
                                                    borderWidth=(0.15, 0.15),
@@ -572,15 +676,11 @@ class ViewEditor():
                                    text_fg=WHITE,
                                    text_bg=WINDOW_BG_COLOUR,
                                    borderWidth=(.0, .0),
-                                   #pos=(10.9, 1.4, 3),
+                                   pos=(0.0, 0.0, 1.27),
                                    scale=(0.2, 3, 0.2))
 
-        self.heading.set_pos((0.0, 0.0, 1.27))
-
-        quit_filename = os.path.join(DATA_PATH, "quit.png")
-
         # Quit button
-        self.btn = DirectButton(image=quit_filename,
+        self.btn = DirectButton(image=os.path.join(DATA_PATH, "quit.png"),
                                 command=self.__toggle_view_editor,
                                 pos=(0.9, 0.4, 1.32),
                                 parent=self.__window.frame,
@@ -610,7 +710,7 @@ class ViewEditor():
             text="Save",
             text_fg=(0.3, 0.3, 0.3, 1.0),
             pressEffect=1,
-            command=lambda: self.save_state(self.state_num),
+            command=self.__save,
             pos=(-0.575, 0, -5.5),
             parent=self.__window.frame,
             scale=(0.20, 2.1, 0.15),
@@ -620,153 +720,55 @@ class ViewEditor():
             text="Restore",
             text_fg=(0.3, 0.3, 0.3, 1.0),
             pressEffect=1,
-            command=lambda: self.load_state(self.state_num),
+            command=self.__reset,
             pos=(0.50, 0, -5.5),
             parent=self.__window.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
 
-        # view elements
-        self.__elements = []
-        for name, dc in self.__voxel_map.colours.items():
-            self.__elements.append(ViewElement(name, self.__voxel_map.set_visibility, self.__voxel_map.set_colour, self.__window.frame, colour=dc()))
-
-        for i in range(len(self.__elements)):
-            self.__elements[i].frame.set_pos((0.0, 0.0, -1.9 - 0.2 * i))
-
-        self.__cv_transparent_overlays = []
-        for i in range(len(self.__elements)):
-            self.__cv_transparent_overlays.append(DirectButton(parent=self.__window.frame,
-                                                               relief=DGG.SUNKEN,
-                                                               frameColor=TRANSPARENT,
-                                                               borderWidth=(0, 0),
-                                                               frameSize=(-0.52, 0.52, -0.44, 0.44),
-                                                               scale=(0.18, 1.0, 0.18),
-                                                               pos=(-0.65, 1.0, -1.897 - 0.2 * i),
-                                                               command=self.__select_cv,
-                                                               extraArgs=[i]))
-
-        # Creating state buttons
-        self.__state_btns = []
-        for i in range(0, 3):
+        # Creating view selectors
+        self.__view_selectors = []
+        for i in range(0, PersistentState.MAX_VIEWS):
             num = os.path.join(DATA_PATH, str(i + 1) + ".png")
 
-            self.__state_btns.append(DirectButton(image=num,
-                                                  pos=(-0.7 + i * 0.7, 0.4, -4.4),
-                                                  parent=self.__window.frame,
-                                                  scale=0.16,
-                                                  frameColor=TRANSPARENT,
-                                                  command=self.__select_state_num_one,
-                                                  extraArgs=[i]))
-        for i in range(0, 3):
-            num = os.path.join(DATA_PATH, str(i + 4) + ".png")
-            self.__state_btns.append(DirectButton(image=num,
-                                                  pos=(-0.7 + i * 0.7, 0.4, -4.9),
-                                                  parent=self.__window.frame,
-                                                  scale=0.16,
-                                                  frameColor=TRANSPARENT,
-                                                  command=self.__select_state_num_two,
-                                                  extraArgs=[i+3]))
+            self.__view_selectors.append(DirectButton(image=num,
+                                                      pos=(-0.7 + (i % 3) * 0.7, 0.4, -4.4 - 0.5 * (i // 3)),
+                                                      parent=self.__window.frame,
+                                                      scale=0.16,
+                                                      frameColor=TRANSPARENT,
+                                                      command=lambda v: setattr(self, "view_idx", v),
+                                                      extraArgs=[i]))
 
-        """
-        # default settings - testing #
-        self.OBSTACLES = self.__elements[0]
-        self.OBSTACLES_TRI_WF = self.__elements[1]
-        self.OBSTACLES_SQR_WF = self.__elements[2]
-        self.TRAVERSABLES = self.__elements[3]
-        self.TRAVERSABLES_TRI_WF = self.__elements[4]
-        self.TRAVERSABLES_SQR_WF = self.__elements[5]
-        self.START = self.__elements[6]
-        self.GOAL = self.__elements[7]
-        self.PATH = self.__elements[8]
-        self.FRINGE = self.__elements[9]
-        self.EXPLORED = self.__elements[10]
-        """
+        self.__elems = []
+        self.__reset()
 
-        self.views = [{'OBSTACLES': [0.9254902601242065, 0.0, 1.0, 0.5], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
-                       'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.0],
-                       'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
-                       'START': [0.8, 0.0, 0.0, 1.0], 'GOAL': [0.0, 0.9, 0.0, 1.0], 'PATH': [1.0, 1.0, 1.0, 0.5],
-                       'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+    def __reset(self) -> None:
+        self.__services.state.restore_effective_view()
+        ps_colours = self.__services.state.effective_view.colours
 
-                      {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
-                       'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
-                       'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
-                       'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
-                       'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+        for e in self.__elems:
+            e.destroy()
+        self.__elems.clear()
 
-                      {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
-                       'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
-                       'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
-                       'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
-                       'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+        for name, dc in ps_colours.items():
+            self.__elems.append(ViewElement(name, self.__update_visibility, self.__update_colour, self.__select_cv, self.__elems_frame.getCanvas(), dc.visible, dc.colour))
 
-                      {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
-                       'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
-                       'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
-                       'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
-                       'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+        for i in range(len(self.__elems)):
+            self.__elems[i].frame.set_pos((0.15, 0.0, -0.2 * i))
+        self.__elems_frame["canvasSize"] = (-0.95, 0.95, -0.2 * len(self.__elems) + 0.1, 0.1)
 
-                      {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
-                       'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
-                       'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
-                       'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
-                       'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]},
+        self.__selected_view_outline.set_pos((-0.7 + (self.view_idx % 3) * 0.7, 0.4, -4.4 - 0.5 * (self.view_idx // 3)))
 
-                      {'OBSTACLES': [0.8, 0.2, 0.2, 1.0], 'OBSTACLES_TRI_WF': [1.0, 1.0, 1.0, 1.0],
-                       'OBSTACLES_SQR_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES': [1.0, 1.0, 1.0, 0.5],
-                       'TRAVERSABLES_TRI_WF': [1.0, 1.0, 1.0, 0.5], 'TRAVERSABLES_SQR_WF': [1.0, 1.0, 1.0, 0.5],
-                       'START': [0.5, 0.0, 0.5, 1.0], 'GOAL': [0.0, 1.0, 0.0, 0.5], 'PATH': [1.0, 1.0, 1.0, 0.5],
-                       'FRINGE': [0.2, 0.2, 0.8, 1.0], 'EXPLORED': [0.4, 0.4, 0.4, 1.0]}
-                      ]
+        self.__select_cv(self.__elems[0] if self.__elems else None)
 
-        if os.path.isfile('state.json'):
-            with open('state.json', 'r') as json_file:
-                self.views = json.load(json_file)
-                # todo: actually check that structure is the same
-        else:
-            self.save_state()
+    def __save(self) -> None:
+        self.__services.state.apply_effective_view()
 
-        self.__selected_cv_idx = 0
-        self.__select_cv(0)
-        self.__selected_sn_idx = 0
-        self.__select_state_num_one(0)
+    def __update_visibility(self, name: str, visible: bool) -> None:
+        self.__services.state.effective_view.colours[name].visible = visible
 
-    def load_state(self, i: int):
-        state_nr = self.views[i]
-        """
-        self.OBSTACLES.colour = Colour(state_nr["OBSTACLES"][0], state_nr["OBSTACLES"][1], state_nr["OBSTACLES"][2], state_nr["OBSTACLES"][3])
-        self.OBSTACLES_TRI_WF.colour = Colour(state_nr["OBSTACLES_TRI_WF"][0], state_nr["OBSTACLES_TRI_WF"][1], state_nr["OBSTACLES_TRI_WF"][2], state_nr["OBSTACLES_TRI_WF"][3])
-        self.OBSTACLES_SQR_WF.colour = Colour(state_nr["OBSTACLES_SQR_WF"][0], state_nr["OBSTACLES_SQR_WF"][1], state_nr["OBSTACLES_SQR_WF"][2], state_nr["OBSTACLES_SQR_WF"][3])
-        self.TRAVERSABLES.colour = Colour(state_nr["TRAVERSABLES"][0], state_nr["TRAVERSABLES"][1], state_nr["TRAVERSABLES"][2], state_nr["TRAVERSABLES"][3])
-        self.TRAVERSABLES_TRI_WF.colour = Colour(state_nr["TRAVERSABLES_TRI_WF"][0], state_nr["TRAVERSABLES_TRI_WF"][1], state_nr["TRAVERSABLES_TRI_WF"][2], state_nr["TRAVERSABLES_TRI_WF"][3])
-        self.TRAVERSABLES_SQR_WF.colour = Colour(state_nr["TRAVERSABLES_SQR_WF"][0], state_nr["TRAVERSABLES_SQR_WF"][1], state_nr["TRAVERSABLES_SQR_WF"][2], state_nr["TRAVERSABLES_SQR_WF"][3])
-        self.START.colour = Colour(state_nr["START"][0], state_nr["START"][1], state_nr["START"][2], state_nr["START"][3])
-        self.GOAL.colour = Colour(state_nr["GOAL"][0], state_nr["GOAL"][1], state_nr["GOAL"][2], state_nr["GOAL"][3])
-        self.PATH.colour = Colour(state_nr["PATH"][0], state_nr["PATH"][1], state_nr["PATH"][2], state_nr["PATH"][3])
-        self.FRINGE.colour = Colour(state_nr["FRINGE"][0], state_nr["FRINGE"][1], state_nr["FRINGE"][2], state_nr["FRINGE"][3])
-        self.EXPLORED.colour = Colour(state_nr["EXPLORED"][0], state_nr["EXPLORED"][1], state_nr["EXPLORED"][2], state_nr["EXPLORED"][3])
-        """
-
-    def save_state(self, i=None):
-        if i is not None:
-            state_nr = self.views[i]
-            """
-            state_nr["OBSTACLES"][0],state_nr["OBSTACLES"][1],state_nr["OBSTACLES"][2],state_nr["OBSTACLES"][3] = self.OBSTACLES.colour
-            state_nr["OBSTACLES_TRI_WF"][0], state_nr["OBSTACLES_TRI_WF"][1], state_nr["OBSTACLES_TRI_WF"][2], state_nr["OBSTACLES_TRI_WF"][3] = self.OBSTACLES_TRI_WF.colour
-            state_nr["OBSTACLES_SQR_WF"][0], state_nr["OBSTACLES_SQR_WF"][1], state_nr["OBSTACLES_SQR_WF"][2], state_nr["OBSTACLES_SQR_WF"][3] = self.OBSTACLES_SQR_WF.colour
-            state_nr["TRAVERSABLES"][0], state_nr["TRAVERSABLES"][1], state_nr["TRAVERSABLES"][2], state_nr["TRAVERSABLES"][3] = self.TRAVERSABLES.colour
-            state_nr["TRAVERSABLES_TRI_WF"][0], state_nr["TRAVERSABLES_TRI_WF"][1], state_nr["TRAVERSABLES_TRI_WF"][2], state_nr["TRAVERSABLES_TRI_WF"][3] = self.TRAVERSABLES_TRI_WF.colour
-            state_nr["TRAVERSABLES_SQR_WF"][0], state_nr["TRAVERSABLES_SQR_WF"][1], state_nr["TRAVERSABLES_SQR_WF"][2], state_nr["TRAVERSABLES_SQR_WF"][3] = self.OBSTACLES_SQR_WF.colour
-            state_nr["START"][0], state_nr["START"][1], state_nr["START"][2], state_nr["START"][3] = self.START.colour
-            state_nr["GOAL"][0], state_nr["GOAL"][1], state_nr["GOAL"][2], state_nr["GOAL"][3] = self.GOAL.colour
-            state_nr["PATH"][0], state_nr["PATH"][1], state_nr["PATH"][2], state_nr["PATH"][3] = self.PATH.colour
-            state_nr["FRINGE"][0], state_nr["FRINGE"][1], state_nr["FRINGE"][2], state_nr["FRINGE"][3] = self.FRINGE.colour
-            state_nr["EXPLORED"][0], state_nr["EXPLORED"][1], state_nr["EXPLORED"][2], state_nr["EXPLORED"][3] = self.EXPLORED.colour
-            """
-
-        with open('state.json', 'w') as json_file:
-            json.dump(self.views, json_file)
+    def __update_colour(self, name: str, colour: Colour) -> None:
+        self.__services.state.effective_view.colours[name].colour = colour
 
     def __toggle_view_editor(self):
         if not self.hidden:
@@ -777,22 +779,34 @@ class ViewEditor():
             self.hidden = False
 
     def __colour_picker_callback(self, colour: Colour) -> None:
-        i = self.__selected_cv_idx
-        self.__elements[i].colour = colour
+        if self.__selected_cv_elem is None:
+            return
+        self.__selected_cv_elem.colour = colour  # calls self.__update_colour()
 
-    def __select_cv(self, i: int):
-        self.__selected_cv_idx = i
-        self.__selected_cv_outline.set_pos((-0.65, 1.0, -1.897 - 0.2 * i))
-        self.__colour_picker.colour = self.__elements[i].colour
+    def __select_cv(self, e: ViewElement):
+        self.__selected_cv_elem = e
+        if e is None:
+            self.__selected_cv_outline.hide()
+            self.__colour_picker.enabled = False
+        else:
+            self.__colour_picker.enabled = True
+            self.__selected_cv_outline.show()
+            self.__selected_cv_outline.set_pos((-0.495, 1.0, -0.2 * self.__elems.index(e)))
+            self.__colour_picker.colour = e.colour
 
-    def __select_state_num_one(self, i: int):
-        self.__selected_sn_idx = i
-        self.__selected_state_number.set_pos((-0.7 + i * 0.7, 0.4, -4.4))
-        self.load_state(i)
-        self.state_num = i
+    def notify(self, event: Event) -> None:
+        if isinstance(event, NewColourEvent):
+            self.__reset()
 
-    def __select_state_num_two(self, i: int):
-        self.__selected_sn_idx = i
-        self.__selected_state_number.set_pos((-0.7 + (i-3) * 0.7, 0.4, -4.9))
-        self.load_state(i)
-        self.state_num = i
+    @property
+    def view_idx(self) -> str:
+        return 'view_idx'
+
+    @view_idx.setter
+    def view_idx(self, idx: int) -> None:
+        self.__services.state.view_idx = idx
+        self.__reset()
+
+    @view_idx.getter
+    def view_idx(self) -> int:
+        return self.__services.state.view_idx

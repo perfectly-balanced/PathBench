@@ -7,8 +7,7 @@ class KeyFrameEvent(Event):
     __refresh: bool
 
     def __init__(self, is_first: bool = False, refresh: Optional[bool] = None) -> None:
-        super().__init__()
-        self._name = "KeyFrame event"
+        super().__init__("KeyFrame event", True)
         self.__is_first = is_first
         if refresh is None:
             self.__refresh = self.is_first

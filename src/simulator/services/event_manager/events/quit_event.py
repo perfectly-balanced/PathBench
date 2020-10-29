@@ -7,5 +7,4 @@ class QuitEvent(Event):
     """
 
     def __init__(self) -> None:
-        super().__init__()
-        self._name = "Quit event"
+        super().__init__("Quit event", True)

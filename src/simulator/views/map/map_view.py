@@ -13,6 +13,7 @@ from simulator.services.services import Services
 from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
 from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
+from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
 
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
@@ -80,7 +81,7 @@ class MapView(View):
         self.__center(self.__map.root)
 
         # GUI #
-        self.__vs = ViewEditor(self._services, self.map)
+        self.__vs = ViewEditor(self._services)
 
         self.update_view()
 
@@ -90,6 +91,10 @@ class MapView(View):
             if event.refresh:
                 self.__tc_reset()
             self.update_view()
+        elif isinstance(event, ColourUpdateEvent):
+            if event.view.is_effective():
+                self.__tc_reset()
+                self.update_view()
         elif isinstance(event, TakeScreenshotEvent):
             self.take_screenshot()
 
@@ -126,7 +131,7 @@ class MapView(View):
 
     def __get_displays(self) -> None:
         self.__displays = []
-        displays: List[MapDisplay] = [EntitiesMapDisplay(self.__map, self._services)]
+        displays: List[MapDisplay] = [EntitiesMapDisplay(self._services)]
         # drop map displays if not compatible with display format
         displays += list(
             filter(lambda d: self._services.settings.simulator_grid_display or not isinstance(d, NumbersMapDisplay),
@@ -207,7 +212,7 @@ class MapView(View):
         if y not in self.__tc_scratchpad[x]:
             self.__tc_scratchpad[x][y] = {}
         if z not in self.__tc_scratchpad[x][y]:
-            self.__tc_scratchpad[x][y][z] = self.map.colours["traversables"].colour  # use raw colour
+            self.__tc_scratchpad[x][y][z] = self._services.state.effective_view.colours["traversables"].colour  # use raw colour
         dst = self.__tc_scratchpad[x][y][z]
 
         wda = dst.a * (1 - src.a)  # weighted dst alpha

@@ -9,7 +9,6 @@ from algorithms.configuration.entities.trace import Trace
 from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
 from simulator.views.map.display.map_display import MapDisplay
-from simulator.views.map.data.map_data import MapData
 from simulator.views.map.data.voxel_map import VoxelMap
 
 from structures import DynamicColour
@@ -24,13 +23,13 @@ class EntitiesMapDisplay(MapDisplay):
     __trace_colour: DynamicColour
     __goal_colour: DynamicColour
 
-    def __init__(self, map_data: MapData, services: Services, z_index=100, custom_map: Map = None) -> None:
+    def __init__(self, services: Services, z_index=100, custom_map: Map = None) -> None:
         super().__init__(services, z_index=z_index, custom_map=custom_map)
         self.animation_step = 0
 
-        self.__agent_colour = map_data.colours[VoxelMap.AGENT]
-        self.__trace_colour = map_data.colours[VoxelMap.TRACE]
-        self.__goal_colour = map_data.colours[VoxelMap.GOAL]
+        self.__agent_colour = self._services.state.effective_view.colours[VoxelMap.AGENT]
+        self.__trace_colour = self._services.state.effective_view.colours[VoxelMap.TRACE]
+        self.__goal_colour = self._services.state.effective_view.colours[VoxelMap.GOAL]
 
     def render(self) -> bool:
         if not super().render():

@@ -65,6 +65,14 @@ class EventManager:
         :param event: The event to post
         """
 
+        # unify event with an existing one if
+        # allowed -> prevents spamming of events.
+        if event._unifiable:
+            for e in self.__event_queue:
+                if type(e) == type(event):
+                    e._absorb(event)
+                    return
+
         self.__event_queue.append(event)
         self.__services.debug.write(str(event), DebugLevel.MEDIUM)
 
