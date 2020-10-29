@@ -7,9 +7,16 @@ from simulator.services.event_manager.events.new_colour_event import NewColourEv
 from simulator.services.debug import DebugLevel
 from utility.utils import exclude_from_dict
 
-from typing import Dict, Final, Any, List, Optional
+from typing import Dict, Any, List, Optional
 import json
 import os
+import traceback
+
+try:
+    from typing import Final
+except ImportError: # work-around for Python < 3.8
+    from typing import Tuple
+    Final = Tuple
 
 class PersistentStateView():
     __services: Services
@@ -92,23 +99,19 @@ class PersistentState(Service):
             self.save()
 
     def load(self) -> None:
-        def check(req: bool) -> None:
-            if not req:
-                raise RuntimeError
-
         if os.path.isfile(self.file_name):
             self._services.debug.write("Loading state from '{}'".format(self.file_name), DebugLevel.BASIC)
             with open(self.file_name, 'r') as f:
                 try:
                     jdata = json.load(f)
                     jidx = jdata["view_index"]
-                    check(jidx >= 0 and jidx < self.MAX_VIEWS)
                     jviews = jdata["views"]
                     for v in range(self.MAX_VIEWS):
                         self.views[v]._from_json(jviews[v])
                     self.view_idx = jidx
-                except Exception:
-                    print("{} is corrupted".format(self.file_name))
+                except Exception as e:
+                    msg = "Failed to load state data from '{}', reason:\n{}".format(self.file_name, traceback.format_exc())
+                    self._services.debug.write(msg, DebugLevel.NONE)
                     self.reset()
         else:
             self._services.debug.write("'{}' not found, falling back to default state data".format(self.file_name), DebugLevel.BASIC)
@@ -166,6 +169,8 @@ class PersistentState(Service):
     @view_idx.setter
     def view_idx(self, value: Any) -> None:
         idx, save_delay = (value, 4.0) if isinstance(value, int) else value
+        if idx < 0 or idx >= self.MAX_VIEWS:
+            raise IndexError("index '{}' not in bounds, expected 0 < view_idx: int < {}.".format(idx, self.MAX_VIEWS))
         self.__view_idx = idx
         self.effective_view._from_view(self.views[idx])
         self.schedule_save(save_delay)
