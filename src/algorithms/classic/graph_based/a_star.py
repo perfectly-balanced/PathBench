@@ -21,10 +21,6 @@ Heap duplicates https://www.redblobgames.com/pathfinding/a-star/implementation.h
 
 
 class AStar(Algorithm):
-    PQ_COLOUR_HIGH: Colour = BLUE
-    PQ_COLOUR_LOW: Colour = Colour(0.27, 0.33, 0.35, 0.2)
-    VISITED_COLOUR: Colour = Colour(0.19, 0.19, 0.2, 0.8)
-
     class InternalMemory:
         priority_queue: List[Tuple[int, Point]]
         visited: Set[Point]
@@ -41,19 +37,27 @@ class AStar(Algorithm):
 
     mem: InternalMemory
 
+    pq_colour_max: DynamicColour
+    pq_colour_min: DynamicColour
+    visited_colour: DynamicColour
+
     def __init__(self, services: Services, testing: BasicTesting = None):
         super().__init__(services, testing)
 
         self.mem = AStar.InternalMemory()
+
+        self.pq_colour_max = self._services.state.add_colour("explored max", BLUE)
+        self.pq_colour_min = self._services.state.add_colour("explored min", Colour(0.27, 0.33, 0.35, 0.2))
+        self.visited_colour = self._services.state.add_colour("visited", Colour(0.19, 0.19, 0.2, 0.8))
 
     def set_display_info(self) -> List[MapDisplay]:
         """
         Read super description
         """
         return super().set_display_info() + [
-            SolidColorMapDisplay(self._services, self.mem.visited, DynamicColour(self.VISITED_COLOUR), z_index=50),
+            SolidColorMapDisplay(self._services, self.mem.visited, self.visited_colour, z_index=50),
             GradientMapDisplay(self._services, pts=self.mem.priority_queue,
-                               min_color=DynamicColour(self.PQ_COLOUR_LOW), max_color=DynamicColour(self.PQ_COLOUR_HIGH), z_index=49, inverted=True),
+                               min_color=self.pq_colour_min, max_color=self.pq_colour_max, z_index=49, inverted=True),
         ]
 
     # noinspection PyUnusedLocal

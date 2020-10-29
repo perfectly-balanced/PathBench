@@ -13,6 +13,7 @@ from simulator.services.services import Services
 from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
 from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
+from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
 
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
@@ -90,6 +91,10 @@ class MapView(View):
             if event.refresh:
                 self.__tc_reset()
             self.update_view()
+        elif isinstance(event, ColourUpdateEvent):
+            if event.view.is_effective():
+                self.__tc_reset()
+                self.update_view()
         elif isinstance(event, TakeScreenshotEvent):
             self.take_screenshot()
 

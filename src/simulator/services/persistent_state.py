@@ -60,7 +60,6 @@ class PersistentStateView():
             dc[n]["visible"] = c.visible
         return data
 
-    @property
     def is_effective(self) -> bool:
         return self.index == PersistentStateView.EFFECTIVE_VIEW
 

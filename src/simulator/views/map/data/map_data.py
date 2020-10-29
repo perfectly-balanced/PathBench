@@ -49,15 +49,12 @@ class MapData:
     def name(self) -> NodePath:
         return self.__name
 
-    def _colour_update_callback(self, colour: DynamicColour) -> None:
-        self._services.ev_manager.post(KeyFrameEvent(refresh=True))
-
     def _add_colour(self, name: str, default_colour: Colour, default_visible: bool = True, invoke_callback: bool = True, callback: Optional[Callable[[DynamicColour], None]] = None) -> DynamicColour:
+        dc = self._services.state.add_colour(name, default_colour, default_visible)
         if callback is None:
-            callback = self._colour_update_callback
+            return
         if name not in self.__colour_callbacks:
             self.__colour_callbacks[name] = callback
-        dc = self._services.state.add_colour(name, default_colour, default_visible)
         if invoke_callback:
             callback(dc)
         return dc
