@@ -38,8 +38,12 @@ class PersistentStateView():
         return dc
 
     def _from_view(self, other: 'PersistentStateView') -> None:
+        self.colours = dict(filter(lambda n: n in other.colours, self.colours))
         for n, c in other.colours.items():
-            self.colours[n].set_all(c.colour, c.visible)
+            if n not in self.colours:
+                self._add_colour(n, c.colour, c.visible)
+            else:
+                self.colours[n].set_all(c.colour, c.visible)
 
     def _from_json(self, data: Dict[str, Any]) -> None:
         for n, c in data["colours"].items():
@@ -129,6 +133,13 @@ class PersistentState(Service):
             self.views[v]._add_colour(name, default_colour, default_visible)
         self.__schedule_save()
         return dc
+
+    def restore_effective_view(self):
+        self.effective_view._from_view(self.view)
+
+    def apply_effective_view(self):
+        self.view._from_view(self.effective_view)
+        self.__schedule_save()
 
     @property
     def view_idx(self) -> str:

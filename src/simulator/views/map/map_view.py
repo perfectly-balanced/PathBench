@@ -80,7 +80,7 @@ class MapView(View):
         self.__center(self.__map.root)
 
         # GUI #
-        self.__vs = ViewEditor(self._services, self.map)
+        self.__vs = ViewEditor(self._services)
 
         self.update_view()
 
