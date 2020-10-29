@@ -4,7 +4,7 @@ from simulator.services.services import Services
 from simulator.views.map.data.map_data import MapData
 from simulator.views.map.object.cube_mesh import CubeMesh
 
-from structures import Point, DynamicColour, Colour, TRANSPARENT
+from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 
 from typing import List
 import random
@@ -56,10 +56,10 @@ class VoxelMap(MapData):
         self.obstacles_wf.setRenderModeWireframe()
         self.obstacles_wf.setRenderModeThickness(2.2)
 
-        self._add_colour(VoxelMap.TRAVERSABLES, Colour(1), callback=self.__traversables_colour_callback)
-        self._add_colour(VoxelMap.TRAVERSABLES_WF, Colour(0), callback=lambda dc: self.__mesh_colour_callback(dc, self.traversables_wf))
-        self._add_colour(VoxelMap.OBSTACLES, Colour(0), callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles))
-        self._add_colour(VoxelMap.OBSTACLES_WF, Colour(1), callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles_wf))
+        self._add_colour(VoxelMap.TRAVERSABLES, WHITE, callback=self.__traversables_colour_callback)
+        self._add_colour(VoxelMap.TRAVERSABLES_WF, BLACK, callback=lambda dc: self.__mesh_colour_callback(dc, self.traversables_wf))
+        self._add_colour(VoxelMap.OBSTACLES, BLACK, callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles))
+        self._add_colour(VoxelMap.OBSTACLES_WF, WHITE, callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles_wf))
 
         self._add_colour(VoxelMap.AGENT, Colour(0.8, 0, 0))
         self._add_colour(VoxelMap.TRACE, Colour(0, 0.9, 0))

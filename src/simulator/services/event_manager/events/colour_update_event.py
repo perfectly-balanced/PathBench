@@ -10,8 +10,7 @@ class ColourUpdateEvent(Event):
     __view: 'PersistentStateView'
 
     def __init__(self, colour: DynamicColour, view: 'PersistentStateView') -> None:
-        super().__init__()
-        self._name = "KeyFrame event"
+        super().__init__("KeyFrame event")
         self.__colour = colour
         self.__view = view
 

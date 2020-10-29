@@ -11,5 +11,4 @@ class InitialiseEvent(Event):
     """
 
     def __init__(self) -> None:
-        super().__init__()
-        self._name = "Initialise event"
+        super().__init__("Initialise event")
