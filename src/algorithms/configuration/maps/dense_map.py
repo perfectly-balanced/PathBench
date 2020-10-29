@@ -115,7 +115,7 @@ class DenseMap(Map):
         if isinstance(entity, Agent):
             if not self.is_agent_valid_pos(to):
                 return False
-            
+
             prev_pos = self.agent.position
             self.agent.position = to
         elif isinstance(entity, Goal):
