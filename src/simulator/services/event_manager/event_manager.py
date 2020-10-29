@@ -75,7 +75,7 @@ class EventManager:
 
         self.__event_queue.append(event)
         self.__services.debug.write(str(event), DebugLevel.MEDIUM)
-        
+
     def tick(self) -> None:
         """
         Sends all messages form the event queue
