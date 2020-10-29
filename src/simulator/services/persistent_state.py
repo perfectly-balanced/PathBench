@@ -3,6 +3,7 @@ from structures import DynamicColour, Colour, TRANSPARENT
 from simulator.services.service import Service
 from simulator.services.services import Services
 from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
+from simulator.services.event_manager.events.new_colour_event import NewColourEvent
 from simulator.services.debug import DebugLevel
 from utility.utils import exclude_from_dict
 
@@ -143,6 +144,7 @@ class PersistentState(Service):
         dc = self.effective_view._add_colour(name, default_colour, default_visible)
         for v in range(self.MAX_VIEWS):
             self.views[v]._add_colour(name, default_colour, default_visible)
+        self._services.ev_manager.post(NewColourEvent(dc))
         self.schedule_save(save_delay)
         return dc
 

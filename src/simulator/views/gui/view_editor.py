@@ -12,6 +12,7 @@ from structures import Colour, WHITE, BLACK, TRANSPARENT
 from constants import DATA_PATH
 
 from simulator.services.services import Services
+from simulator.services.event_manager.events.new_colour_event import NewColourEvent
 from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
 
 class ColourPicker:
@@ -614,6 +615,7 @@ class ViewEditor():
 
     def __init__(self, services: Services):
         self.__services = services
+        self.__services.ev_manager.register_listener(self)
         self.__base = self.__services.graphics.window
         self.hidden = False
 
@@ -794,6 +796,10 @@ class ViewEditor():
             self.__selected_cv_outline.show()
             self.__selected_cv_outline.set_pos((-0.65, 1.0, -1.897 - 0.2 * self.__elems.index(e)))
             self.__colour_picker.colour = e.colour
+
+    def notify(self, event: Event) -> None:
+        if isinstance(event, NewColourEvent):
+            self.__reset()
 
     @property
     def view_idx(self) -> str:
