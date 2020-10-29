@@ -16,9 +16,9 @@ class Services:
     This class is a bag of services available throughout all simulator classes and algorithms
     """
     __settings: 'Configuration'
-    __state: 'PersistentState'
     __debug: Debug
     __ev_manager: EventManager
+    __state: 'PersistentState'
     __algorithm_runner: 'AlgorithmRunner'
     __graphics: Optional['GraphicsManager']
     __resources_dir: 'Resources'
@@ -26,9 +26,9 @@ class Services:
 
     def __init__(self, config: 'Configuration') -> None:
         self.__settings = None
-        self.__state = None
         self.__debug = None
         self.__ev_manager = None
+        self.__state = None
         self.__graphics = None
         self.__algorithm_runner = None
         self.__resources_dir = None
@@ -43,9 +43,9 @@ class Services:
         from simulator.services.torch import Torch
 
         self.__settings = config
-        self.__state = PersistentState(self)
         self.__debug = Debug(self)
         self.__ev_manager = EventManager(self)
+        self.__state = PersistentState(self)
         self.__resources_dir = Resources(self)
         self.__torch = Torch(self)
         self.__algorithm_runner = AlgorithmRunner(self)

@@ -26,7 +26,7 @@ class MapData:
         self.__root = parent.attach_new_node(self.name)
         self.root.set_transparency(TransparencyAttrib.M_alpha)
 
-        self.add_colour(MapData.BG, Colour(0, 0, 0.2, 1), callback=lambda dc: self._services.graphics.window.set_background_color(*dc()))
+        self._add_colour(MapData.BG, Colour(0, 0, 0.2, 1), callback=lambda dc: self._services.graphics.window.set_background_color(*dc()))
     
     def notify(self, event: Event) -> None:
         if isinstance(event, ColourUpdateEvent):
@@ -52,7 +52,7 @@ class MapData:
     def _colour_update_callback(self, colour: DynamicColour) -> None:
         self._services.ev_manager.post(KeyFrameEvent(refresh=True))
 
-    def add_colour(self, name: str, default_colour: Colour, default_visible: bool = True, invoke_callback: bool = True, callback: Optional[Callable[[DynamicColour], None]] = None) -> DynamicColour:
+    def _add_colour(self, name: str, default_colour: Colour, default_visible: bool = True, invoke_callback: bool = True, callback: Optional[Callable[[DynamicColour], None]] = None) -> DynamicColour:
         if callback is None:
             callback = self._colour_update_callback
         if name not in self.__colour_callbacks:

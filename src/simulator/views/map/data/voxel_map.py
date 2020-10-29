@@ -56,14 +56,14 @@ class VoxelMap(MapData):
         self.obstacles_wf.setRenderModeWireframe()
         self.obstacles_wf.setRenderModeThickness(2.2)
 
-        self.add_colour(VoxelMap.TRAVERSABLES, Colour(1), callback=self.__traversables_colour_callback)
-        self.add_colour(VoxelMap.TRAVERSABLES_WF, Colour(0), callback=lambda dc: self.__mesh_colour_callback(dc, self.traversables_wf))
-        self.add_colour(VoxelMap.OBSTACLES, Colour(0), callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles))
-        self.add_colour(VoxelMap.OBSTACLES_WF, Colour(1), callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles_wf))
+        self._add_colour(VoxelMap.TRAVERSABLES, Colour(1), callback=self.__traversables_colour_callback)
+        self._add_colour(VoxelMap.TRAVERSABLES_WF, Colour(0), callback=lambda dc: self.__mesh_colour_callback(dc, self.traversables_wf))
+        self._add_colour(VoxelMap.OBSTACLES, Colour(0), callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles))
+        self._add_colour(VoxelMap.OBSTACLES_WF, Colour(1), callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles_wf))
 
-        self.add_colour(VoxelMap.AGENT, Colour(0.8, 0, 0))
-        self.add_colour(VoxelMap.TRACE, Colour(0, 0.9, 0))
-        self.add_colour(VoxelMap.GOAL, Colour(0, 0.9, 0))
+        self._add_colour(VoxelMap.AGENT, Colour(0.8, 0, 0))
+        self._add_colour(VoxelMap.TRACE, Colour(0, 0.9, 0))
+        self._add_colour(VoxelMap.GOAL, Colour(0, 0.9, 0))
 
     def __traversables_colour_callback(self, dc: DynamicColour) -> None:
         self.traversables_mesh.default_colour = dc()

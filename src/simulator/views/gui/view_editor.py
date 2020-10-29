@@ -234,6 +234,10 @@ class ColourView():
     def frame(self) -> DirectFrame:
         return self.__frame
 
+    @property
+    def view(self) -> DirectFrame:
+        return self.__view
+        
     def destroy(self) -> None:
         self.__view.destroy()
         self.__frame.destroy()
@@ -285,6 +289,7 @@ class ColourChannel():
                                                     borderWidth=(0.0, 0.0),
                                                     frameSize=(-0.6, 0.9, -0.2, 0.2),
                                                     suppressMouse=True)
+        self.__disable_frame_overlay.hide()
         self.__enabled = True
 
         self.__set_callbacks()
@@ -503,12 +508,12 @@ class ViewElement():
         self.__cv.frame.set_scale((0.15, 1.0, 0.15))
         self.__cv.frame.set_pos((-0.65, 1.0, 0.0))
 
-        self.__cv_btn = DirectButton(parent=self.__frame,
+        self.__cv_btn = DirectButton(parent=self.__cv.frame,
                                      frameColor=TRANSPARENT,
                                      borderWidth=(0, 0),
-                                     frameSize=self.__cv.frame["frameSize"],
-                                     scale=self.__cv.frame["scale"],
-                                     pos=self.__cv.frame["pos"],
+                                     frameSize=self.__cv.view["frameSize"],
+                                     scale=self.__cv.view["scale"],
+                                     pos=self.__cv.view["pos"],
                                      command=self.__cv_clicked)
 
         self.__label = DirectLabel(parent=self.__frame,
