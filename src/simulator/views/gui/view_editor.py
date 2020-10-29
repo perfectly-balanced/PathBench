@@ -27,12 +27,12 @@ class ColourPicker:
     __marker: DirectFrame
     __marker_center: DirectFrame
 
-    __enabled: bool
+    enabled: bool
 
     def __init__(self, base: ShowBase, pick_colour_callback: Callable[[Tuple[float, float, float, float]], None], **kwargs) -> None:
         self.__base = base
         self.pick_colour_callback = pick_colour_callback
-        self.__enabled = True
+        self.enabled = True
 
         # PALETTE #
         palette_filename = os.path.join(DATA_PATH, "colour_palette.png")
@@ -128,7 +128,7 @@ class ColourPicker:
         return self.__colour_at(pointer.getX(), -pointer.getY())
 
     def __pick(self, *args):
-        if self.__enabled:
+        if self.enabled:
             self.__update_marker_pos()
             self.pick_colour_callback(self.__update_marker_colour())
 
@@ -139,12 +139,6 @@ class ColourPicker:
     @property
     def marker(self) -> DirectFrame:
         return self.__marker
-
-    def enable(self) -> None:
-        self.__enabled = True
-
-    def disable(self) -> None:
-        self.__enabled = False
 
 class Window():
     __base: ShowBase
@@ -329,17 +323,23 @@ class ColourChannel():
     def value(self) -> float:
         return self.__slider['value']
 
-    def enable(self) -> None:
-        if self.__enabled:
-            return
-        self.__enabled = True
-        self.__disable_frame_overlay.hide()
+    @property
+    def enabled(self) -> str:
+        return 'enabled'
 
-    def disable(self) -> None:
-        if not self.__enabled:
+    @enabled.setter
+    def enabled(self, enabled: bool) -> None:
+        if self.__enabled == enabled:
             return
-        self.__enabled = False
-        self.__disable_frame_overlay.show()
+        self.__enabled = enabled
+        if enabled:
+            self.__disable_frame_overlay.hide()
+        else:
+            self.__disable_frame_overlay.show()
+
+    @enabled.getter
+    def enabled(self) -> bool:
+        return self.__enabled
 
 
 class AdvancedColourPicker():
@@ -461,26 +461,26 @@ class AdvancedColourPicker():
         self.__b.update(b)
         self.__a.update(a)
 
-    def enable(self) -> None:
-        if self.__enabled:
-            return
-        self.__enabled = True
-        self.__colour_picker.enable()
-        self.__r.enable()
-        self.__g.enable()
-        self.__b.enable()
-        self.__a.enable()
+    @property
+    def enabled(self) -> str:
+        return 'enabled'
 
-    def disable(self) -> None:
-        if not self.__enabled:
+    @enabled.setter
+    def enabled(self, enabled: bool) -> None:
+        if self.__enabled == enabled:
             return
-        self.__enabled = False
-        self.colour = WINDOW_BG_COLOUR
-        self.__colour_picker.disable()
-        self.__r.disable()
-        self.__g.disable()
-        self.__b.disable()
-        self.__a.disable()
+        self.__enabled = enabled
+        if not enabled:
+            self.colour = WINDOW_BG_COLOUR
+        self.__colour_picker.enabled = enabled
+        self.__r.enabled = enabled
+        self.__g.enabled = enabled
+        self.__b.enabled = enabled
+        self.__a.enabled = enabled
+
+    @enabled.getter
+    def enabled(self) -> bool:
+        return self.__enabled
 
 class ViewElement():
     __name: str
@@ -648,8 +648,15 @@ class ViewEditor():
                     frameSize=(-1., 1., -0.01, 0.01),
                     pos=(0.0, 0.0, -4.1))
 
+        # ViewElements listing
+        self.__elems_frame = DirectScrolledFrame(parent=self.__window.frame,
+                                                 frameColor=WINDOW_BG_COLOUR,
+                                                 frameSize=(-1, 1, -1.125, 1.1),
+                                                 pos=(0, 0, -2.9),
+                                                 autoHideScrollBars=True)
+
         # selected colour view frame
-        self.__selected_cv_outline = DirectFrame(parent=self.__window.frame,
+        self.__selected_cv_outline = DirectFrame(parent=self.__elems_frame.getCanvas(),
                                                  relief=DGG.SUNKEN,
                                                  frameColor=WHITE,
                                                  borderWidth=(0.15, 0.15),
@@ -752,10 +759,11 @@ class ViewEditor():
         self.__elems.clear()
 
         for name, dc in ps_colours.items():
-            self.__elems.append(ViewElement(name, self.__update_visibility, self.__update_colour, self.__select_cv, self.__window.frame, dc.visible, dc.colour))
+            self.__elems.append(ViewElement(name, self.__update_visibility, self.__update_colour, self.__select_cv, self.__elems_frame.getCanvas(), dc.visible, dc.colour))
 
         for i in range(len(self.__elems)):
-            self.__elems[i].frame.set_pos((0.0, 0.0, -1.9 - 0.2 * i))
+            self.__elems[i].frame.set_pos((0.15, 0.0, -0.2 * i))
+        self.__elems_frame["canvasSize"] = (-0.95, 0.95, -0.2 * len(self.__elems) + 0.1, 0.1)
 
         if self.view_idx < 3:
             self.__selected_view_outline.set_pos((-0.7 + self.view_idx * 0.7, 0.4, -4.4))
@@ -790,11 +798,11 @@ class ViewEditor():
         self.__selected_cv_elem = e
         if e is None:
             self.__selected_cv_outline.hide()
-            self.__colour_picker.disable()
+            self.__colour_picker.enabled = False
         else:
-            self.__colour_picker.enable()
+            self.__colour_picker.enabled = True
             self.__selected_cv_outline.show()
-            self.__selected_cv_outline.set_pos((-0.65, 1.0, -1.897 - 0.2 * self.__elems.index(e)))
+            self.__selected_cv_outline.set_pos((-0.495, 1.0, -0.2 * self.__elems.index(e)))
             self.__colour_picker.colour = e.colour
 
     def notify(self, event: Event) -> None:
