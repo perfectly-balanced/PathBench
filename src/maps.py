@@ -37,6 +37,14 @@ class Maps:
                       Obstacle(Point(250, 250), 50),
                   ],
                   Goal(Point(460, 460), 10))
+    
+    pixel_map_one_obstacle_3d: SparseMap = \
+        SparseMap(Size(500, 500, 100),
+                  Agent(Point(40, 40, 8), 10),
+                  [
+                      Obstacle(Point(250, 250, 50), 50),
+                  ],
+                  Goal(Point(460, 460, 92), 10))
 
     grid_map_one_obstacle: SparseMap = \
         SparseMap(Size(33, 32),
