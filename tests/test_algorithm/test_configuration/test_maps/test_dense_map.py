@@ -261,7 +261,7 @@ class TestDenseMap(unittest.TestCase):
             Goal(Point(4, 3), 1)
         ).convert_to_dense_map()
         map1._services = service
-        
+
         self.assertEqual("""DenseMap: {
 		size: Size(30, 30), 
 		agent: Agent: {position: Point(1, 2), radius: 1}, 
