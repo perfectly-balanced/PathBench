@@ -1,13 +1,15 @@
 
 from structures import DynamicColour, Colour, TRANSPARENT
+from simulator.services.service import Service
 from simulator.services.services import Services
-from simulator.models.model import Model
+from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
+from utility.utils import exclude_from_dict
 
-from typing import Optional, Callable, Dict, Final
-from functools import partial
+from typing import Dict, Final, Any, List
 import json
+import os
 
-class View():
+class PersistentStateView():
     __services: Services
     state: 'PersistentState'
     index: int
@@ -35,7 +37,7 @@ class View():
             self.__colour_callback(dc)
         return dc
 
-    def _from_view(self, other: View) -> None:
+    def _from_view(self, other: 'PersistentStateView') -> None:
         for n, c in other.colours.items():
             self.colours[n].set_all(c.colour, c.visible)
 
@@ -56,28 +58,27 @@ class View():
 
     @property
     def is_effective(self) -> bool:
-        return self.index == View.EFFECTIVE_VIEW
+        return self.index == PersistentStateView.EFFECTIVE_VIEW
 
-class PersistentState(Model):
-    __services: Services
+class PersistentState(Service):
     file_name: str
 
     MAX_VIEWS: Final[int] = 6
-    effective_view: View
-    views: List[View]
+    effective_view: PersistentStateView
+    views: List[PersistentStateView]
     __view_idx: int
     
-    def __init__(self, services: Services, file_name: str = ".pathbench.json"):
-        self.__services = services
-        self.file_name = file_name
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **exclude_from_dict(kwargs, ["file_name"]))
+        self.file_name = kwargs["file_name"] if "file_name" in kwargs else ".pathbench.json"
 
         self.__reset()
         self.__load()
         self.__save()
     
     def __reset(self):
-        self.effective_view = View(services, self, View.EFFECTIVE_VIEW)
-        self.views = [View(services, self, i) for i in range(self.MAX_VIEWS)]
+        self.effective_view = PersistentStateView(self._services, self, PersistentStateView.EFFECTIVE_VIEW)
+        self.views = [PersistentStateView(self._services, self, i) for i in range(self.MAX_VIEWS)]
         self.__view_idx = 0
 
     def __load(self) -> None:
@@ -86,10 +87,9 @@ class PersistentState(Model):
                 raise RuntimeError
 
         if os.path.isfile(self.file_name):
-            with open(self.file_name, 'r') as f:
-                jdata = json.load(f)
-                
+            with open(self.file_name, 'r') as f:                
                 try:
+                    jdata = json.load(f)
                     check(isinstance(jdata, dict))
                     jidx = jdata["view_index"]
                     check(jidx >= 0 and jidx < self.MAX_VIEWS)
@@ -103,19 +103,17 @@ class PersistentState(Model):
                 except Exception:
                     print("{} is corrupted".format(self.file_name))
                     self.__reset()
-        self.__services.ev_manager.post(PersistentStateLoadedEvent())
     
     def __save(self) -> None:
         data = {}
         data["view_index"] = self.view_idx
         data["views"] = [self.views[v]._to_json() for v in range(self.MAX_VIEWS)]
         with open(self.file_name, 'w') as f:
-            json.dump(self.views, f, sort_keys=True, indent=4)
+            json.dump(data, f, sort_keys=True, indent=4)
     
     def __schedule_save(self) -> None:
-        w = self._services.graphics.window
-        if w is not None:
-            tm = w.taskMgr
+        if self._services.graphics is not None:
+            tm = self._services.graphics.window.taskMgr
             name = "save_persistent_state"
             if len(tm.getTasksNamed(name)) == 0:
                 tm.doMethodLater(5, lambda _: self.__save(), name)
@@ -150,10 +148,10 @@ class PersistentState(Model):
         return 'view'
 
     @view.getter
-    def view(self) -> View:
+    def view(self) -> PersistentStateView:
         return self.views[self.view_idx]
     
     @view.setter
-    def view(self, v: View) -> None:
-        assert v == self.views[v.index], "View is not owned by this PersistentState"
+    def view(self, v: PersistentStateView) -> None:
+        assert v == self.views[v.index], "PersistentStateView is not owned by this PersistentState"
         self.view_idx = v.index
