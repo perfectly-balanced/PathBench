@@ -18,9 +18,7 @@ class CameraController(Controller, DirectObject):
         self.__base = self._services.graphics.window
         self.__cam = kwargs["camera"] if "camera" in kwargs else self.__base.cam
         self.__origin = kwargs["origin"]
-
-        self.target_size = 6.37800000E+06
-        self.render_ratio = 1.0e-6
+        self.start_rot = True
         self.deg_per_sec = 60.0
         self.min_dist = 3.0
         self.max_dist = 4000.0
@@ -53,7 +51,6 @@ class CameraController(Controller, DirectObject):
 
         # disables the default camera behaviour
         self.__base.disable_mouse()
-        # self.__cam.lookAt(self.__origin)
 
         # Use the arrow keys to move left, right, up and down
         self.accept('arrow_left', self.update_key_map, ["left1", 1])
@@ -66,24 +63,24 @@ class CameraController(Controller, DirectObject):
         self.accept('arrow_down-up', self.update_key_map, ["down1", 0])
 
         # Setup down events for arrow keys : rotating camera latitude and longitude
-        self.accept("a", self.update_key_map, ["left_rot", 1])
-        self.accept("d", self.update_key_map, ["right_rot", 1])
-        self.accept("w", self.update_key_map, ["up_tilt", 1])
-        self.accept("s", self.update_key_map, ["down_tilt", 1])
-        self.accept("a-up", self.update_key_map, ["left_rot", 0])
-        self.accept("d-up", self.update_key_map, ["right_rot", 0])
-        self.accept("w-up", self.update_key_map, ["up_tilt", 0])
-        self.accept("s-up", self.update_key_map, ["down_tilt", 0])
+        # self.accept("a", self.update_key_map, ["left_rot", 1])
+        # self.accept("d", self.update_key_map, ["right_rot", 1])
+        # self.accept("w", self.update_key_map, ["up_tilt", 1])
+        # self.accept("s", self.update_key_map, ["down_tilt", 1])
+        # self.accept("a-up", self.update_key_map, ["left_rot", 0])
+        # self.accept("d-up", self.update_key_map, ["right_rot", 0])
+        # self.accept("w-up", self.update_key_map, ["up_tilt", 0])
+        # self.accept("s-up", self.update_key_map, ["down_tilt", 0])
 
-        # # Orbital movement
-        # self.accept("f", self.update_key_map, ["left", 1])
-        # self.accept("h", self.update_key_map, ["right", 1])
-        # self.accept("t", self.update_key_map, ["up", 1])
-        # self.accept("g", self.update_key_map, ["down", 1])
-        # self.accept("f-up", self.update_key_map, ["left", 0])
-        # self.accept("h-up", self.update_key_map, ["right", 0])
-        # self.accept("t-up", self.update_key_map, ["up", 0])
-        # self.accept("g-up", self.update_key_map, ["down", 0])
+        # Orbital movement
+        self.accept("a", self.update_key_map, ["left", 1])
+        self.accept("d", self.update_key_map, ["right", 1])
+        self.accept("w", self.update_key_map, ["up", 1])
+        self.accept("s", self.update_key_map, ["down", 1])
+        self.accept("a-up", self.update_key_map, ["left", 0])
+        self.accept("d-up", self.update_key_map, ["right", 0])
+        self.accept("w-up", self.update_key_map, ["up", 0])
+        self.accept("s-up", self.update_key_map, ["down", 0])
 
         # Use the scroll mouse button/touchpad to zoom in and out
         self.accept("wheel_up", self.update_key_map, ["wheelup", 1])
@@ -95,9 +92,28 @@ class CameraController(Controller, DirectObject):
         self.key_map[key] = state
 
     def move_camera_task(self, task):
+        pos_x = self.__cam.getX()
+        pos_y = self.__cam.getY()
+        pos_z = self.__cam.getZ()
 
         if self.is_orbital():
-            # First compute new camera angles and distance
+
+            # First compute new camera angles and distance from the origin
+            self.rad = math.sqrt(pow(pos_x - self.__origin.getX(), 2) + pow(pos_y - self.__origin.getY(), 2) + pow(
+                pos_z - self.__origin.getZ(), 2))
+
+            # fix camera to look at the origin at the start of the orbital movements
+            if (self.start_rot):
+                self.longitude_deg = self.__cam.getH(self.__origin)
+                self.latitude_deg = self.__cam.getP(self.__origin)
+                self.__cam.set_hpr(self.longitude_deg, self.latitude_deg, 0)
+                # at the start we get the degrees of the origin according to the camera
+                # self.longitude_deg = self.__origin.getH(self.__cam)
+                # self.latitude_deg = self.__origin.getP(self.__cam)
+
+            # bring start_rot to false so that we don't set H and P values anymore at the start
+            self.start_rot = False
+
             if self.key_map["left"] != 0:
                 self.longitude_deg = self.longitude_deg - self.deg_per_sec * globalClock.getDt()
             if self.key_map["right"] != 0:
@@ -106,70 +122,37 @@ class CameraController(Controller, DirectObject):
                 self.latitude_deg = self.latitude_deg - self.deg_per_sec * globalClock.getDt()
             if self.key_map["down"] != 0:
                 self.latitude_deg = self.latitude_deg + self.deg_per_sec * globalClock.getDt()
-            # if self.key_map["wheelup"] != 0:
-            #     self.dist = self.dist * (1 + (self.zoom_per_sec - 1) * globalClock.getDt())
-            #    #   pos_y = self.__cam.getY()
-            #    #   pos_y -= self.speed * dt
-            #    #
-            #    #   self.__cam.setY(pos_y)
-            #     self.update_key_map("wheelup", 0)
-            # if self.key_map["wheeldown"] != 0:
-            #     # pos_y = self.__cam.getY()
-            #     # pos_y += self.speed * dt
-            #     # self.__cam.setY(pos_y)
-            #     self.dist = self.dist / (1 + (self.zoom_per_sec - 1) * globalClock.getDt())
-            #     self.update_key_map("wheeldown", 0)
 
+            # longitude is defined from -180 to 180 deg
             if self.longitude_deg > 180.0:
                 self.longitude_deg = self.longitude_deg - 360.0
             if self.longitude_deg < -180.0:
                 self.longitude_deg = self.longitude_deg + 360.0
 
-            if self.dist < self.min_dist:
-                self.dist = self.min_dist
-            if self.dist > self.max_dist:
-                self.dist = self.max_dist
-
             # Convert to Radians
             angle_longitude_radians = self.longitude_deg * (pi / 180.0)
             angle_latitude_radians = self.latitude_deg * (pi / 180.0)
 
-            x = -self.dist * self.target_size * sin(angle_longitude_radians) * cos(angle_latitude_radians)
-            y = self.dist * self.target_size * cos(angle_longitude_radians) * cos(angle_latitude_radians)
-            z = self.dist * self.target_size * sin(angle_latitude_radians)
+            x = self.rad * cos(angle_longitude_radians) * sin(angle_latitude_radians)
+            y = self.rad * sin(angle_longitude_radians) * sin(angle_latitude_radians)
+            z = self.rad * cos(angle_latitude_radians)
 
-            # Compute the world origin's position with respect to the camera
-            x = (x * self.render_ratio)
-            y = (y * self.render_ratio)
-            z = (z * self.render_ratio)
+            x = (x + self.__origin.getX())
+            y = (y + self.__origin.getY())
+            z = (z + self.__origin.getZ())
 
             # Apply the position
-            self.__origin.set_pos(x, y, z)
+            self.__cam.set_pos(x, y, z)
 
-            # Rotate the camera
+            # Rotate the camera towards origin
             self.__cam.set_hpr(self.longitude_deg, self.latitude_deg, 0)
         else:
-            dt = globalClock.getDt()
-            pos_h = self.__cam.getH()
-            pos_p = self.__cam.getP()
-
-            # alter the angle
-            if (self.key_map["left_rot"]):
-                pos_h += self.speed * dt
-                self.__cam.setH(pos_h)
-            if (self.key_map["right_rot"]):
-                pos_h -= self.speed * dt
-                self.__cam.setH(pos_h)
-            if (self.key_map["up_tilt"]):
-                pos_p += self.speed * dt
-                self.__cam.setP(pos_p)
-            if (self.key_map["down_tilt"]):
-                pos_p -= self.speed * dt
-                self.__cam.setP(pos_p)
+            # we use the arrow keys -> we set the boolean to true because later we will need to change cam orientation again
+            self.start_rot = True
 
             # move horizontally or vertically
             if (self.key_map["up1"]):
-                self.__cam.setZ(self.__cam, 1.5)
+               self.__cam.setZ(self.__cam, 1.5)
 
             if (self.key_map["down1"]):
                 self.__cam.setZ(self.__cam, -1.5)
