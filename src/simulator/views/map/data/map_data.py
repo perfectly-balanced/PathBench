@@ -27,7 +27,7 @@ class MapData:
         self.root.set_transparency(TransparencyAttrib.M_alpha)
 
         self._add_colour(MapData.BG, Colour(0, 0, 0.2, 1), callback=lambda dc: self._services.graphics.window.set_background_color(*dc()))
-    
+
     def notify(self, event: Event) -> None:
         if isinstance(event, ColourUpdateEvent):
             if event.colour.name in self.__colour_callbacks:

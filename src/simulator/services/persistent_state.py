@@ -24,7 +24,7 @@ class PersistentStateView():
         self.index = index
 
         self.colours = {}
-    
+
     def __colour_callback(self, colour: DynamicColour) -> None:
         if self.index == self.state.view_idx:
             self.state.effective_view.colours[colour.name].set_all(colour.colour, colour.visible)
@@ -73,17 +73,17 @@ class PersistentState(Service):
     __view_idx: int
 
     _save_task: Optional['Task']
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **exclude_from_dict(kwargs, ["file_name"]))
         self.file_name = kwargs["file_name"] if "file_name" in kwargs else ".pathbench.json"
-        
+
         self._save_task = None
 
         self.reset(False)
         self.load()
         self.save()
-        
+
     def reset(self, save: bool = True) -> None:
         self.effective_view = PersistentStateView(self._services, self, PersistentStateView.EFFECTIVE_VIEW)
         self.views = [PersistentStateView(self._services, self, i) for i in range(self.MAX_VIEWS)]
@@ -95,10 +95,10 @@ class PersistentState(Service):
         def check(req: bool) -> None:
             if not req:
                 raise RuntimeError
-        
+
         if os.path.isfile(self.file_name):
             self._services.debug.write("Loading state from '{}'".format(self.file_name), DebugLevel.BASIC)
-            with open(self.file_name, 'r') as f:                
+            with open(self.file_name, 'r') as f:
                 try:
                     jdata = json.load(f)
                     jidx = jdata["view_index"]
@@ -112,7 +112,7 @@ class PersistentState(Service):
                     self.reset()
         else:
             self._services.debug.write("'{}' not found, falling back to default state data".format(self.file_name), DebugLevel.BASIC)
-    
+
     def save(self) -> None:
         self._services.debug.write("Saving state to '{}'".format(self.file_name), DebugLevel.BASIC)
         data = {}
@@ -120,7 +120,7 @@ class PersistentState(Service):
         data["views"] = [self.views[v]._to_json() for v in range(self.MAX_VIEWS)]
         with open(self.file_name, 'w') as f:
             json.dump(data, f, sort_keys=True, indent=4)
-        
+
         if self._save_task is not None:
             self._services.graphics.window.taskMgr.remove(self._save_task)
             self._save_task = None
@@ -128,7 +128,7 @@ class PersistentState(Service):
     def schedule_save(self, delay: float = 0) -> None:
         if delay < 0:
             return
-        
+
         if delay > 0 and self._services.graphics is not None:
             tm = self._services.graphics.window.taskMgr
             if self._save_task is None:
@@ -140,7 +140,7 @@ class PersistentState(Service):
     def add_colour(self, name: str, default_colour: Colour, default_visible: bool = True, save_delay: float = 0) -> DynamicColour:
         if name in self.effective_view.colours:
             return self.effective_view.colours[name]
-        
+
         dc = self.effective_view._add_colour(name, default_colour, default_visible)
         for v in range(self.MAX_VIEWS):
             self.views[v]._add_colour(name, default_colour, default_visible)
@@ -157,11 +157,11 @@ class PersistentState(Service):
     @property
     def view_idx(self) -> str:
         return 'view_idx'
-    
+
     @view_idx.getter
     def view_idx(self) -> int:
         return self.__view_idx
-    
+
     @view_idx.setter
     def view_idx(self, value: Any) -> None:
         idx, save_delay = (value, 4.0) if isinstance(value, int) else value
@@ -176,7 +176,7 @@ class PersistentState(Service):
     @view.getter
     def view(self) -> PersistentStateView:
         return self.views[self.view_idx]
-    
+
     @view.setter
     def view(self, v: PersistentStateView) -> None:
         assert v == self.views[v.index], "PersistentStateView is not owned by this PersistentState"

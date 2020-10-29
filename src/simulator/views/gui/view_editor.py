@@ -237,7 +237,7 @@ class ColourView():
     @property
     def view(self) -> DirectFrame:
         return self.__view
-        
+
     def destroy(self) -> None:
         self.__view.destroy()
         self.__frame.destroy()
@@ -595,7 +595,7 @@ class ViewElement():
             self.__visibility_bar.hide()
         else:
             self.__visibility_bar.show()
-    
+
     def destroy(self) -> None:
         self.__visibility_bar.destroy()
         self.__visibility_btn.destroy()
@@ -616,7 +616,7 @@ class ViewEditor():
         self.__services = services
         self.__base = self.__services.graphics.window
         self.hidden = False
-        
+
         self.__window = Window(self.__base, "view_editor", parent=self.__base.pixel2d,
                                relief=DGG.RAISED,
                                borderWidth=(0.0, 0.0),
@@ -754,7 +754,7 @@ class ViewEditor():
 
         for i in range(len(self.__elems)):
             self.__elems[i].frame.set_pos((0.0, 0.0, -1.9 - 0.2 * i))
-        
+
         if self.view_idx < 3:
             self.__selected_view_outline.set_pos((-0.7 + self.view_idx * 0.7, 0.4, -4.4))
         else:
@@ -764,7 +764,7 @@ class ViewEditor():
 
     def __save(self) -> None:
         self.__services.state.apply_effective_view()
-    
+
     def __update_visibility(self, name: str, visible: bool) -> None:
         self.__services.state.effective_view.colours[name].visible = visible
 
@@ -782,7 +782,7 @@ class ViewEditor():
     def __colour_picker_callback(self, colour: Colour) -> None:
         if self.__selected_cv_elem is None:
             return
-        self.__selected_cv_elem.colour = colour # calls self.__update_colour()
+        self.__selected_cv_elem.colour = colour  # calls self.__update_colour()
 
     def __select_cv(self, e: ViewElement):
         self.__selected_cv_elem = e
@@ -803,7 +803,7 @@ class ViewEditor():
     def view_idx(self, idx: int) -> None:
         self.__services.state.view_idx = idx
         self.__reset()
-    
+
     @view_idx.getter
     def view_idx(self) -> int:
         return self.__services.state.view_idx
