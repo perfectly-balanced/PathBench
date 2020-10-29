@@ -96,9 +96,10 @@ class PotentialField(Algorithm):
     def calc_potential_field(self,grid: Map):
 
         # calc each potential
-        pmap = np.zeros(self.size, dtype=np.float32)
+        pmap = np.zeros(grid.size, dtype=np.float32)
+        pmap = np.transpose(pmap)
 
-        for index in np.ndindex(*self.size):
+        for index in np.ndindex(*grid.size):
             ug = self.calc_attractive_potential(index, grid.goal.position)
             if Point(*index) not in grid.obstacles:
                 uo = self.calc_repulsive_potential(index, grid.obstacles, rr=(grid.agent.radius))
@@ -196,11 +197,17 @@ class PotentialField(Algorithm):
         #         print(str((num))+"  ",end='')
         #    print("\n")
         
-        self.pmapnew= set([num for lst in pmap for num in lst if num < 1000000])
+        nums = []
+
+        for index in np.ndindex(*pmap.shape):
+            if(pmap[index] < 1000000):
+                nums.append(pmap[index])
+
+        self.pmapnew= set(nums)
 
         # search path
         d = np.linalg.norm(np.array(grid.agent.position) - np.array(grid.goal.position))
-        i = [round((grid.agent.position[i] ) / self.grid_size) for i in range(grid.agent.position.n_dim)]   #index starting x position
+        iss = [round((grid.agent.position[i] ) / self.grid_size) for i in range(grid.agent.position.n_dim)]   #index starting x position
 
         gi = [round((grid.goal.position[i] ) / self.grid_size) for i in range(grid.agent.position.n_dim)]   #index goal x position
 
@@ -215,15 +222,20 @@ class PotentialField(Algorithm):
             minp = float("inf")
             minIxs = [-1] * grid.agent.position.n_dim
             for point in motion:
-                ins = [int(i[n] + point[n]) for n in range(grid.agent.position.n_dim)]
-
-                p = pmap[tuple(ins)]
+                ins = [int(iss[n] + point.pos[n]) for n in range(grid.agent.position.n_dim)]
+         
+                setInf = False
 
                 for i in range(len(ins)):
                     if(ins[i] < 0 or ins[i] >= len(pmap[tuple(([0] * i))])):
-                        p = float("inf") 
+
+                        setInf = True 
                         break
-                
+                if setInf:
+                    p = float("inf")
+                else:
+                    p = pmap[tuple(ins)]
+                        
                 point = tuple(ins)
                 #find which neighbour has the largest potential value (so can move there)
                 if minp > p and point not in visited:
@@ -232,15 +244,19 @@ class PotentialField(Algorithm):
                     if tuple(ins) in visited:
                         print("stuck")
                         break
-            visited.append(*minIxs)
+            visited.append(tuple(minIxs))
          
-            i = minIxs
+            iss = minIxs
 
-            d = np.linalg.norm(np.array(grid.goal.position) -  np.array(*i))
+            print("isssss me! " + str(iss))
+
+            print("goal pos! " + str(grid.goal.position))
+
+            d = np.linalg.norm(np.array(grid.goal.position) -  np.array(tuple(iss)))
             # what do these two lines do?
             #rx.append(iy)
             #ry.append(ix)
-            point1=Point(*i)
+            point1=Point(*iss)
 
             if (tuple([-1] * grid.agent.position.n_dim)) in visited:
                 print("stuck at start")
