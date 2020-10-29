@@ -94,14 +94,11 @@ class PersistentState(Service):
             with open(self.file_name, 'r') as f:                
                 try:
                     jdata = json.load(f)
-                    check(isinstance(jdata, dict))
                     jidx = jdata["view_index"]
                     check(jidx >= 0 and jidx < self.MAX_VIEWS)
                     jviews = jdata["views"]
-                    check(isinstance(jviews, list))
                     check(len(jviews) == self.MAX_VIEWS)
                     for v in range(len(jviews)):
-                        check(isinstance(v, dict))
                         self.views[v]._from_json(jviews[v])
                     self.view_idx = jidx
                 except Exception:
