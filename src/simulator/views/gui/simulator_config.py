@@ -58,6 +58,7 @@ class SimulatorConfig():
                                    borderWidth=(.0, .0),
                                    pos=(0.0, 0.0, 0.56),
                                    scale=(0.2, 3, 0.18))
+
         # Quit button
         self.btn = DirectButton(image=os.path.join(DATA_PATH, "quit.png"),
                                 # command=self.__toggle_config(),
@@ -93,6 +94,22 @@ class SimulatorConfig():
                                         pos=(-0.65, 0.4, -2),
                                         highlightColor=(0.65, 0.65, 0.65, 1),
                                         textMayChange=1)
+
+        self.__start_simulator = DirectFrame(parent=self.__window_config.frame,
+                                          frameColor=WHITE,
+                                          pos=(-0.65, 0.4, -3),
+                                          borderWidth=(0.25, 0.15),
+                                          frameSize=(-0.69, 2.1, -0.54, 0.54),
+                                          scale=(0.50, 3.1, 0.25))
+        self.btn_s = DirectButton(
+            text="Start Simulator",
+            text_fg=(0.3, 0.3, 0.3, 1.0),
+            pressEffect=1,
+            # command=,
+            pos=(-0.3, 0.4, -3),
+            parent=self.__window_config.frame,
+            scale=(0.20, 2.1, 0.15),
+            frameColor=TRANSPARENT)
 
     def __toggle_config(self):
         if not self.hidden_config:
