@@ -94,6 +94,7 @@ class MapView(View):
         self._services.ev_manager.unregister_listener(self)
         self._services.ev_manager.unregister_tick_listener(self)
         self._root_view.remove_child(self)
+        self._root_view = None
 
     def notify(self, event: Event) -> None:
         super().notify(event)
