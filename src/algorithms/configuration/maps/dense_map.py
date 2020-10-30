@@ -167,7 +167,7 @@ class DenseMap(Map):
                 res += "\n"
             res = res[:-1] + "\t\t]"
         else:
-            res += f", grid: Size({', '.join(i for i in new_grid.shape)})"
+            res += f", grid: Size({', '.join(str(i) for i in new_grid.shape)})"
         return res + "\n\t}"
 
     def __copy__(self) -> 'DenseMap':

@@ -46,7 +46,7 @@ class VoxelMap(MapData):
 
         def gen_cube_mesh_wireframe():
             ls = LineSegs()
-            ls.set_thickness(6)
+            ls.set_thickness(5)
             for i in range(len(self.traversables_data)):
                 for j in range(len(self.traversables_data[i])):
                     for k in range(len(self.traversables_data[i][j])):
@@ -70,7 +70,7 @@ class VoxelMap(MapData):
 
         def gen_cube_mesh_wireframe_obstacles():
             ls = LineSegs()
-            ls.set_thickness(6)
+            ls.set_thickness(5)
             for i in range(len(self.obstacles_data)):
                 for j in range(len(self.obstacles_data[i])):
                     for k in range(len(self.obstacles_data[i][j])):
@@ -120,11 +120,11 @@ class VoxelMap(MapData):
             np.show()
         else:
             np.hide()
-        np.set_color(LVecBase4f(*dc()))
+        np.set_color(LVecBase4f(*dc()), 1)
 
     def destroy(self) -> None:
         self.traversables.remove_node()
-        # self.traversables_wf.remove_node()
+        self.traversables_wf.remove_node()
         self.obstacles.remove_node()
         self.obstacles_wf.remove_node()
         super().destroy()

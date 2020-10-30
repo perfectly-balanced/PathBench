@@ -12,6 +12,7 @@ from simulator.services.event_manager.events.take_screenshot_event import TakeSc
 
 import math
 from typing import Optional
+from functools import partial
 
 class MapController(Controller, DirectObject):
     __picker: Optional[CubeMapPicker]
@@ -39,12 +40,17 @@ class MapController(Controller, DirectObject):
                     p = Point(p[0], p[1])
                 self._model.move_goal(p)
 
+        def set_view(i):
+            self._services.state.view_idx = i
+
         self.accept('mouse1', left_click)
         self.accept('mouse3', right_click)
         self.accept("c", lambda: self._model.compute_trace())
         self.accept("m", lambda: self._model.toggle_convert_map())
         self.accept("x", lambda: self._model.toggle_pause_algorithm())
         self.accept("p", lambda: self._services.ev_manager.post(TakeScreenshotEvent()))
+        for i in range(6):
+            self.accept(str(i+1), partial(set_view, i))
 
     def destroy(self) -> None:
         self.ignore_all()

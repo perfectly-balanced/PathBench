@@ -567,7 +567,6 @@ class ViewEditor():
         self.__services.ev_manager.register_listener(self)
         self.__base = self.__services.graphics.window
         self.hidden = False
-        self.hidden_config = False
 
         self.__window = Window(self.__base, "view_editor", parent=self.__base.pixel2d,
                                relief=DGG.RAISED,
@@ -706,6 +705,7 @@ class ViewEditor():
             self.__elems[i].frame.set_pos((0.15, 0.0, -0.2 * i))
         self.__elems_frame["canvasSize"] = (-0.95, 0.95, -0.2 * len(self.__elems) + 0.1, 0.1)
 
+        self.__cur_view_idx = self.view_idx
         self.__selected_view_outline.set_pos((-0.7 + (self.view_idx % 3) * 0.7, 0.4, -4.4 - 0.5 * (self.view_idx // 3)))
 
         self.__select_cv(self.__elems[0] if self.__elems else None)
@@ -745,7 +745,7 @@ class ViewEditor():
             self.__colour_picker.colour = e.colour
 
     def notify(self, event: Event) -> None:
-        if isinstance(event, NewColourEvent):
+        if isinstance(event, NewColourEvent) or self.__services.state.view_idx != self.__cur_view_idx:
             self.__reset()
 
     @property

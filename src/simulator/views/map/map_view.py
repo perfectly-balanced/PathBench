@@ -93,8 +93,8 @@ class MapView(View):
         self.__circles = []
         self._services.ev_manager.unregister_listener(self)
         self._services.ev_manager.unregister_tick_listener(self)
-        self._root_view.remove_child(self)
-        self._root_view = None
+        if self._root_view is not None:
+            self._root_view.remove_child(self)
 
     def notify(self, event: Event) -> None:
         super().notify(event)
