@@ -91,6 +91,8 @@ class MapView(View):
         for _, _, geo in self.__circles:
             geo.releaseAll()
         self.__circles = []
+        self._services.ev_manager.unregister_listener(self)
+        self._services.ev_manager.unregister_tick_listener(self)
 
     def notify(self, event: Event) -> None:
         super().notify(event)

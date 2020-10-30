@@ -50,3 +50,4 @@ class MapController(Controller, DirectObject):
         self.ignore_all()
         self.__camera.destroy()
         self.__picker.destroy()
+        self._services.ev_manager.unregister_listener(self)

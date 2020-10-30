@@ -120,5 +120,6 @@ Additional runtime commands:
         if isinstance(event, ResetEvent):
             if self.__map:
                 self.__map.reset()
+                self.__services.ev_manager.unregister_listener(self.__map)
                 self.__services.ev_manager.unregister_tick_listener(self.__map)
             self.__try_setup_map_graphics()

@@ -61,3 +61,4 @@ class MapData:
     
     def destroy(self) -> None:
         self.__root.remove_node()
+        self._services.ev_manager.unregister_listener(self)

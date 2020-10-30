@@ -97,7 +97,7 @@ class VoxelMap(MapData):
 
     def destroy(self) -> None:
         self.traversables.remove_node()
-        self.traversables_wf.remove_node()
+        # self.traversables_wf.remove_node()
         self.obstacles.remove_node()
         self.obstacles_wf.remove_node()
         super().destroy()

@@ -183,3 +183,4 @@ class CameraController(Controller, DirectObject):
     def destroy(self) -> None:
         self.ignore_all()
         self.__task.remove()
+        self._services.ev_manager.unregister_listener(self)

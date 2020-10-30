@@ -8,10 +8,168 @@ from structures import Colour, WHITE, BLACK, TRANSPARENT
 import os
 from constants import DATA_PATH
 
+from maps import Maps
+
+# planner testing
+from algorithms.basic_testing import BasicTesting
+from algorithms.classic.testing.a_star_testing import AStarTesting
+from algorithms.classic.testing.combined_online_lstm_testing import CombinedOnlineLSTMTesting
+from algorithms.classic.testing.dijkstra_testing import DijkstraTesting
+from algorithms.classic.testing.wavefront_testing import WavefrontTesting
+from algorithms.classic.testing.way_point_navigation_testing import WayPointNavigationTesting
+
+# planner implementations
+from algorithms.classic.graph_based.a_star import AStar
+from algorithms.classic.graph_based.bug1 import Bug1
+from algorithms.classic.graph_based.bug2 import Bug2
+from algorithms.classic.graph_based.dijkstra import Dijkstra
+from algorithms.classic.graph_based.potential_field import PotentialField
+from algorithms.classic.sample_based.sprm import SPRM
+from algorithms.classic.sample_based.rt import RT
+from algorithms.classic.sample_based.rrt import RRT
+from algorithms.classic.sample_based.rrt_star import RRT_Star
+from algorithms.classic.sample_based.rrt_connect import RRT_Connect
+
+from algorithms.classic.sample_based.ompl_rrt import OMPL_RRT
+from algorithms.classic.sample_based.ompl_prmstar import OMPL_PRMstar
+from algorithms.classic.sample_based.ompl_lazyprmstar import OMPL_LazyPRMstar
+from algorithms.classic.sample_based.ompl_rrtstar import OMPL_RRTstar
+from algorithms.classic.sample_based.ompl_rrtsharp import OMPL_RRTsharp
+from algorithms.classic.sample_based.ompl_rrtx import OMPL_RRTXstatic
+from algorithms.classic.sample_based.ompl_informedrrt import OMPL_InformedRRT
+from algorithms.classic.sample_based.ompl_kpiece1 import OMPL_KPIECE1
+from algorithms.classic.sample_based.ompl_ltlplanner import OMPL_LTLPlanner
+from algorithms.classic.sample_based.ompl_pdst import OMPL_PDST
+from algorithms.classic.sample_based.ompl_sst import OMPL_SST
+from algorithms.classic.sample_based.ompl_aitstar import OMPL_AITstar
+from algorithms.classic.sample_based.ompl_anytimepathshortening import OMPL_AnytimePathShortening
+from algorithms.classic.sample_based.ompl_bfmt import OMPL_BFMT
+from algorithms.classic.sample_based.ompl_biest import OMPL_BiEST
+from algorithms.classic.sample_based.ompl_rrtconnect import OMPL_RRTConnect
+from algorithms.classic.sample_based.ompl_trrt import OMPL_TRRT
+from algorithms.classic.sample_based.ompl_birlrt import OMPL_BiRLRT
+from algorithms.classic.sample_based.ompl_bitrrt import OMPL_BiTRRT
+from algorithms.classic.sample_based.ompl_bitstar import OMPL_BITstar
+from algorithms.classic.sample_based.ompl_bkpiece1 import OMPL_BKPIECE1
+from algorithms.classic.sample_based.ompl_syclop import OMPL_Syclop
+from algorithms.classic.sample_based.ompl_cforest import OMPL_CForest
+from algorithms.classic.sample_based.ompl_est import OMPL_EST
+from algorithms.classic.sample_based.ompl_fmt import OMPL_FMT
+from algorithms.classic.sample_based.ompl_lazylbtrrt import OMPL_LazyLBTRRT
+from algorithms.classic.sample_based.ompl_lazyprm import OMPL_LazyPRM
+from algorithms.classic.sample_based.ompl_lazyrrt import OMPL_LazyRRT
+from algorithms.classic.sample_based.ompl_lbkpiece1 import OMPL_LBKPIECE1
+from algorithms.classic.sample_based.ompl_lbtrrt import OMPL_LBTRRT
+from algorithms.classic.sample_based.ompl_prm import OMPL_PRM
+from algorithms.classic.sample_based.ompl_spars import OMPL_SPARS
+from algorithms.classic.sample_based.ompl_spars2 import OMPL_SPARS2
+from algorithms.classic.sample_based.ompl_vfrrt import OMPL_VFRRT
+from algorithms.classic.sample_based.ompl_prrt import OMPL_pRRT
+from algorithms.classic.sample_based.ompl_tsrrt import OMPL_TSRRT
+from algorithms.classic.sample_based.ompl_psbl import OMPL_pSBL
+from algorithms.classic.sample_based.ompl_sbl import OMPL_SBL
+from algorithms.classic.sample_based.ompl_stride import OMPL_STRIDE
+from algorithms.classic.sample_based.ompl_qrrt import OMPL_QRRT
+
+from algorithms.VIN.vin import VINTest
+
+from algorithms.classic.graph_based.wavefront import Wavefront
+from algorithms.configuration.configuration import Configuration
+from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
+from algorithms.lstm.a_star_waypoint import WayPointNavigation
+from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
+
 class SimulatorConfig():
     __services: Services
     __base: ShowBase
     __window: Window
+
+    __maps = {
+        # "uniform_random_fill_10/0" is a directory. 0.pickle inside the uniform_random_fill_10 folder inside ./src/resources/maps
+        "Uniform Random Fill": ("uniform_random_fill_10/0", True),
+        "Block": ("block_map_10/6", True),
+        "House": ("house_10/6", True),
+        # Maps.grid_map_labyrinth2 is a map defined inside Maps class
+        # "Long Wall": (Maps.grid_map_labyrinth2, True),
+        "Long Wall": (Maps.grid_map_one_obstacle1, True),
+        "Labyrinth": (Maps.grid_map_labyrinth, True),
+        "vin test 8x8": (Maps.grid_map_small_one_obstacle2, True),
+        "vin test 8x8 -2": (Maps.grid_map_small_one_obstacle, True),
+        "vin test 8x8 -3": (Maps.grid_map_small_one_obstacle3, True),
+        "vin test 16x16 -1": (Maps.grid_map_complex_obstacle, True),
+        "vin test 16x16 -2": (Maps.grid_map_complex_obstacle2, True),
+        "vin test 28x28 -1": (Maps.grid_map_28x28vin, True),
+        "Small Obstacle": (Maps.grid_map_one_obstacle.convert_to_dense_map(), True),
+        "SLAM Map 1": ("map10", False),
+        "SLAM Map 1 (compressed)": ("map11", True),
+        "SLAM Map 2": ("map14", False),
+        "SLAM Map 3": ("map12", False),
+    }
+
+    __algorithms = {
+        "A*": (AStar, AStarTesting, ([], {})),
+        "Global Way-point LSTM": (WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel": (CombinedOnlineLSTM, ([], {})), "global_kernel_max_it": 100})),
+        "LSTM Bagging": (CombinedOnlineLSTM, CombinedOnlineLSTMTesting, ([], {})),
+        "CAE Online LSTM": (OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"})),
+        "Online LSTM": (OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"})),
+        "SPRM": (SPRM, BasicTesting, ([], {})),
+        "RT": (RT, BasicTesting, ([], {})),
+        "RRT": (RRT, BasicTesting, ([], {})),
+        "RRT*": (RRT_Star, BasicTesting, ([], {})),
+        "RRT-Connect": (RRT_Connect, BasicTesting, ([], {})),
+        "Wave-front": (Wavefront, WavefrontTesting, ([], {})),
+        "Dijkstra": (Dijkstra, DijkstraTesting, ([], {})),
+        "Bug1": (Bug1, BasicTesting, ([], {})),
+        "Bug2": (Bug2, BasicTesting, ([], {})),
+        "Potential Field": (PotentialField, BasicTesting, ([], {})),
+        "OMPL RRT": (OMPL_RRT, BasicTesting, ([], {})),
+        "OMPL PRM*": (OMPL_PRMstar, BasicTesting, ([], {})),
+        "OMPL Lazy PRM*": (OMPL_LazyPRMstar, BasicTesting, ([], {})),
+        "OMPL RRT*": (OMPL_RRTstar, BasicTesting, ([], {})),
+        "OMPL RRT#": (OMPL_RRTsharp, BasicTesting, ([], {})),
+        "OMPL RRTX": (OMPL_RRTXstatic, BasicTesting, ([], {})),
+        "OMPL KPIECE1": (OMPL_KPIECE1, BasicTesting, ([], {})),
+        "OMPL LazyLBTRRT": (OMPL_LazyLBTRRT, BasicTesting, ([], {})),
+        "OMPL LazyPRM": (OMPL_LazyPRM, BasicTesting, ([], {})),
+        "OMPL LazyRRT": (OMPL_LazyRRT, BasicTesting, ([], {})),
+        "OMPL LBKPIECE1": (OMPL_LBKPIECE1, BasicTesting, ([], {})),
+        "OMPL LBTRRT": (OMPL_LBTRRT, BasicTesting, ([], {})),
+        "OMPL PRM": (OMPL_PRM, BasicTesting, ([], {})),
+        "OMPL SBL": (OMPL_SBL, BasicTesting, ([], {})),
+        "OMPL STRIDE": (OMPL_STRIDE, BasicTesting, ([], {})),
+        "OMPL PDST": (OMPL_PDST, BasicTesting, ([], {})),
+        "OMPL SST": (OMPL_SST, BasicTesting, ([], {})),
+        "OMPL BiEst": (OMPL_BiEST, BasicTesting, ([], {})),
+        "OMPL TRRT": (OMPL_TRRT, BasicTesting, ([], {})),
+        "OMPL RRTConnect": (OMPL_RRTConnect, BasicTesting, ([], {})),
+        "OMPL BITstar": (OMPL_BITstar, BasicTesting, ([], {})),
+        "OMPL BKPIECE1": (OMPL_BKPIECE1, BasicTesting, ([], {})),
+        "OMPL EST": (OMPL_EST, BasicTesting, ([], {})),
+        "VIN": (VINTest, BasicTesting, ([], {})),
+        # "OMPL LTLPlanner": (OMPL_LTLPlanner, BasicTesting, ([], {})),
+        # "OMPL AITstar": (OMPL_AITstar, BasicTesting, ([], {})),
+        # "OMPL AnytimePathShortening": (OMPL_AnytimePathShortening, BasicTesting, ([], {})),
+        # "OMPL BFMT": (OMPL_BFMT, BasicTesting, ([], {})),
+        # "OMPL BiRLRT": (OMPL_BiRLRT, BasicTesting, ([], {})),
+        # "OMPL BiTRRT": (OMPL_BiTRRT, BasicTesting, ([], {})),
+        # "OMPL Syclop ": (OMPL_Syclop, BasicTesting, ([], {})),
+        # "OMPL CForest": (OMPL_CForest, BasicTesting, ([], {})),
+        # "OMPL FMT": (OMPL_FMT, BasicTesting, ([], {})),
+        # "OMPL SPARS": (OMPL_SPARS, BasicTesting, ([], {})),
+        # "OMPL SPARS2": (OMPL_SPARS2, BasicTesting, ([], {})),
+        # "OMPL VFRRT": (OMPL_VFRRT, BasicTesting, ([], {})),
+        # "OMPL pRRT": (OMPL_pRRT, BasicTesting, ([], {})),
+        # "OMPL TSRRT": (OMPL_TSRRT, BasicTesting, ([], {})),
+        # "OMPL pSBL": (OMPL_pSBL, BasicTesting, ([], {})),
+        # "OMPL QRRT": (OMPL_QRRT, BasicTesting, ([], {})),
+    }
+
+    __animations = {
+        "None": (0, 0),
+        "Normal": (0.00001, 0),
+        "Slow": (0.5, 0),
+        "Fast": (0.00001, 20)
+    }
 
     def __init__(self, services: Services):
         self.__services = services
@@ -19,24 +177,13 @@ class SimulatorConfig():
         self.__base = self.__services.graphics.window
         self.hidden_config = False
 
-        self.maps = ["Labyrinth", "Uniform Random Fill", "Block", "House", "Long Wall",
-                     "Labyrinth","vin test 8x8","vin test 8x8 -2","vin test 8x8 -3",
-                     "vin test 16x16 -1", "vin test 16x16 -2", "vin test 28x28 -1",
-                     "Small Obstacle", "SLAM Map 1", "SLAM Map 1 (compressed)", "SLAM Map 2", "SLAM Map 3"]
-
-        self.algorithms = ["OMPL", "A*", "Global Way-point LSTM", "LSTM Bagging", "CAE Online LSTM",
-                           "Online LSTM", "SPRM", "RT", "RRT", "RRT*", "RRT-Connect", "Wave-front", "Dijkstra",
-                           "Bug1", "Bug2", "Potential Field", "VIN"]
-
-        self.animations = ["None","Normal", "Slow", "Fast"]
-
         self.__window_config = Window(self.__base, "simulator_config", parent=self.__base.pixel2d,
-                               relief=DGG.RAISED,
-                               borderWidth=(0.0, 0.0),
-                               frameColor=WINDOW_BG_COLOUR,
-                               pos=(190, 200, -350),
-                               scale=(150, 1., 150),
-                               frameSize=(-1.2, 1.2, -4, 1.1))
+                                      relief=DGG.RAISED,
+                                      borderWidth=(0.0, 0.0),
+                                      frameColor=WINDOW_BG_COLOUR,
+                                      pos=(190, 200, -350),
+                                      scale=(150, 1., 150),
+                                      frameSize=(-1.2, 1.2, -4, 1.1))
 
         DirectFrame(parent=self.__window_config.frame,
                     borderWidth=(.0, .0),
@@ -52,14 +199,13 @@ class SimulatorConfig():
                                           pos=(0.0, 0.0, 0.8),
                                           scale=(0.2, 3, 0.2))
 
-
         self.heading_config = DirectLabel(parent=self.__window_config.frame,
-                                   text="Simulator Configuration",
-                                   text_fg=WHITE,
-                                   text_bg=WINDOW_BG_COLOUR,
-                                   borderWidth=(.0, .0),
-                                   pos=(0.0, 0.0, 0.56),
-                                   scale=(0.2, 3, 0.18))
+                                          text="Simulator Configuration",
+                                          text_fg=WHITE,
+                                          text_bg=WINDOW_BG_COLOUR,
+                                          borderWidth=(.0, .0),
+                                          pos=(0.0, 0.0, 0.56),
+                                          scale=(0.2, 3, 0.18))
 
         # Quit button
         self.btn = DirectButton(image=os.path.join(DATA_PATH, "quit.png"),
@@ -70,44 +216,44 @@ class SimulatorConfig():
                                 pressEffect=1,
                                 frameColor=TRANSPARENT)
 
-        self.options = DirectOptionMenu(text="options",
-                                        scale=0.14,
-                                        parent=self.__window_config.frame,
-                                        initialitem=1,
-                                        items=self.maps,
-                                        pos=(-0.65, 0.4, 0.1),
-                                        highlightColor=(0.65, 0.65, 0.65, 1),
-                                        textMayChange=1)
+        self.__maps_option = DirectOptionMenu(text="options",
+                                              scale=0.14,
+                                              parent=self.__window_config.frame,
+                                              initialitem=1,
+                                              items=list(self.__maps.keys()),
+                                              pos=(-0.65, 0.4, 0.1),
+                                              highlightColor=(0.65, 0.65, 0.65, 1),
+                                              textMayChange=1)
 
-        self.options = DirectOptionMenu(text="options",
-                                        scale=0.14,
-                                        parent=self.__window_config.frame,
-                                        initialitem=1,
-                                        items=self.algorithms,
-                                        pos=(-0.65, 0.4, -1),
-                                        highlightColor=(0.65, 0.65, 0.65, 1),
-                                        textMayChange=1)
+        self.__algorithms_option = DirectOptionMenu(text="options",
+                                                    scale=0.14,
+                                                    parent=self.__window_config.frame,
+                                                    initialitem=1,
+                                                    items=list(self.__algorithms.keys()),
+                                                    pos=(-0.65, 0.4, -1),
+                                                    highlightColor=(0.65, 0.65, 0.65, 1),
+                                                    textMayChange=1)
 
-        self.options = DirectOptionMenu(text="options",
-                                        scale=0.14,
-                                        parent=self.__window_config.frame,
-                                        initialitem=0,
-                                        items=self.animations,
-                                        pos=(-0.65, 0.4, -2),
-                                        highlightColor=(0.65, 0.65, 0.65, 1),
-                                        textMayChange=1)
+        self.__animations_option = DirectOptionMenu(text="options",
+                                                    scale=0.14,
+                                                    parent=self.__window_config.frame,
+                                                    initialitem=0,
+                                                    items=list(self.__animations.keys()),
+                                                    pos=(-0.65, 0.4, -2),
+                                                    highlightColor=(0.65, 0.65, 0.65, 1),
+                                                    textMayChange=1)
 
         self.__start_simulator = DirectFrame(parent=self.__window_config.frame,
-                                          frameColor=WHITE,
-                                          pos=(-0.34, 0.4, -3),
-                                          borderWidth=(0.25, 0.15),
-                                          frameSize=(-0.69, 2.1, -0.54, 0.54),
-                                          scale=(0.50, 3.1, 0.25))
+                                             frameColor=WHITE,
+                                             pos=(-0.34, 0.4, -3),
+                                             borderWidth=(0.25, 0.15),
+                                             frameSize=(-0.69, 2.1, -0.54, 0.54),
+                                             scale=(0.50, 3.1, 0.25))
         self.btn_s = DirectButton(
             text="Start Simulator",
             text_fg=(0.3, 0.3, 0.3, 1.0),
             pressEffect=1,
-            # command=,
+            command=self.__start_simulator_callback,
             pos=(0, 0.4, -3.03),
             parent=self.__window_config.frame,
             scale=(0.20, 2.1, 0.15),
@@ -121,6 +267,17 @@ class SimulatorConfig():
             self.__window_config.frame.show()
             self.hidden_config = False
 
+    def __start_simulator_callback(self) -> None:
+        mp = self.__maps[self.__maps_option.get()]
+        algo = self.__algorithms[self.__algorithms_option.get()]
+        ani = self.__animations[self.__animations_option.get()]
+
+        config = self.__services.settings
+        config.simulator_initial_map, config.simulator_grid_display = mp  # Optional[Union[str, Map]], bool
+        # Optional[Type[Algorithm]],Optional[Type[BasicTesting]], Tuple[List, Dict]
+        config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = algo
+        config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani  # int, int
+        self.__services.reset()
 
     def notify(self, event: Event) -> None:
-        print("notify")
+        pass
