@@ -119,6 +119,11 @@ Additional runtime commands:
     def notify(self, event: Event) -> None:
         if isinstance(event, ResetEvent):
             if self.__map:
+                """
+                self.__map.stop_algorithm()
+                if self.__map.last_thread:
+                    self.__map.last_thread.join()
+                """
                 self.__map.reset()
                 self.__services.ev_manager.unregister_listener(self.__map)
                 self.__services.ev_manager.unregister_tick_listener(self.__map)

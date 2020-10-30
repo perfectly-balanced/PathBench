@@ -93,6 +93,7 @@ class MapView(View):
         self.__circles = []
         self._services.ev_manager.unregister_listener(self)
         self._services.ev_manager.unregister_tick_listener(self)
+        self._root_view.remove_child(self)
 
     def notify(self, event: Event) -> None:
         super().notify(event)
@@ -226,9 +227,9 @@ class MapView(View):
 
         wda = dst.a * (1 - src.a)  # weighted dst alpha
         a = src.a + wda
-        r = (src.r * src.a + dst.r * wda) / a
-        g = (src.g * src.a + dst.g * wda) / a
-        b = (src.b * src.a + dst.b * wda) / a
+        r = (src.r * src.a + dst.r * wda) / (a if a else 1) 
+        g = (src.g * src.a + dst.g * wda) / (a if a else 1)
+        b = (src.b * src.a + dst.b * wda) / (a if a else 1)
 
         self.__tc_scratchpad[x][y][z] = Colour(r, g, b, a)
 
