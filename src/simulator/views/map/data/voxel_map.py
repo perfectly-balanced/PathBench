@@ -43,41 +43,68 @@ class VoxelMap(MapData):
         self.traversables_mesh = CubeMesh(self.traversables_data, self.name + '_traversables', artificial_lighting, hidden_faces=True)
         self.traversables = self.root.attach_new_node(self.traversables_mesh.geom_node)
 
-        # self.traversables_wf_mesh = CubeMesh(self.traversables_data, self.name + '_traversables_wf', artificial_lighting, hidden_faces=True)
-        # self.traversables_wf = self.root.attach_new_node(self.traversables_wf_mesh.geom_node)
-        # self.traversables_wf.setRenderModeWireframe()
-        # self.traversables_wf.setRenderModeThickness(2.2)
-        # returns a node
-        # def gen_cube_mesh_wireframe():
-        #     ls = LineSegs()
-        #     ls.set_thickness(4)
-        #
-        #     # traverse each cube in the traversables data
-        #     for i in range(len(self.obstacles_data)):
-        #         self.traversables_data[i] = {}
-        #         for j in range(len(self.obstacles_data[i])):
-        #             self.traversables_data[i][j] = {}
-        #             for k in range(len(self.obstacles_data[i][j])):
-        #                 if self.traversables_data[i][j][k] is True:
-        #                     ls.move_to(i,j,k)
-        #                     ls.draw_to()
-        #
-        #
-        #     np = ls.create()
-        #     return np
 
-        #self.traversables_wf = self.root.attach_new_node(gen_cube_mesh_wireframe(self.traversables_data, self.name + '_traversables_wf'))
+        def gen_cube_mesh_wireframe():
+            ls = LineSegs()
+            ls.set_thickness(6)
+            for i in range(len(self.traversables_data)):
+                for j in range(len(self.traversables_data[i])):
+                    for k in range(len(self.traversables_data[i][j])):
+                        if self.traversables_data[i][j][k]:
+                            self.arr_x = [0, 0, 0, 0, 1, 1, 1, 1]
+                            self.arr_y = [0, 0, 1, 1, 1, 1, 0, 0]
+                            self.arr_z = [0, -1, -1, 0, 0, -1, -1, 0]
+                            for pos1 in range(len(self.arr_x) - 1):
+                                for pos2 in range(pos1, len(self.arr_x)):
+                                    x = self.arr_x[pos1] + i
+                                    y = self.arr_y[pos1] + j
+                                    z = self.arr_z[pos1] + k
+                                    x1 = self.arr_x[pos2] + i
+                                    y1 = self.arr_y[pos2] + j
+                                    z1 = self.arr_z[pos2] + k
+                                    if (is_connected(x, y, z, x1, y1, z1)):
+                                        ls.move_to(x, y, z)
+                                        ls.draw_to(x1, y1, z1)
+            np = ls.create()
+            return np
+
+        def gen_cube_mesh_wireframe_obstacles():
+            ls = LineSegs()
+            ls.set_thickness(6)
+            for i in range(len(self.obstacles_data)):
+                for j in range(len(self.obstacles_data[i])):
+                    for k in range(len(self.obstacles_data[i][j])):
+                        if self.obstacles_data[i][j][k]:
+                            self.arr_x = [0, 0, 0, 0, 1, 1, 1, 1]
+                            self.arr_y = [0, 0, 1, 1, 1, 1, 0, 0]
+                            self.arr_z = [0, -1, -1, 0, 0, -1, -1, 0]
+                            for pos1 in range(len(self.arr_x) - 1):
+                                for pos2 in range(pos1, len(self.arr_x)):
+                                    x = self.arr_x[pos1] + i
+                                    y = self.arr_y[pos1] + j
+                                    z = self.arr_z[pos1] + k
+                                    x1 = self.arr_x[pos2] + i
+                                    y1 = self.arr_y[pos2] + j
+                                    z1 = self.arr_z[pos2] + k
+                                    if (is_connected(x, y, z, x1, y1, z1)):
+                                        ls.move_to(x, y, z)
+                                        ls.draw_to(x1, y1, z1)
+            np = ls.create()
+            return np
+
+        def is_connected(x, y, z, x1, y1, z1):
+            return (abs(x - x1) == 1 and abs(y - y1) != 1 and abs(z - z1) != 1) or (
+                    abs(x - x1) != 1 and abs(y - y1) == 1 and abs(z - z1) != 1) or (
+                           abs(x - x1) != 1 and abs(y - y1) != 1 and abs(z - z1) == 1)
+
+        self.traversables_wf = self.root.attach_new_node(gen_cube_mesh_wireframe())
+        self.obstacles_wf = self.root.attach_new_node(gen_cube_mesh_wireframe_obstacles())
 
         self.obstacles_mesh = CubeMesh(self.obstacles_data, self.name + '_obstacles', artificial_lighting, hidden_faces=True)
         self.obstacles = self.root.attach_new_node(self.obstacles_mesh.geom_node)
 
-        self.obstacles_wf_mesh = CubeMesh(self.obstacles_data, self.name + '_obstacles_wf', artificial_lighting, hidden_faces=True)
-        self.obstacles_wf = self.root.attach_new_node(self.obstacles_wf_mesh.geom_node)
-        self.obstacles_wf.setRenderModeWireframe()
-        self.obstacles_wf.setRenderModeThickness(2.2)
-
         self._add_colour(VoxelMap.TRAVERSABLES, WHITE, callback=self.__traversables_colour_callback)
-        #self._add_colour(VoxelMap.TRAVERSABLES_WF, BLACK, callback=lambda dc: self.__mesh_colour_callback(dc, self.traversables_wf))
+        self._add_colour(VoxelMap.TRAVERSABLES_WF, BLACK, callback=lambda dc: self.__mesh_colour_callback(dc, self.traversables_wf))
         self._add_colour(VoxelMap.OBSTACLES, BLACK, callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles))
         self._add_colour(VoxelMap.OBSTACLES_WF, WHITE, callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles_wf))
 
