@@ -20,7 +20,9 @@ class SimulatorConfig():
         self.hidden_config = False
 
         self.maps = ["Labyrinth", "Uniform Random Fill", "Block", "House", "Long Wall",
-                     "Labyrinth", "Small Obstacle", "SLAM Map 1", "SLAM Map 1 (compressed)", "SLAM Map 2", "SLAM Map 3"]
+                     "Labyrinth","vin test 8x8","vin test 8x8 -2","vin test 8x8 -3",
+                     "vin test 16x16 -1", "vin test 16x16 -2", "vin test 28x28 -1",
+                     "Small Obstacle", "SLAM Map 1", "SLAM Map 1 (compressed)", "SLAM Map 2", "SLAM Map 3"]
 
         self.algorithms = ["OMPL", "A*", "Global Way-point LSTM", "LSTM Bagging", "CAE Online LSTM",
                            "Online LSTM", "SPRM", "RT", "RRT", "RRT*", "RRT-Connect", "Wave-front", "Dijkstra",
@@ -97,7 +99,7 @@ class SimulatorConfig():
 
         self.__start_simulator = DirectFrame(parent=self.__window_config.frame,
                                           frameColor=WHITE,
-                                          pos=(-0.65, 0.4, -3),
+                                          pos=(-0.34, 0.4, -3),
                                           borderWidth=(0.25, 0.15),
                                           frameSize=(-0.69, 2.1, -0.54, 0.54),
                                           scale=(0.50, 3.1, 0.25))
@@ -106,7 +108,7 @@ class SimulatorConfig():
             text_fg=(0.3, 0.3, 0.3, 1.0),
             pressEffect=1,
             # command=,
-            pos=(-0.3, 0.4, -3),
+            pos=(0, 0.4, -3.03),
             parent=self.__window_config.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
