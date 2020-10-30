@@ -42,6 +42,7 @@ class View:
         view._root_view = None
 
     def __del__(self) -> None:
+        print(self)
         if self._root_view is not None:
             self._root_view.remove_child(self)
 

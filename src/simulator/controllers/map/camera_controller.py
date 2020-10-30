@@ -75,7 +75,7 @@ class CameraController(Controller, DirectObject):
         self.accept("wheel_up", self.update_key_map, ["wheelup", 1])
         self.accept("wheel_down", self.update_key_map, ["wheeldown", 1])
 
-        self.__base.taskMgr.add(self.move_orbital_camera_task, "move_orbital_camera_task")
+        self.__task = self.__base.taskMgr.add(self.move_orbital_camera_task, "move_orbital_camera_task")
 
         #self.__base.taskMgr.add(self.update, "update")
 
@@ -182,3 +182,4 @@ class CameraController(Controller, DirectObject):
 
     def destroy(self) -> None:
         self.ignore_all()
+        self.__task.remove()

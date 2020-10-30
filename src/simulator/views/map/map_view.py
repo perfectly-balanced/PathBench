@@ -22,8 +22,6 @@ from simulator.views.map.display.online_lstm_map_display import OnlineLSTMMapDis
 from simulator.views.view import View
 from structures import Point, Colour, TRANSPARENT, WHITE
 
-from simulator.views.gui.view_editor import ViewEditor
-from simulator.views.gui.simulator_config import SimulatorConfig
 from simulator.views.map.data.voxel_map import VoxelMap
 from simulator.views.map.object.cube_mesh import Face
 
@@ -38,8 +36,7 @@ class MapView(View):
 
     __world: NodePath
     __map: VoxelMap
-    __vs: ViewEditor
-    __sc: SimulatorConfig
+
     __tc_previous: List[List[List[Colour]]]
     __tc_scratchpad: List[List[List[Colour]]]
     __draw_nps: List[NodePath]
@@ -80,12 +77,20 @@ class MapView(View):
         # MAP #
         self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
         self.__center(self.__map.root)
-
-        # GUI #
-        self.__vs = ViewEditor(self._services)
-        self.__sc = SimulatorConfig(self._services)
-
         self.update_view()
+
+    def destroy(self) -> None:
+        self.__map.destroy()
+        self.__world.remove_node()
+        self.__displays = []
+        self.__tc_previous = {}
+        self.__tc_scratchpad = {}
+        for np in self.__draw_nps:
+            np.remove_node()
+        self.__draw_nps = []
+        for _, _, geo in self.__circles:
+            geo.releaseAll()
+        self.__circles = []
 
     def notify(self, event: Event) -> None:
         super().notify(event)

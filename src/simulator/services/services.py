@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Optional
 
 from simulator.services.debug import Debug
 from simulator.services.event_manager.event_manager import EventManager
+from simulator.services.event_manager.events.reset_event import ResetEvent
 
 if TYPE_CHECKING:
     from algorithms.configuration.configuration import Configuration
@@ -53,6 +54,12 @@ class Services:
 
         if self.__settings.simulator_graphics:
             self.__graphics = GraphicsManager(self)
+
+    def reset(self) -> None:
+        from simulator.services.algorithm_runner import AlgorithmRunner
+        self.__algorithm_runner = AlgorithmRunner(self)
+        self.__algorithm_runner.reset_algorithm()
+        self.ev_manager.post(ResetEvent())
 
     @property
     def state(self) -> str:

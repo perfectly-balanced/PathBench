@@ -58,3 +58,6 @@ class MapData:
         if invoke_callback:
             callback(dc)
         return dc
+    
+    def destroy(self) -> None:
+        self.__root.remove_node()

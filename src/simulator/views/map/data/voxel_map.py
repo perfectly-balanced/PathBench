@@ -94,3 +94,10 @@ class VoxelMap(MapData):
         else:
             np.hide()
         np.set_color(LVecBase4f(*dc()))
+
+    def destroy(self) -> None:
+        self.traversables.remove_node()
+        self.traversables_wf.remove_node()
+        self.obstacles.remove_node()
+        self.obstacles_wf.remove_node()
+        super().destroy()

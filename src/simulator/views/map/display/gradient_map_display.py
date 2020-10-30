@@ -48,7 +48,7 @@ class GradientMapDisplay(MapDisplay):
         cmin = self.min_color()
         cmax = self.max_color()
 
-        proc_dist: float = (val - min_val) / ((max_val - min_val) if (max_val - min_val) != 0 else 1)
+        proc_dist: float = max(0, min(1, (val - min_val) / ((max_val - min_val) if (max_val - min_val) != 0 else 1)))
         proc_dist_clr = Colour(proc_dist, proc_dist, proc_dist, proc_dist)
         clr_vec: Colour = cmax - cmin
         clr = cmin + proc_dist_clr * clr_vec
