@@ -1,4 +1,4 @@
-from panda3d.core import NodePath, TransparencyAttrib, LVecBase4f
+from panda3d.core import NodePath, TransparencyAttrib, LVecBase4f, LineSegs
 
 from simulator.services.services import Services
 from simulator.views.map.data.map_data import MapData
@@ -43,10 +43,30 @@ class VoxelMap(MapData):
         self.traversables_mesh = CubeMesh(self.traversables_data, self.name + '_traversables', artificial_lighting, hidden_faces=True)
         self.traversables = self.root.attach_new_node(self.traversables_mesh.geom_node)
 
-        self.traversables_wf_mesh = CubeMesh(self.traversables_data, self.name + '_traversables_wf', artificial_lighting, hidden_faces=True)
-        self.traversables_wf = self.root.attach_new_node(self.traversables_wf_mesh.geom_node)
-        self.traversables_wf.setRenderModeWireframe()
-        self.traversables_wf.setRenderModeThickness(2.2)
+        # self.traversables_wf_mesh = CubeMesh(self.traversables_data, self.name + '_traversables_wf', artificial_lighting, hidden_faces=True)
+        # self.traversables_wf = self.root.attach_new_node(self.traversables_wf_mesh.geom_node)
+        # self.traversables_wf.setRenderModeWireframe()
+        # self.traversables_wf.setRenderModeThickness(2.2)
+        # returns a node
+        # def gen_cube_mesh_wireframe():
+        #     ls = LineSegs()
+        #     ls.set_thickness(4)
+        #
+        #     # traverse each cube in the traversables data
+        #     for i in range(len(self.obstacles_data)):
+        #         self.traversables_data[i] = {}
+        #         for j in range(len(self.obstacles_data[i])):
+        #             self.traversables_data[i][j] = {}
+        #             for k in range(len(self.obstacles_data[i][j])):
+        #                 if self.traversables_data[i][j][k] is True:
+        #                     ls.move_to(i,j,k)
+        #                     ls.draw_to()
+        #
+        #
+        #     np = ls.create()
+        #     return np
+
+        #self.traversables_wf = self.root.attach_new_node(gen_cube_mesh_wireframe(self.traversables_data, self.name + '_traversables_wf'))
 
         self.obstacles_mesh = CubeMesh(self.obstacles_data, self.name + '_obstacles', artificial_lighting, hidden_faces=True)
         self.obstacles = self.root.attach_new_node(self.obstacles_mesh.geom_node)
@@ -57,7 +77,7 @@ class VoxelMap(MapData):
         self.obstacles_wf.setRenderModeThickness(2.2)
 
         self._add_colour(VoxelMap.TRAVERSABLES, WHITE, callback=self.__traversables_colour_callback)
-        self._add_colour(VoxelMap.TRAVERSABLES_WF, BLACK, callback=lambda dc: self.__mesh_colour_callback(dc, self.traversables_wf))
+        #self._add_colour(VoxelMap.TRAVERSABLES_WF, BLACK, callback=lambda dc: self.__mesh_colour_callback(dc, self.traversables_wf))
         self._add_colour(VoxelMap.OBSTACLES, BLACK, callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles))
         self._add_colour(VoxelMap.OBSTACLES_WF, WHITE, callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles_wf))
 
