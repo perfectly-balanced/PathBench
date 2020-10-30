@@ -29,6 +29,16 @@ class SparseMap(Map):
         self.obstacles = obstacles
         self.goal = goal
 
+    def at(self, p: Point) -> int:
+        if self.agent.position == p:
+            return self.AGENT_ID
+        elif p in [o.position for o in self.obstacles]:
+            return self.WALL_ID
+        elif self.goal.position == p:
+            return self.GOAL_ID
+        else:
+            return self.CLEAR_ID
+
     def move(self, entity: Entity, to: Point, no_trace: bool = False) -> bool:
         """
         Read super description
@@ -52,26 +62,25 @@ class SparseMap(Map):
         Converts current map into a :class:`DenseMap`
         :return: The converted map
         """
-        grid: List[List[int]] = [[0 for _ in range(self.size.width)] for _ in range(self.size.height)]
+        grid: np.array = np.zeros(self.size, dtype=np.int32)
         should_optimize: bool = len(self.obstacles) > 20
 
         for obstacle in self.obstacles:
             total_radius: int = self.agent.radius + obstacle.radius
             if should_optimize:
                 total_radius = obstacle.radius
-            for x in range(obstacle.position.x - total_radius, obstacle.position.x + total_radius + 1):
-                for y in range(obstacle.position.y - total_radius, obstacle.position.y + total_radius + 1):
-                    if not self.is_out_of_bounds_pos(Point(x, y)):
-                        dist: Union[float, np.ndarray] = np.linalg.norm(np.array([x, y]) - np.array(obstacle.position))
-                        if not should_optimize and \
-                                dist <= obstacle.radius + self.agent.radius and grid[y][x] == DenseMap.CLEAR_ID:
-                            grid[y][x] = DenseMap.EXTENDED_WALL
-                        if dist <= obstacle.radius:
-                            grid[y][x] = DenseMap.WALL_ID
+            for index in np.ndindex(*(len(self.size) * [total_radius*2 + 1])):
+                p = [elem + obstacle.position[i] - total_radius for i, elem in enumerate(index)]
+                if not self.is_out_of_bounds_pos(Point(*p)):
+                    dist: Union[float, np.ndarray] = np.linalg.norm(np.array(p) - np.array(obstacle.position))
+                    if (not should_optimize) and (dist <= obstacle.radius + self.agent.radius) and (grid[tuple(p)] == DenseMap.CLEAR_ID):
+                        grid[tuple(p)] = DenseMap.EXTENDED_WALL
+                    if dist <= obstacle.radius:
+                        grid[tuple(p)] = DenseMap.WALL_ID
 
-        grid[self.agent.position.y][self.agent.position.x] = DenseMap.AGENT_ID
-        grid[self.goal.position.y][self.goal.position.x] = DenseMap.GOAL_ID
-        dense_map: DenseMap = DenseMap(grid, self._services)
+        grid[self.agent.position.pos] = DenseMap.AGENT_ID
+        grid[self.goal.position.pos] = DenseMap.GOAL_ID
+        dense_map: DenseMap = DenseMap(grid, self._services, transpose=False)
         dense_map.agent = copy.deepcopy(self.agent)
         dense_map.goal = copy.deepcopy(self.goal)
         dense_map.trace = copy.deepcopy(self.trace)
@@ -91,7 +100,7 @@ class SparseMap(Map):
                 return False
         return True
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         debug_level: DebugLevel = DebugLevel.BASIC
         if self._services is not None:
             debug_level = self._services.settings.simulator_write_debug_level
@@ -99,7 +108,7 @@ class SparseMap(Map):
         obst_str: str = "{\n\t\t\tsize: " + str(len(self.obstacles))
         if debug_level == DebugLevel.HIGH or len(self.obstacles) <= 10:
             obst_str += ", \n\t\t\tentities: [\n"
-            for obst in self.obstacles:
+            for obst in sorted(self.obstacles, key=lambda o: o.position[::-1]):
                 obst_str += "\t\t\t\t" + str(obst) + ", \n"
             obst_str += "\t\t\t]"
         obst_str += "\n\t\t}"

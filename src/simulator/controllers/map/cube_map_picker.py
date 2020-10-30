@@ -1,4 +1,8 @@
-from typing import Final, List
+from typing import List
+try:
+    from typing import Final
+except ImportError:
+    Final = 'Final[Colour]'
 
 from panda3d.core import CollisionTraverser, CollisionHandlerQueue, CollisionNode, NodePath, BitMask32, CollisionBox, CollisionRay, Point3
 from direct.showbase.ShowBase import ShowBase

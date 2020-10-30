@@ -165,7 +165,7 @@ class TestDenseMap(unittest.TestCase):
         ])
         map1.move_agent(Point(1, 1))
         self.assertEqual(Point(1, 1), map1.agent.position)
-        self.assertTrue(DenseMap.AGENT_ID, map1.grid[1][1])
+        self.assertEqual(DenseMap.AGENT_ID, map1.at(Point(1, 1)))
         self.assertTrue([Trace(Point(1, 1))], map1.trace)
 
     def test_move_agent_no_trace(self) -> None:
@@ -176,7 +176,7 @@ class TestDenseMap(unittest.TestCase):
         ])
         map1.move_agent(Point(1, 1), True)
         self.assertEqual(Point(1, 1), map1.agent.position)
-        self.assertEqual(DenseMap.AGENT_ID, map1.grid[1][1])
+        self.assertEqual(DenseMap.AGENT_ID, map1.at(Point(1, 1)))
         self.assertEqual([], map1.trace)
 
     def test_move_agent_out_of_bounds(self) -> None:
@@ -186,8 +186,7 @@ class TestDenseMap(unittest.TestCase):
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         map1.move_agent(Point(-1, 0))
-        self.assertEqual(Point(0, 1), map1.agent.position)
-        self.assertEqual(DenseMap.AGENT_ID, map1.grid[1][0])
+        self.assertEqual(DenseMap.AGENT_ID, map1.at(Point(0, 1)))
         self.assertEqual([Trace(Point(0, 1))], map1.trace)
 
     def test_is_goal_reached_normal(self) -> None:
@@ -262,6 +261,7 @@ class TestDenseMap(unittest.TestCase):
             Goal(Point(4, 3), 1)
         ).convert_to_dense_map()
         map1._services = service
+
         self.assertEqual("""DenseMap: {
 		size: Size(30, 30), 
 		agent: Agent: {position: Point(1, 2), radius: 1}, 

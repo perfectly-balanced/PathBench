@@ -13,8 +13,11 @@ class Trace(Entity):
     def __init__(self, position: Point) -> None:
         super().__init__(position, 1)
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return "Trace: {position: " + str(self.position) + "}"
+
+    def __str__(self) -> str:
+        return self.__repr__()
 
     def __copy__(self) -> 'Trace':
         return copy.deepcopy(self)

@@ -23,6 +23,12 @@ class Map:
     All maps must inherit this class.
     """
 
+    CLEAR_ID: int = 0
+    WALL_ID: int = 1
+    AGENT_ID: int = 2
+    GOAL_ID: int = 3
+    EXTENDED_WALL: int = 4
+
     size: Size
     agent: Agent
     goal: Goal
@@ -31,6 +37,8 @@ class Map:
     _services: Optional[Services]
     __cached_move_costs: List[float] = []
 
+    def at(self, p: Point) -> int:
+        raise NotImplementedError("Have not implemented this for the given map yet.")
 
     def init_direction_vectors(self):
         """
@@ -213,7 +221,6 @@ class Map:
 
         return all(map(lambda pos: pos[0] == pos[1], zip(goal.position, pos)))
 
-    # check if this is compatible with n dimensions
     def is_agent_in_goal_radius(self, agent_pos: Point = None, goal: Goal = None) -> bool:
         if agent_pos is None:
             agent_pos = self.agent.position
@@ -236,7 +243,8 @@ class Map:
         :param pos: The position
         :return: If the n dimensional position is out of bounds
         """
-        return not all([pos[i] >= 0 and pos[i] < self.size[i] for i in range(self.size.n_dim)])
+
+        return len(pos) != len(self.size) or not all([pos[i] >= 0 and pos[i] < self.size[i] for i in range(self.size.n_dim)])
 
     def get_next_positions(self, pos: Point) -> List[Point]:
         """

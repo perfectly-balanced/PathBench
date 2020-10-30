@@ -240,6 +240,7 @@ class TestSparseMap(unittest.TestCase):
             [2, 3, 0, 0, 0, 0, 0, 0, 0, 0]
         ]).convert_to_sparse_map()
         map1._services = service
+
         self.assertEqual("""SparseMap: {
 		size: Size(10, 3), 
 		agent: Agent: {position: Point(0, 2), radius: 0}, 

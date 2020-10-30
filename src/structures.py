@@ -1,4 +1,8 @@
-from typing import Tuple, Final, Optional, Callable
+from typing import Tuple, Optional, Callable
+try:
+    from typing import Final
+except ImportError:
+    Final = 'Final[Colour]'
 import torch
 import copy
 
@@ -18,7 +22,8 @@ class Point(torch.Tensor):
             if ("z" in kwargs): ords = (*ords, kwargs["z"])
         assert (len(ords) > 1), "Needs at least two dimensions"
         super().__init__()
-        self.pos = tuple(ords)
+        self.pos = tuple(int(i) for i in ords)
+        assert all(map(lambda x: x[0] == x[1], zip(self.pos, ords))), "conversion to int changed a value"
         self.data = torch.FloatTensor(self.pos)
     
     @property
