@@ -22,7 +22,8 @@ from simulator.views.map.display.online_lstm_map_display import OnlineLSTMMapDis
 from simulator.views.view import View
 from structures import Point, Colour, TRANSPARENT, WHITE
 
-from simulator.views.gui.view_editor import ViewEditor, SimulatorConfig
+from simulator.views.gui.view_editor import ViewEditor
+from simulator.views.gui.simulator_config import SimulatorConfig
 from simulator.views.map.data.voxel_map import VoxelMap
 from simulator.views.map.object.cube_mesh import Face
 
