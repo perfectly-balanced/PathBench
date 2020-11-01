@@ -180,11 +180,17 @@ class SimulatorConfig():
         "High":(0)
     }
 
+
     def __init__(self, services: Services):
         self.__services = services
         self.__services.ev_manager.register_listener(self)
         self.__base = self.__services.graphics.window
         self.hidden_config = False
+        self.__text = "Important runtime commands:\n \n* c - find the path between the agent and goal\n\n"\
+             "* mouse click - moves agent to mouse location \n\n* mouse right click - moves goal to"\
+             " mouse location\n\n* s - stop trace animation (animations required)\n\n* r - resume trace animation  (" \
+             "animations required)\n\n* p - take screenshot"
+
 
         self.__window_config = Window(self.__base, "simulator_config", parent=self.__base.pixel2d,
                                       relief=DGG.RAISED,
@@ -192,7 +198,7 @@ class SimulatorConfig():
                                       frameColor=WINDOW_BG_COLOUR,
                                       pos=(190, 200, -350),
                                       scale=(150, 1., 150),
-                                      frameSize=(-1.6, 1.2, -4, 1.1))
+                                      frameSize=(-1.6, 1.2, -4.2, 1.1))
 
         # spacer #
         DirectFrame(parent=self.__window_config.frame,
@@ -200,6 +206,11 @@ class SimulatorConfig():
                     frameColor=WIDGET_BG_COLOUR,
                     frameSize=(-1.3, 1.3, -0.01, 0.01),
                     pos=(-0.2, 0.0, 0.4))
+        DirectFrame(parent=self.__window_config.frame,
+                    borderWidth=(.0, .0),
+                    frameColor=WIDGET_BG_COLOUR,
+                    frameSize=(-1.3, 1.3, -0.01, 0.01),
+                    pos=(-0.2, 0.0, -2.46))
 
 
         self.heading_config = DirectLabel(parent=self.__window_config.frame,
@@ -219,6 +230,15 @@ class SimulatorConfig():
                                           borderWidth=(.0, .0),
                                           pos=(-0.2, 0.0, 0.56),
                                           scale=(0.2, 3, 0.18))
+        self.user_information = DirectLabel(parent=self.__window_config.frame,
+                                          text=self.__text,
+                                          text_fg=WHITE,
+                                          text_bg=WINDOW_BG_COLOUR,
+                                          frameColor=WINDOW_BG_COLOUR,
+                                          text_align=TextNode.ALeft,
+                                          borderWidth=(.0, .0),
+                                          pos=(-1.4, 0.0, -2.7),
+                                          scale=(0.11, 1.1, 0.11))
         self.map_label = DirectLabel(parent=self.__window_config.frame,
                                       text="Map:",
                                       text_fg=WHITE,
