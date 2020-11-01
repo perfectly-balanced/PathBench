@@ -172,6 +172,14 @@ class SimulatorConfig():
         "Fast": (0.00001, 20)
     }
 
+    __debug = {
+        "None": (0),
+        "Basic": (0),
+        "Low": (0),
+        "Medium": (0),
+        "High":(0)
+    }
+
     def __init__(self, services: Services):
         self.__services = services
         self.__services.ev_manager.register_listener(self)
@@ -186,24 +194,28 @@ class SimulatorConfig():
                                       scale=(150, 1., 150),
                                       frameSize=(-1.6, 1.2, -4, 1.1))
 
+        # spacer #
         DirectFrame(parent=self.__window_config.frame,
                     borderWidth=(.0, .0),
                     frameColor=WIDGET_BG_COLOUR,
-                    frameSize=(-1., 1., -0.01, 0.01),
+                    frameSize=(-1.3, 1.3, -0.01, 0.01),
                     pos=(-0.2, 0.0, 0.4))
+
 
         self.heading_config = DirectLabel(parent=self.__window_config.frame,
                                           text="PathBench",
                                           text_fg=WHITE,
                                           text_bg=WINDOW_BG_COLOUR,
+                                          frameColor=WINDOW_BG_COLOUR,
                                           borderWidth=(.0, .0),
                                           pos=(-0.2, 0.0, 0.8),
-                                          scale=(0.2, 3, 0.2))
+                                          scale=(0.23, 3.1, 0.22))
 
         self.sim_config = DirectLabel(parent=self.__window_config.frame,
                                           text="Simulator Configuration",
                                           text_fg=WHITE,
                                           text_bg=WINDOW_BG_COLOUR,
+                                          frameColor=WINDOW_BG_COLOUR,
                                           borderWidth=(.0, .0),
                                           pos=(-0.2, 0.0, 0.56),
                                           scale=(0.2, 3, 0.18))
@@ -211,27 +223,42 @@ class SimulatorConfig():
                                       text="Map:",
                                       text_fg=WHITE,
                                       text_bg=WINDOW_BG_COLOUR,
+                                      text_align=TextNode.ALeft,
+                                      frameColor=WINDOW_BG_COLOUR,
                                       borderWidth=(.0, .0),
-                                      pos=(-0.98, 0.4, 0.1),
-                                      scale=(0.13, 1.08, 0.1))
+                                      pos=(-1.4, 0.4, 0.),
+                                      scale=(0.17, 1.09, 0.13))
         self.algo_label = DirectLabel(parent=self.__window_config.frame,
                                       text="Algorithm:",
                                       text_fg=WHITE,
                                       text_bg=WINDOW_BG_COLOUR,
+                                      frameColor = WINDOW_BG_COLOUR,
+                                      text_align=TextNode.ALeft,
                                       borderWidth=(.0, .0),
-                                      pos=(-1.1, 0.4, -1),
-                                      scale=(0.13, 1.08, 0.1))
+                                      pos=(-1.4, 0.4, -0.5),
+                                      scale=(0.17, 1.09, 0.13))
         self.animation_label = DirectLabel(parent=self.__window_config.frame,
                                       text="Animation:",
                                       text_fg=WHITE,
                                       text_bg=WINDOW_BG_COLOUR,
+                                      frameColor=WINDOW_BG_COLOUR,
+                                      text_align=TextNode.ALeft,
                                       borderWidth=(.0, .0),
-                                      pos=(-1.1, 0.4, -2),
-                                      scale=(0.13, 1.08, 0.1))
+                                      pos=(-1.4, 0.4, -1),
+                                      scale=(0.17, 1.09, 0.13))
+        self.debug_label = DirectLabel(parent=self.__window_config.frame,
+                                           text="Debug Level:",
+                                           text_fg=WHITE,
+                                           text_bg=WINDOW_BG_COLOUR,
+                                           frameColor=WINDOW_BG_COLOUR,
+                                           text_align=TextNode.ALeft,
+                                           borderWidth=(.0, .0),
+                                           pos=(-1.4, 0.4, -1.5),
+                                           scale=(0.17, 1.09, 0.13))
 
         # Quit button
         self.btn = DirectButton(image=os.path.join(DATA_PATH, "quit.png"),
-                                # command=self.__toggle_config(),
+                                #command=self.__toggle_config(),
                                 pos=(1., 0.4, 0.86),
                                 parent=self.__window_config.frame,
                                 scale=0.1,
@@ -243,7 +270,7 @@ class SimulatorConfig():
                                               parent=self.__window_config.frame,
                                               initialitem=1,
                                               items=list(self.__maps.keys()),
-                                              pos=(-0.65, 0.4, 0.1),
+                                              pos=(-0.65, 0.4, 0.),
                                               highlightColor=(0.65, 0.65, 0.65, 1),
                                               textMayChange=1)
 
@@ -252,7 +279,7 @@ class SimulatorConfig():
                                                     parent=self.__window_config.frame,
                                                     initialitem=1,
                                                     items=list(self.__algorithms.keys()),
-                                                    pos=(-0.65, 0.4, -1),
+                                                    pos=(-0.46, 0.4, -0.5),
                                                     highlightColor=(0.65, 0.65, 0.65, 1),
                                                     textMayChange=1)
 
@@ -261,22 +288,31 @@ class SimulatorConfig():
                                                     parent=self.__window_config.frame,
                                                     initialitem=0,
                                                     items=list(self.__animations.keys()),
-                                                    pos=(-0.65, 0.4, -2),
+                                                    pos=(-0.1, 0.4, -1),
+                                                    highlightColor=(0.65, 0.65, 0.65, 1),
+                                                    textMayChange=1)
+
+        self.__debug_option = DirectOptionMenu(text="options",
+                                                    scale=0.14,
+                                                    parent=self.__window_config.frame,
+                                                    initialitem=0,
+                                                    items=list(self.__debug.keys()),
+                                                    pos=(-0.1, 0.4, -1.5),
                                                     highlightColor=(0.65, 0.65, 0.65, 1),
                                                     textMayChange=1)
 
         self.__start_simulator = DirectFrame(parent=self.__window_config.frame,
                                              frameColor=WHITE,
-                                             pos=(-0.52, 0.4, -3),
+                                             pos=(-0.61, 0.4, -2.1),
                                              borderWidth=(0.25, 0.15),
-                                             frameSize=(-0.69, 2.1, -0.54, 0.54),
+                                             frameSize=(-0.72, 2.28, -0.54, 0.54),
                                              scale=(0.50, 3.1, 0.25))
         self.btn_s = DirectButton(
             text="Start Simulator",
             text_fg=(0.3, 0.3, 0.3, 1.0),
             pressEffect=1,
             command=self.__start_simulator_callback,
-            pos=(-0.2, 0.4, -3.03),
+            pos=(-0.223, 0.4, -2.15),
             parent=self.__window_config.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)

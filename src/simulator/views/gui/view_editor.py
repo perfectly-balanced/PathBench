@@ -471,8 +471,10 @@ class ViewElement():
                                    text=self.__name,
                                    text_fg=WHITE,
                                    text_bg=WINDOW_BG_COLOUR,
+                                   frameColor=WINDOW_BG_COLOUR,
+                                   text_align=TextNode.ALeft,
                                    borderWidth=(.0, .0),
-                                   pos=(0.28, 0.0, -0.03),
+                                   pos=(-0.3, 0.0, -0.03),
                                    scale=(0.1, 1.0, 0.1))
 
         visibility_filename = os.path.join(DATA_PATH, "visible.png")
@@ -623,6 +625,7 @@ class ViewEditor():
                                    text="View Editor",
                                    text_fg=WHITE,
                                    text_bg=WINDOW_BG_COLOUR,
+                                   frameColor=WINDOW_BG_COLOUR,
                                    borderWidth=(.0, .0),
                                    pos=(0.0, 0.0, 1.27),
                                    scale=(0.2, 3, 0.2))
