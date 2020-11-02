@@ -9,6 +9,8 @@ from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 from typing import List
 import random
 
+import numpy as np
+
 class VoxelMap(MapData):
     traversables: NodePath
     traversables_wf: NodePath
@@ -39,8 +41,16 @@ class VoxelMap(MapData):
                 self.traversables_data[i][j] = {}
                 for k in range(len(self.obstacles_data[i][j])):
                     self.traversables_data[i][j][k] = False if self.obstacles_data[i][j][k] else True
+        
+        self.np_obstacles_data = np.empty((len(self.obstacles_data), len(self.obstacles_data[0]), len(self.obstacles_data[0][0])), dtype=bool)
+        self.np_traversables_data = np.empty((len(self.obstacles_data), len(self.obstacles_data[0]), len(self.obstacles_data[0][0])), dtype=bool)
+        for i in range(len(self.obstacles_data)):
+            for j in range(len(self.obstacles_data[i])):
+                for k in range(len(self.obstacles_data[i][j])):
+                    self.np_obstacles_data[i, j, k] = self.obstacles_data[i][j][k]
+                    self.np_traversables_data[i, j, k] = self.traversables_data[i][j][k]
 
-        self.traversables_mesh = CubeMesh(self.traversables_data, self.name + '_traversables', artificial_lighting, hidden_faces=True)
+        self.traversables_mesh = CubeMesh(self.np_traversables_data, self.name + '_traversables', artificial_lighting, hidden_faces=True)
         self.traversables = self.root.attach_new_node(self.traversables_mesh.geom_node)
 
 
@@ -100,7 +110,7 @@ class VoxelMap(MapData):
         self.traversables_wf = self.root.attach_new_node(gen_cube_mesh_wireframe())
         self.obstacles_wf = self.root.attach_new_node(gen_cube_mesh_wireframe_obstacles())
 
-        self.obstacles_mesh = CubeMesh(self.obstacles_data, self.name + '_obstacles', artificial_lighting, hidden_faces=True)
+        self.obstacles_mesh = CubeMesh(self.np_obstacles_data, self.name + '_obstacles', artificial_lighting, hidden_faces=True)
         self.obstacles = self.root.attach_new_node(self.obstacles_mesh.geom_node)
 
         self._add_colour(VoxelMap.TRAVERSABLES, WHITE, callback=self.__traversables_colour_callback)
