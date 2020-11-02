@@ -6,8 +6,8 @@ from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
 from simulator.views.map.display.map_display import MapDisplay
 from structures import Point, Colour, DynamicColour
-from structure.tracked import Tracked
-from structure.tracked_set import TrackedSet
+from structures.tracked import Tracked
+from structures.tracked_set import TrackedSet
 
 
 class SolidColourMapDisplay(MapDisplay):

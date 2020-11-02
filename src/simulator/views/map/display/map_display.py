@@ -4,7 +4,7 @@ from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
 from simulator.views.view import View
 from structures import Point
-from structure.tracked import Tracked
+from structures.tracked import Tracked
 
 
 class MapDisplay(View):

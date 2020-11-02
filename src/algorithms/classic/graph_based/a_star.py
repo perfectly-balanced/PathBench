@@ -12,7 +12,7 @@ from simulator.views.map.display.gradient_map_display import GradientMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
 from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
 from structures import Point, Colour, BLUE, DynamicColour
-from structure.tracked_set import TrackedSet
+from structures.tracked_set import TrackedSet
 
 from memory_profiler import profile
 

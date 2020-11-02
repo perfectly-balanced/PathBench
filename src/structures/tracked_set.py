@@ -1,7 +1,7 @@
-from typing import Iterable, Any, List, TypeVar
+from typing import Iterable, Any, List
 from collections.abc import MutableSet
 
-from structure.tracked import Tracked
+from structures.tracked import Tracked
 
 class TrackedSet(MutableSet):
     class TrackingData():
