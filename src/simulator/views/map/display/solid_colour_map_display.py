@@ -7,7 +7,6 @@ from simulator.services.services import Services
 from simulator.views.map.display.map_display import MapDisplay
 from structures import Point, Colour, DynamicColour
 from structures.tracked import Tracked
-from structures.tracked_set import TrackedSet
 
 
 class SolidColourMapDisplay(MapDisplay):
@@ -41,16 +40,13 @@ class SolidColourMapDisplay(MapDisplay):
         self._root_view.display_updates_cube()
         self.__deduced_colour = self.colour()
 
-        if type(self.points) is TrackedSet:
-            return self.__render_tracked_set()
+        if isinstance(self.points, Tracked):
+            return self.__render_tracked()
         else:
             return self.__render_not_tracked()
 
-    def __render_tracked_set(self) -> bool:
-        td = self.points.get_tracking_data()
-        for p in td.added:
-            self._root_view.cube_requires_update(p)
-        for p in td.removed:
+    def __render_tracked(self) -> bool:
+        for p in self.points.modified:
             self._root_view.cube_requires_update(p)
         return True
 
@@ -62,8 +58,7 @@ class SolidColourMapDisplay(MapDisplay):
         self.__old_points = copy.deepcopy(self.points)
         if self.__old_points is None:
             return False
-        self.__old_points = set(map(self._root_view.to_point3, self.__old_points))
-
+        
         for p in self.__old_points:
             self._root_view.cube_requires_update(p)
 

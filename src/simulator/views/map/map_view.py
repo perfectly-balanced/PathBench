@@ -1,10 +1,11 @@
 from time import sleep
 
-from heapq import heappush, heappop
 from typing import List, Any, Tuple, Optional, Union, Set
 import os
 
 from constants import DATA_PATH
+
+from utility.generic_heapq import heappush, heappop
 
 from algorithms.configuration.entities.entity import Entity
 from simulator.models.model import Model
@@ -77,7 +78,7 @@ class MapView(View):
         self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
         self.__center(self.__map.root)
 
-        self.update_view()
+        self.update_view(True)
 
     def destroy(self) -> None:
         self.__map.destroy()
@@ -97,13 +98,10 @@ class MapView(View):
     def notify(self, event: Event) -> None:
         super().notify(event)
         if isinstance(event, KeyFrameEvent):
-            if event.refresh:
-                self.__tc_reset()
-            self.update_view()
+            self.update_view(event.refresh)
         elif isinstance(event, ColourUpdateEvent):
             if event.view.is_effective():
-                self.__tc_reset()
-                self.update_view()
+                self.update_view(True)
         elif isinstance(event, TakeScreenshotEvent):
             self.take_screenshot()
 
@@ -133,13 +131,7 @@ class MapView(View):
     def map(self) -> VoxelMap:
         return self.__map
 
-    def __tc_reset(self) -> None:
-        self.map.traversables_mesh.reset_all_cubes()
-
     def __get_displays(self) -> None:
-        self.__displays.clear()
-        self.__tracked_data.clear()
-
         # drop map displays if not compatible with display format
         displays: List[MapDisplay] = list(
             filter(lambda d: self._services.settings.simulator_grid_display or not isinstance(d, NumbersMapDisplay),
@@ -170,17 +162,37 @@ class MapView(View):
                 np = self.map.root.attach_new_node(n)
                 self.__draw_nps.append(np)
 
-        traversables_colour = self._services.state.effective_view.colours["traversables"]()
-        for p in self.__cubes_requiring_update:
-            self.__cube_colour = traversables_colour
+    def __update_cubes(self, refresh: bool) -> None:
+        clr = self._services.state.effective_view.colours["traversables"]()
+        mesh = self.map.traversables_mesh
+
+        def update_cube_colour(p):
+            self.__cube_colour = clr
             for d in self.__second_pass_displays:
                 d.update_cube(p)
-            self.map.traversables_mesh.set_cube_colour(p, self.__cube_colour)
+            mesh.set_cube_colour(p, self.__cube_colour)
+        
+        if refresh:
+            for x, y, z in np.ndindex(mesh.structure.shape):
+                if mesh.structure[x, y, z]:
+                    update_cube_colour(Point(x, y, z))
+        else:
+            for p in self.__cubes_requiring_update:
+                update_cube_colour(p)
+        
         self.__second_pass_displays.clear()
         self.__cubes_requiring_update.clear()
 
         for td in self.__tracked_data:
             td.clear_tracking_data()
+        
+        self.__tracked_data.clear()
+        self.__displays.clear()
+
+    def update_view(self, refresh: bool) -> None:
+        self.__get_displays()
+        self.__render_displays()
+        self.__update_cubes(refresh)
 
     def display_updates_cube(self) -> None:
         self.__display_updates_cube = True
@@ -201,10 +213,6 @@ class MapView(View):
         b = (src.b * src.a + dst.b * wda) / d
 
         self.__cube_colour = Colour(r, g, b, a)
-
-    def update_view(self) -> None:
-        self.__get_displays()
-        self.__render_displays()
 
     def take_screenshot(self) -> None:
         self._services.resources.screenshots_dir.append(

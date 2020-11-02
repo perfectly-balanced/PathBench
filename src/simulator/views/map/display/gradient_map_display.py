@@ -7,6 +7,7 @@ from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
 from simulator.views.map.display.map_display import MapDisplay
 from structures import Point, Colour, DynamicColour
+from structures.tracked import Tracked
 
 class GradientMapDisplay(MapDisplay):
     inverted: bool
@@ -22,10 +23,10 @@ class GradientMapDisplay(MapDisplay):
 
         self.pts = None
 
-        if grid is not None:
-            self.pts = self.__transform_to_points(grid)
-        elif pts is not None:
+        if pts is not None:
             self.pts = pts
+        elif grid is not None:
+            self.pts = self.__transform_to_points(grid)
 
         assert min_color is not None
         assert max_color is not None
@@ -74,6 +75,8 @@ class GradientMapDisplay(MapDisplay):
             min_val = min(min_val, p[0])
             max_val = max(max_val, p[0])
 
+        for p in self.__cube_colours:
+            self.get_renderer_view().cube_requires_update(p)
         self.__cube_colours.clear()
         for p in self.pts:
             clr = self.get_colour(p[0], min_val, max_val)
@@ -83,6 +86,9 @@ class GradientMapDisplay(MapDisplay):
     def update_cube(self, p: Point) -> None:
         if p in self.__cube_colours:
             self._root_view.colour_cube(self.__cube_colours[p])
+
+    def get_tracked_data(self) -> List[Tracked]:
+        return [self.pts] if isinstance(self.pts, Tracked) else []
 
     def __lt__(self, other):
         return super().__lt__(other)

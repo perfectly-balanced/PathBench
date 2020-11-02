@@ -1,8 +1,8 @@
-from heapq import heappush, heappop
 from typing import Set, List, Tuple, Optional, Dict
 
 import numpy as np
 
+from utility.generic_heapq import heappush, heappop
 from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.entities.goal import Goal
@@ -13,6 +13,7 @@ from simulator.views.map.display.map_display import MapDisplay
 from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
 from structures import Point, Colour, BLUE, DynamicColour
 from structures.tracked_set import TrackedSet
+from structures.tracked_list import TrackedList
 
 from memory_profiler import profile
 
@@ -30,7 +31,7 @@ class AStar(Algorithm):
         h: Dict[Point, float]
 
         def __init__(self):
-            self.priority_queue = []
+            self.priority_queue = TrackedList()
             self.visited = TrackedSet()
             self.back_pointer = {}
             self.g = {}
