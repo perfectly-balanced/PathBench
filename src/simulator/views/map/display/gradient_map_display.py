@@ -24,8 +24,7 @@ class GradientMapDisplay(MapDisplay):
 
         if grid is not None:
             self.pts = self.__transform_to_points(grid)
-
-        if pts:
+        elif pts is not None:
             self.pts = pts
 
         assert min_color is not None
