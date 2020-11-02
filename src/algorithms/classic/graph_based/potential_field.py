@@ -15,7 +15,7 @@ from simulator.services.services import Services
 from simulator.views.map.display.gradient_map_display import GradientMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
 from simulator.views.map.display.numbers_map_display import NumbersMapDisplay
-from simulator.views.map.display.solid_color_map_display_pot import SolidColorMapDisplaypot
+from simulator.views.map.display.solid_colour_map_display_pot import SolidColourMapDisplaypot
 from structures import Point
 import copy
 
@@ -48,7 +48,7 @@ class PotentialField(Algorithm):
             #                                    max_color=PotentialField.STEP_GRID_MAX_COLOR),
         
             NumbersMapDisplay(self._services, copy.deepcopy(self.step_grid)),
-            SolidColorMapDisplaypot(self._services, self.pmapheat, z_index=50, pmaplst=self.pmapnew)
+            SolidColourMapDisplaypot(self._services, self.pmapheat, z_index=50, pmaplst=self.pmapnew)
         ]
 
         # display_info: List[MapDisplay] = super().set_display_info() + [
@@ -56,7 +56,7 @@ class PotentialField(Algorithm):
         #     #                                    min_color=PotentialField.STEP_GRID_MIN_COLOR,
         #     #                                    max_color=PotentialField.STEP_GRID_MAX_COLOR),
         
-        #SolidColorMapDisplaypot(self._services, self.pmapheat, z_index=50, pmaplst=pmapnew)
+        #SolidColourMapDisplaypot(self._services, self.pmapheat, z_index=50, pmaplst=pmapnew)
         # ]
 
         return display_info
@@ -66,8 +66,8 @@ class PotentialField(Algorithm):
     #     Read super description
     #     """
     #     return super().set_display_info() #+ [
-            #  SolidColorMapDisplay(self._services, self.mem.visited, self.VISITED_COLOR, z_index=50),
-            #  # SolidColorMapDisplay(self._services, set(map(lambda el: el[1], self.mem.priority_queue)), (0, 0, 255)),
+            #  SolidColourMapDisplay(self._services, self.mem.visited, self.VISITED_COLOR, z_index=50),
+            #  # SolidColourMapDisplay(self._services, set(map(lambda el: el[1], self.mem.priority_queue)), (0, 0, 255)),
             #  GradientMapDisplay(self._services, pts=self.mem.priority_queue,
             #                     min_color=self.PQ_COLOR_LOW, max_color=self.PQ_COLOR_HIGH, z_index=49, inverted=True),
          #]

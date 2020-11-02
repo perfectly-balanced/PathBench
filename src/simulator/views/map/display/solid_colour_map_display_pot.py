@@ -7,7 +7,7 @@ from simulator.services.services import Services
 from simulator.views.map.display.map_display import MapDisplay
 from structures import Point, Colour
 
-class SolidColorMapDisplaypot(MapDisplay):
+class SolidColourMapDisplaypot(MapDisplay):
     radius: int
     points: Union[Set[Point], List[Entity]]
 

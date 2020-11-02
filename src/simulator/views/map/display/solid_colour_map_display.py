@@ -8,7 +8,7 @@ from simulator.views.map.display.map_display import MapDisplay
 from structures import Point, Colour, DynamicColour
 
 
-class SolidColorMapDisplay(MapDisplay):
+class SolidColourMapDisplay(MapDisplay):
     radius: int
     points: Union[Set[Point], List[Entity]]
     colour: DynamicColour
@@ -43,5 +43,5 @@ class SolidColorMapDisplay(MapDisplay):
         if p in self.__unique_points:
             self._root_view.colour_cube(self.__c)
 
-    def __lt__(self, other: 'SolidColorMapDisplay') -> bool:
+    def __lt__(self, other: 'SolidColourMapDisplay') -> bool:
         return tuple(*self.colour) < tuple(*other.colour)

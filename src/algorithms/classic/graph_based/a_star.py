@@ -10,7 +10,7 @@ from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
 from simulator.views.map.display.gradient_map_display import GradientMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
-from simulator.views.map.display.solid_color_map_display import SolidColorMapDisplay
+from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
 from structures import Point, Colour, BLUE, DynamicColour
 
 from memory_profiler import profile
@@ -55,7 +55,7 @@ class AStar(Algorithm):
         Read super description
         """
         return super().set_display_info() + [
-            SolidColorMapDisplay(self._services, self.mem.visited, self.visited_colour, z_index=50),
+            SolidColourMapDisplay(self._services, self.mem.visited, self.visited_colour, z_index=50),
             GradientMapDisplay(self._services, pts=self.mem.priority_queue,
                                min_color=self.pq_colour_min, max_color=self.pq_colour_max, z_index=49, inverted=True),
         ]
