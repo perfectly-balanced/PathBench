@@ -54,12 +54,12 @@ class Map(Model):
     def move(self, to: Point) -> None:
         self.reset()
         self._services.algorithm.map.move_agent(to, True)
-        self._services.ev_manager.post(KeyFrameEvent())
+        self._services.ev_manager.post(KeyFrameEvent(refresh=True))
 
     def move_goal(self, to: Point) -> None:
         self.reset()
         self._services.algorithm.map.move(self._services.algorithm.map.goal, to, True)
-        self._services.ev_manager.post(KeyFrameEvent())
+        self._services.ev_manager.post(KeyFrameEvent(refresh=True))
 
     def stop_algorithm(self) -> None:
         self.key_frame_is_paused = True

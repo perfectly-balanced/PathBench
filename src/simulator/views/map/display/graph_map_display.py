@@ -26,10 +26,7 @@ class GraphMapDisplay(MapDisplay):
         if not super().render():
             return False
 
-        try:
-            self.__graph.walk_dfs(lambda child: self.__render(child))
-        except: # todo: fixme shouldn't ever throw (something fishy is going on)
-            print("GraphMapDisplay FAILURE")
+        self.__graph.walk_dfs(lambda child: self.__render(child))
 
         return True
 

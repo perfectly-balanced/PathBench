@@ -30,7 +30,9 @@ class MapController(Controller, DirectObject):
                 self._services.debug.write("Moved agent to: " + str(p), DebugLevel.MEDIUM)
                 if self._services.algorithm.map.size.n_dim == 2:
                     p = Point(p[0], p[1])
+                self._services.lock.acquire()
                 self._model.move(p)
+                self._services.lock.release()
 
         def right_click():
             p = self.__picker.pos
@@ -38,7 +40,9 @@ class MapController(Controller, DirectObject):
                 self._services.debug.write("Moved goal to: " + str(p), DebugLevel.MEDIUM)
                 if self._services.algorithm.map.size.n_dim == 2:
                     p = Point(p[0], p[1])
+                self._services.lock.acquire()
                 self._model.move_goal(p)
+                self._services.lock.release()
 
         def set_view(i):
             self._services.state.view_idx = i

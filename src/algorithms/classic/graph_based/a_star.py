@@ -2,7 +2,7 @@ from typing import Set, List, Tuple, Optional, Dict
 
 import numpy as np
 
-from utility.generic_heapq import heappush, heappop
+
 from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.entities.goal import Goal
@@ -13,7 +13,7 @@ from simulator.views.map.display.map_display import MapDisplay
 from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
 from structures import Point, Colour, BLUE, DynamicColour
 from structures.tracked_set import TrackedSet
-from structures.tracked_list import TrackedList
+from structures.tracked_heap import TrackedHeap
 
 from memory_profiler import profile
 
@@ -24,14 +24,14 @@ Heap duplicates https://www.redblobgames.com/pathfinding/a-star/implementation.h
 
 class AStar(Algorithm):
     class InternalMemory:
-        priority_queue: List[Tuple[int, Point]]
+        priority_queue: TrackedHeap
         visited: Set[Point]
         back_pointer: Dict[Point, Optional[Point]]
         g: Dict[Point, int]
         h: Dict[Point, float]
 
         def __init__(self):
-            self.priority_queue = TrackedList()
+            self.priority_queue = TrackedHeap()
             self.visited = TrackedSet()
             self.back_pointer = {}
             self.g = {}
@@ -78,7 +78,7 @@ class AStar(Algorithm):
         # push agent
         self.mem.g[grid.agent.position] = 0
         item: Tuple[float, Point] = (self.get_heuristic(grid.agent.position), grid.agent.position)
-        heappush(self.mem.priority_queue, item)
+        self.mem.priority_queue.push(item)
         self.mem.back_pointer[grid.agent.position] = None
 
     def _expand(self) -> bool:
@@ -88,10 +88,10 @@ class AStar(Algorithm):
             total_dist: float
             next_node: Point
             # peek and check if we need to terminate
-            total_dist, next_node = heappop(self.mem.priority_queue)
+            total_dist, next_node = self.mem.priority_queue.pop()
 
             if grid.is_goal_reached(next_node):
-                heappush(self.mem.priority_queue, (total_dist, next_node))
+                self.mem.priority_queue.push((total_dist, next_node))
                 return True
 
             self.mem.visited.add(next_node)
@@ -104,7 +104,7 @@ class AStar(Algorithm):
                         # therefore it does not affect the priority
                         self.mem.g[n] = self.mem.g[next_node] + dist
                         item = (self.f(n), n)
-                        heappush(self.mem.priority_queue, item)
+                        self.mem.priority_queue.push(item)
                         self.mem.back_pointer[n] = next_node
 
             self.key_frame()

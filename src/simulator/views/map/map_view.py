@@ -5,7 +5,7 @@ import os
 
 from constants import DATA_PATH
 
-from utility.generic_heapq import heappush, heappop
+from heapq import heappush, heappop
 
 from algorithms.configuration.entities.entity import Entity
 from simulator.models.model import Model
@@ -190,9 +190,11 @@ class MapView(View):
         self.__displays.clear()
 
     def update_view(self, refresh: bool) -> None:
+        self._services.lock.acquire()
         self.__get_displays()
         self.__render_displays()
         self.__update_cubes(refresh)
+        self._services.lock.release()
 
     def display_updates_cube(self) -> None:
         self.__display_updates_cube = True

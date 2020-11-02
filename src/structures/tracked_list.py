@@ -31,3 +31,6 @@ class TrackedList(Tracked, MutableSequence):
 
     def append(self, value):
         self.insert(len(self), value)
+
+    def __repr__(self):
+        return "TrackedList({0})".format(self._list)

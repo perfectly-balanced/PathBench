@@ -36,6 +36,9 @@ class Services:
         self.__torch = None
         self.__setup(config)
 
+        from threading import Lock
+        self.lock = Lock()
+
     def __setup(self, config: 'Configuration') -> None:
         from simulator.services.graphics.graphics_manager import GraphicsManager
         from simulator.services.algorithm_runner import AlgorithmRunner
