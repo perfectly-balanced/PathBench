@@ -1,7 +1,7 @@
 from time import sleep
 
 from heapq import heappush, heappop
-from typing import List, Any, Tuple, Optional, Union
+from typing import List, Any, Tuple, Optional, Union, Set
 import os
 
 from constants import DATA_PATH
@@ -32,28 +32,31 @@ import math
 import numpy as np
 
 class MapView(View):
-    __displays: List[Any]
-
     __world: NodePath
     __map: VoxelMap
 
-    __tc_previous: List[List[List[Colour]]]
-    __tc_scratchpad: List[List[List[Colour]]]
+    __displays: List[Any]
+    __persistent_displays: List[Any]
+
+    __second_pass_displays: List[Any]
+    __cubes_requiring_update: Set[Point]
+    __display_updates_cube: bool
+    __cube_colour: Colour
+
     __draw_nps: List[NodePath]
     __circles: List[Tuple[int, float, Geom]]
     __line_segs: LineSegs
-    __angle_degs: float
-    __angle_rads: float
-    __nsteps: int
-    __thickness: float
-    __rad = float
-    __colour: Colour
 
     def __init__(self, services: Services, model: Model, root_view: Optional[View]) -> None:
         super().__init__(services, model, root_view)
         self.__displays = []
-        self.__tc_previous = {}
-        self.__tc_scratchpad = {}
+        self.__persistent_displays = [EntitiesMapDisplay(self._services)]
+
+        self.__second_pass_displays = []
+        self.__cubes_requiring_update = set()
+        self.__display_updates_cube = False
+        self.__cube_colour = None
+
         self.__draw_nps = []
         self.__circles = []
         self.__line_segs = LineSegs()
@@ -104,7 +107,7 @@ class MapView(View):
         elif isinstance(event, TakeScreenshotEvent):
             self.take_screenshot()
 
-    def __to_point3(self, v: Union[Point, Entity]):
+    def to_point3(self, v: Union[Point, Entity]):
         if isinstance(v, Entity):
             v = v.position
         return Point(*v, 0) if len(v) == 2 else v
@@ -137,7 +140,7 @@ class MapView(View):
 
     def __get_displays(self) -> None:
         self.__displays = []
-        displays: List[MapDisplay] = [EntitiesMapDisplay(self._services)]
+        displays: List[MapDisplay] = list(self.__persistent_displays)
         # drop map displays if not compatible with display format
         displays += list(
             filter(lambda d: self._services.settings.simulator_grid_display or not isinstance(d, NumbersMapDisplay),
@@ -154,80 +157,45 @@ class MapView(View):
         while len(self.__displays) > 0:
             display: MapDisplay
             _, display = heappop(self.__displays)
+
             display.render()
+            if self.__display_updates_cube:
+                self.__display_updates_cube = False
+                self.__second_pass_displays.append(display)
+            
             if not self.__line_segs.is_empty():
                 n = self.__line_segs.create()
                 np = self.map.root.attach_new_node(n)
                 self.__draw_nps.append(np)
 
-        # update actual viewable map data
-        # lazily update mesh data, maybe this is actually slower
-        """
-        for x in self.__tc_scratchpad:
-            if x in self.__tc_previous:
-                for y in self.__tc_scratchpad[x]:
-                    if y in self.__tc_previous[x]:
-                        for z in self.__tc_scratchpad[x][y]:
-                            if z in self.__tc_previous[x][y]:
-                                def approx_eq(c1, c2):
-                                    r1, g1, b1, a1 = c1
-                                    r2, g2, b2, a2 = c2
-                                    TOLERANCE = 1e-3
-                                    return math.isclose(r1, r2, rel_tol=TOLERANCE) and \
-                                           math.isclose(g1, g2, rel_tol=TOLERANCE) and \
-                                           math.isclose(b1, b2, rel_tol=TOLERANCE) and \
-                                           math.isclose(a1, a2, rel_tol=TOLERANCE)
+        traversables_colour = self._services.state.effective_view.colours["traversables"]()
+        for p in self.__cubes_requiring_update:
+            self.__cube_colour = traversables_colour
+            for d in self.__second_pass_displays:
+                d.update_cube(p)
+            self.map.traversables_mesh.set_cube_colour(p, self.__cube_colour)
+        self.__second_pass_displays.clear()
+        self.__cubes_requiring_update.clear()
 
-                                if not approx_eq(self.__tc_previous[x][y][z], self.__tc_scratchpad[x][y][z]):
-                                    self.map.traversables_mesh.set_cube_colour(Point(x, y, z), self.__tc_scratchpad[x][y][z])
-                            else:
-                                self.map.traversables_mesh.set_cube_colour(Point(x, y, z), self.__tc_scratchpad[x][y][z])
-                    else:
-                        for z in self.__tc_scratchpad[x][y]:
-                            self.map.traversables_mesh.set_cube_colour(Point(x, y, z), self.__tc_scratchpad[x][y][z])
-            else:
-                for y in self.__tc_scratchpad[x]:
-                    for z in self.__tc_scratchpad[x][y]:
-                        self.map.traversables_mesh.set_cube_colour(Point(x, y, z), self.__tc_scratchpad[x][y][z])
-        """
-        for x in self.__tc_scratchpad:
-            for y in self.__tc_scratchpad[x]:
-                for z in self.__tc_scratchpad[x][y]:
-                    self.map.traversables_mesh.set_cube_colour(Point(x, y, z), self.__tc_scratchpad[x][y][z])
+    def display_updates_cube(self) -> None:
+        self.__display_updates_cube = True
 
-        # for our purposes a simple reset on first frame may suffice
-        # i.e. may not need to do the following on each frame
-        for x in self.__tc_previous:
-            should_reset = x not in self.__tc_scratchpad
-            for y in self.__tc_previous[x]:
-                if not should_reset:
-                    should_reset = y not in self.__tc_scratchpad[x]
-                for z in self.__tc_previous[x][y]:
-                    if not should_reset:
-                        should_reset = z not in self.__tc_scratchpad[x][y]
-                    if should_reset:
-                        self.map.traversables_mesh.reset_cube(Point(x, y, z))
+    def cube_requires_update(self, v: Union[Point, Entity]) -> Point:
+        p = self.to_point3(v)
+        self.__cubes_requiring_update.add(p)
+        return p
 
-        self.__tc_previous = self.__tc_scratchpad
-        self.__tc_scratchpad = {}
-
-    def render_pos(self, pe: Union[Point, Entity], src: Colour) -> None:
-        x, y, z = self.__to_point3(pe)
-        if x not in self.__tc_scratchpad:
-            self.__tc_scratchpad[x] = {}
-        if y not in self.__tc_scratchpad[x]:
-            self.__tc_scratchpad[x][y] = {}
-        if z not in self.__tc_scratchpad[x][y]:
-            self.__tc_scratchpad[x][y][z] = self._services.state.effective_view.colours["traversables"].colour  # use raw colour
-        dst = self.__tc_scratchpad[x][y][z]
+    def colour_cube(self, src: Colour) -> None:
+        dst = self.__cube_colour
 
         wda = dst.a * (1 - src.a)  # weighted dst alpha
         a = src.a + wda
-        r = (src.r * src.a + dst.r * wda) / (a if a else 1) 
-        g = (src.g * src.a + dst.g * wda) / (a if a else 1)
-        b = (src.b * src.a + dst.b * wda) / (a if a else 1)
+        d = (a if a != 0 else 1)
+        r = (src.r * src.a + dst.r * wda) / d
+        g = (src.g * src.a + dst.g * wda) / d
+        b = (src.b * src.a + dst.b * wda) / d
 
-        self.__tc_scratchpad[x][y][z] = Colour(r, g, b, a)
+        self.__cube_colour = Colour(r, g, b, a)
 
     def update_view(self) -> None:
         self.__get_displays()
@@ -238,7 +206,7 @@ class MapView(View):
             lambda fn: self._services.graphics.window.win.save_screenshot(fn))
 
     def cube_center(self, p: Point) -> Point:
-        x, y, z = self.__to_point3(p)
+        x, y, z = self.to_point3(p)
         x += 0.5
         y += 0.5
         if self._services.algorithm.map.size.n_dim == 3:

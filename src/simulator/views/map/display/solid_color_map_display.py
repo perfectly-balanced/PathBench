@@ -20,26 +20,28 @@ class SolidColorMapDisplay(MapDisplay):
         self.colour = colour
         self.radius = radius
 
+        self.__cube_colours = {}
+        self.__c = self.colour()
+
     def render(self) -> bool:
         if not super().render():
             return False
 
-        points: Union[Set[Point], List[Entity]] = copy.deepcopy(self.points)
-        if points is None:
+        self.__unique_points: Union[Set[Point], List[Entity]] = copy.deepcopy(self.points)
+        if self.__unique_points is None:
             return False
 
-        def f(pt):
-            if isinstance(pt, Entity):
-                pt = pt.position
-            return pt
-
-        points = set(map(f, points))
-
-        c = self.colour()
-        for point in points:
-            self._root_view.render_pos(Entity(point, self.radius), c)
+        self.__unique_points = set(map(self._root_view.to_point3, self.__unique_points))
+        self._root_view.display_updates_cube()
+        self.__c = self.colour()
+        for point in self.__unique_points:
+            self._root_view.cube_requires_update(point)
 
         return True
+    
+    def update_cube(self, p: Point) -> None:
+        if p in self.__unique_points:
+            self._root_view.colour_cube(self.__c)
 
     def __lt__(self, other: 'SolidColorMapDisplay') -> bool:
         return tuple(*self.colour) < tuple(*other.colour)

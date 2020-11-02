@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, Dict, TYPE_CHECKING
 
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.entity import Entity
@@ -11,7 +11,7 @@ from simulator.services.services import Services
 from simulator.views.map.display.map_display import MapDisplay
 from simulator.views.map.data.voxel_map import VoxelMap
 
-from structures import DynamicColour
+from structures import DynamicColour, Colour, Point
 
 if TYPE_CHECKING:
     from simulator.views.map.map_view import MapView
@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 
 class EntitiesMapDisplay(MapDisplay):
     animation_step: int
+    __cube_colours: Dict[Point, Colour]
     __agent_colour: DynamicColour
     __trace_colour: DynamicColour
     __goal_colour: DynamicColour
@@ -31,35 +32,34 @@ class EntitiesMapDisplay(MapDisplay):
         self.__trace_colour = self._services.state.effective_view.colours[VoxelMap.TRACE]
         self.__goal_colour = self._services.state.effective_view.colours[VoxelMap.GOAL]
 
+        self.__cube_colours = {}
+
     def render(self) -> bool:
         if not super().render():
             return False
 
-        self.render_entities()
+        for p in self.__cube_colours:
+            self.get_renderer_view().cube_requires_update(p)
+
+        p3 = self.get_renderer_view().to_point3
+        self.get_renderer_view().display_updates_cube()
+        self.__cube_colours = {p3(self._map.agent): self.__agent_colour(),
+                               p3(self._map.goal): self.__goal_colour()}
+
+        tc = self.__trace_colour()
+        for trace_point in self._map.trace:
+            self.__cube_colours[p3(trace_point)] = tc
+        if len(self._map.trace) >= 1:
+            self.__cube_colours[p3(Entity(self._map.trace[0].position, self._map.agent.radius))] = self.__agent_colour()
+
+        for p in self.__cube_colours:
+            self.get_renderer_view().cube_requires_update(p)
+
         return True
 
-    def render_entities(self) -> None:
-        self.render_trace()
-        self.render_agent(self._map.agent)
-        self.render_goal(self._map.goal)
-
-    def render_trace(self) -> None:
-        for trace_point in self._map.trace:
-            self.render_trace_point(trace_point)
-        self.render_initial_position(self._map)
-
-    def render_agent(self, agent: Agent) -> None:
-        self.get_renderer_view().render_pos(agent, self.__agent_colour())
-
-    def render_goal(self, goal: Goal) -> None:
-        self.get_renderer_view().render_pos(goal, self.__goal_colour())
-
-    def render_trace_point(self, trace_point: Trace) -> None:
-        self.get_renderer_view().render_pos(trace_point, self.__trace_colour())
-
-    def render_initial_position(self, grid: Map) -> None:
-        if len(grid.trace) >= 1:
-            self.get_renderer_view().render_pos(Entity(grid.trace[0].position, grid.agent.radius), self.__agent_colour())
+    def update_cube(self, p: Point) -> None:
+        if p in self.__cube_colours:
+            self.get_renderer_view().colour_cube(self.__cube_colours[p])
 
     def __lt__(self, other):
         return super().__lt__(other)

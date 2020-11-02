@@ -3,6 +3,7 @@ from typing import Optional, Callable
 from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
 from simulator.views.view import View
+from structures import Point
 
 
 class MapDisplay(View):
@@ -28,6 +29,9 @@ class MapDisplay(View):
             self.render_method()
 
         return True
+    
+    def update_cube(self, p: Point) -> None:
+        pass
 
     def get_renderer_view(self) -> Optional['MapView']:
         from simulator.views.map.map_view import MapView

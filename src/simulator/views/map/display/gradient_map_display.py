@@ -34,6 +34,8 @@ class GradientMapDisplay(MapDisplay):
         self.max_color = max_color
         self.inverted = inverted
 
+        self.__cube_colours = {}
+
     @staticmethod
     def __transform_to_points(grid: List[List[Union[int, float]]]) -> List[Tuple[Union[int, float], Point]]:
         ret: List[Tuple[Union[int, float], Point]] = []
@@ -64,6 +66,8 @@ class GradientMapDisplay(MapDisplay):
         if self.pts is None:
             return False
 
+        self.get_renderer_view().display_updates_cube()
+
         min_val: float = np.inf
         max_val: float = -np.inf
         for p in self.pts:
@@ -71,11 +75,15 @@ class GradientMapDisplay(MapDisplay):
             min_val = min(min_val, p[0])
             max_val = max(max_val, p[0])
 
+        self.__cube_colours.clear()
         for p in self.pts:
             clr = self.get_colour(p[0], min_val, max_val)
-            self._root_view.render_pos(Entity(p[1]), clr)
-
+            self.__cube_colours[self.get_renderer_view().cube_requires_update(p[1])] = clr
         return True
+    
+    def update_cube(self, p: Point) -> None:
+        if p in self.__cube_colours:
+            self._root_view.colour_cube(self.__cube_colours[p])
 
     def __lt__(self, other):
         return super().__lt__(other)
