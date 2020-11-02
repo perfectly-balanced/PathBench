@@ -29,7 +29,7 @@ from panda3d.core import NodePath, GeomNode, Geom, LineSegs, TextNode
 from direct.showutil import BuildGeometry
 
 import math
-
+import numpy as np
 
 class MapView(View):
     __displays: List[Any]
@@ -62,21 +62,16 @@ class MapView(View):
         # world (dummy node)
         self.__world = self._services.graphics.window.render.attach_new_node("world")
 
-        map_data = {}
-        for x in range(0, self._services.algorithm.map.size.width):
-            map_data[x] = {}
-            for y in range(0, self._services.algorithm.map.size.height):
-                map_data[x][y] = {}
-                if self._services.algorithm.map.size.n_dim == 2:
-                    map_data[x][y][0] = not self._services.algorithm.map.is_agent_valid_pos(Point(x, y))
-                else:
-                    # assume 3D
-                    for z in range(0, self._services.algorithm.map.size.depth):
-                        map_data[x][y][z] = not self._services.algorithm.map.is_agent_valid_pos(Point(x, y, z))
+        map_size = self._services.algorithm.map.size
+        map_data = np.empty((*map_size, 1) if map_size.n_dim == 2 else map_size, dtype=bool)
+        for x, y, z in np.ndindex(map_data.shape):
+            p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
+            map_data[x, y, z] = not self._services.algorithm.map.is_agent_valid_pos(p)
 
         # MAP #
         self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
         self.__center(self.__map.root)
+
         self.update_view()
 
     def destroy(self) -> None:

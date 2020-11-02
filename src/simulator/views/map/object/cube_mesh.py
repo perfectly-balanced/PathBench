@@ -1,4 +1,4 @@
-from panda3d.core import Texture, GeomNode
+from panda3d.core import Texture, GeomNode, LineSegs
 from panda3d.core import GeomVertexFormat, GeomVertexData
 from panda3d.core import Geom, GeomTriangles, GeomVertexWriter, GeomVertexRewriter, GeomVertexArrayData
 from panda3d.core import LVector3, Vec3, Vec4
@@ -283,3 +283,29 @@ class CubeMesh():
             if f is not None:
                 return True
         return False
+
+    def gen_wireframe(self, thickness: float = 5) -> GeomNode:
+        def is_connected(x, y, z, x1, y1, z1):
+            return (abs(x - x1) == 1 and abs(y - y1) != 1 and abs(z - z1) != 1) or \
+                   (abs(x - x1) != 1 and abs(y - y1) == 1 and abs(z - z1) != 1) or \
+                   (abs(x - x1) != 1 and abs(y - y1) != 1 and abs(z - z1) == 1)
+
+        ls = LineSegs()
+        ls.set_thickness(thickness)
+        for i, j, k in np.ndindex(self.structure.shape):
+            if self.structure[i, j, k]:
+                self.arr_x = [0, 0, 0, 0, 1, 1, 1, 1]
+                self.arr_y = [0, 0, 1, 1, 1, 1, 0, 0]
+                self.arr_z = [0, -1, -1, 0, 0, -1, -1, 0]
+                for pos1 in range(len(self.arr_x) - 1):
+                    for pos2 in range(pos1, len(self.arr_x)):
+                        x = self.arr_x[pos1] + i
+                        y = self.arr_y[pos1] + j
+                        z = self.arr_z[pos1] + k
+                        x1 = self.arr_x[pos2] + i
+                        y1 = self.arr_y[pos2] + j
+                        z1 = self.arr_z[pos2] + k
+                        if (is_connected(x, y, z, x1, y1, z1)):
+                            ls.move_to(x, y, z)
+                            ls.draw_to(x1, y1, z1)
+        return ls.create()
