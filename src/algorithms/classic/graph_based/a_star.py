@@ -12,6 +12,7 @@ from simulator.views.map.display.gradient_map_display import GradientMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
 from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
 from structures import Point, Colour, BLUE, DynamicColour
+from structure.tracked_set import TrackedSet
 
 from memory_profiler import profile
 
@@ -30,7 +31,7 @@ class AStar(Algorithm):
 
         def __init__(self):
             self.priority_queue = []
-            self.visited = set()
+            self.visited = TrackedSet()
             self.back_pointer = {}
             self.g = {}
             self.h = {}

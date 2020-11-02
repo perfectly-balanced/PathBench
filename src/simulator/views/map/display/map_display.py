@@ -1,9 +1,10 @@
-from typing import Optional, Callable
+from typing import Optional, Callable, List
 
 from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
 from simulator.views.view import View
 from structures import Point
+from structure.tracked import Tracked
 
 
 class MapDisplay(View):
@@ -33,6 +34,9 @@ class MapDisplay(View):
     def update_cube(self, p: Point) -> None:
         pass
 
+    def get_tracked_data(self) -> List[Tracked]:
+        return []
+    
     def get_renderer_view(self) -> Optional['MapView']:
         from simulator.views.map.map_view import MapView
         if isinstance(self._root_view, MapView):

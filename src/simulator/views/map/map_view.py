@@ -37,6 +37,7 @@ class MapView(View):
 
     __displays: List[Any]
     __persistent_displays: List[Any]
+    __tracked_data: List[Any]
 
     __second_pass_displays: List[Any]
     __cubes_requiring_update: Set[Point]
@@ -51,6 +52,7 @@ class MapView(View):
         super().__init__(services, model, root_view)
         self.__displays = []
         self.__persistent_displays = [EntitiesMapDisplay(self._services)]
+        self.__tracked_data = []
 
         self.__second_pass_displays = []
         self.__cubes_requiring_update = set()
@@ -81,8 +83,6 @@ class MapView(View):
         self.__map.destroy()
         self.__world.remove_node()
         self.__displays = []
-        self.__tc_previous = {}
-        self.__tc_scratchpad = {}
         for np in self.__draw_nps:
             np.remove_node()
         self.__draw_nps = []
@@ -134,21 +134,23 @@ class MapView(View):
         return self.__map
 
     def __tc_reset(self) -> None:
-        self.__tc_scratchpad = {}
-        self.__tc_previous = {}
         self.map.traversables_mesh.reset_all_cubes()
 
     def __get_displays(self) -> None:
-        self.__displays = []
-        displays: List[MapDisplay] = list(self.__persistent_displays)
+        self.__displays.clear()
+        self.__tracked_data.clear()
+
         # drop map displays if not compatible with display format
-        displays += list(
+        displays: List[MapDisplay] = list(
             filter(lambda d: self._services.settings.simulator_grid_display or not isinstance(d, NumbersMapDisplay),
                    self._services.algorithm.instance.get_display_info()))
+        displays += self.__persistent_displays
+
         for display in displays:
             display._model = self._model
             self.add_child(display)
             heappush(self.__displays, (display.z_index, display))
+            self.__tracked_data += display.get_tracked_data()
 
     def __render_displays(self) -> None:
         for np in self.__draw_nps:
@@ -176,6 +178,9 @@ class MapView(View):
             self.map.traversables_mesh.set_cube_colour(p, self.__cube_colour)
         self.__second_pass_displays.clear()
         self.__cubes_requiring_update.clear()
+
+        for td in self.__tracked_data:
+            td.clear_tracking_data()
 
     def display_updates_cube(self) -> None:
         self.__display_updates_cube = True

@@ -1,0 +1,77 @@
+from typing import Iterable, Any, List, TypeVar
+from collections.abc import MutableSet
+
+from structure.tracked import Tracked
+
+class TrackedSet(MutableSet):
+    class TrackingData():
+        added: List[Any]
+        removed: List[Any]
+
+        def __init__(self) -> None:
+            self.added = []
+            self.removed = []
+
+        def clear(self) -> None:
+            self.added.clear()
+            self.removed.clear()
+
+    _set: set
+    __tracking_data: TrackingData
+
+    def __init__(self) -> None:
+        self.__tracking_data = TrackedSet.TrackingData()
+
+    def __new__(cls, iterable=None):
+        self_obj = super(TrackedSet, cls).__new__(TrackedSet)
+        self_obj._set = set() if iterable is None else set(iterable)
+        return self_obj
+
+    def __contains__(self, item):
+        return item in self._set
+
+    def __len__(self):
+        return len(self._set)
+
+    def __iter__(self):
+        return iter(self._set)
+
+    def __repr__(self):
+        return "TrackedSet({0})".format(list(self._set))
+
+    def clear_tracking_data(self) -> None:
+        self.__tracking_data.clear()
+    
+    def get_tracking_data(self) -> 'TrackedSet.TrackingData':
+        return self.__tracking_data
+
+    def add(self, element: Any) -> None:
+        old_len = len(self)
+        self._set.add(element)
+        new_len = len(self)
+        if old_len != new_len:
+            self.__tracking_data.added.append(element)
+
+    def clear(self) -> None:
+        raise NotImplementedError
+
+    def difference_update(self, *s: Iterable[Any]) -> None:
+        raise NotImplementedError
+
+    def discard(self, element: Any) -> None:
+        raise NotImplementedError
+
+    def intersection_update(self, *s: Iterable[Any]) -> None:
+        raise NotImplementedError
+
+    def pop(self) -> Any:
+        raise NotImplementedError
+
+    def remove(self, element: Any) -> None:
+        raise NotImplementedError
+
+    def symmetric_difference_update(self, s: Iterable[Any]) -> None:
+        raise NotImplementedError
+
+    def update(self, *s: Iterable[Any]) -> None:
+        raise NotImplementedError
