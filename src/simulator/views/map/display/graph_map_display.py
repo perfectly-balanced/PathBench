@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
 from simulator.views.map.display.map_display import MapDisplay
-from structures import Colour, RED
+from structures import DynamicColour, Colour, RED
 
 if TYPE_CHECKING:
     from algorithms.classic.sample_based.rrt import Graph, Vertex
@@ -12,8 +12,8 @@ if TYPE_CHECKING:
 class GraphMapDisplay(MapDisplay):
     __graph: 'Graph'
 
-    edge_colour: Colour
-    node_colour: Colour
+    edge_colour: DynamicColour
+    node_colour: DynamicColour
 
     def __init__(self, services: Services, graph: 'Graph', custom_map: Map = None) -> None:
         super().__init__(services, z_index=250, custom_map=custom_map)
