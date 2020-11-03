@@ -1,4 +1,3 @@
-import pygame
 from typing import List, Optional
 
 from simulator.models.model import Model

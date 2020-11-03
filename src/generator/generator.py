@@ -2,7 +2,12 @@ import torch
 from typing import Tuple, List, TYPE_CHECKING, Dict, Callable, Type, Set, Any
 
 import numpy as np
-from pygame.surface import Surface
+try:
+    from pygame.surface import Surface
+except ImportError:
+    print("Warning: pygame not found, importing image as map may not work")
+    class pygame:
+        surface = None
 import math
 import os
 import json
