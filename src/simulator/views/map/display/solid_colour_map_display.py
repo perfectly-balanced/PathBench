@@ -30,8 +30,8 @@ class SolidColourMapDisplay(MapDisplay):
 
         self.__deduced_colour = self.colour()
 
-    def render(self) -> bool:
-        if not super().render():
+    def render(self, refresh: bool) -> bool:
+        if not super().render(refresh):
             return False
 
         if self.points is None:

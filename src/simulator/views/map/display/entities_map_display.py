@@ -34,8 +34,8 @@ class EntitiesMapDisplay(MapDisplay):
 
         self.__cube_colours = {}
 
-    def render(self) -> bool:
-        if not super().render():
+    def render(self, refresh: bool) -> bool:
+        if not super().render(refresh):
             return False
 
         for p in self.__cube_colours:

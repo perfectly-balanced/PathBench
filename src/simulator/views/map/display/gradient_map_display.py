@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Dict
 
 import numpy as np
 
@@ -14,6 +14,9 @@ class GradientMapDisplay(MapDisplay):
     pts: List[Tuple[Union[int, float], Point]]
     min_color: DynamicColour
     max_color: DynamicColour
+    min_value: float
+    max_value: float
+    __cube_colours: Dict[Point, Colour]
 
     def __init__(self, services: Services, grid: List[List[Union[int, float]]] = None,
                  pts: List[Tuple[Union[int, float], Point]] = None,
@@ -33,6 +36,8 @@ class GradientMapDisplay(MapDisplay):
         self.min_color = min_color
         self.max_color = max_color
         self.inverted = inverted
+        self.min_val = np.inf
+        self.max_val = -np.inf
 
         self.__cube_colours = {}
 
@@ -46,20 +51,21 @@ class GradientMapDisplay(MapDisplay):
 
         return ret
 
-    def get_colour(self, val: float, min_val: float, max_val: float) -> Colour:
+    def get_colour(self, val: float) -> Colour:
+        d = (self.max_val - self.min_val)
+        d = d if d != 0 else 1
+        mag = (val - self.min_val) / d
+
+        cmag = Colour(mag, mag, mag, mag)
         cmin = self.min_color()
         cmax = self.max_color()
-
-        proc_dist: float = (val - min_val) / ((max_val - min_val) if (max_val - min_val) != 0 else 1)
-        proc_dist_clr = Colour(proc_dist, proc_dist, proc_dist, proc_dist)
-        clr_vec: Colour = cmax - cmin
-        clr = cmin + proc_dist_clr * clr_vec
-        if self.inverted:
-            clr = cmax - proc_dist_clr * clr_vec
+        cvec: Colour = cmax - cmin
+        clr = (cmax - cmag * cvec) if self.inverted else (cmin + cmag * cvec)
+        
         return clr
 
-    def render(self) -> bool:
-        if not super().render():
+    def render(self, refresh: bool) -> bool:
+        if not super().render(refresh):
             return False
 
         if self.pts is None:
@@ -67,20 +73,48 @@ class GradientMapDisplay(MapDisplay):
 
         self.get_renderer_view().display_updates_cube()
 
-        min_val: float = np.inf
-        max_val: float = -np.inf
-        for p in self.pts:
-            print("point[0]" + str(p[0]))
-            min_val = min(min_val, p[0])
-            max_val = max(max_val, p[0])
+        if not refresh and isinstance(self.pts, Tracked):
+            return self.__render_tracked()
+        else:
+            return self.__render_not_tracked()
+    
+    def __render_tracked(self) -> bool:
+        if self.pts.elems_were_removed:
+            return self.__render_not_tracked()
+        
+        old_min_val = self.min_val
+        old_max_val = self.max_val
+        for p in self.pts.modified:
+            self.min_val = min(self.min_val, p[0])
+            self.max_val = max(self.max_val, p[0])
 
+        if old_min_val != self.min_val or old_max_val != self.max_val:
+            self.__eager_colour_update_dispatch()
+        else:
+            rv = self.get_renderer_view()
+            self.__cube_colours.clear()
+            for p in self.pts.modified:
+                clr = self.get_colour(p[0])
+                self.__cube_colours[rv.cube_requires_update(p[1])] = clr
+        return True
+
+    def __render_not_tracked(self) -> bool:
+        self.min_val: float = np.inf
+        self.max_val: float = -np.inf
+        for p in self.pts:
+            self.min_val = min(self.min_val, p[0])
+            self.max_val = max(self.max_val, p[0])
+        self.__eager_colour_update_dispatch()
+        return True
+
+    def __eager_colour_update_dispatch(self) -> None:
+        rv = self.get_renderer_view()
         for p in self.__cube_colours:
-            self.get_renderer_view().cube_requires_update(p)
+            rv.cube_requires_update(p)
         self.__cube_colours.clear()
         for p in self.pts:
-            clr = self.get_colour(p[0], min_val, max_val)
-            self.__cube_colours[self.get_renderer_view().cube_requires_update(p[1])] = clr
-        return True
+            clr = self.get_colour(p[0])
+            self.__cube_colours[rv.cube_requires_update(p[1])] = clr
     
     def update_cube(self, p: Point) -> None:
         if p in self.__cube_colours:

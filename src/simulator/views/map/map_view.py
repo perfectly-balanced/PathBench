@@ -144,7 +144,7 @@ class MapView(View):
             heappush(self.__displays, (display.z_index, display))
             self.__tracked_data += display.get_tracked_data()
 
-    def __render_displays(self) -> None:
+    def __render_displays(self, refresh: bool) -> None:
         for np in self.__draw_nps:
             np.remove_node()
         self.__draw_nps.clear()
@@ -152,7 +152,7 @@ class MapView(View):
             display: MapDisplay
             _, display = heappop(self.__displays)
 
-            display.render()
+            display.render(refresh)
             if self.__display_updates_cube:
                 self.__display_updates_cube = False
                 self.__second_pass_displays.append(display)
@@ -192,7 +192,7 @@ class MapView(View):
     def update_view(self, refresh: bool) -> None:
         self._services.lock.acquire()
         self.__get_displays()
-        self.__render_displays()
+        self.__render_displays(refresh)
         self.__update_cubes(refresh)
         self._services.lock.release()
 

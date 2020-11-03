@@ -9,14 +9,14 @@ class TrackedHeap(Tracked):
         Tracked.__init__(self)
         self._list = list()
 
-    def push(self, element):
-        self.modified.append(element)
-        heappush(self._list, element)
+    def push(self, elem):
+        self._added_elem(elem)
+        heappush(self._list, elem)
 
     def pop(self):
-        element = heappop(self._list)
-        self.modified.append(element)
-        return element
+        elem = heappop(self._list)
+        self._removed_elem(elem)
+        return elem
 
     def __len__(self):
         return len(self._list)

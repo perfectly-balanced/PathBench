@@ -26,12 +26,12 @@ class TrackedSet(Tracked, MutableSet):
     def __repr__(self):
         return "TrackedSet({0})".format(list(self._set))
 
-    def add(self, element: Any) -> None:
+    def add(self, elem: Any) -> None:
         old_len = len(self)
-        self._set.add(element)
+        self._set.add(elem)
         new_len = len(self)
         if old_len != new_len:
-            self.modified.append(element)
+            self._added_elem(elem)
 
     def clear(self) -> None:
         raise NotImplementedError

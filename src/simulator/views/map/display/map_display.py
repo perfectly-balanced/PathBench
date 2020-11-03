@@ -25,7 +25,7 @@ class MapDisplay(View):
         if custom_map:
             self._map = custom_map
 
-    def render(self) -> bool:
+    def render(self, refresh: bool) -> bool:
         if self.render_method is not None:
             self.render_method()
 
