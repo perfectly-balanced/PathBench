@@ -1,13 +1,13 @@
 from typing import Iterable, Any, List
 from collections.abc import MutableSet
 
-from structures.tracked import Tracked
+from structures.tracked_container import TrackedContainer
 
-class TrackedSet(Tracked, MutableSet):
+class TrackedSet(TrackedContainer, MutableSet):
     _set: set
 
     def __init__(self) -> None:
-        Tracked.__init__(self)
+        TrackedContainer.__init__(self)
 
     def __new__(cls, iterable=None):
         self_obj = super(TrackedSet, cls).__new__(TrackedSet)
@@ -31,7 +31,7 @@ class TrackedSet(Tracked, MutableSet):
         self._set.add(elem)
         new_len = len(self)
         if old_len != new_len:
-            self._added_elem(elem)
+            self._elem_added(elem)
 
     def clear(self) -> None:
         raise NotImplementedError

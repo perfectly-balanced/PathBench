@@ -1,12 +1,12 @@
 from typing import Callable, List, Tuple
 from algorithms.classic.sample_based.core.vertex import Vertex
 from structures import Point
+from structures.tracked import Tracked
 import torch
 from abc import ABC, abstractmethod
 
 
 class Graph(ABC):
-
     def __init__(self, start_pos: Vertex, goal_pos: Vertex, root_vertices: List[Vertex]) -> None:
         self.root_vertex_start = start_pos
         self.root_vertex_goal = goal_pos
@@ -59,9 +59,26 @@ class Graph(ABC):
         self.walk_dfs_subset_of_vertices(root_vertices, lambda current: get_within_radius(current, acc))
         return acc
 
+class TrackedGraph(Tracked):
+    added: List[Tuple[Vertex, Vertex]]
+    removed: List[Tuple[Vertex, Vertex]]
+
+    def __init__(self) -> None:
+        self.added = []
+        self.removed = []
+
+    def _edge_added(self, parent: Vertex, child: Vertex) -> None:
+        self.added.append((parent, child))
+
+    def _edge_removed(self, parent: Vertex, child: Vertex) -> None:
+        self.removed.append((parent, child))
+
+    def clear_tracking_data(self) -> None:
+        self.added.clear()
+        self.removed.clear()
+
 
 class Forest(Graph):
-
     def add_edge(self, parent: Vertex, child: Vertex):
         if child is not parent:
             parent.add_child(child)
@@ -81,24 +98,20 @@ class Forest(Graph):
         for root_vertex in self.root_vertices:
             root_vertex.visit_children(f)
 
-class TrackedForest(Forest):
-    added: List[Tuple[Vertex, Vertex]]
-    removed: List[Tuple[Vertex, Vertex]]
+class TrackedForest(Forest, TrackedGraph):
+    def __init__(self, *args) -> None:
+        Forest.__init__(self, *args)
+        TrackedGraph.__init__(self)
 
-    def __init__(self) -> None:
-        self.added = []
-        self.removed = []
-    
     def add_edge(self, parent: Vertex, child: Vertex) -> None:
-        super().add_edge(parent, child)
-        self.added.append((parent, child))
+        Forest.add_edge(self, parent, child)
+        TrackedGraph._edge_added(self, parent, child)
 
     def remove_edge(self, parent: Vertex, child: Vertex) -> None:
-        super().remove_edge(parent, child)
-        self.removed.append((parent, child))
+        Forest.remove_edge(self, parent, child)
+        TrackedGraph._edge_removed(self, parent, child)
 
 class CyclicGraph(Graph):
-
     def add_edge(self, parent: Vertex, child: Vertex):
         if child is not parent:
             parent.add_child(child)
@@ -119,6 +132,20 @@ class CyclicGraph(Graph):
         for root_vertex in self.root_vertices:
             if not f(root_vertex):
                 return
+
+class TrackedCyclicGraph(CyclicGraph, TrackedGraph):
+    def __init__(self, *args) -> None:
+        CyclicGraph.__init__(self, *args)
+        TrackedGraph.__init__(self)
+
+    def add_edge(self, parent: Vertex, child: Vertex) -> None:
+        CyclicGraph.add_edge(self, parent, child)
+        if child is not parent:
+            TrackedGraph._edge_added(self, parent, child)
+
+    def remove_edge(self, parent: Vertex, child: Vertex) -> None:
+        CyclicGraph.remove_edge(self, parent, child)
+        TrackedGraph._edge_removed(self, parent, child)
 
 
 '''

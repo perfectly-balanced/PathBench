@@ -1,21 +1,21 @@
 from heapq import heappush, heappop
 
-from structures.tracked import Tracked
+from structures.tracked_container import TrackedContainer
 
-class TrackedHeap(Tracked):
+class TrackedHeap(TrackedContainer):
     _list: list
 
     def __init__(self) -> None:
-        Tracked.__init__(self)
+        TrackedContainer.__init__(self)
         self._list = list()
 
     def push(self, elem):
-        self._added_elem(elem)
+        self._elem_added(elem)
         heappush(self._list, elem)
 
     def pop(self):
         elem = heappop(self._list)
-        self._removed_elem(elem)
+        self._elem_removed(elem)
         return elem
 
     def __len__(self):

@@ -6,7 +6,7 @@ import numpy as np
 from algorithms.classic.sample_based.core.sample_based_algorithm import SampleBasedAlgorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.classic.sample_based.core.vertex import Vertex
-from algorithms.classic.sample_based.core.graph import Forest
+from algorithms.classic.sample_based.core.graph import TrackedForest
 
 from simulator.services.services import Services
 
@@ -14,11 +14,11 @@ from structures import Point
 
 
 class RRT(SampleBasedAlgorithm):
-    _graph: Forest  #used in set_display_info method in sample_based_algorithm.py
+    _graph: TrackedForest  #used in set_display_info method in sample_based_algorithm.py
 
     def __init__(self, services: Services, testing: BasicTesting = None) -> None:
         super().__init__(services, testing)
-        self._graph = Forest(Vertex(self._get_grid().agent.position), Vertex(self._get_grid().goal.position), [])
+        self._graph = TrackedForest(Vertex(self._get_grid().agent.position), Vertex(self._get_grid().goal.position), [])
 
     # Helper Functions #
     # -----------------#

@@ -18,7 +18,6 @@ if TYPE_CHECKING:
 
 
 class EntitiesMapDisplay(MapDisplay):
-    animation_step: int
     __cube_colours: Dict[Point, Colour]
     __agent_colour: DynamicColour
     __trace_colour: DynamicColour
@@ -26,7 +25,6 @@ class EntitiesMapDisplay(MapDisplay):
 
     def __init__(self, services: Services, z_index=100, custom_map: Map = None) -> None:
         super().__init__(services, z_index=z_index, custom_map=custom_map)
-        self.animation_step = 0
 
         self.__agent_colour = self._services.state.effective_view.colours[VoxelMap.AGENT]
         self.__trace_colour = self._services.state.effective_view.colours[VoxelMap.TRACE]
@@ -38,13 +36,17 @@ class EntitiesMapDisplay(MapDisplay):
         if not super().render(refresh):
             return False
 
-        for p in self.__cube_colours:
-            self.get_renderer_view().cube_requires_update(p)
+        rv = self.get_renderer_view()
 
-        p3 = self.get_renderer_view().to_point3
-        self.get_renderer_view().display_updates_cube()
-        self.__cube_colours = {p3(self._map.agent): self.__agent_colour(),
-                               p3(self._map.goal): self.__goal_colour()}
+        for p in self.__cube_colours:
+            rv.cube_requires_update(p)
+        self.__cube_colours.clear()
+
+        p3 = rv.to_point3
+        rv.display_updates_cube()
+
+        self.__cube_colours[p3(self._map.agent)] = self.__agent_colour()
+        self.__cube_colours[p3(self._map.goal)] = self.__goal_colour()
 
         tc = self.__trace_colour()
         for trace_point in self._map.trace:
@@ -53,7 +55,7 @@ class EntitiesMapDisplay(MapDisplay):
             self.__cube_colours[p3(Entity(self._map.trace[0].position, self._map.agent.radius))] = self.__agent_colour()
 
         for p in self.__cube_colours:
-            self.get_renderer_view().cube_requires_update(p)
+            rv.cube_requires_update(p)
 
         return True
 

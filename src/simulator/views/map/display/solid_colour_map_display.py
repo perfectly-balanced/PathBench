@@ -14,7 +14,7 @@ class SolidColourMapDisplay(MapDisplay):
     colour: DynamicColour
 
     points: Union[Set[Point], List[Entity]]
-    __old_points: Optional[Union[Set[Point], List[Entity]]]
+    __old_pts: Optional[Union[Set[Point], List[Entity]]]
 
     __deduced_colour: Colour
 
@@ -25,8 +25,8 @@ class SolidColourMapDisplay(MapDisplay):
         self.radius = radius
         self.colour = colour
 
-        self.points = points
-        self.__old_points = None
+        self.pts = points
+        self.__old_pts = None
 
         self.__deduced_colour = self.colour()
 
@@ -34,39 +34,42 @@ class SolidColourMapDisplay(MapDisplay):
         if not super().render(refresh):
             return False
 
-        if self.points is None:
+        if self.pts is None:
             return False
 
         self._root_view.display_updates_cube()
-        self.__deduced_colour = self.colour()
 
-        if isinstance(self.points, Tracked):
-            return self.__render_tracked()
+        c = self.colour()
+        refresh = refresh or c != self.__deduced_colour
+        self.__deduced_colour = c
+
+        if not refresh and isinstance(self.pts, Tracked):
+            return self.__render_lazy()
         else:
-            return self.__render_not_tracked()
+            return self.__render_eager()
 
-    def __render_tracked(self) -> bool:
-        for p in self.points.modified:
+    def __render_lazy(self) -> bool:
+        for p in self.pts.modified:
             self._root_view.cube_requires_update(p)
         return True
 
-    def __render_not_tracked(self) -> bool:
-        if self.__old_points is not None:
-            for p in self.__old_points:
+    def __render_eager(self) -> bool:
+        if self.__old_pts is not None:
+            for p in self.__old_pts:
                 self._root_view.cube_requires_update(p)
 
-        self.__old_points = copy.deepcopy(self.points)
-        if self.__old_points is None:
+        self.__old_pts = copy.deepcopy(self.pts)
+        if self.__old_pts is None:
             return False
-        
-        for p in self.__old_points:
+
+        for p in self.__old_pts:
             self._root_view.cube_requires_update(p)
 
     def get_tracked_data(self) -> List[Tracked]:
-        return [self.points] if isinstance(self.points, Tracked) else []
+        return [self.pts] if isinstance(self.pts, Tracked) else []
 
     def update_cube(self, p: Point) -> None:
         if self._map.size.n_dim == 2:
             p = Point(p.x, p.y)
-        if p in self.points:
+        if p in self.pts:
             self._root_view.colour_cube(self.__deduced_colour)

@@ -55,8 +55,8 @@ class AStar(Algorithm):
         self.visited_colour = self._services.state.add_colour("visited", Colour(0.19, 0.19, 0.2, 0.8))
 
         self.__map_displays = [SolidColourMapDisplay(self._services, self.mem.visited, self.visited_colour, z_index=50),
-                               GradientMapDisplay(self._services, pts=self.mem.priority_queue, min_color=self.pq_colour_min,
-                                                  max_color=self.pq_colour_max, z_index=49, inverted=True)]
+                               GradientMapDisplay(self._services, pts=self.mem.priority_queue, min_colour=self.pq_colour_min,
+                                                  max_colour=self.pq_colour_max, z_index=49, inverted=True)]
 
     def set_display_info(self) -> List[MapDisplay]:
         """

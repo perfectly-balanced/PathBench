@@ -101,7 +101,7 @@ class MapView(View):
             self.update_view(event.refresh)
         elif isinstance(event, ColourUpdateEvent):
             if event.view.is_effective():
-                self.update_view(True)
+                self.update_view(False)
         elif isinstance(event, TakeScreenshotEvent):
             self.take_screenshot()
 

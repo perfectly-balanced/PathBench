@@ -12,16 +12,18 @@ from structures.tracked import Tracked
 class GradientMapDisplay(MapDisplay):
     inverted: bool
     pts: List[Tuple[Union[int, float], Point]]
-    min_color: DynamicColour
-    max_color: DynamicColour
+    min_colour: DynamicColour
+    max_colour: DynamicColour
     min_value: float
     max_value: float
+    __deduced_min_colour: Colour
+    __deduced_max_colour: Colour
     __cube_colours: Dict[Point, Colour]
 
     def __init__(self, services: Services, grid: List[List[Union[int, float]]] = None,
                  pts: List[Tuple[Union[int, float], Point]] = None,
-                 min_color: DynamicColour = None,
-                 max_color: DynamicColour = None, z_index=50, inverted: bool = False, custom_map: Map = None) -> None:
+                 min_colour: DynamicColour = None, max_colour: DynamicColour = None,
+                 z_index=50, inverted: bool = False, custom_map: Map = None) -> None:
         super().__init__(services, z_index=z_index, custom_map=custom_map)
 
         self.pts = None
@@ -31,13 +33,16 @@ class GradientMapDisplay(MapDisplay):
         elif grid is not None:
             self.pts = self.__transform_to_points(grid)
 
-        assert min_color is not None
-        assert max_color is not None
-        self.min_color = min_color
-        self.max_color = max_color
+        assert min_colour is not None
+        assert max_colour is not None
+        self.min_colour = min_colour
+        self.max_colour = max_colour
         self.inverted = inverted
         self.min_val = np.inf
         self.max_val = -np.inf
+
+        self.__deduced_min_colour = self.min_colour()
+        self.__deduced_max_colour = self.max_colour()
 
         self.__cube_colours = {}
 
@@ -57,11 +62,11 @@ class GradientMapDisplay(MapDisplay):
         mag = (val - self.min_val) / d
 
         cmag = Colour(mag, mag, mag, mag)
-        cmin = self.min_color()
-        cmax = self.max_color()
+        cmin = self.__deduced_min_colour
+        cmax = self.__deduced_max_colour
         cvec: Colour = cmax - cmin
         clr = (cmax - cmag * cvec) if self.inverted else (cmin + cmag * cvec)
-        
+
         return clr
 
     def render(self, refresh: bool) -> bool:
@@ -73,15 +78,23 @@ class GradientMapDisplay(MapDisplay):
 
         self.get_renderer_view().display_updates_cube()
 
+        c = self.min_colour()
+        refresh = refresh or c != self.__deduced_min_colour
+        self.__deduced_min_colour = c
+
+        c = self.max_colour()
+        refresh = refresh or c != self.__deduced_max_colour
+        self.__deduced_max_colour = c
+
         if not refresh and isinstance(self.pts, Tracked):
-            return self.__render_tracked()
+            return self.__render_lazy()
         else:
-            return self.__render_not_tracked()
-    
-    def __render_tracked(self) -> bool:
+            return self.__render_eager()
+
+    def __render_lazy(self) -> bool:
         if self.pts.elems_were_removed:
-            return self.__render_not_tracked()
-        
+            return self.__render_eager()
+
         old_min_val = self.min_val
         old_max_val = self.max_val
         for p in self.pts.modified:
@@ -98,7 +111,7 @@ class GradientMapDisplay(MapDisplay):
                 self.__cube_colours[rv.cube_requires_update(p[1])] = clr
         return True
 
-    def __render_not_tracked(self) -> bool:
+    def __render_eager(self) -> bool:
         self.min_val: float = np.inf
         self.max_val: float = -np.inf
         for p in self.pts:
@@ -115,7 +128,7 @@ class GradientMapDisplay(MapDisplay):
         for p in self.pts:
             clr = self.get_colour(p[0])
             self.__cube_colours[rv.cube_requires_update(p[1])] = clr
-    
+
     def update_cube(self, p: Point) -> None:
         if p in self.__cube_colours:
             self._root_view.colour_cube(self.__cube_colours[p])
