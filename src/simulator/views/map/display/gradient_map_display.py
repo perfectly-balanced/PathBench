@@ -87,14 +87,16 @@ class GradientMapDisplay(MapDisplay):
         self.__deduced_max_colour = c
 
         if not refresh and isinstance(self.pts, Tracked):
-            return self.__render_lazy()
+            self.__render_lazy()
         else:
-            return self.__render_eager()
+            self.__render_eager()
+        return True
 
-    def __render_lazy(self) -> bool:
+    def __render_lazy(self) -> None:
         if self.pts.elems_were_removed:
             # todo: could probably add some laziness here
-            return self.__render_eager()
+            self.__render_eager()
+            return
 
         old_min_val = self.min_val
         old_max_val = self.max_val
@@ -112,14 +114,13 @@ class GradientMapDisplay(MapDisplay):
                 self.__cube_colours[rv.cube_requires_update(p[1])] = clr
         return True
 
-    def __render_eager(self) -> bool:
+    def __render_eager(self) -> None:
         self.min_val: float = np.inf
         self.max_val: float = -np.inf
         for p in self.pts:
             self.min_val = min(self.min_val, p[0])
             self.max_val = max(self.max_val, p[0])
         self.__eager_colour_update_dispatch()
-        return True
 
     def __eager_colour_update_dispatch(self) -> None:
         rv = self.get_renderer_view()

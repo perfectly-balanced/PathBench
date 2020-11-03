@@ -229,9 +229,9 @@ class MapView(View):
             z = 0
         return Point(x, y, z)
 
-    def start_collecting_nodes(self) -> None:
+    def start_collecting_nodes(self, np: Optional[NodePath] = None) -> None:
         self.__render_lines()
-        self.__np_collector = self.map.root.attach_new_node('collection')
+        self.__np_collector = self.map.root.attach_new_node('collection') if np is None else np
 
     def end_collecting_nodes(self) -> NodePath:
         self.__render_lines()
