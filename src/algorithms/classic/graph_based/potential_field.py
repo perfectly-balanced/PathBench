@@ -97,7 +97,6 @@ class PotentialField(Algorithm):
 
         # calc each potential
         pmap = np.zeros(grid.size, dtype=np.float32)
-        pmap = np.transpose(pmap)
         #print(str(grid.size))
 
         for index in np.ndindex(*grid.size):
