@@ -1,4 +1,4 @@
-from typing import Callable, List
+from typing import Callable, List, Tuple
 from algorithms.classic.sample_based.core.vertex import Vertex
 from structures import Point
 import torch
@@ -80,6 +80,22 @@ class Forest(Graph):
     def walk_dfs(self, f: Callable[[Vertex], bool]):
         for root_vertex in self.root_vertices:
             root_vertex.visit_children(f)
+
+class TrackedForest(Forest):
+    added: List[Tuple[Vertex, Vertex]]
+    removed: List[Tuple[Vertex, Vertex]]
+
+    def __init__(self) -> None:
+        self.added = []
+        self.removed = []
+    
+    def add_edge(self, parent: Vertex, child: Vertex) -> None:
+        super().add_edge(parent, child)
+        self.added.append((parent, child))
+
+    def remove_edge(self, parent: Vertex, child: Vertex) -> None:
+        super().remove_edge(parent, child)
+        self.removed.append((parent, child))
 
 class CyclicGraph(Graph):
 

@@ -22,8 +22,8 @@ class GraphMapDisplay(MapDisplay):
         self.edge_colour = self._services.state.add_colour("graph edge", RED)
         self.node_colour = self._services.state.add_colour("graph node", RED)
 
-    def render(self) -> bool:
-        if not super().render():
+    def render(self, refresh: bool) -> bool:
+        if not super().render(refresh):
             return False
 
         self.__graph.walk_dfs(lambda child: self.__render(child))
