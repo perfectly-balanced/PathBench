@@ -29,11 +29,11 @@ class Wavefront(Algorithm):
         Read super description
         """
         display_info: List[MapDisplay] = super().set_display_info() + [
-            GradientMapDisplay(self._services, self.step_grid,
-                                               min_color=Wavefront.STEP_GRID_MIN_COLOR,
-                                               max_color=Wavefront.STEP_GRID_MAX_COLOR),
+            #GradientMapDisplay(self._services, self.step_grid,
+            #                                   min_color=Wavefront.STEP_GRID_MIN_COLOR,
+            #                                   max_color=Wavefront.STEP_GRID_MAX_COLOR),
         
-            #NumbersMapDisplay(self._services, copy.deepcopy(self.step_grid))
+            NumbersMapDisplay(self._services, copy.deepcopy(self.step_grid))
         ]
         return display_info
     
@@ -61,7 +61,7 @@ class Wavefront(Algorithm):
         #put position of goal in tuple with 2 in a list called queue -> queue= [(Point(x=??, y=??), 2)]
         queue: List[Tuple[Point, int]] = [(goal.position, 2)]
         #make all the cells of the stepgrid 0  
-        self.step_grid = [[0 for _ in range(grid.size.width)] for _ in range(grid.size.height)]
+        self.step_grid = np.zeros(grid.size, dtype=np.int32)
         
         #print("grid=",grid)
         #print("________________________________________________________\n")
@@ -70,7 +70,7 @@ class Wavefront(Algorithm):
         #print("queue=",queue)
         
         #make the goal cell 1
-        self.step_grid[goal.position.y][goal.position.x] = 1
+        self.step_grid[goal.position[::-1]] = 1
             
         #print("________________________________________________________\n")
         #print("self.step_grid=",self.step_grid)
@@ -83,12 +83,12 @@ class Wavefront(Algorithm):
             count: int
             next_node, count = queue.pop(0)
             for n in grid.get_next_positions(next_node):
-                if self.step_grid[n.y][n.x] == 0:
-                    self.step_grid[n.y][n.x] = count
+                if self.step_grid[n.pos[::-1]] == 0:
+                    self.step_grid[n.pos[::-1]] = count
                     queue.append((n, count + 1))
                 if self.__equal_pos(n, agent.position):
                     agent_reached = True
-                    self.step_grid[n.y][n.x] = count
+                    self.step_grid[n.pos[::-1]] = count
                     break
             self.key_frame()
 
@@ -103,7 +103,7 @@ class Wavefront(Algorithm):
             
 
     def __equal_pos(self, pos1: Point, pos2: Point) -> bool:
-        return pos1.x == pos2.x and pos1.y == pos2.y
+        return all(map(lambda pos2: pos2[0] == pos2[1], zip(pos1, pos2)))
 
     def gradient_descent(self, current: Point, grid: Map) -> List[Point]:
         """
@@ -114,9 +114,9 @@ class Wavefront(Algorithm):
         """
         trace: List[Point] = [current]
         #find the trace of the path by looking at neighbours at each point and moving the current towards the agent position. (number to next lowest numb(-1))
-        while self.step_grid[current.y][current.x] != 1:
+        while self.step_grid[current.pos[::-1]] != 1:
             for n in grid.get_next_positions(current):
-                if self.step_grid[n.y][n.x] == self.step_grid[current.y][current.x] - 1:
+                if self.step_grid[n.pos[::-1]] == self.step_grid[current.pos[::-1]] - 1:
                     trace.append(n)
                     current = n
                     break

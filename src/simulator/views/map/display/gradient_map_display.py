@@ -22,7 +22,7 @@ class GradientMapDisplay(MapDisplay):
 
         self.pts = None
 
-        if grid:
+        if not(grid is None):
             self.pts = self.__transform_to_points(grid)
 
         if pts:
@@ -66,6 +66,7 @@ class GradientMapDisplay(MapDisplay):
         min_val: float = np.inf
         max_val: float = -np.inf
         for p in self.pts:
+            print("point[0]" + str(p[0]))
             min_val = min(min_val, p[0])
             max_val = max(max_val, p[0])
 
