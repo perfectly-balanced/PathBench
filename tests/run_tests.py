@@ -1,8 +1,9 @@
-import sys
+import sys, os
 import unittest
 from unittest import TestLoader, TestSuite, TextTestRunner, TestResult
 
-sys.path.append('../src')
+src_path = os.path.dirname(os.path.abspath(__file__)) + "/../src"
+sys.path.append(src_path)
 
 if __name__ == '__main__':
     loader: TestLoader = unittest.TestLoader()
