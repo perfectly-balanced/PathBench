@@ -25,7 +25,7 @@ class SolidColorMapDisplaypot(MapDisplay):
         self.small = min(pmaplst)
         self.range = (self.large-self.small)/6
 
-        assert self._map.size.n_dim == 2, "Unsupported map dimension, expected 2D"
+        #assert self._map.size.n_dim == 2, "Unsupported map dimension, expected 2D"
 
     def render(self) -> bool:
         if not super().render():
