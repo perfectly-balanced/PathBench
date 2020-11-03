@@ -16,7 +16,7 @@ class NumbersMapDisplay(MapDisplay):
         self.grid = grid
 
     def render(self) -> bool:
-        if not super().render() or not self.grid:
+        if not super().render() or self.grid is None:
             return False
 
         if self.services.settings.simulator_grid_display:
