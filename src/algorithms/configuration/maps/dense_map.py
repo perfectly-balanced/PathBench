@@ -84,6 +84,7 @@ class DenseMap(Map):
                 extend_obstacle_bound()
 
     def at(self, p: Point) -> int:
+        assert not p.is_float, f"Can't look up a floating point Point in dense_map: {p}"
         return self.grid[p.pos]
 
     def move(self, entity: Entity, to: Point, no_trace: bool = False) -> bool:
