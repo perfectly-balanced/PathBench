@@ -141,7 +141,7 @@ class MapView(View):
         for display in displays:
             display._model = self._model
             self.add_child(display)
-            heappush(self.__displays, (display.z_index, display))
+            heappush(self.__displays, display)
             self.__tracked_data += display.get_tracked_data()
 
     def __render_displays(self, refresh: bool) -> None:
@@ -150,7 +150,7 @@ class MapView(View):
         self.__draw_nps.clear()
         while len(self.__displays) > 0:
             display: MapDisplay
-            _, display = heappop(self.__displays)
+            display = heappop(self.__displays)
 
             display.render(refresh)
             if self.__display_updates_cube:

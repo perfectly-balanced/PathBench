@@ -122,6 +122,3 @@ class GradientMapDisplay(MapDisplay):
 
     def get_tracked_data(self) -> List[Tracked]:
         return [self.pts] if isinstance(self.pts, Tracked) else []
-
-    def __lt__(self, other):
-        return super().__lt__(other)

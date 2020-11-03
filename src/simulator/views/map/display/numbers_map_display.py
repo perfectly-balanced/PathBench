@@ -25,6 +25,3 @@ class NumbersMapDisplay(MapDisplay):
                 self.get_renderer_view().render_text(Point(*index), str(round(self.grid[index], 1)))
 
         return True
-
-    def __lt__(self, other):
-        return super().__lt__(other)

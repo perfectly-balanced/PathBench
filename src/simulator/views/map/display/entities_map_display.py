@@ -60,6 +60,3 @@ class EntitiesMapDisplay(MapDisplay):
     def update_cube(self, p: Point) -> None:
         if p in self.__cube_colours:
             self.get_renderer_view().colour_cube(self.__cube_colours[p])
-
-    def __lt__(self, other):
-        return super().__lt__(other)

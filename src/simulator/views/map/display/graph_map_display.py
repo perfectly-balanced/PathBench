@@ -45,6 +45,3 @@ class GraphMapDisplay(MapDisplay):
             self.get_renderer_view().draw_circle_filled(current.position, colour=self.node_colour())
         else:
             self.get_renderer_view().draw_sphere(current.position, colour=self.node_colour())
-
-    def __lt__(self, other):
-        return super().__lt__(other)

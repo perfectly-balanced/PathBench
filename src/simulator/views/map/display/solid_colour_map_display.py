@@ -70,6 +70,3 @@ class SolidColourMapDisplay(MapDisplay):
             p = Point(p.x, p.y)
         if p in self.points:
             self._root_view.colour_cube(self.__deduced_colour)
-
-    def __lt__(self, other: 'SolidColourMapDisplay') -> bool:
-        return tuple(*self.colour) < tuple(*other.colour)

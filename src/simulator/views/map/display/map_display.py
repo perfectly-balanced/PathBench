@@ -43,4 +43,4 @@ class MapDisplay(View):
             return self._root_view
 
     def __lt__(self, other):
-        return True
+        return self.z_index < other.z_index

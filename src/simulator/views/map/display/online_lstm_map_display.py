@@ -58,6 +58,3 @@ class OnlineLSTMMapDisplay(MapDisplay):
 
     def __render_line(self, p1: Point, p2: Point, colour: Colour):
         self.get_renderer_view().draw_line(colour, p1, p2)
-
-    def __lt__(self, other):
-        return super().__lt__(other)
