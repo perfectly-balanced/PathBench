@@ -45,6 +45,7 @@ class MapView(View):
     __display_updates_cube: bool
     __cube_colour: Colour
 
+    __np_collector: Optional[NodePath]
     __draw_nps: List[NodePath]
     __circles: List[Tuple[int, float, Geom]]
     __line_segs: LineSegs
@@ -60,6 +61,7 @@ class MapView(View):
         self.__display_updates_cube = False
         self.__cube_colour = None
 
+        self.__np_collector = None
         self.__draw_nps = []
         self.__circles = []
         self.__line_segs = LineSegs()
@@ -157,10 +159,7 @@ class MapView(View):
                 self.__display_updates_cube = False
                 self.__second_pass_displays.append(display)
             
-            if not self.__line_segs.is_empty():
-                n = self.__line_segs.create()
-                np = self.map.root.attach_new_node(n)
-                self.__draw_nps.append(np)
+            self.__render_lines()
 
     def __update_cubes(self, refresh: bool) -> None:
         clr = self._services.state.effective_view.colours["traversables"]()
@@ -230,13 +229,28 @@ class MapView(View):
             z = 0
         return Point(x, y, z)
 
-    @property
-    def line_segs(self) -> LineSegs:
-        self.__line_segs_used = True
-        return self.__line_segs
+    def start_collecting_nodes(self) -> None:
+        self.__render_lines()
+        self.__np_collector = self.map.root.attach_new_node('collection')
+
+    def end_collecting_nodes(self) -> NodePath:
+        self.__render_lines()
+        np = self.__np_collector
+        self.__np_collector = None
+        np.flatten_strong() # todo: evaluate performance of this
+        return np
+
+    def __render_lines(self) -> None:
+        if not self.__line_segs.is_empty():
+            n = self.__line_segs.create()
+            if self.__np_collector is None:
+                np = self.map.root.attach_new_node(n)
+                self.__draw_nps.append(np)
+            else:
+                self.__np_collector.attach_new_node(n)
 
     def draw_line(self, colour: Colour, p1: Point, p2: Point) -> None:
-        ls = self.line_segs
+        ls = self.__line_segs
         ls.set_color(*colour)
 
         ls.move_to(*self.cube_center(p1))
@@ -245,14 +259,18 @@ class MapView(View):
     def draw_sphere(self, p: Point, colour: Colour = WHITE, scale: float = 0.2) -> None:
         np = loader.load_model("models/misc/sphere.egg")
         np.set_color(*colour)
-        np.reparent_to(self.map.root)
+
+        if self.__np_collector is None:
+            np.reparent_to(self.map.root)
+            self.__draw_nps.append(np)
+        else:
+            np.reparent_to(self.__np_collector)
+
         np.set_pos(*self.cube_center(p))
         np.set_scale(scale)
 
-        self.__draw_nps.append(np)
-
     def make_arc(self, p: Point, angle_degs=360, nsteps=16, radius: float = 0.06, colour: Colour = WHITE) -> None:
-        ls = self.line_segs
+        ls = self.__line_segs
         ls.set_color(*colour)
 
         angle_rads = angle_degs * (math.pi / 180.0)
@@ -280,11 +298,14 @@ class MapView(View):
         if not exists:
             self.__circles.append((nsteps, radius, BuildGeometry.addCircle(gn, nsteps, radius, colour)))
 
-        np = self.map.root.attach_new_node(gn)
+        if self.__np_collector is None:
+            np = self.map.root.attach_new_node(gn)
+            self.__draw_nps.append(np)
+        else:
+            np = self.__np_collector.attach_new_node(gn)
+        
         np.set_pos(*self.cube_center(p))
         np.set_color(*colour)
-
-        self.__draw_nps.append(np)
 
     def render_text(self, p: Point, text: str, colour: Colour = WHITE, scale: float = 0.4) -> None:
         center = self.cube_center(p)

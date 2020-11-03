@@ -93,6 +93,7 @@ class GradientMapDisplay(MapDisplay):
 
     def __render_lazy(self) -> bool:
         if self.pts.elems_were_removed:
+            # todo: could probably add some laziness here
             return self.__render_eager()
 
         old_min_val = self.min_val
