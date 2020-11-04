@@ -150,6 +150,7 @@ class MapView(View):
         for np in self.__draw_nps:
             np.remove_node()
         self.__draw_nps.clear()
+        
         while len(self.__displays) > 0:
             display: MapDisplay
             display = heappop(self.__displays)

@@ -44,16 +44,13 @@ class GraphMapDisplay(MapDisplay):
         refresh = refresh or c != self.__deduced_node_colour
         self.__deduced_node_colour = c
 
-        if not refresh and isinstance(self.__graph, TrackedGraph):
-            self.__render_lazy()
+        if isinstance(self.__graph, TrackedGraph):
+            self.__render_lazy(refresh)
         else:
-            for np in self.__v_to_np:
-                np.remove_node()
-            self.__v_to_np.clear()
             self.__render_eager()
         return True
 
-    def __render_lazy(self) -> None:
+    def __render_lazy(self, refresh: bool) -> None:
         # node where edge added is (virtually) never the same node as one where an edge has been removed
         # hence it's more advantageous to add edges & then remove + redraw if found to been in removed set
         # instead of keeping track of whether or not should remove + redraw from the beginning
@@ -62,6 +59,28 @@ class GraphMapDisplay(MapDisplay):
         #    print(l)
 
         rv = self.get_renderer_view()
+
+        if refresh:
+            for np in self.__v_to_np.items():
+                np.remove_node()
+            self.__v_to_np.clear()
+
+        if not self.__v_to_np: # occurs at initialisation or refresh
+            for v in self.__graph.root_vertices:
+                rv.start_collecting_nodes()
+                self.__render_child(v)
+                np = rv.end_collecting_nodes()
+                self.__v_to_np[v] = np
+            
+            def render_child(current) -> bool:
+                rv.start_collecting_nodes()
+                self.__render_child(current)
+                np = rv.end_collecting_nodes()
+                self.__v_to_np[current] = np
+                return True
+            
+            self.__graph.walk_dfs(lambda child: render_child(child))
+            return
 
         for p, c in self.__graph.added:
             if c in self.__v_to_np:
@@ -84,19 +103,37 @@ class GraphMapDisplay(MapDisplay):
                 np = rv.end_collecting_nodes()
                 self.__v_to_np[c] = np
         
+        # this rendering stage must be done last to
+        # ensure that adding edges that were subsequently
+        # removed are removed from the scene
         vs = set([c for _, c in self.__graph.removed])
+        vs_no_show = []
         for v in vs:
-            # todo if vertex is unreachable shouldn't add
-            # should be able to do this quite fast. By, for example
-            # checking if a node doesn't have parents. If it doesn't
-            # then all its children (recursively) should no longer be
-            # rendered if they only have unique parent.
-            # If any of these nodes are root nodes then this overrides
-            # discarding the node. The root list is quite small.
-            # Commonly just 2 for start and goal vertices.
-            
             if v in self.__v_to_np:
                 self.__v_to_np[v].remove_node()
+
+            # if vertex is unreachable shouldn't add
+            # The root list is quite small, commonly
+            # just 2 for start and goal vertices.
+            # Therefore, this implementation should
+            # be quite fast. It's unlikely that a 
+            # large tree will suddenly be removed
+
+            if v in vs_no_show:
+                continue
+
+            if v.parents.empty() and v not in self.__graph.root_vertices:
+                vs_no_show.append(v)
+                def check_no_show(current):
+                    for p in current.parents:
+                        if p not in vs_no_show:
+                            return
+                    vs_no_show.append(current)
+                    for c in current.children:
+                        check_no_show(c)
+                for c in v.children:
+                    check_no_show(c)
+                continue
 
             rv.start_collecting_nodes()
             self.__render_child(v)
