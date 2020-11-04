@@ -49,6 +49,7 @@ class MapController(Controller, DirectObject):
         self.accept("m", lambda: self._model.toggle_convert_map())
         self.accept("x", lambda: self._model.toggle_pause_algorithm())
         self.accept("p", lambda: self._services.ev_manager.post(TakeScreenshotEvent()))
+        self.accept("o", lambda: self.__camera.take_top_screenshot())
         for i in range(6):
             self.accept(str(i+1), partial(set_view, i))
 
