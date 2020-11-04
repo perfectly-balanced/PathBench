@@ -7,6 +7,7 @@ from simulator.services.services import Services
 from structures import Colour, WHITE, BLACK, TRANSPARENT
 import os
 from constants import DATA_PATH
+from simulator.services.event_manager.events.toggle_simulator_config_event import ToggleSimulatorConfigEvent
 
 from maps import Maps
 
@@ -186,7 +187,7 @@ class SimulatorConfig():
         self.__services.ev_manager.register_listener(self)
         self.__base = self.__services.graphics.window
         self.hidden_config = False
-        self.__text = "Important runtime commands:\n \n* c - find the path between the agent and goal\n\n"\
+        self.__text = "Important runtime commands:\n \n* t - find the path between the agent and goal\n\n"\
              "* mouse click - moves agent to mouse location \n\n* mouse right click - moves goal to"\
              " mouse location\n\n* s - stop trace animation (animations required)\n\n* r - resume trace animation  (" \
              "animations required)\n\n* p - take screenshot"
@@ -278,7 +279,7 @@ class SimulatorConfig():
 
         # Quit button
         self.btn = DirectButton(image=os.path.join(DATA_PATH, "quit.png"),
-                                #command=self.__toggle_config(),
+                                command=self.__toggle_config,
                                 pos=(1., 0.4, 0.86),
                                 parent=self.__window_config.frame,
                                 scale=0.1,
@@ -358,4 +359,5 @@ class SimulatorConfig():
         self.__services.reset()
 
     def notify(self, event: Event) -> None:
-        pass
+        if isinstance(event, ToggleSimulatorConfigEvent):
+            self.__toggle_config()

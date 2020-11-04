@@ -45,7 +45,7 @@ class MapController(Controller, DirectObject):
 
         self.accept('mouse1', left_click)
         self.accept('mouse3', right_click)
-        self.accept("c", lambda: self._model.compute_trace())
+        self.accept("t", lambda: self._model.compute_trace())
         self.accept("m", lambda: self._model.toggle_convert_map())
         self.accept("x", lambda: self._model.toggle_pause_algorithm())
         self.accept("p", lambda: self._services.ev_manager.post(TakeScreenshotEvent()))

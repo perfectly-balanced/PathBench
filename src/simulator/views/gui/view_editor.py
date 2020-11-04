@@ -14,6 +14,8 @@ from constants import DATA_PATH
 from simulator.services.services import Services
 from simulator.services.persistent_state import PersistentState
 from simulator.services.event_manager.events.new_colour_event import NewColourEvent
+from simulator.services.event_manager.events.toggle_view_event import ToggleViewEvent
+
 from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR, Window
 
 class ColourPicker:
@@ -639,8 +641,6 @@ class ViewEditor():
                                 pressEffect=1,
                                 frameColor=TRANSPARENT)
 
-        # Show or hide the Style Editor #
-        self.__base.accept('v', self.__toggle_view_editor)
 
         self.__save_outline = DirectFrame(parent=self.__window.frame,
                                           frameColor=WHITE,
@@ -750,6 +750,8 @@ class ViewEditor():
     def notify(self, event: Event) -> None:
         if isinstance(event, NewColourEvent) or self.__services.state.view_idx != self.__cur_view_idx:
             self.__reset()
+        elif isinstance(event, ToggleViewEvent):
+            self.__toggle_view_editor()
 
     @property
     def view_idx(self) -> str:

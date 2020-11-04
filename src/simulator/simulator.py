@@ -3,6 +3,8 @@ from typing import Optional
 from algorithms.basic_testing import BasicTesting
 from simulator.controllers.main_controller import MainController
 from simulator.controllers.map.map_controller import MapController
+from simulator.controllers.gui.gui_controller import GuiController
+
 from simulator.models.main import Main
 from simulator.models.map import Map
 from simulator.services.debug import DebugLevel
@@ -28,6 +30,7 @@ class Simulator:
     __map: Map
     __main_controller: MainController
     __map_controller: MapController
+    __gui_controller: GuiController
     __main_view: MainView
     __map_view: MapView
     __gui_view: GuiView
@@ -41,6 +44,7 @@ class Simulator:
         self.__map = None
         self.__main_controller = None
         self.__map_controller = None
+        self.__gui_controller = None
         self.__main_view = None
         self.__map_view = None
 
@@ -75,8 +79,10 @@ class Simulator:
         self.__main_view = MainView(self.__services, self.__main, None)
         self.__gui_view = GuiView(self.__services, None, self.__main_view)
 
+
         # init controllers
         self.__main_controller = MainController(self.__services, self.__main)
+        self.__gui_controller = GuiController(self.__gui_view, self.__services,self.__main)
 
         self.__try_setup_map_graphics()
 
