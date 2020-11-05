@@ -112,7 +112,7 @@ class GraphMapDisplay(MapDisplay):
             if v in vs_no_show:
                 continue
 
-            if v.parents.empty() and v not in self.__graph.root_vertices:
+            if not v.parents and v not in self.__graph.root_vertices:
                 vs_no_show.append(v)
                 def check_no_show(current):
                     for p in current.parents:

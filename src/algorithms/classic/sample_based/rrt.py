@@ -14,11 +14,13 @@ from structures import Point
 
 
 class RRT(SampleBasedAlgorithm):
-    _graph: TrackedForest  #used in set_display_info method in sample_based_algorithm.py
+    _graph: TrackedForest
 
     def __init__(self, services: Services, testing: BasicTesting = None) -> None:
         super().__init__(services, testing)
+        
         self._graph = TrackedForest(Vertex(self._get_grid().agent.position), Vertex(self._get_grid().goal.position), [])
+        self._graph.edges_removable = False
         self._init_displays()
 
     # Helper Functions #
