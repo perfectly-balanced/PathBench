@@ -63,13 +63,11 @@ class TrackedGraph(Tracked):
     added: List[Tuple[Vertex, Vertex]]
     removed: List[Tuple[Vertex, Vertex]]
     edges_removable: bool
-    aux: Dict[Any, Any]
 
     def __init__(self) -> None:
         self.added = []
         self.removed = []
         self.edges_removable = True
-        self.aux = {}
 
     def _edge_added(self, parent: Vertex, child: Vertex) -> None:
         self.added.append((parent, child))

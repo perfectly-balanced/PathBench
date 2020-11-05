@@ -45,10 +45,11 @@ class MapView(View):
     __display_updates_cube: bool
     __cube_colour: Colour
 
+    __overlay: NodePath
     __np_collector: Optional[NodePath]
     __draw_nps: List[NodePath]
     __circles: List[Tuple[int, float, Geom]]
-    __line_segs: LineSegs
+    __line_segs: LineSegs    
 
     def __init__(self, services: Services, model: Model, root_view: Optional[View]) -> None:
         super().__init__(services, model, root_view)
@@ -79,6 +80,7 @@ class MapView(View):
         # MAP #
         self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
         self.__center(self.__map.root)
+        self.__overlay = self.map.root.attach_new_node("overlay")
 
         self.update_view(True)
 
@@ -86,8 +88,7 @@ class MapView(View):
         self.__map.destroy()
         self.__world.remove_node()
         self.__displays = []
-        for np in self.__draw_nps:
-            np.remove_node()
+        self.__persistent_displays = []
         self.__draw_nps = []
         for _, _, geo in self.__circles:
             geo.releaseAll()
@@ -97,10 +98,18 @@ class MapView(View):
         if self._root_view is not None:
             self._root_view.remove_child(self)
 
+    def __refresh(self) -> None:
+        self.__overlay.flatten_strong()
+        self.__overlay.remove_node()
+        self.__overlay = self.map.root.attach_new_node("overlay")
+
     def notify(self, event: Event) -> None:
         super().notify(event)
         if isinstance(event, KeyFrameEvent):
+            if event.refresh:
+                self.__refresh()
             self.update_view(event.refresh)
+
         elif isinstance(event, ColourUpdateEvent):
             if event.view.is_effective():
                 self.update_view(False)
@@ -132,6 +141,10 @@ class MapView(View):
     @map.getter
     def map(self) -> VoxelMap:
         return self.__map
+
+    @property
+    def overlay(self) -> NodePath:
+        return self.__overlay
 
     def __get_displays(self) -> None:
         # drop map displays if not compatible with display format
@@ -232,20 +245,21 @@ class MapView(View):
 
     def start_collecting_nodes(self, np: Optional[NodePath] = None) -> None:
         self.__render_lines()
-        self.__np_collector = self.map.root.attach_new_node('collection') if np is None else np
+        self.__np_collector = self.overlay.attach_new_node('collection') if np is None else np
 
-    def end_collecting_nodes(self) -> NodePath:
+    def end_collecting_nodes(self, flatten: bool = True) -> NodePath:
         self.__render_lines()
         np = self.__np_collector
         self.__np_collector = None
-        np.flatten_strong() # todo: evaluate performance of this
+        if flatten:
+            np.flatten_strong()
         return np
 
     def __render_lines(self) -> None:
         if not self.__line_segs.is_empty():
             n = self.__line_segs.create()
             if self.__np_collector is None:
-                np = self.map.root.attach_new_node(n)
+                np = self.overlay.attach_new_node(n)
                 self.__draw_nps.append(np)
             else:
                 self.__np_collector.attach_new_node(n)
@@ -262,7 +276,7 @@ class MapView(View):
         np.set_color(*colour)
 
         if self.__np_collector is None:
-            np.reparent_to(self.map.root)
+            np.reparent_to(self.overlay)
             self.__draw_nps.append(np)
         else:
             np.reparent_to(self.__np_collector)
@@ -300,7 +314,7 @@ class MapView(View):
             self.__circles.append((nsteps, radius, BuildGeometry.addCircle(gn, nsteps, radius, colour)))
 
         if self.__np_collector is None:
-            np = self.map.root.attach_new_node(gn)
+            np = self.overlay.attach_new_node(gn)
             self.__draw_nps.append(np)
         else:
             np = self.__np_collector.attach_new_node(gn)
@@ -315,7 +329,7 @@ class MapView(View):
 
         n = TextNode('text')
         n.set_text(text)
-        np = self.map.root.attach_new_node(n)
+        np = self.overlay.attach_new_node(n)
         np.set_scale(scale)
         np.set_color(*colour)
         np.set_pos(*(center + offset))
