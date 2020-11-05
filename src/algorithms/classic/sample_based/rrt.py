@@ -33,8 +33,9 @@ class RRT(SampleBasedAlgorithm):
 
     def _get_random_sample(self) -> Point:
         while True:
-            sample: Point = Point(torch.randint(0, self._get_grid().size.width, (1,)).item(),
-                                  torch.randint(0, self._get_grid().size.height, (1,)).item())
+            rand_pos = [torch.randint(0, self._get_grid().size[i], (1,)).item() for i in range(self._get_grid().size.n_dim)]
+            
+            sample: Point = Point(*tuple(rand_pos))
             if self._get_grid().is_agent_valid_pos(sample):
                 return sample
 
