@@ -78,7 +78,7 @@ class Configuration:
 
 
         # Generator
-        self.generator = True
+        self.generator = False
         self.generator_labelling_atlases = []
         self.generator_nr_of_examples = 10
         self.generator_gen_type = "uniform_random_fill"
