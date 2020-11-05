@@ -54,7 +54,6 @@ class MapView(View):
     def __init__(self, services: Services, model: Model, root_view: Optional[View]) -> None:
         super().__init__(services, model, root_view)
         self.__displays = []
-        self.__persistent_displays = [EntitiesMapDisplay(self._services)]
         self.__tracked_data = []
 
         self.__second_pass_displays = []
@@ -80,7 +79,9 @@ class MapView(View):
         # MAP #
         self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
         self.__center(self.__map.root)
+
         self.__overlay = self.map.root.attach_new_node("overlay")
+        self.__persistent_displays = [EntitiesMapDisplay(self._services)]
 
         self.update_view(True)
 

@@ -213,7 +213,7 @@ class GraphMapDisplay(MapDisplay):
 
     def __render_node(self, current: Vertex) -> None:
         rv = self.get_renderer_view()
-        if self._map.size.n_dim == 3:
+        if self._map.size.n_dim == 2:
             rv.draw_circle_filled(current.position, colour=self.__deduced_node_colour)
         else:
             rv.draw_sphere(current.position, colour=self.__deduced_node_colour)
