@@ -1,4 +1,4 @@
-from typing import Callable, List, Tuple
+from typing import Callable, List, Tuple, Any, Dict
 from algorithms.classic.sample_based.core.vertex import Vertex
 from structures import Point
 from structures.tracked import Tracked
@@ -62,15 +62,20 @@ class Graph(ABC):
 class TrackedGraph(Tracked):
     added: List[Tuple[Vertex, Vertex]]
     removed: List[Tuple[Vertex, Vertex]]
+    edges_removable: bool
+    aux: Dict[Any, Any]
 
     def __init__(self) -> None:
         self.added = []
         self.removed = []
+        self.edges_removable = True
+        self.aux = {}
 
     def _edge_added(self, parent: Vertex, child: Vertex) -> None:
         self.added.append((parent, child))
 
     def _edge_removed(self, parent: Vertex, child: Vertex) -> None:
+        assert self.edges_removable
         self.removed.append((parent, child))
 
     def clear_tracking_data(self) -> None:

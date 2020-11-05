@@ -30,12 +30,9 @@ class SolidColourMapDisplay(MapDisplay):
 
         self.__deduced_colour = self.colour()
 
-    def render(self, refresh: bool) -> bool:
-        if not super().render(refresh):
-            return False
-
+    def render(self, refresh: bool) -> None:
         if self.pts is None:
-            return False
+            return
 
         self._root_view.display_updates_cube()
 
@@ -44,23 +41,22 @@ class SolidColourMapDisplay(MapDisplay):
         self.__deduced_colour = c
 
         if not refresh and isinstance(self.pts, Tracked):
-            return self.__render_lazy()
+            self.__render_lazy()
         else:
-            return self.__render_eager()
+            self.__render_eager()
 
-    def __render_lazy(self) -> bool:
+    def __render_lazy(self) -> None:
         for p in self.pts.modified:
             self._root_view.cube_requires_update(p)
-        return True
 
-    def __render_eager(self) -> bool:
+    def __render_eager(self) -> None:
         if self.__old_pts is not None:
             for p in self.__old_pts:
                 self._root_view.cube_requires_update(p)
 
         self.__old_pts = copy.deepcopy(self.pts)
         if self.__old_pts is None:
-            return False
+            return
 
         for p in self.__old_pts:
             self._root_view.cube_requires_update(p)

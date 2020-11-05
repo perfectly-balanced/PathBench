@@ -27,13 +27,10 @@ class SolidColourMapDisplaypot(MapDisplay):
 
         #assert self._map.size.n_dim == 2, "Unsupported map dimension, expected 2D"
 
-    def render(self) -> bool:
-        if not super().render():
-            return False
-
+    def render(self, refresh: bool) -> None:
         points: Union[Set[Point], List[Entity]] = copy.deepcopy(self.points)
         if points is None:
-            return False
+            return
 
         def f(pt):
             if isinstance(pt, Entity):
@@ -55,4 +52,3 @@ class SolidColourMapDisplaypot(MapDisplay):
                 self._root_view.render_pos(Entity(point[0], self.radius), self.color2)
             elif point[1] < self.small+(self.range*6):
                 self._root_view.render_pos(Entity(point[0], self.radius), self.color1)
-        return True

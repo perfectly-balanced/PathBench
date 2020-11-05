@@ -32,10 +32,7 @@ class EntitiesMapDisplay(MapDisplay):
 
         self.__cube_colours = {}
 
-    def render(self, refresh: bool) -> bool:
-        if not super().render(refresh):
-            return False
-
+    def render(self, refresh: bool) -> None:
         rv = self.get_renderer_view()
 
         for p in self.__cube_colours:
@@ -56,8 +53,6 @@ class EntitiesMapDisplay(MapDisplay):
 
         for p in self.__cube_colours:
             rv.cube_requires_update(p)
-
-        return True
 
     def update_cube(self, p: Point) -> None:
         if p in self.__cube_colours:

@@ -69,12 +69,9 @@ class GradientMapDisplay(MapDisplay):
 
         return clr
 
-    def render(self, refresh: bool) -> bool:
-        if not super().render(refresh):
-            return False
-
+    def render(self, refresh: bool) -> None:
         if self.pts is None:
-            return False
+            return
 
         self.get_renderer_view().display_updates_cube()
 
@@ -90,7 +87,6 @@ class GradientMapDisplay(MapDisplay):
             self.__render_lazy()
         else:
             self.__render_eager()
-        return True
 
     def __render_lazy(self) -> None:
         if self.pts.elems_were_removed:
@@ -112,7 +108,6 @@ class GradientMapDisplay(MapDisplay):
             for p in self.pts.modified:
                 clr = self.get_colour(p[0])
                 self.__cube_colours[rv.cube_requires_update(p[1])] = clr
-        return True
 
     def __render_eager(self) -> None:
         self.min_val: float = np.inf

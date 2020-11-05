@@ -32,10 +32,7 @@ class GraphMapDisplay(MapDisplay):
 
         self.__v_to_np = {}
 
-    def render(self, refresh: bool) -> bool:
-        if not super().render(refresh):
-            return False
-
+    def render(self, refresh: bool) -> None:
         c = self.edge_colour()
         refresh = refresh or c != self.__deduced_edge_colour
         self.__deduced_edge_colour = c
@@ -48,7 +45,6 @@ class GraphMapDisplay(MapDisplay):
             self.__render_lazy(refresh)
         else:
             self.__render_eager()
-        return True
 
     def __render_lazy(self, refresh: bool) -> None:
         # node where edge added is (virtually) never the same node as one where an edge has been removed
@@ -65,13 +61,7 @@ class GraphMapDisplay(MapDisplay):
                 np.remove_node()
             self.__v_to_np.clear()
 
-        if not self.__v_to_np: # occurs at initialisation or refresh
-            for v in self.__graph.root_vertices:
-                rv.start_collecting_nodes()
-                self.__render_child(v)
-                np = rv.end_collecting_nodes()
-                self.__v_to_np[v] = np
-            
+        if not self.__v_to_np: # occurs at initialisation or refresh            
             def render_child(current) -> bool:
                 rv.start_collecting_nodes()
                 self.__render_child(current)
