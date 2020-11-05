@@ -101,7 +101,7 @@ class PotentialField(Algorithm):
 
         for index in np.ndindex(*grid.size):
             ug = self.calc_attractive_potential(index, grid.goal.position)
-            if Point(*index) not in grid.obstacles:
+            if grid.is_agent_valid_pos(Point(*index)):
                 uo = self.calc_repulsive_potential(index, grid.obstacles, rr=(grid.agent.radius))
             else:
                 uo = 0
@@ -141,7 +141,7 @@ class PotentialField(Algorithm):
         return 0.5 * self.KP * np.linalg.norm(np.array(pos) - np.array(goal))
 
 
-    def calc_repulsive_potential(self,pos, obs, rr):
+    def calc_repulsive_potential(self, pos, obs, rr):
         # search nearest obstacle
         minid = -1
         
