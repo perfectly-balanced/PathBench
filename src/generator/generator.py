@@ -222,10 +222,8 @@ class Generator:
         return res
 
     def __generate_random_const_obstacles(self, dimensions: Size, obstacle_fill_rate: float, nr_of_obstacles: int):
-        grid: List[List[int]] = [[0 for _ in range(dimensions.width)] for _ in range(dimensions.height)]
-
-        total_fill = int(obstacle_fill_rate * dimensions.width * dimensions.height) + 1
-
+        grid: np.array = np.zeros(dimensions)
+        total_fill = int(math.prod(dimensions) * obstacle_fill_rate) + 1
         for i in range(nr_of_obstacles):
             next_obst_fill = torch.randint(total_fill, (1,)).item()
 
@@ -240,14 +238,14 @@ class Generator:
                 if first_side == 0:
                     continue
                 second_side = int(next_obst_fill / first_side)
-
-                size = Size(first_side, second_side)
+                third_side = int(next_obst_fill / second_side)
+                # incomplete - testing if it works
+                size = Size(first_side, second_side, third_side)
                 top_left_corner = self.__get_rand_position(dimensions)
-
+                
                 if self.__can_place_square(size, top_left_corner, dimensions):
                     self.__place_square(grid, size, top_left_corner)
                     break
-
             total_fill -= next_obst_fill
 
         """
@@ -263,11 +261,13 @@ class Generator:
         return DenseMap(grid)
 
     def __place_square(self, grid: List[List[int]], size: Size, top_left_corner: Point) -> None:
+        # TODO: MODIFY THIS!!
         for x in range(top_left_corner.x, top_left_corner.x + size.width):
             for y in range(top_left_corner.y, top_left_corner.y + size.height):
                 grid[y][x] = DenseMap.WALL_ID
 
     def __can_place_square(self, size: Size, top_left_corner: Point, dimensions: Size) -> bool:
+        # TODO: MODIFY THIS!!
         return self.__in_bounds(top_left_corner, dimensions) and \
                self.__in_bounds(Point(top_left_corner.x + size.width, top_left_corner.y), dimensions) and \
                self.__in_bounds(Point(top_left_corner.x, top_left_corner.y + size.height), dimensions) and \
