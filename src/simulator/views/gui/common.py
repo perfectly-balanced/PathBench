@@ -26,7 +26,7 @@ class Window():
         if 'frameSize' not in kwargs:
             kwargs['frameSize'] = (-.8, .8, -1., 1.)
 
-        self.__frame = DirectFrame(*args, **kwargs)
+        self.__frame = DirectFrame(*args, parent=self.__base.pixel2d, **kwargs)
         self.__frame['state'] = DGG.NORMAL
         self.__frame.bind(DGG.B1PRESS, command=self.__start_drag)
         self.__frame.bind(DGG.B1RELEASE, command=self.__stop_drag)
@@ -49,6 +49,7 @@ class Window():
     def __start_drag(self, *args):
         pointer = self.__base.win.getPointer(0)
         fx, _, fz = self.__frame.getPos()
+        self.focus()
 
         self.__drag_start = Point2(pointer.getX(), -pointer.getY())
         self.__drag_offset = Point2(fx, fz) - self.__drag_start
@@ -61,3 +62,7 @@ class Window():
     @property
     def frame(self) -> DirectFrame:
         return self.__frame
+
+    def focus(self) -> None:
+        self.__frame.detach_node()
+        self.__frame.reparent_to(self.__base.pixel2d)

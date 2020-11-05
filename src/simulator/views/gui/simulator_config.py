@@ -193,7 +193,7 @@ class SimulatorConfig():
              "animations required)\n\n* p - take screenshot"
 
 
-        self.__window_config = Window(self.__base, "simulator_config", parent=self.__base.pixel2d,
+        self.__window_config = Window(self.__base, "simulator_config",
                                       relief=DGG.RAISED,
                                       borderWidth=(0.0, 0.0),
                                       frameColor=WINDOW_BG_COLOUR,

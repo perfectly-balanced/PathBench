@@ -572,7 +572,7 @@ class ViewEditor():
         self.__base = self.__services.graphics.window
         self.hidden = False
 
-        self.__window = Window(self.__base, "view_editor", parent=self.__base.pixel2d,
+        self.__window = Window(self.__base, "view_editor",
                                relief=DGG.RAISED,
                                borderWidth=(0.0, 0.0),
                                frameColor=WINDOW_BG_COLOUR,
@@ -728,15 +728,16 @@ class ViewEditor():
             self.hidden = True
         else:
             self.__window.frame.show()
+            self.__window.focus()
             self.hidden = False
 
-
     def __colour_picker_callback(self, colour: Colour) -> None:
-        if self.__selected_cv_elem is None:
-            return
-        self.__selected_cv_elem.colour = colour  # calls self.__update_colour()
+        self.__window.focus()
+        if self.__selected_cv_elem is not None:
+            self.__selected_cv_elem.colour = colour  # calls self.__update_colour()
 
     def __select_cv(self, e: ViewElement):
+        self.__window.focus()
         self.__selected_cv_elem = e
         if e is None:
             self.__selected_cv_outline.hide()
