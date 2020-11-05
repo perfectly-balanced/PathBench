@@ -50,7 +50,7 @@ class Generator:
     def generate_map_from_image(self, image_name: str, rand_entities: bool = False, entity_radius: int = None, house_expo_flag: bool = False) -> Map:
         """
         Generate a map from an image
-        Load the image from the default location and save the map in the default location
+        Load the image from the default location and lsave the map in the default location
         :param image_name: The image name
         :return: The map
         """
@@ -146,39 +146,40 @@ class Generator:
         return 0 <= pt.x < dimensions.width and 0 <= pt.y < dimensions.height
 
     def __get_rand_position(self, dimensions: Size, start: Point = Point(0, 0)) -> Point:
-        p_x = torch.randint(start.x, dimensions.width, (1,))
-        p_y = torch.randint(start.y, dimensions.height, (1,))
-        return Point(int(p_x[0]), int(p_y[0]))
+        if dimensions.n_dim == 3:
+            start = Point(0, 0, 0)
+        return Point(*np.random.randint([*start], [*dimensions]))
 
     def __generate_random_map(self, dimensions: Size, obstacle_fill_rate: float = 0.3) -> Map:
-        grid: List[List[int]] = [[0 for _ in range(dimensions.width)] for _ in range(dimensions.height)]
-        fill: float = dimensions.width * dimensions.height * obstacle_fill_rate
+        grid: np.array = np.zeros(dimensions)
+        fill: float = math.prod(dimensions) * obstacle_fill_rate
         nr_of_obstacles = 0
 
         while nr_of_obstacles < fill:
             obst_pos: Point = self.__get_rand_position(dimensions)
 
-            if grid[obst_pos.y][obst_pos.x] == DenseMap.CLEAR_ID:
-                grid[obst_pos.y][obst_pos.x] = DenseMap.WALL_ID
+            if grid[obst_pos.pos] == DenseMap.CLEAR_ID:
+                grid[obst_pos.pos] = DenseMap.WALL_ID
                 nr_of_obstacles += 1
 
         self.__place_random_agent_and_goal(grid, dimensions)
 
         return DenseMap(grid)
 
-    def __place_random_agent_and_goal(self, grid: List[List[int]], dimensions: Size):
+    #TODO: this is a terrible algorithm for random generation, can theoretically run forever....
+    def __place_random_agent_and_goal(self, grid: np.array, dimensions: Size):
         while True:
             agent_pos: Point = self.__get_rand_position(dimensions)
 
-            if grid[agent_pos.y][agent_pos.x] == DenseMap.CLEAR_ID:
-                grid[agent_pos.y][agent_pos.x] = DenseMap.AGENT_ID #Changes the value of pos on grid to 2 for agent id 
+            if grid[agent_pos.pos] == DenseMap.CLEAR_ID:
+                grid[agent_pos.pos] = DenseMap.AGENT_ID #Changes the value of pos on grid to 2 for agent id 
                 break
 
         while True:
             goal_pos: Point = self.__get_rand_position(dimensions)
 
-            if grid[goal_pos.y][goal_pos.x] == DenseMap.CLEAR_ID:
-                grid[goal_pos.y][goal_pos.x] = DenseMap.GOAL_ID #Changes the value of pos on grid to 3 for goal id 
+            if grid[goal_pos.pos] == DenseMap.CLEAR_ID:
+                grid[goal_pos.pos] = DenseMap.GOAL_ID #Changes the value of pos on grid to 3 for goal id 
                 break
 
     def __place_entity_near_corner(self, entity: Type[Entity], corner: int, grid: List[List[int]], dimensions: Size) -> \
@@ -583,7 +584,7 @@ class Generator:
         """.format(nr_of_samples, gen_type, dimensions, fill_range, nr_of_obstacle_range, min_map_range, max_map_range), DebugLevel.BASIC)
 
         atlas_name = "{}_{}".format(gen_type, str(nr_of_samples))
-        atlas: Atlas = self.__services.resources.maps_dir.create_atlas(atlas_name)
+        #atlas: Atlas = self.__services.resources.maps_dir.create_atlas(atlas_name)
         progress_bar: Progress = self.__services.debug.progress_debug(nr_of_samples, DebugLevel.BASIC)
         progress_bar.start()
         maps: List[Map] = []
@@ -610,20 +611,22 @@ class Generator:
                     max_room_size=Size(max_map_size, max_map_size),
                 )
             #print('grid is \n', mp.grid)
-            atlas.append(mp)
+ #           atlas.append(mp)
             maps.append(mp)
             progress_bar.step()
           
             map_as_dict = {
-                "goal" : [mp.goal.position.x,mp.goal.position.y],
-                "agent" : [mp.agent.position.x, mp.agent.position.y],
-                "grid" : mp.grid 
-            }
+                "type": "DenseMap",
+                "version": 1, 
+                "goal": [*mp.goal.position.pos],
+                "agent": [*mp.agent.position.pos],
+                "grid": mp.grid.tolist() 
+            }            
+
             if json_save: 
-                with open('output path here'+ str(_) + '.json', 'w') as outfile:
+                with open(self.__services.resources.maps_dir._full_path() + atlas_name + '/' + str(_) + '.json', 'w') as outfile:
                     json.dump(map_as_dict,outfile)
                     self.__services.debug.write("Dumping JSON: " + str(_) + "\n", DebugLevel.LOW)
-
 
         #print(maps[1].grid)
 
@@ -844,7 +847,7 @@ class Generator:
 
         if not m.main_services.settings.generator_house_expo:
             if m.main_services.settings.generator_size == 8: #Fill rate and nr obstacle range (1,2) is for unifrom random fill (0.1,0.2)
-                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(8, 8),
+                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(8, 8, 8),
                                         m.main_services.settings.generator_gen_type, [0.1, 0.2], [1, 2], [3,4], [5, 7],json_save = True)
 
             if m.main_services.settings.generator_size == 16:

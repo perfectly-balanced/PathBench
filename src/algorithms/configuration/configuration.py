@@ -78,10 +78,10 @@ class Configuration:
 
 
         # Generator
-        self.generator = False
+        self.generator = True
         self.generator_labelling_atlases = []
-        self.generator_nr_of_examples = 0
-        self.generator_gen_type = ""
+        self.generator_nr_of_examples = 10
+        self.generator_gen_type = "uniform_random_fill"
         self.generator_labelling_features = []
         self.generator_labelling_labels = []
         self.generator_single_labelling_features = []
@@ -93,7 +93,7 @@ class Configuration:
         self.generator_modify = None
         self.generator_show_gen_sample = False
         self.generator_house_expo = False
-        self.generator_size = 64
+        self.generator_size = 8
         # Trainer
         self.trainer = False
         self.trainer_model = BasicLSTMModule

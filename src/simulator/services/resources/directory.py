@@ -1,9 +1,12 @@
 from io import StringIO
 import os
 import shutil
+import json
 
 import dill as pickle  # used to pickle lambdas
 from typing import BinaryIO, Callable, Any
+
+from algorithms.configuration.maps.dense_map import DenseMap
 
 from simulator.services.debug import DebugLevel
 from simulator.services.service import Service
@@ -44,7 +47,11 @@ class Directory(Service):
 
     @staticmethod
     def _default_load(dir: 'Directory', name: str) -> Any:
-        return Directory._unpickle(name, dir._full_path())
+        fi = Directory._unpickle(name, dir._full_path())
+        #Assuming this is a .json
+        if fi is None:
+            return Directory._unjson(name, dir._full_path())
+        return fi
 
     def save(self, name: str, obj: Any, save_function: Callable[['Directory', str, Any], None] = None) -> None:
         if not save_function:
@@ -78,10 +85,21 @@ class Directory(Service):
         file_name = Directory._add_extension(file_name, "pickle")
         if not os.path.isfile(directory + file_name):
             return None
-        handle: BinaryIO
 
-        with open(directory + file_name, 'rb') as handle:
-            return smart_load(handle)
+        return smart_load(directory + file_name)
+
+    @staticmethod
+    def _unjson(file_name: str, directory: str) -> Any:
+        file_name = Directory._add_extension(file_name, "json")
+        if not os.path.isfile(directory + file_name):
+            return None
+
+        dic = json.load(open(directory + file_name))
+
+        if dic['type'] == "DenseMap" and dic['version'] <= 1:
+            return DenseMap(dic['grid'])
+
+        return None
 
     @staticmethod
     def _add_extension(file_name: str, extension: str) -> str:
