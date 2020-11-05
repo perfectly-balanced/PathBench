@@ -48,11 +48,11 @@ def recursive_replace_loaded_objects(obj, depth=3):
                 pass
     return obj
 
-def load(fp):
+def load(fname):
     old_classes = tuple([eval(i) for i in names])
     exec(", ".join(i for i in names) + " = " + ", ".join(i.split(".")[-1] for i in names))
 
-    loaded_obj = dill.load(fp, ignore=True)
+    loaded_obj = dill.load(open(fname, "rb"), ignore=True)
 
     exec(", ".join(i for i in names) + " = old_classes")
 
