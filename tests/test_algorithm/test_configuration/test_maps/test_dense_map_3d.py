@@ -167,8 +167,6 @@ class TestDenseMap3D(unittest.TestCase):
 
     def test_convert_to_sparse_map(self) -> None:
         map1: DenseMap = Maps.grid_map_3d_example_4_4_4
-        #TODO: check why this doesn't work for 3d sparse maps that have been converted to dense maps
-        #map1: DenseMap = Maps.large_map_one_obstacle_3d.convert_to_dense_map()
         map2: SparseMap = map1.convert_to_sparse_map()
         self.assertEqual(map1, map2)
     
