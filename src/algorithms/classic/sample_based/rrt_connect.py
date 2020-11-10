@@ -1,6 +1,7 @@
 from typing import List
 
 import torch
+import numpy as np
 
 from memory_profiler import profile
 
@@ -75,8 +76,8 @@ class RRT_Connect(SampleBasedAlgorithm):
 
     def _get_random_sample(self) -> Point:
         while True:
-            rand_pos = [torch.randint(0, self._get_grid().size[i], (1,)).item() for i in range(self._get_grid().size.n_dim)]
-            sample: Point = Point(*tuple(rand_pos))
+            rand_pos = np.random.randint(0, self._get_grid().size, self._get_grid().size.n_dim)
+            sample: Point = Point(*rand_pos)
             if self._get_grid().is_agent_valid_pos(sample):
                 return sample
 
