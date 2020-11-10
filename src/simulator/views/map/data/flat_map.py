@@ -3,6 +3,7 @@ from panda3d.core import NodePath, TransparencyAttrib, LVecBase4f, Texture, PTA_
 from simulator.services.services import Services
 from simulator.views.map.data.map_data import MapData
 from simulator.views.map.object.square_mesh import SquareMesh
+from simulator.views.util import blend_colours
 from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 
 import random
@@ -79,20 +80,11 @@ class FlatMap(MapData):
         for y in range(py * self.square_size, (py + 1) * self.square_size):            
             img.set_subdata((y * self.texture_w + x_offset) * 4, line_size, line_str)
 
-    def blend(self, src: Colour, dst: Colour):
-        wda = dst.a * (1 - src.a)  # weighted dst alpha
-        a = src.a + wda
-        d = (a if a != 0 else 1)
-        r = (src.r * src.a + dst.r * wda) / d
-        g = (src.g * src.a + dst.g * wda) / d
-        b = (src.b * src.a + dst.b * wda) / d
-        return Colour(r, g, b, a)
-
     def render_square_with_wf(self, p: Point, c: Colour, wfc: Colour) -> None:
         def conv(f): return int(round(f * 255))
 
-        wfc = self.blend(wfc, c)
-        px, py = int(p[0]), int(p[1]) # int(self.texture_w // self.square_size - p[0] - 1), int(self.texture_h // self.square_size - p[1] - 1)
+        wfc = blend_colours(wfc, c)
+        px, py = int(p[0]), int(p[1])
         r, g, b, a = conv(c.r), conv(c.g), conv(c.b), conv(c.a)
         wfr, wfg, wfb, wfa = conv(wfc.r), conv(wfc.g), conv(wfc.b), conv(wfc.a)
 

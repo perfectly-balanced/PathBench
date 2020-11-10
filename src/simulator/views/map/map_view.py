@@ -18,21 +18,20 @@ from simulator.services.event_manager.events.key_frame_event import KeyFrameEven
 from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
 from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
 from simulator.services.event_manager.events.take_screenshot_tex_event import TakeScreenshotTexEvent
-from panda3d.core import PandaNode
-
+from simulator.services.graphics.renderer import Renderer
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
 from simulator.views.map.display.numbers_map_display import NumbersMapDisplay
 from simulator.views.map.display.online_lstm_map_display import OnlineLSTMMapDisplay
 from simulator.views.view import View
+from simulator.views.util import blend_colours
 from structures import Point, Colour, TRANSPARENT, WHITE
 
 from simulator.views.map.data.map_data import MapData
 from simulator.views.map.data.voxel_map import VoxelMap
 from simulator.views.map.data.flat_map import FlatMap
 
-from panda3d.core import NodePath, GeomNode, Geom, LineSegs, TextNode
-from direct.showutil import BuildGeometry
+from panda3d.core import NodePath, GeomNode, Geom, LineSegs, TextNode, PandaNode
 
 import math
 import numpy as np
@@ -45,32 +44,23 @@ class MapView(View):
     __persistent_displays: List[Any]
     __tracked_data: List[Any]
 
-    __second_pass_displays: List[Any]
+    __cube_update_displays: List[Any]
     __cubes_requiring_update: Set[Point]
     __display_updates_cube: bool
     __cube_colour: Colour
 
+    __scratch: NodePath
     __overlay: NodePath
-    __np_collector: Optional[NodePath]
-    __draw_nps: List[NodePath]
-    __circles: List[Tuple[int, float, Geom]]
-    __line_segs: LineSegs    
 
     def __init__(self, services: Services, model: Model, root_view: Optional[View]) -> None:
         super().__init__(services, model, root_view)
         self.__displays = []
         self.__tracked_data = []
 
-        self.__second_pass_displays = []
+        self.__cube_update_displays = []
         self.__cubes_requiring_update = set()
         self.__display_updates_cube = False
         self.__cube_colour = None
-
-        self.__np_collector = None
-        self.__draw_nps = []
-        self.__circles = []
-        self.__line_segs = LineSegs()
-        self.__line_segs.set_thickness(2)
 
         # world (dummy node)
         self.__world = self._services.graphics.window.render.attach_new_node("world")
@@ -89,6 +79,9 @@ class MapView(View):
         self.__center(self.__map.root)
 
         self.__overlay = self.map.root.attach_new_node("overlay")
+        self.__scratch = self.world.attach_new_node("scratch")
+        self.renderer.push_root(self.__scratch)
+
         self.__persistent_displays = [EntitiesMapDisplay(self._services)]
 
         self.__deduced_traversables_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
@@ -101,10 +94,6 @@ class MapView(View):
         self.__world.remove_node()
         self.__displays = []
         self.__persistent_displays = []
-        self.__draw_nps = []
-        for _, _, geo in self.__circles:
-            geo.releaseAll()
-        self.__circles = []
         self._services.ev_manager.unregister_listener(self)
         self._services.ev_manager.unregister_tick_listener(self)
         if self._root_view is not None:
@@ -137,7 +126,8 @@ class MapView(View):
 
     def __center(self, np: NodePath):
         (x1, y1, z1), (x2, y2, z2) = np.get_tight_bounds()
-        np.set_pos(self.world.getX() - (x2 - x1) / 2, self.world.getY() - (y2 - y1) / 2,
+        np.set_pos(self.world.getX() - (x2 - x1) / 2,
+                   self.world.getY() - (y2 - y1) / 2,
                    self.world.getZ() - (z2 - z1) / 2)
 
     @property
@@ -160,24 +150,28 @@ class MapView(View):
     def overlay(self) -> NodePath:
         return self.__overlay
 
-    def __get_displays(self) -> None:
-        # drop map displays if not compatible with display format
-        displays: List[MapDisplay] = list(
-            filter(lambda d: self._services.settings.simulator_grid_display or not isinstance(d, NumbersMapDisplay),
-                   self._services.algorithm.instance.get_display_info()))
-        displays += self.__persistent_displays
+    @property
+    def renderer(self) -> Renderer:
+        return self._services.graphics.renderer
 
-        for display in displays:
-            display._model = self._model
-            self.add_child(display)
-            heappush(self.__displays, display)
-            self.__tracked_data += display.get_tracked_data()
+    def __clear_scratch(self) -> None:
+        assert self.renderer.root == self.__scratch
+        for c in self.__scratch.get_children():
+            c.remove_node()
+
+    def __get_displays(self) -> None:
+        def add_diplay(d):
+            d._model = self._model
+            self.add_child(d)
+            heappush(self.__displays, d)
+            self.__tracked_data += d.get_tracked_data()
+
+        for d in self.__persistent_displays:
+            add_diplay(d)
+        for d in self._services.algorithm.instance.get_display_info():
+            add_diplay(d)
 
     def __render_displays(self, refresh: bool) -> None:
-        for np in self.__draw_nps:
-            np.remove_node()
-        self.__draw_nps.clear()
-        
         while len(self.__displays) > 0:
             display: MapDisplay
             display = heappop(self.__displays)
@@ -185,9 +179,7 @@ class MapView(View):
             display.render(refresh)
             if self.__display_updates_cube:
                 self.__display_updates_cube = False
-                self.__second_pass_displays.append(display)
-            
-            self.__render_lines()
+                self.__cube_update_displays.append(display)
 
     def __update_cubes(self, refresh: bool) -> None:
         clr = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
@@ -197,22 +189,23 @@ class MapView(View):
         travs_data = self.map.traversables_data
 
         if self.map.dim == 3:
-            set_colour = lambda p, c: self.map.traversables_mesh.set_cube_colour(p, c)
-        else: # 2D
+            def set_colour(p, c): return self.map.traversables_mesh.set_cube_colour(p, c)
+        else:
+            # 2D #
+            # wireframe colour
             wfc = self.map.traversables_wf_dc()
             wfc = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
             refresh = refresh or wfc != self.__deduced_traversables_wf_colour
             self.__deduced_traversables_wf_colour = wfc
-            
-            set_colour = lambda p, c: self.map.render_square_with_wf(p, c, wfc)
-            
-        
+
+            def set_colour(p, c): return self.map.render_square_with_wf(p, c, wfc)
+
         def update_cube_colour(p):
             self.__cube_colour = clr
-            for d in self.__second_pass_displays:
+            for d in self.__cube_update_displays:
                 d.update_cube(p)
             set_colour(p, self.__cube_colour)
-        
+
         if refresh:
             for x, y, z in np.ndindex(travs_data.shape):
                 if travs_data[x, y, z]:
@@ -220,21 +213,23 @@ class MapView(View):
         else:
             for p in self.__cubes_requiring_update:
                 update_cube_colour(p)
-        
-        self.__second_pass_displays.clear()
+
+        self.__cube_update_displays.clear()
         self.__cubes_requiring_update.clear()
 
         for td in self.__tracked_data:
             td.clear_tracking_data()
-        
+
         self.__tracked_data.clear()
         self.__displays.clear()
 
     def update_view(self, refresh: bool) -> None:
         self._services.lock.acquire()
+        self.__clear_scratch()
         self.__get_displays()
         self.__render_displays(refresh)
         self.__update_cubes(refresh)
+        self.renderer.render()
         self._services.lock.release()
 
     def display_updates_cube(self) -> None:
@@ -246,16 +241,7 @@ class MapView(View):
         return p
 
     def colour_cube(self, src: Colour) -> None:
-        dst = self.__cube_colour
-
-        wda = dst.a * (1 - src.a)  # weighted dst alpha
-        a = src.a + wda
-        d = (a if a != 0 else 1)
-        r = (src.r * src.a + dst.r * wda) / d
-        g = (src.g * src.a + dst.g * wda) / d
-        b = (src.b * src.a + dst.b * wda) / d
-
-        self.__cube_colour = Colour(r, g, b, a)
+        self.__cube_colour = blend_colours(src, self.__cube_colour)
 
     def take_screenshot(self) -> None:
         self._services.resources.screenshots_dir.append(
@@ -297,86 +283,32 @@ class MapView(View):
             z = 0
         return Point(x, y, z)
 
-    def start_collecting_nodes(self, np: Optional[NodePath] = None) -> None:
-        self.__render_lines()
-        self.__np_collector = self.overlay.attach_new_node('collection') if np is None else np
-
-    def end_collecting_nodes(self, flatten: bool = True) -> NodePath:
-        self.__render_lines()
-        np = self.__np_collector
-        self.__np_collector = None
-        if flatten:
-            np.flatten_strong()
+    def push_root(self, np: Optional[NodePath] = None) -> NodePath:
+        if np is None:
+            np = self.overlay.attach_new_node('collection')
+        self.renderer.push_root(np)
         return np
 
-    def __render_lines(self) -> None:
-        if not self.__line_segs.is_empty():
-            n = self.__line_segs.create()
-            if self.__np_collector is None:
-                np = self.overlay.attach_new_node(n)
-                self.__draw_nps.append(np)
-            else:
-                self.__np_collector.attach_new_node(n)
+    def pop_root(self) -> NodePath:
+        return self.renderer.pop_root()
 
     def draw_line(self, colour: Colour, p1: Point, p2: Point) -> None:
-        ls = self.__line_segs
-        ls.set_color(*colour)
+        self.renderer.draw_line(colour, self.cube_center(p1), self.cube_center(p2))
 
-        ls.move_to(*self.cube_center(p1))
-        ls.draw_to(*self.cube_center(p2))
+    def draw_sphere(self, p: Point, *args, **kwargs) -> None:
+        self.renderer.draw_sphere(self.cube_center(p), *args, **kwargs)
 
-    def draw_sphere(self, p: Point, colour: Colour = WHITE, scale: float = 0.2) -> None:
-        np = loader.load_model("models/misc/sphere.egg")
-        np.set_color(*colour)
-
-        if self.__np_collector is None:
-            np.reparent_to(self.overlay)
-            self.__draw_nps.append(np)
-        else:
-            np.reparent_to(self.__np_collector)
-
-        np.set_pos(*self.cube_center(p))
-        np.set_scale(scale)
-
-    def make_arc(self, p: Point, angle_degs=360, nsteps=16, radius: float = 0.06, colour: Colour = WHITE) -> None:
-        ls = self.__line_segs
-        ls.set_color(*colour)
-
-        angle_rads = angle_degs * (math.pi / 180.0)
-        x, y, z = self.cube_center(p)
-
-        ls.move_to(x + radius, y, z)
-        for i in range(nsteps + 1):
-            a = angle_rads * i / nsteps
-            ty = math.sin(a) * radius + y
-            tx = math.cos(a) * radius + x
-            ls.draw_to(tx, ty, z)
+    def make_arc(self, p: Point, *args, **kwargs) -> None:
+        self.renderer.make_arc(self.cube_center(p), *args, **kwargs)
 
     def draw_circle(self, p: Point, *args, **kwargs) -> None:
         self.make_arc(p, 360, *args, **kwargs)
 
-    def draw_circle_filled(self, p: Point, nsteps=16, radius: float = 0.06, colour: Colour = WHITE) -> None:
-        gn = GeomNode("circle")
-
-        exists: bool = False
-        for cn, cr, cg in self.__circles:
-            if cn == nsteps and cr == radius:
-                exists = True
-                gn.add_geom(cg)
-                break
-        if not exists:
-            self.__circles.append((nsteps, radius, BuildGeometry.addCircle(gn, nsteps, radius, colour)))
-
-        if self.__np_collector is None:
-            np = self.overlay.attach_new_node(gn)
-            self.__draw_nps.append(np)
-        else:
-            np = self.__np_collector.attach_new_node(gn)
-        
-        np.set_pos(*self.cube_center(p))
-        np.set_color(*colour)
+    def draw_circle_filled(self, p: Point, *args, **kwars) -> None:
+        self.renderer.draw_circle_filled(self.cube_center(p), *args, **kwars)
 
     def render_text(self, p: Point, text: str, colour: Colour = WHITE, scale: float = 0.4) -> None:
+        """ TODO: reintergrate into reworked code """
         center = self.cube_center(p)
 
         offset, hpr = Point(-0.25, 0, 0), (0, -90, 0)
@@ -388,5 +320,3 @@ class MapView(View):
         np.set_color(*colour)
         np.set_pos(*(center + offset))
         np.set_hpr(*hpr)
-
-        self.__draw_nps.append(np)

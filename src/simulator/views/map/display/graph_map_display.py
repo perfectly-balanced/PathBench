@@ -69,7 +69,7 @@ class GraphMapDisplay(MapDisplay):
 
         if self.__graph_with_irremovable_edges_np is None:
             self.__graph_with_irremovable_edges_np = rv.overlay.attach_new_node('graph with irremovable edges')
-        rv.start_collecting_nodes(self.__graph_with_irremovable_edges_np)
+        rv.push_root(self.__graph_with_irremovable_edges_np)
 
         if self.__first_frame: # occurs at initialisation or refresh            
             def render_child(current) -> bool:
@@ -79,7 +79,7 @@ class GraphMapDisplay(MapDisplay):
             
             self.__graph.walk_dfs(lambda child: render_child(child))
             self.__first_frame = False
-            rv.end_collecting_nodes()
+            rv.pop_root().flatten_strong()
             return
 
         for p, c in self.__graph.added:
@@ -89,7 +89,7 @@ class GraphMapDisplay(MapDisplay):
                 self.__render_child(c)
                 c.aux[self] = None
         
-        rv.end_collecting_nodes(flatten=False)
+        rv.pop_root()
 
     def __render_lazy_edges_removable(self, refresh: bool) -> None:
         # node where edge added is sometimes the same node as one where an edge has been removed
@@ -114,10 +114,9 @@ class GraphMapDisplay(MapDisplay):
 
         if self.__first_frame: # occurs at initialisation or refresh            
             def render_child(current) -> bool:
-                rv.start_collecting_nodes()
+                rv.push_root()
                 self.__render_child(current)
-                np = rv.end_collecting_nodes()
-                current.aux[self] = np
+                current.aux[self] = rv.pop_root().flatten_strong()
                 return True
             
             self.__graph.walk_dfs(lambda child: render_child(child))
@@ -149,15 +148,13 @@ class GraphMapDisplay(MapDisplay):
                             printed.append(c1)
                 """
 
-                np = c.aux[self]
-                rv.start_collecting_nodes(np)
+                rv.push_root(c.aux[self])
                 rv.draw_line(self.__deduced_edge_colour, p.position, c.position)
-                rv.end_collecting_nodes()
+                rv.pop_root().flatten_strong()
             else:
-                rv.start_collecting_nodes()
+                c.aux[self] = rv.push_root()
                 self.__render_child(c)
-                np = rv.end_collecting_nodes()
-                c.aux[self] = np
+                rv.pop_root().flatten_strong()
         
         # this rendering stage must be done last to
         # ensure that adding edges that were subsequently
@@ -192,10 +189,9 @@ class GraphMapDisplay(MapDisplay):
                     check_no_show(c)
                 continue
 
-            rv.start_collecting_nodes()
+            v.aux[self] = rv.push_root()
             self.__render_child(v)
-            np = rv.end_collecting_nodes()
-            v.aux[self] = np
+            rv.pop_root().flatten_strong()
 
     def __render_eager(self) -> None:
         self.__graph.walk_dfs(lambda child: self.__render_child(child))
