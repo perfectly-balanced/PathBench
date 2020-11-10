@@ -30,6 +30,8 @@ class MapController(Controller, DirectObject):
         self.__camera = CameraController(self._services, self._model, origin=map_view.world)
 
         def left_click():
+            if self.__picker is None:
+                return
             p = self.__picker.pos
             if p != None:
                 self._services.debug.write("Moved agent to: " + str(p), DebugLevel.MEDIUM)
@@ -40,6 +42,8 @@ class MapController(Controller, DirectObject):
                 self._services.lock.release()
 
         def right_click():
+            if self.__picker is None:
+                return
             p = self.__picker.pos
             if p != None:
                 self._services.debug.write("Moved goal to: " + str(p), DebugLevel.MEDIUM)

@@ -49,6 +49,10 @@ class FlatMap(MapData):
 
         self.render_obstacles()
 
+    @property
+    def dim(self) -> int:
+        return 2
+
     def render_square(self, p: Point, c: Colour, wfc: Colour) -> None:
         tex_raw: PTA_uchar = self.texture.modifyRamImage()
         w = self.obstacles_data.shape[0] * self.square_size

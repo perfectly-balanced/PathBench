@@ -43,6 +43,10 @@ class VoxelMap(MapData):
         self._add_colour(MapData.TRACE)
         self._add_colour(MapData.GOAL)
 
+    @property
+    def dim(self) -> int:
+        return 3
+
     def __traversables_colour_callback(self, dc: DynamicColour) -> None:
         self.traversables_mesh.default_colour = dc()
 

@@ -7,11 +7,12 @@ from simulator.services.event_manager.events.colour_update_event import ColourUp
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
 
 from typing import Optional, Callable, Dict, Final, Any
+from abc import ABC, abstractmethod
 
 import numpy as np
 from nptyping import NDArray
 
-class MapData:
+class MapData(ABC):
     _services: Services
     __name: Final[str]
     __root: Final[NodePath]
@@ -19,7 +20,6 @@ class MapData:
 
     obstacles_data: Final[NDArray[(Any, Any, Any), bool]]
     traversables_data: Final[NDArray[(Any, Any, Any), bool]]
-    dim: Final[int]
 
     # REQUIRED COLOURS / COMPONENTS #
     BG: Final[str] = "background"
@@ -49,7 +49,6 @@ class MapData:
 
         self.obstacles_data = data
         self.traversables_data = np.invert(self.obstacles_data)
-        self.dim = 2 + (0 if self.obstacles_data.shape[2] == 1 else 1)
 
         self._services.ev_manager.register_listener(self)
 
@@ -62,6 +61,11 @@ class MapData:
         if isinstance(event, ColourUpdateEvent):
             if event.colour.name in self.__colour_callbacks:
                 self.__colour_callbacks[event.colour.name](event.colour)
+
+    @property
+    @abstractmethod
+    def dim(self) -> int:
+        ...
 
     @property
     def root(self) -> str:
