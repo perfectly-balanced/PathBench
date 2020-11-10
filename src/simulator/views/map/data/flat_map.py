@@ -9,7 +9,7 @@ from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 import array
 import random
 import math
-from typing import Any, Final, Tuple, Dict
+from typing import Any, Final, Tuple, Dict, Optional
 
 import numpy as np
 from nptyping import NDArray
@@ -35,13 +35,40 @@ class FlatMap(MapData):
 
     __lines: Dict[Tuple[Colour, Colour], Tuple[bytes, bytes, bytes]]
 
-    def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "flat_map", square_size: int = 8, wf_thickness: float = 0.2):
+    def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "flat_map", square_size: Optional[int] = None, wf_thickness: Optional[float] = None):
         super().__init__(services, data, parent, name)
 
         self.__lines = {}
 
+        self.logical_w = int(self.obstacles_data.shape[0])
+        self.logical_h = int(self.obstacles_data.shape[1])
+
+        if square_size is None:
+            # basic heuristic for decreasing square
+            # resolution as map increases size.
+            square_size = 32
+            while (self.logical_w * square_size) > 4400:
+                square_size //= 2
+                if square_size == 4:
+                    break
+            while (self.logical_h * square_size) > 4400:
+                square_size //= 2
+                if square_size == 4:
+                    break
+                
+        self.square_size = square_size
+        self.texture_w = int(self.logical_w * square_size)
+        self.texture_h = int(self.logical_h * square_size)
+
+        if wf_thickness is None:
+            # basic heuristic for decreasing wireframe
+            # thickness as square size decreases.
+            wf_thickness = 4
+            while (square_size / wf_thickness) < 16:
+                wf_thickness /= 2
+
         self.wf_thickness = wf_thickness
-        self.wf_line_cnt = int(max(1, math.ceil(wf_thickness + 1) // 2))
+        self.wf_line_cnt = int(max(1, math.ceil(self.wf_thickness + 1) // 2))
 
         self.traversables_dc = self._add_colour(MapData.TRAVERSABLES)
         self.traversables_wf_dc = self._add_colour(MapData.TRAVERSABLES_WF)
@@ -52,15 +79,9 @@ class FlatMap(MapData):
         self._add_colour(MapData.TRACE)
         self._add_colour(MapData.GOAL)
 
-        self.logical_w = int(self.obstacles_data.shape[0])
-        self.logical_h = int(self.obstacles_data.shape[1])
-        self.texture_w = int(self.logical_w * square_size)
-        self.texture_h = int(self.logical_h * square_size)
-
         self.square_mesh = SquareMesh(self.obstacles_data.shape[0], self.obstacles_data.shape[1])
         self.square = self.root.attach_new_node(self.square_mesh.geom_node)
 
-        self.square_size = square_size
         self.texture = Texture(self.name + "_texture")
         self.texture.setup_2d_texture(self.texture_w, self.texture_h, Texture.T_unsigned_byte, Texture.F_rgba8)
         self.square.set_texture(self.texture)
