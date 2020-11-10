@@ -93,19 +93,6 @@ class MapView(View):
         self.__map2d = self.__world.attach_new_node(SquareMesh().geom_node)
         self.__map2d.set_pos((10, 10, 10))
         tex = Texture('2dmap_texture')
-        """
-        tex_data = PNMImage(256, 256)
-        tex_data.addAlpha()
-        tex_data.fill(255,255,255)
-        for x in range(256):
-            for y in range(16):
-                tex_data.set_xel_val(x, y, (255, 0, 0))
-                tex_data.set_alpha_val(x, y, 100)
-        tex.load(tex_data)
-        self.__map2d.setTexture(tex)
-        tex_raw_data: PTA_uchar = tex.modifyRamImage()
-        print(*tex_raw_data)
-        """
         w, h = 16, 16
         tex.setup_2d_texture(w, h, Texture.T_unsigned_byte, Texture.F_rgba8)
         self.__map2d.setTexture(tex)
@@ -113,17 +100,15 @@ class MapView(View):
         tex.set_wrap_u(Texture.WM_clamp)
         tex.set_wrap_v(Texture.WM_clamp)
         tex_img = tex.modifyRamImage()
-        # tex_buf = array.array('B')
-        # tex_buf.fromstring(tex_img.get_data())
-        # print(len(tex_buf), len(tex_img))
         for y in range(2):
             for x in range(w):
                 i = (x + y*w) * 4
-                tex_img[i + 0] = 255  # B
-                tex_img[i + 1] = 0    # G
-                tex_img[i + 2] = 255  # R
-                tex_img[i + 3] = 200  # A
-        # tex_img.set_data(tex_buf.tostring())
+                conv = lambda f: round(f * 255)
+                c = Colour(0.5, 0.2, 0.5, 1)
+                tex_img[i + 0] = conv(c.b)  # B 
+                tex_img[i + 1] = conv(c.g)  # G
+                tex_img[i + 2] = conv(c.r)  # R
+                tex_img[i + 3] = conv(c.a)  # A
 
         self.update_view(True)
 
