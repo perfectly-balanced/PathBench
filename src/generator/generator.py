@@ -143,7 +143,8 @@ class Generator:
         return res_map
 
     def __in_bounds(self, pt: Point, dimensions: Size) -> bool:
-        return 0 <= pt.x < dimensions.width and 0 <= pt.y < dimensions.height
+        z = 0 <= pt.z < dimensions.depth if dimensions.n_dim == 3 else True
+        return 0 <= pt.x < dimensions.width and 0 <= pt.y < dimensions.height and z
 
     def __get_rand_position(self, dimensions: Size, start: Point = Point(0, 0)) -> Point:
         if dimensions.n_dim == 3:
@@ -223,29 +224,34 @@ class Generator:
 
     def __generate_random_const_obstacles(self, dimensions: Size, obstacle_fill_rate: float, nr_of_obstacles: int):
         grid: np.array = np.zeros(dimensions)
-        total_fill = int(math.prod(dimensions) * obstacle_fill_rate) + 1
+        total_fill = int(math.prod(dimensions) * obstacle_fill_rate)
+        print(math.prod(dimensions))
         for i in range(nr_of_obstacles):
-            next_obst_fill = torch.randint(total_fill, (1,)).item()
+            next_obst_fill = np.random.randint(total_fill)
 
             if i == nr_of_obstacles - 1:
-                next_obst_fill = total_fill
+                next_obst_fill = total_fill 
 
             if next_obst_fill == 0:
                 break
 
             while True:
-                first_side = int(torch.randint(int(math.sqrt(next_obst_fill)) + 1, (1,)).item())
-                if first_side == 0:
-                    continue
-                second_side = int(next_obst_fill / first_side)
-                third_side = int(next_obst_fill / second_side)
-                # incomplete - testing if it works
-                size = Size(first_side, second_side, third_side)
+                if(dimensions.n_dim == 3):
+                    first_side = np.random.randint(round(next_obst_fill ** (1. /3))) + 1
+                    second_side = np.random.randint(round(next_obst_fill ** (1. /3))) + 1
+                    third_side = np.random.randint(round(next_obst_fill ** (1. /3))) + 1
+                    size = Size(first_side, second_side, third_side)
+                else:
+                    first_side = np.random.randint(round(next_obst_fill ** (1. /2))) + 1
+                    second_side = max(int(next_obst_fill / first_side), 1)
+                    size = Size(first_side, second_side)
+
                 top_left_corner = self.__get_rand_position(dimensions)
                 
                 if self.__can_place_square(size, top_left_corner, dimensions):
                     self.__place_square(grid, size, top_left_corner)
                     break
+                
             total_fill -= next_obst_fill
 
         """
@@ -260,18 +266,19 @@ class Generator:
         self.__place_random_agent_and_goal(grid, dimensions)
         return DenseMap(grid)
 
-    def __place_square(self, grid: List[List[int]], size: Size, top_left_corner: Point) -> None:
-        # TODO: MODIFY THIS!!
-        for x in range(top_left_corner.x, top_left_corner.x + size.width):
-            for y in range(top_left_corner.y, top_left_corner.y + size.height):
-                grid[y][x] = DenseMap.WALL_ID
+    def __place_square(self, grid: np.array, size: Size, top_left_corner: Point) -> None:
+        for index in np.ndindex(*size.size.pos):
+            p = tuple(np.add(index, top_left_corner.pos))
+            grid[p] = DenseMap.WALL_ID
 
     def __can_place_square(self, size: Size, top_left_corner: Point, dimensions: Size) -> bool:
-        # TODO: MODIFY THIS!!
-        return self.__in_bounds(top_left_corner, dimensions) and \
-               self.__in_bounds(Point(top_left_corner.x + size.width, top_left_corner.y), dimensions) and \
-               self.__in_bounds(Point(top_left_corner.x, top_left_corner.y + size.height), dimensions) and \
-               self.__in_bounds(Point(top_left_corner.x + size.width, top_left_corner.y + size.height), dimensions)
+        for index in np.ndindex(*([2]*size.n_dim)):
+            d_add = [x * y for (x, y) in zip([*index], [*size.size.pos])]
+            p = Point(*np.add(top_left_corner, d_add))
+            if not self.__in_bounds(p, dimensions):
+                return False
+
+        return True
 
     """
     def __place_room(self, grid: List[List[int]], size: Size, top_left_corner: Point) -> None:
@@ -591,14 +598,14 @@ class Generator:
 
         for _ in range(nr_of_samples):
 
-            fill_rate = fill_range[0] + torch.rand((1,)) * (fill_range[1] - fill_range[0])
+            fill_rate = fill_range[0] + np.random.rand() * (fill_range[1] - fill_range[0])
             if gen_type == "uniform_random_fill": #random fill
                 mp: Map = self.__generate_random_map(dimensions, fill_rate)
             elif gen_type == "block_map": #block
                 mp: Map = self.__generate_random_const_obstacles(
                     dimensions,
                     fill_rate,
-                    int(torch.randint(nr_of_obstacle_range[0], nr_of_obstacle_range[1], (1,)).item())
+                    np.random.randint(nr_of_obstacle_range[0], nr_of_obstacle_range[1])
                 )
             else: #house map
                 min_map_size = int(torch.randint(min_map_range[0], min_map_range[1], (1,)).item())
@@ -640,7 +647,9 @@ class Generator:
 
         self.__services.debug.write("""Starting Labelling: [
             atlases: {},
-            feature_list: {},
+            feature_list: {},works differently for negative numbers in Python 2 and 3. The following code, however, handles that:
+
+
             label_list: {},
             single_feature_list: {},
             single_label_list: {}
@@ -850,11 +859,11 @@ class Generator:
                 maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(8, 8, 8),
                                         m.main_services.settings.generator_gen_type, [0.1, 0.2], [1, 2], [3,4], [5, 7],json_save = True)
 
-            if m.main_services.settings.generator_size == 16:
-                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(16, 16),
-                                        m.main_services.settings.generator_gen_type, [0.1, 0.2], [1, 4], [4,6], [8, 11],json_save = True)
+            elif m.main_services.settings.generator_size == 16:
+                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(16, 16, 16),
+                                        m.main_services.settings.generator_gen_type, [0.3, 0.5], [2, 4], [4,6], [8, 11],json_save = True)
 
-            if m.main_services.settings.generator_size == 28:
+            elif m.main_services.settings.generator_size == 28:
                 maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(28, 28),
                                         m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 4], [6,10], [14, 22],json_save = True)
 
