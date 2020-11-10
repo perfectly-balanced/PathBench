@@ -28,6 +28,7 @@ from simulator.views.view import View
 from structures import Point, Colour, TRANSPARENT, WHITE
 
 from simulator.views.map.data.voxel_map import VoxelMap
+from simulator.views.map.data.flat_map import FlatMap
 from simulator.views.map.object.cube_mesh import Face
 
 from panda3d.core import NodePath, GeomNode, Geom, LineSegs, TextNode
@@ -83,32 +84,12 @@ class MapView(View):
         # MAP #
         self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
         self.__center(self.__map.root)
+        self.__map2d = FlatMap(self._services, map_data, self.world)
+        self.__map2d.root.set_pos(10, 10, 50)
+        self.__map2d.root.set_scale(20)
 
         self.__overlay = self.map.root.attach_new_node("overlay")
         self.__persistent_displays = [EntitiesMapDisplay(self._services)]
-
-        from simulator.views.map.object.square_mesh import SquareMesh
-        from panda3d.core import Texture, PTA_uchar, LVecBase4f, PNMImage
-        import struct, array
-        self.__map2d = self.__world.attach_new_node(SquareMesh().geom_node)
-        self.__map2d.set_pos((10, 10, 10))
-        tex = Texture('2dmap_texture')
-        w, h = 16, 16
-        tex.setup_2d_texture(w, h, Texture.T_unsigned_byte, Texture.F_rgba8)
-        self.__map2d.setTexture(tex)
-        tex.set_clear_color(LVecBase4f(1,1,1,1))
-        tex.set_wrap_u(Texture.WM_clamp)
-        tex.set_wrap_v(Texture.WM_clamp)
-        tex_img = tex.modifyRamImage()
-        for y in range(2):
-            for x in range(w):
-                i = (x + y*w) * 4
-                conv = lambda f: round(f * 255)
-                c = Colour(0.5, 0.2, 0.5, 1)
-                tex_img[i + 0] = conv(c.b)  # B 
-                tex_img[i + 1] = conv(c.g)  # G
-                tex_img[i + 2] = conv(c.r)  # R
-                tex_img[i + 3] = conv(c.a)  # A
 
         self.update_view(True)
 
