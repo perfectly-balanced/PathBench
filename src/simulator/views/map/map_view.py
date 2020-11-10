@@ -198,7 +198,7 @@ class MapView(View):
             refresh = refresh or wfc != self.__deduced_traversables_wf_colour
             self.__deduced_traversables_wf_colour = wfc
 
-            def set_colour(p, c): return self.map.render_square_with_wf(p, c, wfc)
+            def set_colour(p, c): return self.map.render_square(p, c, wfc)
 
         def update_cube_colour(p):
             self.__cube_colour = clr
