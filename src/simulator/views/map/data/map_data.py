@@ -88,7 +88,7 @@ class MapData(ABC):
             default_colour = MapData._DEFAULTS[name]
         dc = self._services.state.add_colour(name, default_colour, default_visible)
         if callback is None:
-            return
+            return dc
         if name not in self.__colour_callbacks:
             self.__colour_callbacks[name] = callback
         if invoke_callback:

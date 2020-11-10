@@ -194,7 +194,8 @@ class MapView(View):
         if self.map.dim == 3:
             set_colour = lambda p, c: self.map.traversables_mesh.set_cube_colour(p, c)
         else: # 2D
-            set_colour = lambda p, c: self.map.render_square(p, c, self.map.traversables_dc)
+            wfc = self.map.traversables_wf_dc()
+            set_colour = lambda p, c: self.map.render_square_with_wf(p, c, wfc)
         
         def update_cube_colour(p):
             self.__cube_colour = clr
