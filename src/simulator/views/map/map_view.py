@@ -39,7 +39,7 @@ import numpy as np
 
 class MapView(View):
     __world: NodePath
-    __map: VoxelMap
+    __map: Union[VoxelMap, FlatMap]
 
     __displays: List[Any]
     __persistent_displays: List[Any]
@@ -75,18 +75,19 @@ class MapView(View):
         # world (dummy node)
         self.__world = self._services.graphics.window.render.attach_new_node("world")
 
+        # MAP #
         map_size = self._services.algorithm.map.size
         map_data = np.empty((*map_size, 1) if map_size.n_dim == 2 else map_size, dtype=bool)
         for x, y, z in np.ndindex(map_data.shape):
             p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
             map_data[x, y, z] = not self._services.algorithm.map.is_agent_valid_pos(p)
 
-        # MAP #
-        self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
-        self.__center(self.__map.root)
-        self.__map2d = FlatMap(self._services, map_data, self.world)
-        self.__map2d.root.set_pos(10, 10, 50)
-        self.__map2d.root.set_scale(20)
+        if map_size.n_dim == 2:
+            self.__map = FlatMap(self._services, map_data, self.world)
+            self.__map.root.set_scale(30)
+        else:
+            self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
+            self.__center(self.__map.root)
 
         self.__overlay = self.map.root.attach_new_node("overlay")
         self.__persistent_displays = [EntitiesMapDisplay(self._services)]
@@ -150,7 +151,7 @@ class MapView(View):
         return 'map'
 
     @map.getter
-    def map(self) -> VoxelMap:
+    def map(self) -> Union[VoxelMap, FlatMap]:
         return self.__map
 
     @property
@@ -188,17 +189,22 @@ class MapView(View):
 
     def __update_cubes(self, refresh: bool) -> None:
         clr = self._services.state.effective_view.colours["traversables"]()
-        mesh = self.map.traversables_mesh
+        travs_data = self.map.traversables_data
 
+        if self.map.dim == 3:
+            set_colour = lambda p, c: self.map.traversables_mesh.set_cube_colour(p, c)
+        else: # 2D
+            set_colour = lambda p, c: self.map.render_square(p, c, self.map.traversables_dc)
+        
         def update_cube_colour(p):
             self.__cube_colour = clr
             for d in self.__second_pass_displays:
                 d.update_cube(p)
-            mesh.set_cube_colour(p, self.__cube_colour)
+            set_colour(p, self.__cube_colour)
         
         if refresh:
-            for x, y, z in np.ndindex(mesh.structure.shape):
-                if mesh.structure[x, y, z]:
+            for x, y, z in np.ndindex(travs_data.shape):
+                if travs_data[x, y, z]:
                     update_cube_colour(Point(x, y, z))
         else:
             for p in self.__cubes_requiring_update:

@@ -22,7 +22,11 @@ class MapController(Controller, DirectObject):
     def __init__(self, map_view: MapView, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.__picker = CubeMapPicker(self._services.graphics.window, map_view.map.traversables, map_view.map.traversables_data)
+        if map_view.map.dim == 3:
+            self.__picker = CubeMapPicker(self._services.graphics.window, map_view.map.traversables, map_view.map.traversables_data)
+        else:
+            self.__picker = None
+
         self.__camera = CameraController(self._services, self._model, origin=map_view.world)
 
         def left_click():
@@ -63,5 +67,6 @@ class MapController(Controller, DirectObject):
     def destroy(self) -> None:
         self.ignore_all()
         self.__camera.destroy()
-        self.__picker.destroy()
+        if self.__picker is not None:
+            self.__picker.destroy()
         self._services.ev_manager.unregister_listener(self)

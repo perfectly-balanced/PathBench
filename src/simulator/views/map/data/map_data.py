@@ -19,6 +19,7 @@ class MapData:
 
     obstacles_data: Final[NDArray[(Any, Any, Any), bool]]
     traversables_data: Final[NDArray[(Any, Any, Any), bool]]
+    dim: Final[int]
 
     # REQUIRED COLOURS / COMPONENTS #
     BG: Final[str] = "background"
@@ -48,6 +49,7 @@ class MapData:
 
         self.obstacles_data = data
         self.traversables_data = np.invert(self.obstacles_data)
+        self.dim = 2 + (0 if self.obstacles_data.shape[2] == 1 else 1)
 
         self._services.ev_manager.register_listener(self)
 
