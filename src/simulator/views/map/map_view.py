@@ -6,7 +6,9 @@ import os
 from constants import DATA_PATH
 
 from heapq import heappush, heappop
-
+from panda3d.core import Camera
+from panda3d.core import Texture
+import time
 from algorithms.configuration.entities.entity import Entity
 from simulator.models.model import Model
 from simulator.services.debug import DebugLevel
@@ -15,6 +17,8 @@ from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
 from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
 from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
+from simulator.services.event_manager.events.take_screenshot_tex_event import TakeScreenshotTexEvent
+from panda3d.core import PandaNode
 
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
@@ -116,6 +120,8 @@ class MapView(View):
                 self.update_view(False)
         elif isinstance(event, TakeScreenshotEvent):
             self.take_screenshot()
+        elif isinstance(event, TakeScreenshotTexEvent):
+            self.HDScreenShot()
 
     def to_point3(self, v: Union[Point, Entity]):
         if isinstance(v, Entity):
@@ -233,6 +239,32 @@ class MapView(View):
     def take_screenshot(self) -> None:
         self._services.resources.screenshots_dir.append(
             lambda fn: self._services.graphics.window.win.save_screenshot(fn))
+
+    def HDScreenShot(self):
+        tex = Texture()
+        width = 4096
+        height = 4096
+        mybuffer = self._services.graphics.window.win.makeTextureBuffer('HDScreenshotBuff', width, height, tex, True)
+
+        cam = Camera('HDCam')
+        cam.setLens(self._services.graphics.window.camLens.makeCopy())
+        cam.getLens().setAspectRatio(width / height)
+        npCam = NodePath(cam)
+        npCam.reparentTo(self.__world)
+        x,y,z = self.__world.getPos()
+        npCam.setPos(x,y+0.5,z+77.3)
+        npCam.setP(-90)
+
+        mycamera = self._services.graphics.window.makeCamera(mybuffer, useCamera=npCam)
+        myscene = self._services.graphics.window.render
+        mycamera.node().setScene(myscene)
+        self._services.graphics.window.graphicsEngine.renderFrame()
+        tex = mybuffer.getTexture()
+        mybuffer.setActive(False)
+        tex.write('screenshotTexHD.png')
+        self._services.graphics.window.graphicsEngine.removeWindow(mybuffer)
+        print ("HDScreenShot taken")
+
 
     def cube_center(self, p: Point) -> Point:
         x, y, z = self.to_point3(p)

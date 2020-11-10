@@ -2,21 +2,11 @@ from direct.gui.OnscreenText import OnscreenText
 from direct.showbase.ShowBaseGlobal import globalClock
 from direct.showbase.DirectObject import DirectObject
 from direct.showbase.ShowBase import ShowBase
-from panda3d.core import Lens
-from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
-
-
-# from panda3d.core import loadPrcFileData
-# loadPrcFileData("", "window-type offscreen" ) # Spawn an offscreen buffer
-# loadPrcFileData("", "audio-library-name null" ) # Prevent ALSA errors
-
-
+from panda3d.core import NodePath
+from panda3d.core import Camera
 from math import pi, sin, cos
-
 from utility.utils import exclude_from_dict
 from simulator.controllers.controller import Controller
-
-from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
 
 
 class CameraController(Controller, DirectObject):
@@ -28,6 +18,10 @@ class CameraController(Controller, DirectObject):
         self.__base = self._services.graphics.window
         self.__cam = kwargs["camera"] if "camera" in kwargs else self.__base.cam
         self.__origin = kwargs["origin"]
+
+        self.camNode = Camera('cam')
+        self.camNP = NodePath(self.camNode)
+        self.camNP.reparentTo(self.__origin)
 
         self.lens = self.__base.camNode.getLens()
         self.target_size = 6.37800000E+06
@@ -74,7 +68,7 @@ class CameraController(Controller, DirectObject):
         self.accept('arrow_down', self.update_key_map, ["down1", 1])
         self.accept('arrow_down-up', self.update_key_map, ["down1", 0])
 
-        self.accept('i', lambda :self.show_cam_pos())
+        # self.accept('i', lambda :self.show_cam_pos())
 
         # Setup down events for arrow keys : rotating camera latitude and longitude
         self.accept("a", self.update_key_map, ["left", 1])
@@ -163,13 +157,8 @@ class CameraController(Controller, DirectObject):
         self.__task.remove()
         self._services.ev_manager.unregister_listener(self)
 
-    def take_top_screenshot(self):
+    def top_view(self):
         self.__origin.setY(-0.3)
         self.__origin.setZ(-63.7)
         self.__cam.setH(0)
         self.__cam.setP(-88.62)
-        (x1, y1, z1), (x2, y2, z2) = self.__origin.get_tight_bounds()
-        print(x1,y1,z1,x1,y2,z2)
-        self.__base.graphicsEngine.renderFrame()
-        self.__base.screenshot(namePrefix='screenshot', defaultFilename=1, source=None, imageComment="")
-        print("taken")

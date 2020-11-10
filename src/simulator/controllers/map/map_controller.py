@@ -1,7 +1,7 @@
 from panda3d.core import CollisionTraverser, CollisionHandlerQueue, CollisionNode, BitMask32, CollisionBox, CollisionRay, Point3
 from direct.showbase.ShowBase import ShowBase
-from direct.showbase.DirectObject import DirectObject
 
+from direct.showbase.DirectObject import DirectObject
 from structures import Point
 from simulator.services.debug import DebugLevel
 from simulator.views.map.map_view import MapView
@@ -9,6 +9,7 @@ from simulator.controllers.controller import Controller
 from simulator.controllers.map.cube_map_picker import CubeMapPicker
 from simulator.controllers.map.camera_controller import CameraController
 from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
+from simulator.services.event_manager.events.take_screenshot_tex_event import TakeScreenshotTexEvent
 
 import math
 from typing import Optional
@@ -53,7 +54,9 @@ class MapController(Controller, DirectObject):
         self.accept("m", lambda: self._model.toggle_convert_map())
         self.accept("x", lambda: self._model.toggle_pause_algorithm())
         self.accept("p", lambda: self._services.ev_manager.post(TakeScreenshotEvent()))
-        self.accept("o", lambda: self.__camera.take_top_screenshot())
+        self.accept("o", lambda: self._services.ev_manager.post(TakeScreenshotTexEvent()))
+
+
         for i in range(6):
             self.accept(str(i+1), partial(set_view, i))
 
