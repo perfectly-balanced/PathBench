@@ -1,7 +1,7 @@
 from panda3d.core import Texture, GeomNode, LineSegs
 from panda3d.core import GeomVertexFormat, GeomVertexData
 from panda3d.core import Geom, GeomTriangles, GeomVertexWriter, GeomVertexRewriter, GeomVertexArrayData
-from panda3d.core import LVector3, Vec3, Vec4
+from panda3d.core import Vec3, Vec4
 
 from enum import IntEnum, unique, Enum
 from typing import List, Any, Tuple, Optional
@@ -12,11 +12,7 @@ import numpy as np
 from nptyping import NDArray
 
 from structures import Point, Colour, WHITE
-
-def normalise(*args):
-    v = LVector3(*args)
-    v.normalize()
-    return v
+from simulator.views.map.object.common import normalise
 
 @unique
 class Face(IntEnum):

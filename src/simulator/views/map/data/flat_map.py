@@ -23,6 +23,11 @@ class FlatMap(MapData):
     obstacles_dc: Final[DynamicColour]
     obstacles_wf_dc: Final[DynamicColour]
 
+    logical_w: Final[int]
+    logical_h: Final[int]
+    texture_w: Final[int]
+    texture_h: Final[int]
+
     def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "flat_map", square_size: int = 32):
         super().__init__(services, data, parent, name)
 
@@ -35,14 +40,17 @@ class FlatMap(MapData):
         self._add_colour(MapData.TRACE)
         self._add_colour(MapData.GOAL)
 
-        self.square_mesh = SquareMesh()
+        self.logical_w = int(self.obstacles_data.shape[0])
+        self.logical_h = int(self.obstacles_data.shape[1])
+        self.texture_w = int(self.logical_w * square_size)
+        self.texture_h = int(self.logical_h * square_size)
+
+        self.square_mesh = SquareMesh(self.obstacles_data.shape[0], self.obstacles_data.shape[1])
         self.square = self.root.attach_new_node(self.square_mesh.geom_node)
 
         self.square_size = square_size
-        self.width = self.obstacles_data.shape[0] * square_size
-        self.height = self.obstacles_data.shape[1] * square_size
         self.texture = Texture(self.name + "_texture")
-        self.texture.setup_2d_texture(self.width, self.height, Texture.T_unsigned_byte, Texture.F_rgba8)
+        self.texture.setup_2d_texture(self.texture_w, self.texture_h, Texture.T_unsigned_byte, Texture.F_rgba8)
         self.square.set_texture(self.texture)
         self.texture.set_wrap_u(Texture.WM_clamp)
         self.texture.set_wrap_v(Texture.WM_clamp)
@@ -69,7 +77,7 @@ class FlatMap(MapData):
         x_offset = px * self.square_size
         line_size = self.square_size * 4
         for y in range(py * self.square_size, (py + 1) * self.square_size):            
-            img.set_subdata((y * self.width + x_offset) * 4, line_size, line_str)
+            img.set_subdata((y * self.texture_w + x_offset) * 4, line_size, line_str)
 
     def blend(self, src: Colour, dst: Colour):
         wda = dst.a * (1 - src.a)  # weighted dst alpha
@@ -84,11 +92,11 @@ class FlatMap(MapData):
         def conv(f): return int(round(f * 255))
 
         wfc = self.blend(wfc, c)
-        px, py = p[0], p[1]
+        px, py = int(p[0]), int(p[1]) # int(self.texture_w // self.square_size - p[0] - 1), int(self.texture_h // self.square_size - p[1] - 1)
         r, g, b, a = conv(c.r), conv(c.g), conv(c.b), conv(c.a)
         wfr, wfg, wfb, wfa = conv(wfc.r), conv(wfc.g), conv(wfc.b), conv(wfc.a)
 
-        WF_THICKNESS = 4
+        WF_THICKNESS = 2
         HALF_WF_THICKNESS = WF_THICKNESS // 2
 
         pixel = (b, g, r, a)
@@ -112,11 +120,11 @@ class FlatMap(MapData):
         x_offset = px * self.square_size
         lsize = self.square_size * 4
         for y in range(py * self.square_size, py * self.square_size + HALF_WF_THICKNESS):            
-            img.set_subdata((y * self.width + x_offset) * 4, lsize, wfline_str)
+            img.set_subdata((y * self.texture_w + x_offset) * 4, lsize, wfline_str)
         for y in range(py * self.square_size + HALF_WF_THICKNESS, (py + 1) * self.square_size - HALF_WF_THICKNESS):            
-            img.set_subdata((y * self.width + x_offset) * 4, lsize, line_str)
+            img.set_subdata((y * self.texture_w + x_offset) * 4, lsize, line_str)
         for y in range((py + 1) * self.square_size - HALF_WF_THICKNESS, (py + 1) * self.square_size):
-            img.set_subdata((y * self.width + x_offset) * 4, lsize, wfline_str)
+            img.set_subdata((y * self.texture_w + x_offset) * 4, lsize, wfline_str)
 
     def render_obstacles(self) -> None:
         c = self.obstacles_dc()

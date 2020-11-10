@@ -27,9 +27,9 @@ from simulator.views.map.display.online_lstm_map_display import OnlineLSTMMapDis
 from simulator.views.view import View
 from structures import Point, Colour, TRANSPARENT, WHITE
 
+from simulator.views.map.data.map_data import MapData
 from simulator.views.map.data.voxel_map import VoxelMap
 from simulator.views.map.data.flat_map import FlatMap
-from simulator.views.map.object.cube_mesh import Face
 
 from panda3d.core import NodePath, GeomNode, Geom, LineSegs, TextNode
 from direct.showutil import BuildGeometry
@@ -84,13 +84,15 @@ class MapView(View):
 
         if map_size.n_dim == 2:
             self.__map = FlatMap(self._services, map_data, self.world)
-            self.__map.root.set_scale(30)
         else:
             self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
-            self.__center(self.__map.root)
+        self.__center(self.__map.root)
 
         self.__overlay = self.map.root.attach_new_node("overlay")
         self.__persistent_displays = [EntitiesMapDisplay(self._services)]
+
+        self.__deduced_traversables_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
+        self.__deduced_traversables_wf_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
 
         self.update_view(True)
 
@@ -188,14 +190,22 @@ class MapView(View):
             self.__render_lines()
 
     def __update_cubes(self, refresh: bool) -> None:
-        clr = self._services.state.effective_view.colours["traversables"]()
+        clr = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
+        refresh = refresh or clr != self.__deduced_traversables_colour
+        self.__deduced_traversables_colour = clr
+
         travs_data = self.map.traversables_data
 
         if self.map.dim == 3:
             set_colour = lambda p, c: self.map.traversables_mesh.set_cube_colour(p, c)
         else: # 2D
             wfc = self.map.traversables_wf_dc()
+            wfc = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
+            refresh = refresh or wfc != self.__deduced_traversables_wf_colour
+            self.__deduced_traversables_wf_colour = wfc
+            
             set_colour = lambda p, c: self.map.render_square_with_wf(p, c, wfc)
+            
         
         def update_cube_colour(p):
             self.__cube_colour = clr
