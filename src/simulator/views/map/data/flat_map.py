@@ -8,6 +8,7 @@ from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 
 import array
 import random
+import math
 from typing import Any, Final, Tuple, Dict
 
 import numpy as np
@@ -17,7 +18,10 @@ class FlatMap(MapData):
     square: Final[NodePath]
     square_mesh: Final[SquareMesh]
     texture: Final[Texture]
+
     square_size: Final[int]
+    wf_thickness: Final[float]
+    wf_line_cnt: Final[int]
 
     traversables_dc: Final[DynamicColour]
     traversables_wf_dc: Final[DynamicColour]
@@ -29,15 +33,15 @@ class FlatMap(MapData):
     texture_w: Final[int]
     texture_h: Final[int]
 
-    WF_THICKNESS: Final[int] = 2
-    HALF_WF_THICKNESS: Final[int] = WF_THICKNESS // 2
+    __lines: Dict[Tuple[Colour, Colour], Tuple[bytes, bytes, bytes]]
 
-    __lines: Dict[Tuple[Colour, Colour], Tuple[array.array, array.array]]
-
-    def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "flat_map", square_size: int = 8):
+    def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "flat_map", square_size: int = 8, wf_thickness: float = 0.2):
         super().__init__(services, data, parent, name)
 
         self.__lines = {}
+
+        self.wf_thickness = wf_thickness
+        self.wf_line_cnt = int(max(1, math.ceil(wf_thickness + 1) // 2))
 
         self.traversables_dc = self._add_colour(MapData.TRAVERSABLES)
         self.traversables_wf_dc = self._add_colour(MapData.TRAVERSABLES_WF)
@@ -70,22 +74,32 @@ class FlatMap(MapData):
     def dim(self) -> int:
         return 2
 
-    def __create_lines(self, c: Colour, wfc: Colour):
+    def __create_lines(self, c: Colour, wfc: Colour) -> Tuple[bytes, bytes, bytes]:
         def conv(f): return int(round(f * 255))
+        def to_pixel(c): return (conv(c.b), conv(c.g), conv(c.r), conv(c.a))
 
+        wfd2 = int(self.wf_thickness // 2)
+
+        if wfd2 != self.wf_line_cnt:
+            bc = blend_colours(wfc.with_a(wfc.a * ((self.wf_thickness / 2) - wfd2)), c)
+            tpixel = to_pixel(bc)
+        else:
+            bc = None
+        
+        pixel = to_pixel(c)
         wfc = blend_colours(wfc, c)
-        r, g, b, a = conv(c.r), conv(c.g), conv(c.b), conv(c.a)
-        wfr, wfg, wfb, wfa = conv(wfc.r), conv(wfc.g), conv(wfc.b), conv(wfc.a)
-
-        pixel = (b, g, r, a)
-        wfpixel = (wfb, wfg, wfr, wfa)
+        wfpixel = to_pixel(wfc)
 
         line = array.array('B')
-        for _ in range(self.HALF_WF_THICKNESS):
+        for _ in range(wfd2):
             line.extend(wfpixel)
-        for _ in range(self.square_size - self.WF_THICKNESS):
+        if bc is not None:
+            line.extend(tpixel)
+        for _ in range(self.square_size - 2 * self.wf_line_cnt):
             line.extend(pixel)
-        for _ in range(self.HALF_WF_THICKNESS):
+        if bc is not None:
+            line.extend(tpixel)
+        for _ in range(wfd2):
             line.extend(wfpixel)
         lbytes = line.tobytes()
 
@@ -94,21 +108,37 @@ class FlatMap(MapData):
             wfline.extend(wfpixel)
         wflbytes = wfline.tobytes()
 
-        self.__lines[(c, wfc)] = (lbytes, wflbytes)
-        return lbytes, wflbytes
+        if bc is None:
+            tlbytes = wflbytes
+        else:
+            tline = array.array('B')
+            for _ in range(wfd2):
+                tline.extend(wfpixel)
+            tline.extend(tpixel)
+            for _ in range(self.square_size - 2 * self.wf_line_cnt):
+                tline.extend(tpixel)
+            tline.extend(tpixel)
+            for _ in range(wfd2):
+                tline.extend(wfpixel)
+            tlbytes = tline.tobytes()
+
+        self.__lines[(c, wfc)] = (lbytes, wflbytes, tlbytes)
+        return lbytes, wflbytes, tlbytes
 
     def render_square(self, p: Point, c: Colour, wfc: Colour) -> None:
         px, py = int(p[0]), int(p[1])
-        l, wfl = self.__lines[(c, wfc)] if (c, wfc) in self.__lines else self.__create_lines(c, wfc)
+        l, wfl, tl = self.__lines[(c, wfc)] if (c, wfc) in self.__lines else self.__create_lines(c, wfc)
 
         img = self.texture.modify_ram_image()
         x_offset = px * self.square_size
         lsize = self.square_size * 4
-        for y in range(py * self.square_size, py * self.square_size + self.HALF_WF_THICKNESS):
+        for y in range(py * self.square_size, py * self.square_size + self.wf_line_cnt - 1):
             img.set_subdata((y * self.texture_w + x_offset) * 4, lsize, wfl)
-        for y in range(py * self.square_size + self.HALF_WF_THICKNESS, (py + 1) * self.square_size - self.HALF_WF_THICKNESS):
+        img.set_subdata(((py * self.square_size + self.wf_line_cnt - 1) * self.texture_w + x_offset) * 4, lsize, tl)
+        for y in range(py * self.square_size + self.wf_line_cnt, (py + 1) * self.square_size - self.wf_line_cnt):
             img.set_subdata((y * self.texture_w + x_offset) * 4, lsize, l)
-        for y in range((py + 1) * self.square_size - self.HALF_WF_THICKNESS, (py + 1) * self.square_size):
+        img.set_subdata((((py + 1) * self.square_size - self.wf_line_cnt) * self.texture_w + x_offset) * 4, lsize, tl)
+        for y in range((py + 1) * self.square_size - self.wf_line_cnt + 1, (py + 1) * self.square_size):
             img.set_subdata((y * self.texture_w + x_offset) * 4, lsize, wfl)
 
     def render_obstacles(self) -> None:
