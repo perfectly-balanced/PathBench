@@ -608,14 +608,14 @@ class Generator:
                     np.random.randint(nr_of_obstacle_range[0], nr_of_obstacle_range[1])
                 )
             else: #house map
-                min_map_size = int(torch.randint(min_map_range[0], min_map_range[1], (1,)).item())
+                min_map_size = int(np.random.randint(min_map_range[0], min_map_range[1]))
                 print(min_map_size)
-                max_map_size = int(torch.randint(max_map_range[0], max_map_range[1], (1,)).item())
+                max_map_size = int(np.random.randint(max_map_range[0], max_map_range[1]))
                 print(max_map_size)
                 mp: Map = self.__generate_random_house(
                     dimensions,
-                    min_room_size=Size(min_map_size, min_map_size),
-                    max_room_size=Size(max_map_size, max_map_size),
+                    min_room_size=Size(*([min_map_size] * dimensions.n_dim)),
+                    max_room_size=Size(*([max_map_size] * dimensions.n_dim)),
                 )
             #print('grid is \n', mp.grid)
  #           atlas.append(mp)
