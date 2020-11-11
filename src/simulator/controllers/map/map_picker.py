@@ -1,29 +1,29 @@
-from typing import List, Optional
-
-from panda3d.core import CollisionTraverser, CollisionHandlerQueue, CollisionNode, NodePath, BitMask32, CollisionBox, CollisionRay, Point3
-from direct.showbase.ShowBase import ShowBase
-
 from structures import Point
 from utility.compatibility import Final
 from simulator.views.map.data.map_data import MapData
 
 import math
+from nptyping import NDArray
+from typing import Any, List, Optional
+
+from panda3d.core import CollisionTraverser, CollisionHandlerQueue, CollisionNode, NodePath, BitMask32, CollisionBox, CollisionRay, Point3
+from direct.showbase.ShowBase import ShowBase
 
 class MapPicker():
-    __name: str
-    __base: ShowBase
-    __data: List[List[List[bool]]]
+    __name: Final[str]
+    __base: Final[ShowBase]
+    __data: Final[NDArray[(Any, Any, Any), bool]]
 
     # collision data
-    __ctrav: CollisionTraverser
-    __cqueue: CollisionHandlerQueue
-    __cn: CollisionNode
-    __cnp: NodePath
+    __ctrav: Final[CollisionTraverser]
+    __cqueue: Final[CollisionHandlerQueue]
+    __cn: Final[CollisionNode]
+    __cnp: Final[NodePath]
 
     # picker data
-    __pn: CollisionNode
-    __pnp: NodePath
-    __pray: CollisionRay
+    __pn: Final[CollisionNode]
+    __pnp: Final[NodePath]
+    __pray: Final[CollisionRay]
 
     # constants
     COLLIDE_MASK: Final[BitMask32] = BitMask32.bit(1)
@@ -89,9 +89,8 @@ class MapPicker():
 
         # compute & return logical cube position
         x, y, z = self.__cqueue.get_entry(0).getSurfacePoint(self.__map.root)
-        print(z)
         if self.__map.dim == 2 and math.isclose(z, -self.__map.square_mesh.depth, rel_tol=1e-3):
-            return None # no picking from underneath 
+            return None  # no picking from underneath
         pos = [max(math.floor(x), 0), max(math.floor(y), 0), max(math.ceil(z), 0)]
         if pos[0] == len(self.__data):
             pos[0] -= 1
