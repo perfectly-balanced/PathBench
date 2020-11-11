@@ -5,10 +5,12 @@ from panda3d.core import Geom, GeomTriangles, GeomVertexWriter, GeomVertexArrayD
 from numbers import Real
 
 from simulator.views.map.object.common import normalise
+from utility.compatibility import Final
 
 class SquareMesh():
-    name: str
-    mesh: Geom
+    name: Final[str]
+    mesh: Final[Geom]
+    depth: Final[float]
 
     __vertex_data_format: GeomVertexFormat
     __vertex_data: GeomVertexData
@@ -22,6 +24,7 @@ class SquareMesh():
 
     def __init__(self, width: int = 1, height: int = 1, depth: Real = 0.1, name: str = 'SquareMesh') -> None:
         self.name = name
+        self.depth = depth
 
         self.__vertex_data_format = GeomVertexFormat. getV3n3t2()
         self.__vertex_data = GeomVertexData(name, self.__vertex_data_format, Geom.UHStatic)

@@ -6,17 +6,12 @@ from simulator.services.event_manager.events.colour_update_event import ColourUp
 from simulator.services.event_manager.events.new_colour_event import NewColourEvent
 from simulator.services.debug import DebugLevel
 from utility.utils import exclude_from_dict
+from utility.compatibility import Final
 
 from typing import Dict, Any, List, Optional
 import json
 import os
 import traceback
-
-try:
-    from typing import Final
-except ImportError: # work-around for Python < 3.8
-    from typing import Tuple
-    Final = Tuple
 
 class PersistentStateView():
     __services: Services
