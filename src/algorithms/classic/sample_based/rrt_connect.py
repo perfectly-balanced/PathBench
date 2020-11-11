@@ -107,7 +107,7 @@ class RRT_Connect(SampleBasedAlgorithm):
             global n 
             n+=1
 
-            if n is 100:
+            if n == 100:
                 break
 
             q_rand: Point = self._get_random_sample()
