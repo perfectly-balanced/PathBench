@@ -32,13 +32,14 @@ To find `<path-to-dataset-package>` on Linux you can run the following,
 cd src
 python3 main_gui.py
 ```
-You **must** run the main script from the `src` directory, as some files are still using paths relative to the current working directory.
+You **must** run the main script from the `src` directory as some files are still using paths relative to the current working directory.
 
 | Key               	| Action                                                            	|
 |-------------------	|-------------------------------------------------------------------	|
 | escape            	| Exit the simulator                                                	|
 | mouse left click  	| Moves agent to mouse location                                     	|
 | mouse right click 	| Moves goal to mouse location                                      	|
+| W A S D               | Rotate orbital camera around map                                      |
 | t                 	| Find the path between the agent and goal                            	|
 | x                 	| Pause/Resume path finding (animations required)                      	|
 | p                 	| Take screenshot (the screenshot is placed in resources directory) 	|
