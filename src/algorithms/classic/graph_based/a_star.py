@@ -1,7 +1,7 @@
-from heapq import heappush, heappop
 from typing import Set, List, Tuple, Optional, Dict
 
 import numpy as np
+
 
 from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
@@ -10,8 +10,10 @@ from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
 from simulator.views.map.display.gradient_map_display import GradientMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
-from simulator.views.map.display.solid_color_map_display import SolidColorMapDisplay
+from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
 from structures import Point, Colour, BLUE, DynamicColour
+from structures.factory import gen_set, gen_heap
+from structures.heap import Heap
 
 from memory_profiler import profile
 
@@ -22,15 +24,15 @@ Heap duplicates https://www.redblobgames.com/pathfinding/a-star/implementation.h
 
 class AStar(Algorithm):
     class InternalMemory:
-        priority_queue: List[Tuple[int, Point]]
+        priority_queue: Heap
         visited: Set[Point]
         back_pointer: Dict[Point, Optional[Point]]
         g: Dict[Point, int]
         h: Dict[Point, float]
 
-        def __init__(self):
-            self.priority_queue = []
-            self.visited = set()
+        def __init__(self, services: Services):
+            self.priority_queue = gen_heap(services)
+            self.visited = gen_set(services)
             self.back_pointer = {}
             self.g = {}
             self.h = {}
@@ -41,27 +43,29 @@ class AStar(Algorithm):
     pq_colour_min: DynamicColour
     visited_colour: DynamicColour
 
+    __map_displays: List[MapDisplay]
+
     def __init__(self, services: Services, testing: BasicTesting = None):
         super().__init__(services, testing)
 
-        self.mem = AStar.InternalMemory()
+        self.mem = AStar.InternalMemory(self._services)
 
         self.pq_colour_max = self._services.state.add_colour("explored max", BLUE)
         self.pq_colour_min = self._services.state.add_colour("explored min", Colour(0.27, 0.33, 0.35, 0.2))
         self.visited_colour = self._services.state.add_colour("visited", Colour(0.19, 0.19, 0.2, 0.8))
 
+        self.__map_displays = [SolidColourMapDisplay(self._services, self.mem.visited, self.visited_colour, z_index=50),
+                               GradientMapDisplay(self._services, pts=self.mem.priority_queue, min_colour=self.pq_colour_min,
+                                                  max_colour=self.pq_colour_max, z_index=49, inverted=True)]
+
     def set_display_info(self) -> List[MapDisplay]:
         """
         Read super description
         """
-        return super().set_display_info() + [
-            SolidColorMapDisplay(self._services, self.mem.visited, self.visited_colour, z_index=50),
-            GradientMapDisplay(self._services, pts=self.mem.priority_queue,
-                               min_color=self.pq_colour_min, max_color=self.pq_colour_max, z_index=49, inverted=True),
-        ]
+        return super().set_display_info() + self.__map_displays
 
     # noinspection PyUnusedLocal
-    #@profile
+    # @profile
     def _find_path_internal(self) -> None:
         self._init_mem()
 
@@ -74,7 +78,7 @@ class AStar(Algorithm):
         # push agent
         self.mem.g[grid.agent.position] = 0
         item: Tuple[float, Point] = (self.get_heuristic(grid.agent.position), grid.agent.position)
-        heappush(self.mem.priority_queue, item)
+        self.mem.priority_queue.push(item)
         self.mem.back_pointer[grid.agent.position] = None
 
     def _expand(self) -> bool:
@@ -84,10 +88,10 @@ class AStar(Algorithm):
             total_dist: float
             next_node: Point
             # peek and check if we need to terminate
-            total_dist, next_node = heappop(self.mem.priority_queue)
+            total_dist, next_node = self.mem.priority_queue.pop()
 
             if grid.is_goal_reached(next_node):
-                heappush(self.mem.priority_queue, (total_dist, next_node))
+                self.mem.priority_queue.push((total_dist, next_node))
                 return True
 
             self.mem.visited.add(next_node)
@@ -100,7 +104,7 @@ class AStar(Algorithm):
                         # therefore it does not affect the priority
                         self.mem.g[n] = self.mem.g[next_node] + dist
                         item = (self.f(n), n)
-                        heappush(self.mem.priority_queue, item)
+                        self.mem.priority_queue.push(item)
                         self.mem.back_pointer[n] = next_node
 
             self.key_frame()

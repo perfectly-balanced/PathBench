@@ -5,6 +5,8 @@ The MVC pattern was cloned from https://github.com/wesleywerner/mvc-game-design
 """
 
 import copy
+import sys
+import argparse
 
 from algorithms.configuration.configuration import Configuration
 from algorithms.lstm.trainer import Trainer
@@ -98,6 +100,28 @@ class MainRunner:
         if self.main_services.settings.clear_cache:
             self.main_services.resources.cache_dir.clear()
 
-config = Configuration()
-mr = MainRunner(config)
-mr.run_multiple()
+def configure_and_run(args) -> bool:
+    config = Configuration()
+
+    if args.graphics:
+        config.load_simulator = True
+        config.simulator_graphics = True
+
+    mr = MainRunner(config)
+    mr.run_multiple()
+    return True
+
+def main() -> bool:
+    parser = argparse.ArgumentParser(prog="main.py",
+                                     description="PathBench runner",
+                                     formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument("--graphics", action='store_true', help="run grahpical simulator")
+
+    args = parser.parse_args()
+    print("args:{}".format(args))
+    return configure_and_run(args)
+
+if __name__ == "__main__":
+    ret = main()
+    exit_code = 0 if ret else 1
+    sys.exit(exit_code)

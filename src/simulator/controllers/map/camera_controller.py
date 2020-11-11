@@ -2,10 +2,12 @@ from direct.gui.OnscreenText import OnscreenText
 from direct.showbase.ShowBaseGlobal import globalClock
 from direct.showbase.DirectObject import DirectObject
 from direct.showbase.ShowBase import ShowBase
+from panda3d.core import NodePath
+from panda3d.core import Camera
 from math import pi, sin, cos
-
 from utility.utils import exclude_from_dict
 from simulator.controllers.controller import Controller
+
 
 class CameraController(Controller, DirectObject):
     __base: ShowBase
@@ -17,6 +19,11 @@ class CameraController(Controller, DirectObject):
         self.__cam = kwargs["camera"] if "camera" in kwargs else self.__base.cam
         self.__origin = kwargs["origin"]
 
+        self.camNode = Camera('cam')
+        self.camNP = NodePath(self.camNode)
+        self.camNP.reparentTo(self.__origin)
+
+        self.lens = self.__base.camNode.getLens()
         self.target_size = 6.37800000E+06
         self.render_ratio = 1.0e-6
         self.deg_per_sec = 60.0
@@ -61,6 +68,8 @@ class CameraController(Controller, DirectObject):
         self.accept('arrow_down', self.update_key_map, ["down1", 1])
         self.accept('arrow_down-up', self.update_key_map, ["down1", 0])
 
+        # self.accept('i', lambda :self.show_cam_pos())
+
         # Setup down events for arrow keys : rotating camera latitude and longitude
         self.accept("a", self.update_key_map, ["left", 1])
         self.accept("d", self.update_key_map, ["right", 1])
@@ -75,7 +84,7 @@ class CameraController(Controller, DirectObject):
         self.accept("wheel_up", self.update_key_map, ["wheelup", 1])
         self.accept("wheel_down", self.update_key_map, ["wheeldown", 1])
 
-        self.__base.taskMgr.add(self.move_orbital_camera_task, "move_orbital_camera_task")
+        self.__task = self.__base.taskMgr.add(self.move_orbital_camera_task, "move_orbital_camera_task")
 
         #self.__base.taskMgr.add(self.update, "update")
 
@@ -134,51 +143,22 @@ class CameraController(Controller, DirectObject):
         # End task
         return task.cont
 
-    # Movement of the camera using the arrow keys
-    def update(self, task):
-        dt = globalClock.getDt()
-        pos_h = self.__cam.getH()
-        pos_p = self.__cam.getP()
-        pos_y = self.__cam.getY()
-        if (self.key_map["left1"]):
-            pos_h += self.speed_l * dt
-            if self.speed_l < 150:
-                self.speed_l += 2
-        else:
-            self.speed_l = 4
 
-        if (self.key_map["right1"]):
-            pos_h -= self.speed_r * dt
-            if self.speed_r < 150:
-                self.speed_r += 2
-        else:
-            self.speed_r = 4
-
-        if (self.key_map["up1"]):
-            pos_p += self.speed_u * dt
-            if self.speed_u < 150:
-                self.speed_u += 2
-        else:
-            self.speed_u = 4
-        if (self.key_map["down1"]):
-            pos_p -= self.speed_d * dt
-            if self.speed_d < 150:
-                self.speed_d += 2
-        else:
-            self.speed_d = 4
-
-        self.__cam.setH(pos_h)
-        self.__cam.setP(pos_p)
-        self.__cam.setY(pos_y)
-
-        return task.cont
 
     # Displays position of the camera on the screen
     def show_cam_pos(self):
-        x = self.__cam.getX()
-        y = self.__cam.getY()
-        z = self.__cam.getZ()
+        x = self.__origin.getX()
+        y = self.__origin.getY()
+        z = self.__origin.getZ()
         self.title = OnscreenText(text=str(x) + ":" + str(y) + ":" + str(z), style=1, fg=(1, 1, 0, 1), pos=(0, 0), scale=0.07)
 
     def destroy(self) -> None:
         self.ignore_all()
+        self.__task.remove()
+        self._services.ev_manager.unregister_listener(self)
+
+    def top_view(self):
+        self.__origin.setY(-0.3)
+        self.__origin.setZ(-63.7)
+        self.__cam.setH(0)
+        self.__cam.setP(-88.62)

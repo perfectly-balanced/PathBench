@@ -1,4 +1,4 @@
-from typing import Set, Callable, Dict, List
+from typing import Set, Callable, Dict, List, Any
 from structures import Point
 
 
@@ -7,6 +7,7 @@ class Vertex:
     __children: Set['Vertex']
     __parents: Set['Vertex']
     __connectivity: Dict['Vertex', 'Vertex']
+    __aux: Dict[Any, Any]
 
     def __init__(self, position: Point, store_connectivity: bool = False) -> None:
         self.__position = position
@@ -15,6 +16,7 @@ class Vertex:
         self.__connectivity = {self: self}
         self.__store_connectivity = store_connectivity
         self.__cost = None
+        self.__aux = {}
 
     def __add_connectivity(self, vertex_added: 'Vertex'):
 
@@ -122,6 +124,10 @@ class Vertex:
     @property
     def connectivity(self) -> Dict['Vertex', 'Vertex']:
         return self.__connectivity
+
+    @property
+    def aux(self) -> Dict[Any, Any]:
+        return self.__aux
 
     # Setters #
 

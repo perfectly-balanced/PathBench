@@ -9,7 +9,7 @@ from simulator.services.services import Services
 from structures import Point
 
 from algorithms.classic.sample_based.core.vertex import Vertex
-from algorithms.classic.sample_based.core.graph import Forest
+from algorithms.classic.sample_based.core.graph import gen_forest, Forest
 
 
 class RRT_Star(SampleBasedAlgorithm):
@@ -17,10 +17,13 @@ class RRT_Star(SampleBasedAlgorithm):
 
     def __init__(self, services: Services, testing: BasicTesting = None) -> None:
         super().__init__(services, testing)
+        
         start_vertex = Vertex(self._get_grid().agent.position)
         start_vertex.cost = 0
         goal_vertex = Vertex(self._get_grid().goal.position)
-        self._graph = Forest(start_vertex, goal_vertex, [])
+
+        self._graph = gen_forest(self._services, start_vertex, goal_vertex, [])
+        self._init_displays()
 
     # Helper Functions #
     # -----------------#

@@ -1,4 +1,3 @@
-import pygame
 import numpy as np
 from typing import List
 
@@ -16,15 +15,10 @@ class NumbersMapDisplay(MapDisplay):
         self.font = None
         self.grid = grid
 
-    def render(self) -> bool:
-        if not super().render() or self.grid is None:
+    def render(self, refresh: bool) -> None:
+        if self.grid is None:
             return False
 
         if self.services.settings.simulator_grid_display:
             for index in np.ndindex(*(self.grid.shape)):
                 self.get_renderer_view().render_text(Point(*index), str(round(self.grid[index], 1)))
-
-        return True
-
-    def __lt__(self, other):
-        return super().__lt__(other)

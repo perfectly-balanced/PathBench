@@ -14,7 +14,9 @@ from constants import DATA_PATH
 from simulator.services.services import Services
 from simulator.services.persistent_state import PersistentState
 from simulator.services.event_manager.events.new_colour_event import NewColourEvent
-from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
+from simulator.services.event_manager.events.toggle_view_event import ToggleViewEvent
+
+from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR, Window
 
 class ColourPicker:
     pick_colour_callback: Callable[[Tuple[float, float, float, float]], None]
@@ -140,57 +142,6 @@ class ColourPicker:
     @property
     def marker(self) -> DirectFrame:
         return self.__marker
-
-class Window():
-    __base: ShowBase
-    __name: str
-
-    __frame: DirectFrame
-    __drag_start: Point2
-    __drag_offset: Vec2
-
-    def __init__(self, base: ShowBase, name: str, *args, **kwargs):
-        self.__base = base
-        self.__name = name
-
-        if 'frameSize' not in kwargs:
-            kwargs['frameSize'] = (-.8, .8, -1., 1.)
-
-        self.__frame = DirectFrame(*args, **kwargs)
-        self.__frame['state'] = DGG.NORMAL
-        self.__frame.bind(DGG.B1PRESS, command=self.__start_drag)
-        self.__frame.bind(DGG.B1RELEASE, command=self.__stop_drag)
-
-        self.__drag_start = Point2()
-        self.__drag_offset = Vec2()
-
-    def __drag(self, task):
-        if not self.__base.mouseWatcherNode.hasMouse():
-            return task.cont
-
-        pointer = self.__base.win.getPointer(0)
-        pos = Point2(pointer.getX(), -pointer.getY())
-        x, z = pos + self.__drag_offset
-        self.__frame.setPos(x, 0., z)
-        self.__drag_start = Point2(pos)
-
-        return task.cont
-
-    def __start_drag(self, *args):
-        pointer = self.__base.win.getPointer(0)
-        fx, _, fz = self.__frame.getPos()
-
-        self.__drag_start = Point2(pointer.getX(), -pointer.getY())
-        self.__drag_offset = Point2(fx, fz) - self.__drag_start
-
-        self.__base.taskMgr.add(self.__drag, 'drag_' + self.__name)
-
-    def __stop_drag(self, *args):
-        self.__base.taskMgr.remove('drag_' + self.__name)
-
-    @property
-    def frame(self) -> DirectFrame:
-        return self.__frame
 
 
 class ColourView():
@@ -522,8 +473,10 @@ class ViewElement():
                                    text=self.__name,
                                    text_fg=WHITE,
                                    text_bg=WINDOW_BG_COLOUR,
+                                   frameColor=WINDOW_BG_COLOUR,
+                                   text_align=TextNode.ALeft,
                                    borderWidth=(.0, .0),
-                                   pos=(0.28, 0.0, -0.03),
+                                   pos=(-0.3, 0.0, -0.03),
                                    scale=(0.1, 1.0, 0.1))
 
         visibility_filename = os.path.join(DATA_PATH, "visible.png")
@@ -606,7 +559,6 @@ class ViewElement():
         self.__label.destroy()
         self.__frame.destroy()
 
-
 class ViewEditor():
     __services: Services
     __base: ShowBase
@@ -620,7 +572,7 @@ class ViewEditor():
         self.__base = self.__services.graphics.window
         self.hidden = False
 
-        self.__window = Window(self.__base, "view_editor", parent=self.__base.pixel2d,
+        self.__window = Window(self.__base, "view_editor",
                                relief=DGG.RAISED,
                                borderWidth=(0.0, 0.0),
                                frameColor=WINDOW_BG_COLOUR,
@@ -675,6 +627,7 @@ class ViewEditor():
                                    text="View Editor",
                                    text_fg=WHITE,
                                    text_bg=WINDOW_BG_COLOUR,
+                                   frameColor=WINDOW_BG_COLOUR,
                                    borderWidth=(.0, .0),
                                    pos=(0.0, 0.0, 1.27),
                                    scale=(0.2, 3, 0.2))
@@ -688,8 +641,6 @@ class ViewEditor():
                                 pressEffect=1,
                                 frameColor=TRANSPARENT)
 
-        # Show or hide the Style Editor #
-        self.__base.accept('v', self.__toggle_view_editor)
 
         self.__save_outline = DirectFrame(parent=self.__window.frame,
                                           frameColor=WHITE,
@@ -757,6 +708,7 @@ class ViewEditor():
             self.__elems[i].frame.set_pos((0.15, 0.0, -0.2 * i))
         self.__elems_frame["canvasSize"] = (-0.95, 0.95, -0.2 * len(self.__elems) + 0.1, 0.1)
 
+        self.__cur_view_idx = self.view_idx
         self.__selected_view_outline.set_pos((-0.7 + (self.view_idx % 3) * 0.7, 0.4, -4.4 - 0.5 * (self.view_idx // 3)))
 
         self.__select_cv(self.__elems[0] if self.__elems else None)
@@ -776,14 +728,16 @@ class ViewEditor():
             self.hidden = True
         else:
             self.__window.frame.show()
+            self.__window.focus()
             self.hidden = False
 
     def __colour_picker_callback(self, colour: Colour) -> None:
-        if self.__selected_cv_elem is None:
-            return
-        self.__selected_cv_elem.colour = colour  # calls self.__update_colour()
+        self.__window.focus()
+        if self.__selected_cv_elem is not None:
+            self.__selected_cv_elem.colour = colour  # calls self.__update_colour()
 
     def __select_cv(self, e: ViewElement):
+        self.__window.focus()
         self.__selected_cv_elem = e
         if e is None:
             self.__selected_cv_outline.hide()
@@ -795,8 +749,10 @@ class ViewEditor():
             self.__colour_picker.colour = e.colour
 
     def notify(self, event: Event) -> None:
-        if isinstance(event, NewColourEvent):
+        if isinstance(event, NewColourEvent) or self.__services.state.view_idx != self.__cur_view_idx:
             self.__reset()
+        elif isinstance(event, ToggleViewEvent):
+            self.__toggle_view_editor()
 
     @property
     def view_idx(self) -> str:

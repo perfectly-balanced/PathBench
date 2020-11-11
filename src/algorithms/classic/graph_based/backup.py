@@ -42,8 +42,8 @@ class PotentialField(Algorithm):
         Read super description
         """
         return super().set_display_info() #+ [
-            #  SolidColorMapDisplay(self._services, self.mem.visited, self.VISITED_COLOR, z_index=50),
-            #  # SolidColorMapDisplay(self._services, set(map(lambda el: el[1], self.mem.priority_queue)), (0, 0, 255)),
+            #  SolidColourMapDisplay(self._services, self.mem.visited, self.VISITED_COLOR, z_index=50),
+            #  # SolidColourMapDisplay(self._services, set(map(lambda el: el[1], self.mem.priority_queue)), (0, 0, 255)),
             #  GradientMapDisplay(self._services, pts=self.mem.priority_queue,
             #                     min_color=self.PQ_COLOR_LOW, max_color=self.PQ_COLOR_HIGH, z_index=49, inverted=True),
          #]

@@ -1,19 +1,18 @@
-from panda3d.core import Texture, GeomNode
+from panda3d.core import Texture, GeomNode, LineSegs
 from panda3d.core import GeomVertexFormat, GeomVertexData
-from panda3d.core import Geom, GeomTriangles, GeomVertexWriter, GeomVertexRewriter
-from panda3d.core import LVector3, Vec3, Vec4
+from panda3d.core import Geom, GeomTriangles, GeomVertexWriter, GeomVertexRewriter, GeomVertexArrayData
+from panda3d.core import Vec3, Vec4
 
 from enum import IntEnum, unique, Enum
-from typing import List
+from typing import List, Any, Tuple, Optional
 from numbers import Real
 import math
 
-from structures import Point, Colour, WHITE
+import numpy as np
+from nptyping import NDArray
 
-def normalise(*args):
-    v = LVector3(*args)
-    v.normalize()
-    return v
+from structures import Point, Colour, WHITE
+from simulator.views.map.object.common import normalise
 
 @unique
 class Face(IntEnum):
@@ -28,7 +27,36 @@ class CubeMesh():
     name: str
     mesh: Geom
 
-    def __init__(self, structure: List[List[List[bool]]], name: str = 'CubeMesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, hidden_faces: bool = False) -> None:
+    __structure: NDArray[(Any, Any, Any), bool]
+    __artificial_lighting: bool
+    __default_colour: Colour
+    __face_count: int
+
+    # index: <face-index>
+    # value: <cube-pos>
+    __face_cube_map: List[Tuple[int, int, int]]
+
+    # NDArray[(Any, Any, Any), Tuple[int, int, int, int, int, int]]
+    # index: <cube-pos>
+    # value: (<face-index-left>, <face-index-right>, <face-index-back>, <face-index-front>, <face-index-bottom>, <face-index-top>)
+    __cube_face_map: NDArray[(Any, Any, Any), tuple]
+
+    # index: <cube-pos>
+    # value: is cube using the default colour
+    __cube_default_coloured: NDArray[(Any, Any, Any), bool]
+
+    __vertex_data_format: GeomVertexFormat
+    __vertex_data: GeomVertexData
+
+    __triangles: GeomTriangles
+    __triangle_data: GeomVertexArrayData
+
+    __vertex: GeomVertexWriter
+    __normal: GeomVertexWriter
+    __texcoord: GeomVertexWriter
+    __colour: GeomVertexRewriter
+
+    def __init__(self, structure: NDArray[(Any, Any, Any), bool], name: str = 'CubeMesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, hidden_faces: bool = False) -> None:
         self.name = name
         self.__structure = structure
         self.__artificial_lighting = artificial_lighting
@@ -48,63 +76,45 @@ class CubeMesh():
 
         self.__face_count = 0
 
-        # List[Point]
-        # key: <face-index>
-        # value: <cube-pos>
         self.__face_cube_map = []
+        self.__cube_face_map = np.empty(self.structure.shape, dtype=object)
+        self.__cube_default_coloured = np.full(self.structure.shape, True, dtype=bool)
 
-        # List[List[List[Tuple[Integral, Integral, Integral, Integral, Integral, Integral]]]]
-        # key: <cube-pos>
-        # value: (<face-index-left>, <face-index-right>, <face-index-back>, <face-index-front>, <face-index-bottom>, <face-index-top>)
-        self.__cube_face_map = []
+        # If 'hidden_faces' == False, we only make visible faces. That is, if there
+        # are two adjacent faces, they aren't added. Otherwise, all faces are added
+        for x, y, z in np.ndindex(self.structure.shape):
+            faces = []
+            pos = (x, y, z)
 
-        # List[List[List[bool]]]
-        self.__cube_default_coloured = [None for _ in self.structure]
-        for i in self.structure:
-            self.__cube_default_coloured[i] = [None for _ in self.structure[i]]
-            for j in self.structure[i]:
-                self.__cube_default_coloured[i][j] = [True for _ in self.structure[i][j]]
+            # skip if cube doesn't exist
+            if not self.structure[pos]:
+                self.__cube_face_map[pos] = (None, None, None, None, None, None)
+                continue
 
-        # we only make visible faces: if there are two adjacent faces, they aren't added.
-        self.__cube_face_map = [None for _ in self.structure]
-        for i in self.structure:
-            self.__cube_face_map[i] = [None for _ in self.structure[i]]
-            for j in self.structure[i]:
-                self.__cube_face_map[i][j] = [None for _ in self.structure[i][j]]
-                for k in self.structure[i][j]:
-                    faces = []
-                    pos = (i, j, k)
+            def add_face(face: Face, should_add: bool) -> None:
+                if hidden_faces or should_add:
+                    self.__make_face(face, pos)
+                    self.__face_cube_map.append(pos)
+                    faces.append(self.__face_count-1)
+                else:
+                    faces.append(None)
 
-                    # skip if cube doesn't exist
-                    if not self.structure[i][j][k]:
-                        self.__cube_face_map[i][j][k] = (None, None, None, None, None, None)
-                        continue
+            # add face if there is not adjacent face
+            xdim, ydim, zdim = self.structure.shape
+            add_face(Face.LEFT, (x-1) < 0 or not self.structure[x-1, y, z])
+            add_face(Face.RIGHT, (x+1) >= xdim or not self.structure[x+1, y, z])
+            add_face(Face.BACK, (y-1) < 0 or not self.structure[x, y-1, z])
+            add_face(Face.FRONT, (y+1) >= ydim or not self.structure[x, y+1, z])
+            add_face(Face.BOTTOM, (z-1) < 0 or not self.structure[x, y, z-1])
+            add_face(Face.TOP, (z+1) >= zdim or not self.structure[x, y, z+1])
 
-                    def add_face(face: Face, should_add: bool) -> None:
-                        if hidden_faces or should_add:
-                            self.__make_face(face, pos)
-                            self.__face_cube_map.append(pos)
-                            faces.append(self.__face_count-1)
-                        else:
-                            faces.append(None)
-
-                    # add face if there is not adjacent face
-                    add_face(Face.LEFT, i-1 not in self.structure or not self.structure[i-1][j][k])
-                    add_face(Face.RIGHT, i+1 not in self.structure or not self.structure[i+1][j][k])
-                    add_face(Face.BACK, j-1 not in self.structure[i] or not self.structure[i][j-1][k])
-                    add_face(Face.FRONT, j+1 not in self.structure[i] or not self.structure[i][j+1][k])
-                    add_face(Face.BOTTOM, k-1 not in self.structure[i][j] or not self.structure[i][j][k-1])
-                    add_face(Face.TOP, k+1 not in self.structure[i][j] or not self.structure[i][j][k+1])
-
-                    self.__cube_face_map[i][j][k] = tuple(faces)
+            self.__cube_face_map[pos] = tuple(faces)
 
         self.__triangles.close_primitive()
         self.mesh.add_primitive(self.__triangles)
 
     def get_cube_colour(self, pos: Point) -> Colour:
-        x, y, z = pos
-
-        faces = self.__cube_face_map[x][y][z]
+        faces = self.__cube_face_map[tuple(pos)]
         for i in range(len(faces)):
             if faces[i] != None:
                 self.__colour.setRow(faces[i] * 4)
@@ -118,10 +128,8 @@ class CubeMesh():
         return self.default_colour
 
     def set_cube_colour(self, pos: Point, colour: Colour) -> None:
-        x, y, z = pos
-
-        self.__cube_default_coloured[x][y][z] = False
-        faces = self.__cube_face_map[x][y][z]
+        self.__cube_default_coloured[tuple(pos)] = False
+        faces = self.__cube_face_map[tuple(pos)]
         for i in range(len(faces)):
             if faces[i] != None:
                 c = self.__face_colour(colour, Face(i))
@@ -133,17 +141,14 @@ class CubeMesh():
                 self.__colour.addData4f(*c)
 
     def reset_cube(self, pos: Point) -> None:
-        x, y, z = pos
-
         self.set_cube_colour(pos, self.default_colour)
-        self.__cube_default_coloured[x][y][z] = True
+        self.__cube_default_coloured[tuple(pos)] = True
 
     def reset_all_cubes(self) -> None:
-        for i in self.structure:
-            for j in self.structure[i]:
-                for k in self.structure[i][j]:
-                    if self.structure[i][j][k] and not self.__cube_default_coloured[i][j][k]:
-                        self.reset_cube((i, j, k))
+        for x, y, z in np.ndindex(self.structure.shape):
+            p = (x, y, z)
+            if self.structure[p] and not self.__cube_default_coloured[p]:
+                self.reset_cube(p)
 
     @staticmethod
     def __attenuate_colour(colour: Colour, factor: Real) -> Colour:
@@ -256,23 +261,47 @@ class CubeMesh():
         self.__default_colour = value
 
         # update colour of cubes that have old clear colour
-        for i in self.structure:
-            for j in self.structure[i]:
-                for k in self.structure[i][j]:
-                    if self.structure[i][j][k] and self.__cube_default_coloured[i][j][k]:
-                        self.reset_cube((i, j, k))
+        for x, y, z in np.ndindex(self.structure.shape):
+            p = (x, y, z)
+            if self.structure[p] and self.__cube_default_coloured[p]:
+                self.reset_cube(p)
 
     @property
     def structure(self) -> str:
         return 'structure'
 
     @structure.getter
-    def structure(self) -> List[List[List[bool]]]:
+    def structure(self) -> NDArray[(Any, Any, Any), bool]:
         return self.__structure
 
     def cube_visible(self, pos: Point) -> bool:
-        x, y, z = pos
-        for f in self.__cube_face_map[x][y][z]:
-            if f != None:
+        for f in self.__cube_face_map[tuple(pos)]:
+            if f is not None:
                 return True
         return False
+
+    def gen_wireframe(self, thickness: float = 5) -> GeomNode:
+        def is_connected(x, y, z, x1, y1, z1):
+            return (abs(x - x1) == 1 and abs(y - y1) != 1 and abs(z - z1) != 1) or \
+                   (abs(x - x1) != 1 and abs(y - y1) == 1 and abs(z - z1) != 1) or \
+                   (abs(x - x1) != 1 and abs(y - y1) != 1 and abs(z - z1) == 1)
+
+        ls = LineSegs()
+        ls.set_thickness(thickness)
+        for i, j, k in np.ndindex(self.structure.shape):
+            if self.structure[i, j, k]:
+                self.arr_x = [0, 0, 0, 0, 1, 1, 1, 1]
+                self.arr_y = [0, 0, 1, 1, 1, 1, 0, 0]
+                self.arr_z = [0, -1, -1, 0, 0, -1, -1, 0]
+                for pos1 in range(len(self.arr_x) - 1):
+                    for pos2 in range(pos1, len(self.arr_x)):
+                        x = self.arr_x[pos1] + i
+                        y = self.arr_y[pos1] + j
+                        z = self.arr_z[pos1] + k
+                        x1 = self.arr_x[pos2] + i
+                        y1 = self.arr_y[pos2] + j
+                        z1 = self.arr_z[pos2] + k
+                        if (is_connected(x, y, z, x1, y1, z1)):
+                            ls.move_to(x, y, z)
+                            ls.draw_to(x1, y1, z1)
+        return ls.create()

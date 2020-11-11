@@ -18,10 +18,7 @@ class OnlineLSTMMapDisplay(MapDisplay):
     def __init__(self, services: Services, custom_map: Map = None):
         super().__init__(services, z_index=250, custom_map=custom_map)
 
-    def render(self) -> bool:
-        if not super().render():
-            return False
-
+    def render(self, refresh: bool) -> None:
         mp = copy.deepcopy(self._map)
 
         features = MapProcessing.extract_features(mp, [
@@ -40,8 +37,6 @@ class OnlineLSTMMapDisplay(MapDisplay):
         self.__render_line(mp.agent.position, mp.goal.position, Colour(1, 0, 1))
         self.__render_arc(mp.agent.position, mp.goal.position, Colour(1, 0, 1))
 
-        return True
-
     """
     'distance_to_goal_normalized'(4323596448) = {Tensor}
     tensor(0.4342)
@@ -58,6 +53,3 @@ class OnlineLSTMMapDisplay(MapDisplay):
 
     def __render_line(self, p1: Point, p2: Point, colour: Colour):
         self.get_renderer_view().draw_line(colour, p1, p2)
-
-    def __lt__(self, other):
-        return super().__lt__(other)

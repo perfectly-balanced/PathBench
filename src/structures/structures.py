@@ -1,10 +1,8 @@
 from typing import Tuple, Optional, Callable, Union
-try:
-    from typing import Final
-except ImportError:
-    Final = 'Final[Colour]'
 import torch
 import copy
+
+from utility.compatibility import Final
 
 class Point(torch.Tensor):
     """
@@ -284,6 +282,9 @@ class Colour:
     
     def __getitem__(self, index):
         return self.__data[index]
+    
+    def __hash__(self) -> int:
+        return hash(self.__data)
 
 WHITE: Final = Colour(1)
 BLACK: Final = Colour(0)

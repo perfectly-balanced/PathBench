@@ -1,11 +1,14 @@
 from time import sleep
 
-from heapq import heappush, heappop
-from typing import List, Any, Tuple, Optional, Union
+from typing import List, Any, Tuple, Optional, Union, Set
 import os
 
 from constants import DATA_PATH
 
+from heapq import heappush, heappop
+from panda3d.core import Camera
+from panda3d.core import Texture
+import time
 from algorithms.configuration.entities.entity import Entity
 from simulator.models.model import Model
 from simulator.services.debug import DebugLevel
@@ -14,300 +17,344 @@ from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
 from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
 from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
-
+from simulator.services.event_manager.events.take_screenshot_tex_event import TakeScreenshotTexEvent
+from simulator.services.graphics.renderer import Renderer
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
 from simulator.views.map.display.numbers_map_display import NumbersMapDisplay
 from simulator.views.map.display.online_lstm_map_display import OnlineLSTMMapDisplay
 from simulator.views.view import View
+from simulator.views.util import blend_colours
 from structures import Point, Colour, TRANSPARENT, WHITE
 
-from simulator.views.gui.view_editor import ViewEditor
+from simulator.views.map.data.map_data import MapData
 from simulator.views.map.data.voxel_map import VoxelMap
-from simulator.views.map.object.cube_mesh import Face
+from simulator.views.map.data.flat_map import FlatMap
 
-from panda3d.core import NodePath, GeomNode, Geom, LineSegs, TextNode
-from direct.showutil import BuildGeometry
+from panda3d.core import NodePath, GeomNode, Geom, LineSegs, TextNode, PandaNode
 
 import math
 
+import numpy as np
+from nptyping import NDArray
 
 class MapView(View):
-    __displays: List[Any]
-
     __world: NodePath
-    __map: VoxelMap
-    __vs: ViewEditor
+    __map: Union[VoxelMap, FlatMap]
 
-    __tc_previous: List[List[List[Colour]]]
-    __tc_scratchpad: List[List[List[Colour]]]
-    __draw_nps: List[NodePath]
-    __circles: List[Tuple[int, float, Geom]]
-    __line_segs: LineSegs
-    __angle_degs: float
-    __angle_rads: float
-    __nsteps: int
-    __thickness: float
-    __rad = float
-    __colour: Colour
+    __displays: List[Any]
+    __persistent_displays: List[Any]
+    __tracked_data: List[Any]
+
+    __cube_modified: NDArray[(Any, Any, Any), bool]
+    __cube_update_displays: List[Any]
+    __cubes_requiring_update: Set[Point]
+    __display_updates_cube: bool
+    __cube_colour: Colour
+
+    __scratch: NodePath
+    __overlay: NodePath
 
     def __init__(self, services: Services, model: Model, root_view: Optional[View]) -> None:
         super().__init__(services, model, root_view)
         self.__displays = []
-        self.__tc_previous = {}
-        self.__tc_scratchpad = {}
-        self.__draw_nps = []
-        self.__circles = []
-        self.__line_segs = LineSegs()
-        self.__line_segs.set_thickness(2)
+        self.__tracked_data = []
+
+        self.__cube_update_displays = []
+        self.__cubes_requiring_update = set()
+        self.__display_updates_cube = False
+        self.__cube_colour = None
 
         # world (dummy node)
         self.__world = self._services.graphics.window.render.attach_new_node("world")
 
-        map_data = {}
-        for x in range(0, self._services.algorithm.map.size.width):
-            map_data[x] = {}
-            for y in range(0, self._services.algorithm.map.size.height):
-                map_data[x][y] = {}
-                if self._services.algorithm.map.size.n_dim == 2:
-                    map_data[x][y][0] = not self._services.algorithm.map.is_agent_valid_pos(Point(x, y))
-                else:
-                    # assume 3D
-                    for z in range(0, self._services.algorithm.map.size.depth):
-                        map_data[x][y][z] = not self._services.algorithm.map.is_agent_valid_pos(Point(x, y, z))
-
         # MAP #
-        self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
+        map_size = self._services.algorithm.map.size
+        map_data = np.empty((*map_size, 1) if map_size.n_dim == 2 else map_size, dtype=bool)
+        self.__cube_modified = np.empty(map_data.shape, dtype=bool)
+        for x, y, z in np.ndindex(map_data.shape):
+            p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
+            valid = self._services.algorithm.map.is_agent_valid_pos(p)
+            self.__cube_modified[x, y, z] = valid
+            map_data[x, y, z] = not valid
+
+        if map_size.n_dim == 2:
+            self.__map = FlatMap(self._services, map_data, self.world)
+        else:
+            self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
         self.__center(self.__map.root)
 
-        # GUI #
-        self.__vs = ViewEditor(self._services)
+        self.__overlay = self.map.root.attach_new_node("overlay")
+        self.__scratch = self.map.root.attach_new_node("scratch")
+        self.renderer.push_root(self.__scratch)
 
-        self.update_view()
+        self.__persistent_displays = [EntitiesMapDisplay(self._services)]
+
+        self.__deduced_traversables_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
+        self.__deduced_traversables_wf_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
+
+        self.__sphere_scale = 0.2
+        """
+        def rescale_sphere(dim):
+            while (self.__sphere_scale < 0.75) and ((self.__sphere_scale * dim) < 8):
+                self.__sphere_scale *= 1.25
+        rescale_sphere(self.map.logical_w)
+        rescale_sphere(self.map.logical_h)
+        rescale_sphere(self.map.logical_d)
+        """
+
+        self.__circle_filled_radius = 0.06
+        def resize_circle_filled(dim):
+            if dim < 40:
+                pass
+            elif dim < 75:
+                dim /= 1.5
+            elif dim < 100:
+                dim /= 2
+            while (self.__circle_filled_radius < 1) and (dim / self.__circle_filled_radius > 250):
+                self.__circle_filled_radius *= 1.25
+        resize_circle_filled(self.map.logical_w)
+        resize_circle_filled(self.map.logical_h)
+        resize_circle_filled(self.map.logical_d)
+
+        self.__line_thickness = 2.5
+        def change_line_thickness(dim):
+            while (self.__line_thickness < 4) and (dim / self.__line_thickness > 160):
+                self.__line_thickness *= 1.25
+        change_line_thickness(self.map.logical_w)
+        change_line_thickness(self.map.logical_h)
+        change_line_thickness(self.map.logical_d)
+        self.renderer.line_segs.set_thickness(self.__line_thickness)
+
+        self.update_view(True)
+
+    def destroy(self) -> None:
+        self.__map.destroy()
+        self.__world.remove_node()
+        self.__displays = []
+        self.__persistent_displays = []
+        self._services.ev_manager.unregister_listener(self)
+        self._services.ev_manager.unregister_tick_listener(self)
+        if self._root_view is not None:
+            self._root_view.remove_child(self)
+
+    def __refresh(self) -> None:
+        self.__overlay.flatten_strong()
+        self.__overlay.remove_node()
+        self.__overlay = self.map.root.attach_new_node("overlay")
 
     def notify(self, event: Event) -> None:
         super().notify(event)
         if isinstance(event, KeyFrameEvent):
             if event.refresh:
-                self.__tc_reset()
-            self.update_view()
+                self.__refresh()
+            self.update_view(event.refresh)
+
         elif isinstance(event, ColourUpdateEvent):
             if event.view.is_effective():
-                self.__tc_reset()
-                self.update_view()
+                self.update_view(False)
         elif isinstance(event, TakeScreenshotEvent):
             self.take_screenshot()
+        elif isinstance(event, TakeScreenshotTexEvent):
+            self.HDScreenShot()
 
-    def __to_point3(self, v: Union[Point, Entity]):
+    def to_point3(self, v: Union[Point, Entity]):
         if isinstance(v, Entity):
             v = v.position
         return Point(*v, 0) if len(v) == 2 else v
 
     def __center(self, np: NodePath):
         (x1, y1, z1), (x2, y2, z2) = np.get_tight_bounds()
-        np.set_pos(self.world.getX() - (x2 - x1) / 2, self.world.getY() - (y2 - y1) / 2,
+        np.set_pos(self.world.getX() - (x2 - x1) / 2,
+                   self.world.getY() - (y2 - y1) / 2,
                    self.world.getZ() - (z2 - z1) / 2)
 
     @property
-    def world(self) -> str:
-        return 'world'
-
-    @world.getter
     def world(self) -> NodePath:
         return self.__world
 
     @property
-    def map(self) -> str:
-        return 'map'
-
-    @map.getter
-    def map(self) -> VoxelMap:
+    def map(self) -> Union[VoxelMap, FlatMap]:
         return self.__map
 
-    def __tc_reset(self) -> None:
-        self.__tc_scratchpad = {}
-        self.__tc_previous = {}
-        self.map.traversables_mesh.reset_all_cubes()
+    @property
+    def overlay(self) -> NodePath:
+        return self.__overlay
+
+    @property
+    def renderer(self) -> Renderer:
+        return self._services.graphics.renderer
+
+    def __clear_scratch(self) -> None:
+        assert self.renderer.root == self.__scratch
+        for c in self.__scratch.get_children():
+            c.remove_node()
 
     def __get_displays(self) -> None:
-        self.__displays = []
-        displays: List[MapDisplay] = [EntitiesMapDisplay(self._services)]
-        # drop map displays if not compatible with display format
-        displays += list(
-            filter(lambda d: self._services.settings.simulator_grid_display or not isinstance(d, NumbersMapDisplay),
-                   self._services.algorithm.instance.get_display_info()))
-        for display in displays:
-            display._model = self._model
-            self.add_child(display)
-            heappush(self.__displays, (display.z_index, display))
+        def add_diplay(d):
+            d._model = self._model
+            self.add_child(d)
+            heappush(self.__displays, d)
+            self.__tracked_data += d.get_tracked_data()
 
-    def __render_displays(self) -> None:
-        for np in self.__draw_nps:
-            np.remove_node()
-        self.__draw_nps.clear()
+        for d in self.__persistent_displays:
+            add_diplay(d)
+        for d in self._services.algorithm.instance.get_display_info():
+            add_diplay(d)
+
+    def __render_displays(self, refresh: bool) -> None:
         while len(self.__displays) > 0:
             display: MapDisplay
-            _, display = heappop(self.__displays)
-            display.render()
-            if not self.__line_segs.is_empty():
-                n = self.__line_segs.create()
-                np = self.map.root.attach_new_node(n)
-                self.__draw_nps.append(np)
+            display = heappop(self.__displays)
 
-        # update actual viewable map data
-        # lazily update mesh data, maybe this is actually slower
-        """
-        for x in self.__tc_scratchpad:
-            if x in self.__tc_previous:
-                for y in self.__tc_scratchpad[x]:
-                    if y in self.__tc_previous[x]:
-                        for z in self.__tc_scratchpad[x][y]:
-                            if z in self.__tc_previous[x][y]:
-                                def approx_eq(c1, c2):
-                                    r1, g1, b1, a1 = c1
-                                    r2, g2, b2, a2 = c2
-                                    TOLERANCE = 1e-3
-                                    return math.isclose(r1, r2, rel_tol=TOLERANCE) and \
-                                           math.isclose(g1, g2, rel_tol=TOLERANCE) and \
-                                           math.isclose(b1, b2, rel_tol=TOLERANCE) and \
-                                           math.isclose(a1, a2, rel_tol=TOLERANCE)
+            display.render(refresh)
+            if self.__display_updates_cube:
+                self.__display_updates_cube = False
+                self.__cube_update_displays.append(display)
 
-                                if not approx_eq(self.__tc_previous[x][y][z], self.__tc_scratchpad[x][y][z]):
-                                    self.map.traversables_mesh.set_cube_colour(Point(x, y, z), self.__tc_scratchpad[x][y][z])
-                            else:
-                                self.map.traversables_mesh.set_cube_colour(Point(x, y, z), self.__tc_scratchpad[x][y][z])
-                    else:
-                        for z in self.__tc_scratchpad[x][y]:
-                            self.map.traversables_mesh.set_cube_colour(Point(x, y, z), self.__tc_scratchpad[x][y][z])
-            else:
-                for y in self.__tc_scratchpad[x]:
-                    for z in self.__tc_scratchpad[x][y]:
-                        self.map.traversables_mesh.set_cube_colour(Point(x, y, z), self.__tc_scratchpad[x][y][z])
-        """
-        for x in self.__tc_scratchpad:
-            for y in self.__tc_scratchpad[x]:
-                for z in self.__tc_scratchpad[x][y]:
-                    self.map.traversables_mesh.set_cube_colour(Point(x, y, z), self.__tc_scratchpad[x][y][z])
+    def __update_cubes(self, refresh: bool) -> None:
+        def eager_refresh():
+            nonlocal refresh
+            refresh = True
+            for x, y, z in np.ndindex(self.map.traversables_data.shape):
+                self.__cube_modified[x, y, z] = self.map.traversables_data[x, y, z]
+        
+        clr = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
+        if clr != self.__deduced_traversables_colour:
+            eager_refresh()
+        self.__deduced_traversables_colour = clr
 
-        # for our purposes a simple reset on first frame may suffice
-        # i.e. may not need to do the following on each frame
-        for x in self.__tc_previous:
-            should_reset = x not in self.__tc_scratchpad
-            for y in self.__tc_previous[x]:
-                if not should_reset:
-                    should_reset = y not in self.__tc_scratchpad[x]
-                for z in self.__tc_previous[x][y]:
-                    if not should_reset:
-                        should_reset = z not in self.__tc_scratchpad[x][y]
-                    if should_reset:
-                        self.map.traversables_mesh.reset_cube(Point(x, y, z))
+        if self.map.dim == 3:
+            def set_colour(p, c): return self.map.traversables_mesh.set_cube_colour(p, c)
+        else: # 2D
+            wfc = self.map.traversables_wf_dc()
+            wfc = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
+            if wfc != self.__deduced_traversables_wf_colour:
+                eager_refresh()
+            self.__deduced_traversables_wf_colour = wfc
 
-        self.__tc_previous = self.__tc_scratchpad
-        self.__tc_scratchpad = {}
+            def set_colour(p, c): return self.map.render_square(p, c, wfc)
 
-    def render_pos(self, pe: Union[Point, Entity], src: Colour) -> None:
-        x, y, z = self.__to_point3(pe)
-        if x not in self.__tc_scratchpad:
-            self.__tc_scratchpad[x] = {}
-        if y not in self.__tc_scratchpad[x]:
-            self.__tc_scratchpad[x][y] = {}
-        if z not in self.__tc_scratchpad[x][y]:
-            self.__tc_scratchpad[x][y][z] = self._services.state.effective_view.colours["traversables"].colour  # use raw colour
-        dst = self.__tc_scratchpad[x][y][z]
+        def update_cube_colour(p):
+            self.__cube_colour = clr
+            for d in self.__cube_update_displays:
+                d.update_cube(p)
+            set_colour(p, self.__cube_colour)
+            self.__cube_modified[p.x, p.y, p.z] = self.__cube_colour != clr
 
-        wda = dst.a * (1 - src.a)  # weighted dst alpha
-        a = src.a + wda
-        r = (src.r * src.a + dst.r * wda) / a
-        g = (src.g * src.a + dst.g * wda) / a
-        b = (src.b * src.a + dst.b * wda) / a
+        if refresh:
+            for x, y, z in np.ndindex(self.__cube_modified.shape):
+                if self.__cube_modified[x, y, z]:
+                    update_cube_colour(Point(x, y, z))
+        
+        # update these cubes regardless of refresh
+        # since it cubes that require update aren't
+        # necessarily modified.
+        for p in self.__cubes_requiring_update:
+            update_cube_colour(p)
 
-        self.__tc_scratchpad[x][y][z] = Colour(r, g, b, a)
+        for td in self.__tracked_data:
+            td.clear_tracking_data()
 
-    def update_view(self) -> None:
+        self.__tracked_data.clear()
+        self.__cubes_requiring_update.clear()
+        self.__cube_update_displays.clear()
+        self.__displays.clear()
+
+    def update_view(self, refresh: bool) -> None:
+        self._services.lock.acquire()
+        self.__clear_scratch()
         self.__get_displays()
-        self.__render_displays()
+        self.__render_displays(refresh)
+        self.__update_cubes(refresh)
+        self.renderer.render()
+        self._services.lock.release()
+
+    def display_updates_cube(self) -> None:
+        self.__display_updates_cube = True
+
+    def cube_requires_update(self, v: Union[Point, Entity]) -> Point:
+        p = self.to_point3(v)
+        self.__cubes_requiring_update.add(p)
+        return p
+
+    def colour_cube(self, src: Colour) -> None:
+        self.__cube_colour = blend_colours(src, self.__cube_colour)
 
     def take_screenshot(self) -> None:
         self._services.resources.screenshots_dir.append(
             lambda fn: self._services.graphics.window.win.save_screenshot(fn))
 
+    def HDScreenShot(self):
+        tex = Texture()
+        width = 4096
+        height = 4096
+        mybuffer = self._services.graphics.window.win.makeTextureBuffer('HDScreenshotBuff', width, height, tex, True)
+
+        cam = Camera('HDCam')
+        cam.setLens(self._services.graphics.window.camLens.makeCopy())
+        cam.getLens().setAspectRatio(width / height)
+        npCam = NodePath(cam)
+        npCam.reparentTo(self.__world)
+        x,y,z = self.__world.getPos()
+        npCam.setPos(x,y+0.5,z+77.3)
+        npCam.setP(-90)
+
+        mycamera = self._services.graphics.window.makeCamera(mybuffer, useCamera=npCam)
+        myscene = self._services.graphics.window.render
+        mycamera.node().setScene(myscene)
+        self._services.graphics.window.graphicsEngine.renderFrame()
+        tex = mybuffer.getTexture()
+        mybuffer.setActive(False)
+        tex.write('screenshotTexHD.png')
+        self._services.graphics.window.graphicsEngine.removeWindow(mybuffer)
+        print ("HDScreenShot taken")
+
+
     def cube_center(self, p: Point) -> Point:
-        x, y, z = self.__to_point3(p)
+        x, y, z = self.to_point3(p)
         x += 0.5
         y += 0.5
         if self._services.algorithm.map.size.n_dim == 3:
             z -= 0.5
         else:
-            z = 0
+            z = 0.1 # have overlay be slightly above surface for 2D maps
         return Point(x, y, z)
 
-    @property
-    def line_segs(self) -> LineSegs:
-        self.__line_segs_used = True
-        return self.__line_segs
+    def push_root(self, np: Optional[NodePath] = None) -> NodePath:
+        if np is None:
+            np = self.overlay.attach_new_node('collection')
+        self.renderer.push_root(np)
+        return np
+
+    def pop_root(self) -> NodePath:
+        return self.renderer.pop_root()
 
     def draw_line(self, colour: Colour, p1: Point, p2: Point) -> None:
-        ls = self.line_segs
-        ls.set_color(*colour)
+        self.renderer.draw_line(colour, self.cube_center(p1), self.cube_center(p2))
 
-        ls.move_to(*self.cube_center(p1))
-        ls.draw_to(*self.cube_center(p2))
+    def draw_sphere(self, p: Point, *args, **kwargs) -> None:
+        self.renderer.draw_sphere(self.cube_center(p), *args, **kwargs, scale=self.__sphere_scale)
 
-    def draw_sphere(self, p: Point, colour: Colour = WHITE, scale: float = 0.2) -> None:
-        np = loader.load_model("models/misc/sphere.egg")
-        np.set_color(*colour)
-        np.reparent_to(self.map.root)
-        np.set_pos(*self.cube_center(p))
-        np.set_scale(scale)
-
-        self.__draw_nps.append(np)
-
-    def make_arc(self, p: Point, angle_degs=360, nsteps=16, radius: float = 0.06, colour: Colour = WHITE) -> None:
-        ls = self.line_segs
-        ls.set_color(*colour)
-
-        angle_rads = angle_degs * (math.pi / 180.0)
-        x, y, z = self.cube_center(p)
-
-        ls.move_to(x + radius, y, z)
-        for i in range(nsteps + 1):
-            a = angle_rads * i / nsteps
-            ty = math.sin(a) * radius + y
-            tx = math.cos(a) * radius + x
-            ls.draw_to(tx, ty, z)
+    def make_arc(self, p: Point, *args, **kwargs) -> None:
+        self.renderer.make_arc(self.cube_center(p), *args, **kwargs)
 
     def draw_circle(self, p: Point, *args, **kwargs) -> None:
         self.make_arc(p, 360, *args, **kwargs)
 
-    def draw_circle_filled(self, p: Point, nsteps=16, radius: float = 0.06, colour: Colour = WHITE) -> None:
-        gn = GeomNode("circle")
-
-        exists: bool = False
-        for cn, cr, cg in self.__circles:
-            if cn == nsteps and cr == radius:
-                exists = True
-                gn.add_geom(cg)
-                break
-        if not exists:
-            self.__circles.append((nsteps, radius, BuildGeometry.addCircle(gn, nsteps, radius, colour)))
-
-        np = self.map.root.attach_new_node(gn)
-        np.set_pos(*self.cube_center(p))
-        np.set_color(*colour)
-
-        self.__draw_nps.append(np)
+    def draw_circle_filled(self, p: Point, *args, **kwargs) -> None:
+        self.renderer.draw_circle_filled(self.cube_center(p), *args, **kwargs, radius=self.__circle_filled_radius)
 
     def render_text(self, p: Point, text: str, colour: Colour = WHITE, scale: float = 0.4) -> None:
+        """ TODO: reintergrate into reworked code """
         center = self.cube_center(p)
 
         offset, hpr = Point(-0.25, 0, 0), (0, -90, 0)
 
         n = TextNode('text')
         n.set_text(text)
-        np = self.map.root.attach_new_node(n)
+        np = self.overlay.attach_new_node(n)
         np.set_scale(scale)
         np.set_color(*colour)
         np.set_pos(*(center + offset))
         np.set_hpr(*hpr)
-
-        self.__draw_nps.append(np)

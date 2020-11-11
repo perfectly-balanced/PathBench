@@ -51,15 +51,15 @@ class Map(Model):
         self.stop_algorithm()
         self._services.algorithm.reset_algorithm()
 
-    def move(self, to: Point) -> None:
+    def move(self, to: Point, refresh: bool = False) -> None:
         self.reset()
         self._services.algorithm.map.move_agent(to, True)
-        self._services.ev_manager.post(KeyFrameEvent())
+        self._services.ev_manager.post(KeyFrameEvent(refresh=refresh))
 
-    def move_goal(self, to: Point) -> None:
+    def move_goal(self, to: Point, refresh: bool = False) -> None:
         self.reset()
         self._services.algorithm.map.move(self._services.algorithm.map.goal, to, True)
-        self._services.ev_manager.post(KeyFrameEvent())
+        self._services.ev_manager.post(KeyFrameEvent(refresh=refresh))
 
     def stop_algorithm(self) -> None:
         self.key_frame_is_paused = True
@@ -90,8 +90,12 @@ class Map(Model):
             self.key_frame_is_paused = False
             if self._services.settings.simulator_key_frame_speed > 0:
                 self._services.algorithm.instance.set_condition(self.key_frame_condition)
+            self._services.ev_manager.post(KeyFrameEvent(refresh=True))
             self._services.algorithm.instance.find_path()
-            self._services.ev_manager.post(KeyFrameEvent(is_first=True))
+            if self._services.settings.simulator_key_frame_speed == 0:
+                # no animation hence there hasn't been a chance to render
+                # the last state of the algorithm.
+                self._services.ev_manager.post(KeyFrameEvent(refresh=True))
             self.key_frame_condition = None
             self.last_thread = None
 

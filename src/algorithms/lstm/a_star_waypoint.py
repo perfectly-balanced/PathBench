@@ -12,7 +12,7 @@ from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
 from simulator.services.algorithm_runner import AlgorithmRunner
 from simulator.services.services import Services
 from simulator.views.map.display.map_display import MapDisplay
-from simulator.views.map.display.solid_color_map_display import SolidColorMapDisplay
+from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
 from structures import Point
 
 
@@ -67,9 +67,9 @@ class WayPointNavigation(Algorithm):
             if not self.__is_local_anim and self.__global_kernel_anim:
                 ret += self.__global_kernel_anim.instance.set_display_info()
 
-        ret.append(SolidColorMapDisplay(self._services, self.display_info_data[0], AStar.VISITED_COLOR, z_index=70))
-        ret.append(SolidColorMapDisplay(self._services, self.display_info_data[1], AStar.VISITED_COLOR, z_index=65))
-        ret.append(SolidColorMapDisplay(self._services, self.way_points, (0, 255, 255), z_index=200, radius=5))
+        ret.append(SolidColourMapDisplay(self._services, self.display_info_data[0], AStar.VISITED_COLOR, z_index=70))
+        ret.append(SolidColourMapDisplay(self._services, self.display_info_data[1], AStar.VISITED_COLOR, z_index=65))
+        ret.append(SolidColourMapDisplay(self._services, self.way_points, (0, 255, 255), z_index=200, radius=5))
         return ret
 
     def _find_path_internal(self) -> None:
