@@ -85,7 +85,7 @@ class MapView(View):
         self.__center(self.__map.root)
 
         self.__overlay = self.map.root.attach_new_node("overlay")
-        self.__scratch = self.world.attach_new_node("scratch")
+        self.__scratch = self.map.root.attach_new_node("scratch")
         self.renderer.push_root(self.__scratch)
 
         self.__persistent_displays = [EntitiesMapDisplay(self._services)]

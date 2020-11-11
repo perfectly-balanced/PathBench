@@ -1,10 +1,12 @@
-from typing import Callable, List, Tuple, Any, Dict
 from algorithms.classic.sample_based.core.vertex import Vertex
 from structures import Point
 from structures.tracked import Tracked
+from structures.factory import prefer_tracked
+from simulator.services.services import Services
+
 import torch
 from abc import ABC, abstractmethod
-
+from typing import Callable, List, Tuple, Any, Dict, Union
 
 class Graph(ABC):
     def __init__(self, start_pos: Vertex, goal_pos: Vertex, root_vertices: List[Vertex]) -> None:
@@ -149,6 +151,18 @@ class TrackedCyclicGraph(CyclicGraph, TrackedGraph):
     def remove_edge(self, parent: Vertex, child: Vertex) -> None:
         CyclicGraph.remove_edge(self, parent, child)
         TrackedGraph._edge_removed(self, parent, child)
+
+def gen_forest(services: Services, *args, **kwargs) -> Forest:
+    if prefer_tracked(services):
+        return TrackedForest(*args, **kwargs)
+    else:
+        return Forest(*args, **kwargs)
+
+def gen_cyclic_graph(services: Services, *args, **kwargs) -> CyclicGraph:
+    if prefer_tracked(services):
+        return TrackedCyclicGraph(*args, **kwargs)
+    else:
+        return CyclicGraph(*args, **kwargs)
 
 
 '''

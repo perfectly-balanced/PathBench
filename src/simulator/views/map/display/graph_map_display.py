@@ -114,9 +114,9 @@ class GraphMapDisplay(MapDisplay):
 
         if self.__first_frame: # occurs at initialisation or refresh            
             def render_child(current) -> bool:
-                rv.push_root()
+                current.aux[self] = rv.push_root()
                 self.__render_child(current)
-                current.aux[self] = rv.pop_root().flatten_strong()
+                rv.pop_root().flatten_strong()
                 return True
             
             self.__graph.walk_dfs(lambda child: render_child(child))

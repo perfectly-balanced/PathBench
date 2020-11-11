@@ -20,6 +20,7 @@ class Renderer():
         self.__line_segs.set_thickness(2.5)
 
     def push_root(self, np: NodePath) -> None:
+        assert isinstance(np, NodePath)
         self.render()
         self.__roots.append(np)
 

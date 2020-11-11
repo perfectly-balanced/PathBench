@@ -12,8 +12,8 @@ from simulator.views.map.display.gradient_map_display import GradientMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
 from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
 from structures import Point, Colour, BLUE, DynamicColour
-from structures.tracked_set import TrackedSet
-from structures.tracked_heap import TrackedHeap
+from structures.factory import gen_set, gen_heap
+from structures.heap import Heap
 
 from memory_profiler import profile
 
@@ -24,15 +24,15 @@ Heap duplicates https://www.redblobgames.com/pathfinding/a-star/implementation.h
 
 class AStar(Algorithm):
     class InternalMemory:
-        priority_queue: TrackedHeap
+        priority_queue: Heap
         visited: Set[Point]
         back_pointer: Dict[Point, Optional[Point]]
         g: Dict[Point, int]
         h: Dict[Point, float]
 
-        def __init__(self):
-            self.priority_queue = TrackedHeap()
-            self.visited = TrackedSet()
+        def __init__(self, services: Services):
+            self.priority_queue = gen_heap(services)
+            self.visited = gen_set(services)
             self.back_pointer = {}
             self.g = {}
             self.h = {}
@@ -48,7 +48,7 @@ class AStar(Algorithm):
     def __init__(self, services: Services, testing: BasicTesting = None):
         super().__init__(services, testing)
 
-        self.mem = AStar.InternalMemory()
+        self.mem = AStar.InternalMemory(self._services)
 
         self.pq_colour_max = self._services.state.add_colour("explored max", BLUE)
         self.pq_colour_min = self._services.state.add_colour("explored min", Colour(0.27, 0.33, 0.35, 0.2))
