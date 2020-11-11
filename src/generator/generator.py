@@ -390,17 +390,19 @@ class Generator:
         grid[available_spots[goal_pos_idx].y][available_spots[goal_pos_idx].x] = DenseMap.GOAL_ID
         """
 
-        grid: List[List[int]] = [[DenseMap.CLEAR_ID for _ in range(dimensions.width)] for _ in range(dimensions.height)]
+        grid: np.array = np.zeros(dimensions)
         rooms: List[Tuple[Point, Size]] = []
 
-        def in_bounds(x, y):
-            return 0 <= x < len(grid[0]) and 0 <= y < len(grid)
+        def in_bounds(pos):
+            #return 0 <= x < len(grid[0]) and 0 <= y < len(grid)
+            return all([pos[i] >= 0 and pos[i] < grid.shape[i] for i in range(len(grid.shape))])
 
-        def __place_room(grid: List[List[int]], size: Size, top_left_corner: Point) -> None:
-            for x in range(top_left_corner.x, top_left_corner.x + size.width):
-                for y in range(top_left_corner.y, top_left_corner.y + size.height):
-                    if in_bounds(x, y):
-                        grid[y][x] = DenseMap.CLEAR_ID
+        def __place_room(grid: np.array, size: Size, top_left_corner: Point) -> None:
+            print("top left: ", top_left_corner)
+            for index in np.ndindex(*size):
+                p = [elem + top_left_corner[i] for i, elem in enumerate(index)]
+                if in_bounds(Point(*p)):
+                    grid[p] = DenseMap.CLEAR_ID
 
             for x in range(top_left_corner.x, top_left_corner.x + size.width):
                 y = top_left_corner.y
@@ -422,50 +424,49 @@ class Generator:
 
             rooms.append((top_left_corner, size))
 
-        def __get_subdivision_number(dim, vertical):
-            if vertical:
-                min_size = min_room_size.width
-                dim_size = dim.width
-            else:
-                min_size = min_room_size.height
-                dim_size = dim.height
+        def __get_subdivision_number(dim, i: int):
+            print("dim: ", dim)
+            min_size = min_room_size[i]
+            print("min size: ", min_size)
+            dim_size = dim[i]
+            print("dim size: ", dim_size)
 
             # try hallway
             # if int(torch.randint(0, 11, (1,)).item()) == 0:
             #    return hallway_size + 1
 
             total_split = dim_size - 2 * min_size + 1
-            rand_split = torch.randint(0, total_split + 1, (1,)).item()
+            rand_split = np.random.randint(0, total_split + 1)
             return min_size + rand_split
 
         def __subdivide(top_left_corner, dim):
-            if dim.width < 2 * min_room_size.width - 1 and dim.height < 2 * min_room_size.height - 1:
+            if all([dim[i] < 2 * min_room_size[i] - 1 for i in range(len(dim))]):
                 __place_room(grid, dim, top_left_corner)
                 return
-            elif dim.width < 2 * min_room_size.width - 1:
-                is_vertical_split = False
-            elif dim.height < 2 * min_room_size.height - 1:
-                is_vertical_split = True
-            else:
-                is_vertical_split = int(torch.randint(0, 2, (1,)).item()) == 0
+            is_vertical_split = int(np.random.randint(0, len(dim)))
+            for i in range(len(dim)):
+                if dim[i] < 2 * min_room_size[i] - 1:
+                    is_vertical_split = i
 
-            if dim.width <= max_room_size.width and dim.height <= max_room_size.height:
-                if int(torch.randint(0, 2, (1,)).item()) == 0:
+            if all([dim[i] <= max_room_size[i] for i in range(len(dim))]):
+            # do we want a 50-50 chance here? (or should 2 be len(dim)?)
+                if int(np.random.randint(0, 2)) == 0:
                     __place_room(grid, dim, top_left_corner)
                     return
 
             # split
             new_top_left_corner1 = top_left_corner
 
-            if is_vertical_split:
-                new_dim1 = Size(__get_subdivision_number(dim, True), dim.height)
-                new_top_left_corner2 = Point(top_left_corner.x + new_dim1.width - 1, top_left_corner.y)
-                new_dim2 = Size(dim.width - new_dim1.width + 1, dim.height)
-            else:
-                new_dim1 = Size(dim.width, __get_subdivision_number(dim, False))
-                new_top_left_corner2 = Point(top_left_corner.x, top_left_corner.y + new_dim1.height - 1)
-                new_dim2 = Size(dim.width, dim.height - new_dim1.height + 1)
+            subdiv = __get_subdivision_number(dim, is_vertical_split)
+            new_dim1 = list(dim)
+            new_dim1[is_vertical_split] = subdiv
 
+            new_top_left_corner2 = list(top_left_corner)
+            new_top_left_corner2[is_vertical_split] = top_left_corner[is_vertical_split] + new_dim1[is_vertical_split] - 1
+            
+            new_dim2 = list(dim)
+            new_dim2[is_vertical_split] = dim[is_vertical_split] - new_dim1[is_vertical_split] + 1
+    
             __subdivide(new_top_left_corner1, new_dim1)
             __subdivide(new_top_left_corner2, new_dim2)
 
