@@ -94,12 +94,14 @@ class MapView(View):
         self.__deduced_traversables_wf_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
 
         self.__sphere_scale = 0.2
+        """
         def rescale_sphere(dim):
             while (self.__sphere_scale < 0.75) and ((self.__sphere_scale * dim) < 8):
                 self.__sphere_scale *= 1.25
         rescale_sphere(self.map.logical_w)
         rescale_sphere(self.map.logical_h)
         rescale_sphere(self.map.logical_d)
+        """
 
         self.__circle_filled_radius = 0.06
         def resize_circle_filled(dim):
