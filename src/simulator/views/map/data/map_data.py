@@ -5,8 +5,9 @@ from simulator.services.services import Services
 from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
+from utility.compatibility import Final
 
-from typing import Optional, Callable, Dict, Final, Any
+from typing import Optional, Callable, Dict, Any
 from abc import ABC, abstractmethod
 
 import numpy as np

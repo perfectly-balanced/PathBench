@@ -1,8 +1,7 @@
 from simulator.services.service import Service
 from simulator.services.graphics.window import Window
 from simulator.services.graphics.renderer import Renderer
-
-from typing import Final
+from utility.compatibility import Final
 
 class GraphicsManager(Service):
     __window: Final[Window]

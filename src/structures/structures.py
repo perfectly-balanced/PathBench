@@ -1,10 +1,8 @@
-from typing import Tuple, Optional, Callable, Union
-try:
-    from typing import Final
-except ImportError:
-    Final = 'Final[Colour]'
+from typing import Tuple, Optional, Callable
 import torch
 import copy
+
+from utility.compatibility import Final
 
 class Point(torch.Tensor):
     """

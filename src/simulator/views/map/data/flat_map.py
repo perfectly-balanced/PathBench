@@ -5,11 +5,12 @@ from simulator.views.map.data.map_data import MapData
 from simulator.views.map.object.square_mesh import SquareMesh
 from simulator.views.util import blend_colours
 from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
+from utility.compatibility import Final
 
 import array
 import random
 import math
-from typing import Any, Final, Tuple, Dict, Optional
+from typing import Any, Tuple, Dict, Optional
 
 import numpy as np
 from nptyping import NDArray
