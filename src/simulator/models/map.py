@@ -92,6 +92,10 @@ class Map(Model):
                 self._services.algorithm.instance.set_condition(self.key_frame_condition)
             self._services.ev_manager.post(KeyFrameEvent(refresh=True))
             self._services.algorithm.instance.find_path()
+            if self._services.settings.simulator_key_frame_speed == 0:
+                # no animation hence there hasn't been a chance to render
+                # the last state of the algorithm.
+                self._services.ev_manager.post(KeyFrameEvent(refresh=True))
             self.key_frame_condition = None
             self.last_thread = None
 
