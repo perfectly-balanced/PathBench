@@ -22,7 +22,7 @@ class GradientMapDisplay(MapDisplay):
 
         self.pts = None
 
-        if not(grid is None):
+        if grid is not None:
             self.pts = self.__transform_to_points(grid)
 
         if pts:

@@ -16,13 +16,13 @@ import copy
 
 
 class Wavefront(Algorithm):
-    step_grid: List[List[int]]
+    step_grid: np.ndarray
     STEP_GRID_MIN_COLOR = np.array([255, 255, 255])
     STEP_GRID_MAX_COLOR = np.array([0, 0, 255])
 
     def __init__(self, services: Services, testing: BasicTesting = None):
         super().__init__(services, testing)
-        self.step_grid = []
+        self.step_grid = None
 
     def set_display_info(self) -> List[MapDisplay]:
         """
@@ -54,7 +54,6 @@ class Wavefront(Algorithm):
         """
         #._get_grid() is in Algorithm class and gets the map
         grid: Map = self._get_grid()
-        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& grid", (grid.obstacles[0].position.x,grid.obstacles[0].position.y))
         #agent and goal are represented by a point(x,y) and radius
         agent: Agent = grid.agent
         goal: Goal = grid.goal
@@ -70,7 +69,7 @@ class Wavefront(Algorithm):
         #print("queue=",queue)
         
         #make the goal cell 1
-        self.step_grid[goal.position[::-1]] = 1
+        self.step_grid[goal.position.pos] = 1
             
         #print("________________________________________________________\n")
         #print("self.step_grid=",self.step_grid)
@@ -83,12 +82,12 @@ class Wavefront(Algorithm):
             count: int
             next_node, count = queue.pop(0)
             for n in grid.get_next_positions(next_node):
-                if self.step_grid[n.pos[::-1]] == 0:
-                    self.step_grid[n.pos[::-1]] = count
+                if self.step_grid[n.pos] == 0:
+                    self.step_grid[n.pos] = count
                     queue.append((n, count + 1))
                 if self.__equal_pos(n, agent.position):
                     agent_reached = True
-                    self.step_grid[n.pos[::-1]] = count
+                    self.step_grid[n.pos] = count
                     break
             self.key_frame()
 
@@ -114,9 +113,9 @@ class Wavefront(Algorithm):
         """
         trace: List[Point] = [current]
         #find the trace of the path by looking at neighbours at each point and moving the current towards the agent position. (number to next lowest numb(-1))
-        while self.step_grid[current.pos[::-1]] != 1:
+        while self.step_grid[current.pos] != 1:
             for n in grid.get_next_positions(current):
-                if self.step_grid[n.pos[::-1]] == self.step_grid[current.pos[::-1]] - 1:
+                if self.step_grid[n.pos] == self.step_grid[current.pos] - 1:
                     trace.append(n)
                     current = n
                     break
