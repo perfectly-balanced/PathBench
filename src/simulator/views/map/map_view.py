@@ -34,7 +34,9 @@ from simulator.views.map.data.flat_map import FlatMap
 from panda3d.core import NodePath, GeomNode, Geom, LineSegs, TextNode, PandaNode
 
 import math
+
 import numpy as np
+from nptyping import NDArray
 
 class MapView(View):
     __world: NodePath
@@ -44,6 +46,7 @@ class MapView(View):
     __persistent_displays: List[Any]
     __tracked_data: List[Any]
 
+    __cube_modified: NDArray[(Any, Any, Any), bool]
     __cube_update_displays: List[Any]
     __cubes_requiring_update: Set[Point]
     __display_updates_cube: bool
@@ -68,9 +71,12 @@ class MapView(View):
         # MAP #
         map_size = self._services.algorithm.map.size
         map_data = np.empty((*map_size, 1) if map_size.n_dim == 2 else map_size, dtype=bool)
+        self.__cube_modified = np.empty(map_data.shape, dtype=bool)
         for x, y, z in np.ndindex(map_data.shape):
             p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
-            map_data[x, y, z] = not self._services.algorithm.map.is_agent_valid_pos(p)
+            valid = self._services.algorithm.map.is_agent_valid_pos(p)
+            self.__cube_modified[x, y, z] = valid
+            map_data[x, y, z] = not valid
 
         if map_size.n_dim == 2:
             self.__map = FlatMap(self._services, map_data, self.world)
@@ -209,8 +215,6 @@ class MapView(View):
         refresh = refresh or clr != self.__deduced_traversables_colour
         self.__deduced_traversables_colour = clr
 
-        travs_data = self.map.traversables_data
-
         if self.map.dim == 3:
             def set_colour(p, c): return self.map.traversables_mesh.set_cube_colour(p, c)
         else:
@@ -228,10 +232,11 @@ class MapView(View):
             for d in self.__cube_update_displays:
                 d.update_cube(p)
             set_colour(p, self.__cube_colour)
+            self.__cube_modified[p.x, p.y, p.z] = self.__cube_colour != clr
 
         if refresh:
-            for x, y, z in np.ndindex(travs_data.shape):
-                if travs_data[x, y, z]:
+            for x, y, z in np.ndindex(self.__cube_modified.shape):
+                if self.__cube_modified[x, y, z]:
                     update_cube_colour(Point(x, y, z))
         else:
             for p in self.__cubes_requiring_update:
