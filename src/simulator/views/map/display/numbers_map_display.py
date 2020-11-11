@@ -16,7 +16,7 @@ class NumbersMapDisplay(MapDisplay):
         self.font = None
         self.grid = grid
 
-    def render(self) -> None:
+    def render(self, refresh: bool) -> None:
         if self.grid is None:
             return False
 
