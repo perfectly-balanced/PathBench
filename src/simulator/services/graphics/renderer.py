@@ -28,6 +28,10 @@ class Renderer():
         return self.__roots.pop()
 
     @property
+    def line_segs(self) -> LineSegs:
+        return self.__line_segs
+
+    @property
     def root(self) -> NodePath:
         return self.__roots[-1]
 

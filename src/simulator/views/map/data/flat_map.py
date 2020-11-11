@@ -28,8 +28,6 @@ class FlatMap(MapData):
     obstacles_dc: Final[DynamicColour]
     obstacles_wf_dc: Final[DynamicColour]
 
-    logical_w: Final[int]
-    logical_h: Final[int]
     texture_w: Final[int]
     texture_h: Final[int]
 
@@ -39,9 +37,6 @@ class FlatMap(MapData):
         super().__init__(services, data, parent, name)
 
         self.__lines = {}
-
-        self.logical_w = int(self.obstacles_data.shape[0])
-        self.logical_h = int(self.obstacles_data.shape[1])
 
         if square_size is None:
             # basic heuristic for decreasing square

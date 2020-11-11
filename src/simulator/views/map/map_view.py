@@ -87,6 +87,31 @@ class MapView(View):
         self.__deduced_traversables_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
         self.__deduced_traversables_wf_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
 
+        self.__sphere_scale = 0.2
+        def rescale_sphere(dim):
+            while (self.__sphere_scale < 0.75) and ((self.__sphere_scale * dim) < 8):
+                self.__sphere_scale *= 1.25
+        rescale_sphere(self.map.logical_w)
+        rescale_sphere(self.map.logical_h)
+        rescale_sphere(self.map.logical_d)
+
+        self.__circle_filled_radius = 0.06
+        def resize_circle_filled(dim):
+            while (self.__circle_filled_radius < 1) and (dim / self.__circle_filled_radius > 200):
+                self.__circle_filled_radius *= 1.25
+        resize_circle_filled(self.map.logical_w)
+        resize_circle_filled(self.map.logical_h)
+        resize_circle_filled(self.map.logical_d)
+
+        self.__line_thickness = 2.5
+        def change_line_thickness(dim):
+            while (self.__line_thickness < 4) and (dim / self.__line_thickness > 160):
+                self.__line_thickness *= 1.25
+        change_line_thickness(self.map.logical_w)
+        change_line_thickness(self.map.logical_h)
+        change_line_thickness(self.map.logical_d)
+        self.renderer.line_segs.set_thickness(self.__line_thickness)
+
         self.update_view(True)
 
     def destroy(self) -> None:
@@ -131,18 +156,10 @@ class MapView(View):
                    self.world.getZ() - (z2 - z1) / 2)
 
     @property
-    def world(self) -> str:
-        return 'world'
-
-    @world.getter
     def world(self) -> NodePath:
         return self.__world
 
     @property
-    def map(self) -> str:
-        return 'map'
-
-    @map.getter
     def map(self) -> Union[VoxelMap, FlatMap]:
         return self.__map
 
@@ -280,7 +297,7 @@ class MapView(View):
         if self._services.algorithm.map.size.n_dim == 3:
             z -= 0.5
         else:
-            z = 0
+            z = 0.1 # have overlay be slightly above surface for 2D maps
         return Point(x, y, z)
 
     def push_root(self, np: Optional[NodePath] = None) -> NodePath:
@@ -296,7 +313,7 @@ class MapView(View):
         self.renderer.draw_line(colour, self.cube_center(p1), self.cube_center(p2))
 
     def draw_sphere(self, p: Point, *args, **kwargs) -> None:
-        self.renderer.draw_sphere(self.cube_center(p), *args, **kwargs)
+        self.renderer.draw_sphere(self.cube_center(p), *args, **kwargs, scale=self.__sphere_scale)
 
     def make_arc(self, p: Point, *args, **kwargs) -> None:
         self.renderer.make_arc(self.cube_center(p), *args, **kwargs)
@@ -304,8 +321,8 @@ class MapView(View):
     def draw_circle(self, p: Point, *args, **kwargs) -> None:
         self.make_arc(p, 360, *args, **kwargs)
 
-    def draw_circle_filled(self, p: Point, *args, **kwars) -> None:
-        self.renderer.draw_circle_filled(self.cube_center(p), *args, **kwars)
+    def draw_circle_filled(self, p: Point, *args, **kwargs) -> None:
+        self.renderer.draw_circle_filled(self.cube_center(p), *args, **kwargs, radius=self.__circle_filled_radius)
 
     def render_text(self, p: Point, text: str, colour: Colour = WHITE, scale: float = 0.4) -> None:
         """ TODO: reintergrate into reworked code """

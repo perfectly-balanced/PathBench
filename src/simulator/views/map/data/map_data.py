@@ -42,6 +42,10 @@ class MapData(ABC):
                                            TRACE: Colour(0, 0.9, 0),
                                            GOAL: Colour(0, 0.9, 0)}
 
+    logical_w: Final[int] # x-axis (width)
+    logical_h: Final[int] # y-axis (height)
+    logical_d: Final[int] # z-axis (depth)
+
     def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "map"):
         self._services = services
         self.__name = name
@@ -49,6 +53,10 @@ class MapData(ABC):
 
         self.obstacles_data = data
         self.traversables_data = np.invert(self.obstacles_data)
+
+        self.logical_w = int(self.obstacles_data.shape[0])
+        self.logical_h = int(self.obstacles_data.shape[1])
+        self.logical_d = int(self.obstacles_data.shape[2])
 
         self._services.ev_manager.register_listener(self)
 
