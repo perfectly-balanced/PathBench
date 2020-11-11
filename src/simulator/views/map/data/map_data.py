@@ -76,18 +76,10 @@ class MapData(ABC):
         ...
 
     @property
-    def root(self) -> str:
-        return 'root'
-
-    @root.getter
     def root(self) -> NodePath:
         return self.__root
 
     @property
-    def name(self) -> str:
-        return 'name'
-
-    @name.getter
     def name(self) -> NodePath:
         return self.__name
 

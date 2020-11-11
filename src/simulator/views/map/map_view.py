@@ -97,7 +97,13 @@ class MapView(View):
 
         self.__circle_filled_radius = 0.06
         def resize_circle_filled(dim):
-            while (self.__circle_filled_radius < 1) and (dim / self.__circle_filled_radius > 200):
+            if dim < 40:
+                pass
+            elif dim < 75:
+                dim /= 1.5
+            elif dim < 100:
+                dim /= 2
+            while (self.__circle_filled_radius < 1) and (dim / self.__circle_filled_radius > 250):
                 self.__circle_filled_radius *= 1.25
         resize_circle_filled(self.map.logical_w)
         resize_circle_filled(self.map.logical_h)
