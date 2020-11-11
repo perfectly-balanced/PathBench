@@ -101,10 +101,7 @@ class PotentialField(Algorithm):
 
         for index in np.ndindex(*grid.size):
             ug = self.calc_attractive_potential(index, grid.goal.position)
-            if grid.is_agent_valid_pos(Point(*index)):
-                uo = self.calc_repulsive_potential(index, grid.obstacles, rr=(grid.agent.radius))
-            else:
-                uo = 0
+            uo = self.calc_repulsive_potential(index, grid.obstacles, rr=(grid.agent.radius))
 
             uf = ug + uo    
             pmap[index] = uf
