@@ -1,5 +1,5 @@
 # PathBench: A Benchmarking Platform for Classic and Learned Path Planning Algorithms
-[![coverage report](https://gitlab.doc.ic.ac.uk/ait15/individual-project/badges/master/coverage.svg)](https://gitlab.doc.ic.ac.uk/ait15/individual-project/commits/master)
+[![coverage report](https://codecov.io/gh/judicaelclair/PathBench/coverage.svg?branch=master)](https://codecov.io/gh/judicaelclair/PathBench/?branch=master)
 
 PathBench is a motion planning platform used to develop, assess, compare and visualise the performance
 and behaviour of path planners. The platform is split into four main components:
