@@ -10,6 +10,7 @@ from structures import Point, Colour
 class SolidColourMapDisplaypot(MapDisplay):
     radius: int
     points: Union[Set[Point], List[Entity]]
+    pts: Set[Point]
 
     def __init__(self, services: Services, points, z_index=50, radius=0, custom_map: Map = None, pmaplst=None) -> None:
         super().__init__(services, z_index=z_index, custom_map=custom_map)
@@ -24,6 +25,7 @@ class SolidColourMapDisplaypot(MapDisplay):
         self.large = max(pmaplst)
         self.small = min(pmaplst)
         self.range = (self.large-self.small)/6
+        self.pts = set()
 
         #assert self._map.size.n_dim == 2, "Unsupported map dimension, expected 2D"
 
@@ -37,18 +39,22 @@ class SolidColourMapDisplaypot(MapDisplay):
                 pt = pt.position
             return pt
 
-        points = set(map(f, points))
+        self.pts = set(map(f, points))
 
-        for point in points:
-            if point[1] < self.small+(self.range*1):
-                self._root_view.render_pos(Entity(point[0], self.radius), self.color6)
-            elif point[1] < self.small+(self.range*2):
-                self._root_view.render_pos(Entity(point[0], self.radius), self.color5)
-            elif point[1] < self.small+(self.range*3):
-                self._root_view.render_pos(Entity(point[0], self.radius), self.color4)
-            elif point[1] < self.small+(self.range*4):
-                self._root_view.render_pos(Entity(point[0], self.radius), self.color3)
-            elif point[1] < self.small+(self.range*5):
-                self._root_view.render_pos(Entity(point[0], self.radius), self.color2)
-            elif point[1] < self.small+(self.range*6):
-                self._root_view.render_pos(Entity(point[0], self.radius), self.color1)
+        for p in self.pts:
+            self._root_view.cube_requires_update(Entity(p[0], self.radius))
+
+    def update_cube(self, p: Point) -> None:
+        if p in self.pts:
+            if p[1] < self.small+(self.range*1):
+                self._root_view.colour_cube(self.color6)
+            elif p[1] < self.small+(self.range*2):
+                self._root_view.colour_cube(self.color5)
+            elif p[1] < self.small+(self.range*3):
+                self._root_view.colour_cube(self.color4)
+            elif p[1] < self.small+(self.range*4):
+                self._root_view.colour_cube(self.color3)
+            elif p[1] < self.small+(self.range*5):
+                self._root_view.colour_cube(self.color2)
+            elif p[1] < self.small+(self.range*6):
+                self._root_view.colour_cube(self.color1)
