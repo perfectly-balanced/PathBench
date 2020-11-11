@@ -122,10 +122,10 @@ class Size:
     @property
     def n_dim(self) -> int:
         return self._size.n_dim
-    
+
     def __getitem__(self, idx) -> int:
         return self._size[idx]
-    
+
     def __len__(self) -> int:
         return len(self._size)
 

@@ -21,8 +21,7 @@ import copy
 
 
 class PotentialField(Algorithm):
-    step_grid: List[List[int]]
-
+    step_grid: np.array
 
     # PQ_COLOR_LOW: np.ndarray = np.array(pygame.Color("#ADD8E6")[:3])  # (0, 0, 255)
     # VISITED_COLOR: np.ndarray = np.array(pygame.Color("#777a7f")[:3])
@@ -37,8 +36,6 @@ class PotentialField(Algorithm):
     def __init__(self, services: Services, testing: BasicTesting = None):
         super().__init__(services, testing)
         self.step_grid = []
-
-
 
     def set_display_info(self) -> List[MapDisplay]:
         """
@@ -97,30 +94,19 @@ class PotentialField(Algorithm):
 
 
     def calc_potential_field(self,grid: Map):
-        xw = grid.size.width
-        yw = grid.size.height
 
         # calc each potential
-        pmap = [[0.0 for i in range(yw)] for i in range(xw)]
+        pmap = np.zeros(grid.size, dtype=np.float32)
+        #print(str(grid.size))
 
-        for ix in range(xw):
-            #x = ix * self.grid_size + minx
-            x = ix
+        for index in np.ndindex(*grid.size):
+            ug = self.calc_attractive_potential(index, grid.goal.position)
+            uo = self.calc_repulsive_potential(index, grid.obstacles, rr=(grid.agent.radius))
 
-            for iy in range(yw):
-                #y = iy * self.grid_size + miny
-                y = iy
-                ug = self.calc_attractive_potential(x, y, (grid.goal.position.x), (grid.goal.position.y))
-                if Point(x,y) not in grid.obstacles:
-                    uo = self.calc_repulsive_potential(x=x, y=y, ox=([x.position.x for x in grid.obstacles]), 
-                    oy=([y.position.y for y in grid.obstacles]), rr=(grid.agent.radius))
-                else:
-                    uo = 0
-
-                uf = ug + uo    
-                pmap[ix][iy] = uf
-                point = Point(ix,iy)
-                self.pmapheat.append((point,uf))
+            uf = ug + uo    
+            pmap[index] = uf
+            point = Point(*index)
+            self.pmapheat.append((point,uf))
                 
         #         #print("*****ug,uo",ug,uo)
                 #if uo!=0:
@@ -147,17 +133,19 @@ class PotentialField(Algorithm):
         return pmap
 
 
-    def calc_attractive_potential(self,x, y, gx, gy):
-        return 0.5 * self.KP * np.hypot(x - gx, y - gy)
+    def calc_attractive_potential(self, pos, goal):
+        #print("is norm thing correct" + str(np.linalg.norm(np.array(pos) - np.array(goal))))
+        return 0.5 * self.KP * np.linalg.norm(np.array(pos) - np.array(goal))
 
 
-    def calc_repulsive_potential(self,x, y, ox, oy, rr):
+    def calc_repulsive_potential(self, pos, obs, rr):
         # search nearest obstacle
         minid = -1
         
         dmin = float("inf")
-        for i, _ in enumerate(ox):
-            d = np.hypot(x - ox[i], y - oy[i])
+        for i in range(len(obs)):
+            d = np.linalg.norm(np.array(pos) - np.array(obs[i].position))
+        
             #print("x,ox[i],y,oy[i]",x,ox[i], y,oy[i])
             #print("d=",d)
             
@@ -165,7 +153,6 @@ class PotentialField(Algorithm):
             if dmin >= d:
                 dmin = d    
                 minid = i
-            
             
             # if d > rr:
             #     rep+= 0.0
@@ -180,7 +167,7 @@ class PotentialField(Algorithm):
         
         
         #distance from point to closest obstacle
-        dq = np.hypot(x - ox[minid], y - oy[minid])
+        dq = np.linalg.norm(np.array(pos) - np.array(obs[minid].position))
 
         #print('dq,1st',dq)
 
@@ -189,18 +176,19 @@ class PotentialField(Algorithm):
             if dq <= 0.1:
                 return 0.5 * self.ETA * (1.0 / dq) ** 2
             else:
-                #return 0.5 * self.ETA * (1.0 / dq - 1.0 / rr) ** 2
+                
                 return 0.5 * self.ETA * (1.0 / dq) ** 2
         else:
             return 0    
-            #return 0.5 * self.ETA * (1.0 / dq-1.0/1) ** 2
+           
 
     def potential_field_planning(self,grid):
 
         # calc potential field
         pmap = self.calc_potential_field(grid)
+    
 
-        #print('pmapheat',self.pmapheat)
+        #print('pmap',self.pmapheat)
         self.step_grid=pmap
 
         # for lst in pmap:
@@ -208,67 +196,69 @@ class PotentialField(Algorithm):
         #         print(str((num))+"  ",end='')
         #    print("\n")
         
-        self.pmapnew= set([num for lst in pmap for num in lst if num < 1000000])
-        #print("pmap=",pmapnew)
-        #print (pmap)
+        nums = []
+
+        for index in np.ndindex(*pmap.shape):
+            if(pmap[index] < 1000000):
+                nums.append(pmap[index])
+
+        self.pmapnew= set(nums)
 
         # search path
-        d = np.hypot(grid.agent.position.x - grid.goal.position.x, grid.agent.position.y - grid.goal.position.x)
-        ix = round((grid.agent.position.x ) / self.grid_size)    #index starting x position
-        iy = round((grid.agent.position.y ) / self.grid_size) 
-        gix = round((grid.goal.position.x ) / self.grid_size)    #index goal x position
-        giy = round((grid.goal.position.y ) / self.grid_size)
-        
-        # print('final________________________________________________')
-        # print('ix,iy,gix,giy,d',ix,iy,gix,giy,d)
-        # print('len(pmap),len(pmap[0])',len(pmap),len(pmap[0]))
+        d = np.linalg.norm(np.array(grid.agent.position) - np.array(grid.goal.position))
+        iss = [round((grid.agent.position[i] ) / self.grid_size) for i in range(grid.agent.position.n_dim)]   #index starting x position
 
-        # if show_animation:
-        #     draw_heatmap(pmap)
-        #     # for stopping simulation with the esc key.
-        #     plt.gcf().canvas.mpl_connect('key_release_event',
-        #             lambda event: [exit(0) if event.key == 'escape' else None])
-        #     plt.plot(ix, iy, "*k")
-        #     plt.plot(gix, giy, "*m")
+        gi = [round((grid.goal.position[i] ) / self.grid_size) for i in range(grid.agent.position.n_dim)]   #index goal x position
 
-        rx, ry = [grid.agent.position.x], [grid.agent.position.y]
-        #print('rx,ry',rx,ry)
+        ri = grid.agent.position
+       
         motion = grid.ALL_POINTS_MOVE_VECTOR
         visited=[]
         lst = grid.obstacles
         for ob in lst:
-            visited.append((ob.position.x,ob.position.y))
+            visited.append(ob.position)
         while d >= self.grid_size:
             minp = float("inf")
-            minix, miniy = -1, -1
+            minIxs = [-1] * grid.agent.position.n_dim
             for point in motion:
-                inx = int(ix + point.x)
-                iny = int(iy + point.y)
-                if inx >= len(pmap) or iny >= len(pmap[0]) or inx < 0 or iny < 0 :
-                    p = float("inf")  # outside area
+                ins = [int(iss[n] + point.pos[n]) for n in range(grid.agent.position.n_dim)]
+         
+                setInf = False
+
+                for i in range(len(ins)):
+                    if(ins[i] < 0 or ins[i] >= len(pmap[tuple(([0] * i))])):
+
+                        setInf = True 
+                        break
+                if setInf:
+                    p = float("inf")
                 else:
-                    p = pmap[inx][iny]
-                
-                point = (inx,iny)
+                    p = pmap[tuple(ins)]
+                        
+                point = tuple(ins)
                 #find which neighbour has the largest potential value (so can move there)
                 if minp > p and point not in visited:
                     minp = p
-                    minix = inx
-                    miniy = iny
-                    if (inx,iny) in visited:
+                    minIxs = ins
+                    if tuple(ins) in visited:
                         print("stuck")
                         break
-            visited.append((minix,miniy))
-            #print("minix,miniy",minix,miniy)
-            ix = minix
-            iy = miniy
-            d = np.hypot(grid.goal.position.x - ix, grid.goal.position.y - iy)
-            #print('d=',d)
-            rx.append(iy)
-            ry.append(ix)
-            point1=Point(ix,iy)
+            visited.append(tuple(minIxs))
+         
+            iss = minIxs
 
-            if (-1,-1) in visited:
+           
+
+            #print("goal pos! " + str(grid.goal.position))
+
+            d = np.linalg.norm(np.array(grid.goal.position) -  np.array(tuple(iss)))
+            # what do these two lines do?
+            #rx.append(iy)
+            #ry.append(ix)
+            #print("isssss me! " + str(iss))
+            point1=Point(*iss)
+
+            if (tuple([-1] * grid.agent.position.n_dim)) in visited:
                 print("stuck at start")
                 break
 
@@ -279,7 +269,6 @@ class PotentialField(Algorithm):
             self.key_frame()
 
         print("Goal!!")
-
 
 
     # noinspection PyUnusedLocal

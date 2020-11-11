@@ -1,4 +1,5 @@
 import pygame
+import numpy as np
 from typing import List
 
 from algorithms.configuration.maps.map import Map
@@ -16,13 +17,12 @@ class NumbersMapDisplay(MapDisplay):
         self.grid = grid
 
     def render(self) -> bool:
-        if not super().render() or not self.grid:
+        if not super().render() or self.grid is None:
             return False
 
         if self.services.settings.simulator_grid_display:
-            for i in range(len(self.grid)):
-                for j in range(len(self.grid[i])):
-                    self.get_renderer_view().render_text(Point(i, j), str(round(self.grid[i][j], 1)))
+            for index in np.ndindex(*(self.grid.shape)):
+                self.get_renderer_view().render_text(Point(*index), str(round(self.grid[index], 1)))
 
         return True
 

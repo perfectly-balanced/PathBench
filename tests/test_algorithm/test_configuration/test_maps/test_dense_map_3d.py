@@ -166,7 +166,7 @@ class TestDenseMap3D(unittest.TestCase):
         self.assertEqual(map1, map2)
 
     def test_convert_to_sparse_map(self) -> None:
-        map1: DenseMap = Maps.grid_map_3d_example
+        map1: DenseMap = Maps.grid_map_3d_example_4_4_4
         map2: SparseMap = map1.convert_to_sparse_map()
         self.assertEqual(map1, map2)
     

@@ -1,6 +1,7 @@
 from typing import List
 
 import torch
+import numpy as np
 
 from algorithms.classic.sample_based.core.sample_based_algorithm import SampleBasedAlgorithm
 from algorithms.basic_testing import BasicTesting
@@ -33,8 +34,8 @@ class RRT(SampleBasedAlgorithm):
 
     def _get_random_sample(self) -> Point:
         while True:
-            sample: Point = Point(torch.randint(0, self._get_grid().size.width, (1,)).item(),
-                                  torch.randint(0, self._get_grid().size.height, (1,)).item())
+            rand_pos = np.random.randint(0, self._get_grid().size, self._get_grid().size.n_dim)
+            sample: Point = Point(*rand_pos)
             if self._get_grid().is_agent_valid_pos(sample):
                 return sample
 
