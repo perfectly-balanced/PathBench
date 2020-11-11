@@ -32,6 +32,7 @@ class GradientMapDisplay(MapDisplay):
             self.pts = pts
         elif grid is not None:
             self.pts = self.__transform_to_points(grid)
+        assert self.pts is not None
 
         assert min_colour is not None
         assert max_colour is not None
@@ -70,9 +71,6 @@ class GradientMapDisplay(MapDisplay):
         return clr
 
     def render(self, refresh: bool) -> None:
-        if self.pts is None:
-            return
-
         self.get_renderer_view().display_updates_cube()
 
         c = self.min_colour()

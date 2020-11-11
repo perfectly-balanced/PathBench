@@ -217,9 +217,7 @@ class MapView(View):
 
         if self.map.dim == 3:
             def set_colour(p, c): return self.map.traversables_mesh.set_cube_colour(p, c)
-        else:
-            # 2D #
-            # wireframe colour
+        else: # 2D
             wfc = self.map.traversables_wf_dc()
             wfc = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
             refresh = refresh or wfc != self.__deduced_traversables_wf_colour
@@ -238,17 +236,19 @@ class MapView(View):
             for x, y, z in np.ndindex(self.__cube_modified.shape):
                 if self.__cube_modified[x, y, z]:
                     update_cube_colour(Point(x, y, z))
-        else:
-            for p in self.__cubes_requiring_update:
-                update_cube_colour(p)
-
-        self.__cube_update_displays.clear()
-        self.__cubes_requiring_update.clear()
+        
+        # update these cubes regardless of refresh
+        # since it cubes that require update aren't
+        # necessarily modified.
+        for p in self.__cubes_requiring_update:
+            update_cube_colour(p)
 
         for td in self.__tracked_data:
             td.clear_tracking_data()
 
         self.__tracked_data.clear()
+        self.__cubes_requiring_update.clear()
+        self.__cube_update_displays.clear()
         self.__displays.clear()
 
     def update_view(self, refresh: bool) -> None:
