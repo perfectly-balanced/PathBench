@@ -398,38 +398,23 @@ class Generator:
             return all([pos[i] >= 0 and pos[i] < grid.shape[i] for i in range(len(grid.shape))])
 
         def __place_room(grid: np.array, size: Size, top_left_corner: Point) -> None:
-            print("top left: ", top_left_corner)
             for index in np.ndindex(*size):
                 p = [elem + top_left_corner[i] for i, elem in enumerate(index)]
                 if in_bounds(Point(*p)):
-                    grid[p] = DenseMap.CLEAR_ID
-
-            for x in range(top_left_corner.x, top_left_corner.x + size.width):
-                y = top_left_corner.y
-                if in_bounds(x, y):
-                    grid[y][x] = DenseMap.WALL_ID
-
-                y = top_left_corner.y + size.height - 1
-                if in_bounds(x, y):
-                    grid[y][x] = DenseMap.WALL_ID
-
-            for y in range(top_left_corner.y, top_left_corner.y + size.height):
-                x = top_left_corner.x
-                if in_bounds(x, y):
-                    grid[y][x] = DenseMap.WALL_ID
-
-                x = top_left_corner.x + size.width - 1
-                if in_bounds(x, y):
-                    grid[y][x] = DenseMap.WALL_ID
+                    # do we need reverse? (+other places)
+                    grid[tuple(p)] = DenseMap.CLEAR_ID
+                for i in range(len(size)):         
+                    if index[i] == top_left_corner[i] or index[i] == top_left_corner[i] + size[i] - 1:
+                        if in_bounds(Point(*p)):
+                            grid[tuple(p)] = DenseMap.WALL_ID
 
             rooms.append((top_left_corner, size))
 
         def __get_subdivision_number(dim, i: int):
-            print("dim: ", dim)
+            
             min_size = min_room_size[i]
-            print("min size: ", min_size)
+        
             dim_size = dim[i]
-            print("dim size: ", dim_size)
 
             # try hallway
             # if int(torch.randint(0, 11, (1,)).item()) == 0:
@@ -444,9 +429,14 @@ class Generator:
                 __place_room(grid, dim, top_left_corner)
                 return
             is_vertical_split = int(np.random.randint(0, len(dim)))
+            split = [0] * len(dim)
             for i in range(len(dim)):
                 if dim[i] < 2 * min_room_size[i] - 1:
-                    is_vertical_split = i
+                    split[i] = 1
+                    is_vertical_split = (1 + i) % (len(dim) - 1)
+                    
+            while(split[is_vertical_split] == 1):
+                is_vertical_split = int(np.random.randint(0, len(dim)))
 
             if all([dim[i] <= max_room_size[i] for i in range(len(dim))]):
             # do we want a 50-50 chance here? (or should 2 be len(dim)?)
@@ -467,62 +457,209 @@ class Generator:
             new_dim2 = list(dim)
             new_dim2[is_vertical_split] = dim[is_vertical_split] - new_dim1[is_vertical_split] + 1
     
-            __subdivide(new_top_left_corner1, new_dim1)
-            __subdivide(new_top_left_corner2, new_dim2)
+            __subdivide(Point(*new_top_left_corner1), tuple(new_dim1))
+            __subdivide(Point(*new_top_left_corner2), tuple(new_dim2))
 
         # place rooms
-        __subdivide(Point(-1, -1), Size(dimensions.width + 2, dimensions.height + 2))
+        
+        __subdivide(Point(*([-1] * len(dimensions))), Size(*[dimensions[i] + 2 for i in range(len(dimensions))]))
 
         def __get_nearby_rooms_edges(room):
             room_top_left_point, room_size = room
             edges = []
             full_edge = []
             q = 0
+            
+            if(len(room_size) == 2):
+                    
+                for x in range(room_top_left_point.x, room_top_left_point.x + room_size.width):
+                    y = room_top_left_point.y
+                    # up
+                    if in_bounds(x, y):
+                        full_edge.append(Point(x, y))
+                        n_x, n_y = x, y - 1
+                        if in_bounds(n_x, n_y) and grid[n_y][n_x] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
 
-            for x in range(room_top_left_point.x, room_top_left_point.x + room_size.width):
-                y = room_top_left_point.y
-                # up
-                if in_bounds(x, y):
-                    full_edge.append(Point(x, y))
-                    n_x, n_y = x, y - 1
-                    if in_bounds(n_x, n_y) and grid[n_y][n_x] == DenseMap.WALL_ID:
-                        edges.append(q)
-                    q += 1
+                for y in range(room_top_left_point.y, room_top_left_point.y + room_size.height):
 
-            for y in range(room_top_left_point.y, room_top_left_point.y + room_size.height):
-                x = room_top_left_point.x
+                    # right
+                    x = room_top_left_point.x + room_size.width - 1
+                    if in_bounds(x, y):
+                        full_edge.append(Point(x, y))
+                        n_x, n_y = x + 1, y
+                        if in_bounds(n_x, n_y) and grid[n_y][n_x] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
 
-                # right
-                x = room_top_left_point.x + room_size.width - 1
-                if in_bounds(x, y):
-                    full_edge.append(Point(x, y))
-                    n_x, n_y = x + 1, y
-                    if in_bounds(n_x, n_y) and grid[n_y][n_x] == DenseMap.WALL_ID:
-                        edges.append(q)
-                    q += 1
+                for x in range(room_top_left_point.x, room_top_left_point.x + room_size.width):
 
-            for x in range(room_top_left_point.x, room_top_left_point.x + room_size.width):
-                y = room_top_left_point.y
+                    # bottom
+                    y = room_top_left_point.y + room_size.height - 1
+                    if in_bounds(x, y):
+                        full_edge.append(Point(x, y))
+                        n_x, n_y = x, y + 1
+                        if in_bounds(n_x, n_y) and grid[n_y][n_x] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
 
-                # bottom
-                y = room_top_left_point.y + room_size.height - 1
-                if in_bounds(x, y):
-                    full_edge.append(Point(x, y))
-                    n_x, n_y = x, y + 1
-                    if in_bounds(n_x, n_y) and grid[n_y][n_x] == DenseMap.WALL_ID:
-                        edges.append(q)
-                    q += 1
+                for y in range(room_top_left_point.y, room_top_left_point.y + room_size.height):
+                    x = room_top_left_point.x
 
-            for y in range(room_top_left_point.y, room_top_left_point.y + room_size.height):
-                x = room_top_left_point.x
+                    # left
+                    if in_bounds(x, y):
+                        full_edge.append(Point(x, y))
+                        n_x, n_y = x - 1, y
+                        if in_bounds(n_x, n_y) and grid[n_y][n_x] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
+                        
+            elif len(room_size) == 3:
+                for x in range(room_top_left_point[0], room_top_left_point[0] + room_size[0]):
+                    y = room_top_left_point[1]
+                    z = room_top_left_point[2]
+              
+                    if in_bounds(Point(x, y, z)):
+                        full_edge.append(Point(x, y, z))
+                        n_x, n_y, n_z = x, y - 1, z - 1
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[n_x, n_y, n_z] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
+                        
+                for x in range(room_top_left_point[0], room_top_left_point[0] + room_size[0]):
+                    y = room_top_left_point[1] + room_size[1] - 1
+                    z = room_top_left_point[2]
 
-                # left
-                if in_bounds(x, y):
-                    full_edge.append(Point(x, y))
-                    n_x, n_y = x - 1, y
-                    if in_bounds(n_x, n_y) and grid[n_y][n_x] == DenseMap.WALL_ID:
-                        edges.append(q)
-                    q += 1
+              
+                    if in_bounds(Point(x, y, z)):
+                        full_edge.append(Point(x, y, z))
+                        n_x, n_y, n_z = x, y + 1, z - 1
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[n_x, n_y, n_z] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
+                        
+                for x in range(room_top_left_point[0], room_top_left_point[0] + room_size[0]):
+                    y = room_top_left_point[1] + room_size[1] - 1
+                    z = room_top_left_point[2] + room_size[2] - 1
+
+              
+                    if in_bounds(Point(x, y, z)):
+                        full_edge.append(Point(x, y, z))
+                        n_x, n_y, n_z = x, y + 1, z + 1
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[n_x, n_y, n_z] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
+                        
+                for x in range(room_top_left_point[0], room_top_left_point[0] + room_size[0]):
+                    y = room_top_left_point[1]
+                    z = room_top_left_point[2] + room_size[2] - 1
+
+              
+                    if in_bounds(Point(x, y, z)):
+                        full_edge.append(Point(x, y, z))
+                        n_x, n_y, n_z = x, y - 1, z + 1
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[n_x, n_y, n_z] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
+                        
+                for y in range(room_top_left_point[1], room_top_left_point[1] + room_size[1]):
+                    x = room_top_left_point[0]
+                    z = room_top_left_point[2]
+
+              
+                    if in_bounds(Point(x, y, z)):
+                        full_edge.append(Point(x, y, z))
+                        n_x, n_y, n_z = x - 1, y, z - 1
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[n_x, n_y, n_z] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
+                        
+                for y in range(room_top_left_point[1], room_top_left_point[1] + room_size[1]):
+                    x = room_top_left_point[0] + room_size[0] - 1
+                    z = room_top_left_point[2] 
+
+              
+                    if in_bounds(Point(x, y, z)):
+                        full_edge.append(Point(x, y, z))
+                        n_x, n_y, n_z = x + 1, y, z - 1
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[n_x, n_y, n_z] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
+                        
+                for y in range(room_top_left_point[1], room_top_left_point[1] + room_size[1]):
+                    x = room_top_left_point[0] + room_size[0] - 1
+                    z = room_top_left_point[2] + room_size[2] - 1
+
+              
+                    if in_bounds(Point(x, y, z)):
+                        full_edge.append(Point(x, y, z))
+                        n_x, n_y, n_z = x + 1, y, z + 1
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[n_x, n_y, n_z] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
+                
+                
+                for y in range(room_top_left_point[1], room_top_left_point[1] + room_size[1]):
+                    x = room_top_left_point[0] + room_size[0] - 1
+                    z = room_top_left_point[2] + room_size[2] - 1
+
+              
+                    if in_bounds(Point(x, y, z)):
+                        full_edge.append(Point(x, y, z))
+                        n_x, n_y, n_z = x - 1, y, z + 1
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[n_x, n_y, n_z] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
+                        
+                for z in range(room_top_left_point[2], room_top_left_point[2] + room_size[2]):
+                    x = room_top_left_point[0] 
+                    y = room_top_left_point[1]
+
+              
+                    if in_bounds(Point(x, y, z)):
+                        full_edge.append(Point(x, y, z))
+                        n_x, n_y, n_z = x - 1, y - 1, z
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[n_x, n_y, n_z] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
+                        
+                for z in range(room_top_left_point[2], room_top_left_point[2] + room_size[2]):
+                    x = room_top_left_point[0] + room_size[0] - 1
+                    y = room_top_left_point[1] 
+
+              
+                    if in_bounds(Point(x, y, z)):
+                        full_edge.append(Point(x, y, z))
+                        n_x, n_y, n_z = x + 1, y - 1, z
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[n_x, n_y, n_z] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
+                
+                
+                for z in range(room_top_left_point[2], room_top_left_point[2] + room_size[2]):
+                    x = room_top_left_point[0] + room_size[0] - 1
+                    y = room_top_left_point[1] + room_size[1] - 1
+
+              
+                    if in_bounds(Point(x, y, z)):
+                        full_edge.append(Point(x, y, z))
+                        n_x, n_y, n_z = x + 1, y + 1, z
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[n_x, n_y, n_z] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
+                        
+                for z in range(room_top_left_point[2], room_top_left_point[2] + room_size[2]):
+                    x = room_top_left_point[0] 
+                    y = room_top_left_point[1] + room_size[1] - 1
+
+              
+                    if in_bounds(Point(x, y, z)):
+                        full_edge.append(Point(x, y, z))
+                        n_x, n_y, n_z = x - 1, y + 1, z
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[n_x, n_y, n_z] == DenseMap.WALL_ID:
+                            edges.append(q)
+                        q += 1
 
             return edges, full_edge
 
@@ -552,7 +689,7 @@ class Generator:
 
                     # place door
 
-                    if int(torch.randint(0, 4, (1,)).item()) == 0:
+                    if int(np.random.randint(0, 4)) == 0:
                         continue
 
                     diff = abs(neighbours[i] - neighbours[nxt]) - door_size + 1
@@ -560,11 +697,11 @@ class Generator:
                     if len(neighbours) == 1:
                         diff = len(full_edge)
 
-                    start = int(torch.randint(1, diff, (1,)).item())
+                    start = int(np.random.randint(1, diff))
                     next_door = neighbours[i] + start
                     for q in range(door_size):
-                        pt = full_edge[(next_door + q) % len(full_edge)]
-                        grid[pt.y][pt.x] = DenseMap.CLEAR_ID
+                        pt = full_edge[(next_door + q) % len(full_edge)]                 
+                        grid[pt.pos] = DenseMap.CLEAR_ID
                         doors.add(pt)
 
         self.__place_random_agent_and_goal(grid, dimensions)
