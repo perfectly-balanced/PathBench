@@ -1,11 +1,53 @@
 # PathBench: A Benchmarking Platform for Classic and Learned Path Planning Algorithms
 [![coverage report](https://gitlab.doc.ic.ac.uk/ait15/individual-project/badges/master/coverage.svg)](https://gitlab.doc.ic.ac.uk/ait15/individual-project/commits/master)
 
-## PathBench
-
 PathBench is a motion planning platform used to develop, assess, compare and visualise the performance
 and behaviour of path planners. The platform is split into four main components:
 Simulator, Generator, Trainer and Analyzer.
+
+## Quick Start
+
+**Python 3.8.5** officially supported, though older versions should work for the most part.
+
+The following installation and run instructions have been used for running PathBench on **Ubuntu 18 and 20**.
+
+### Installing dependencies
+```bash
+sudo apt install python3-tk python3-pandas python3-sklearn
+sudo pip3 install torch numpy nptyping pygame torchvision memory-profiler seaborn dataset datafreeze normality dill natsort
+```
+
+Optional dependency is `ompl` with installation not covered here.
+
+**freeze error (dataset package is broken)**
+
+Find  `<path-to-dataset-package>/__init__.py` and remove `freeze` entry in `__all__` (line 13).
+
+To find `<path-to-dataset-package>`, on Linux you can run the following,
+
+`sudo find / -path "*/dist-packages/dataset" -type d`
+
+### Simulator Visualiser Usage
+```bash
+cd src
+python3 main_gui.py
+```
+You **must** run the main script from the `src` directory, as some files are still using paths relative to the current working directory.
+
+| Key               	| Action                                                            	|
+|-------------------	|-------------------------------------------------------------------	|
+| escape            	| Exit the simulator                                                	|
+| mouse left click  	| Moves agent to mouse location                                     	|
+| mouse right click 	| Moves goal to mouse location                                      	|
+| t                 	| Find the path between the agent and goal                            	|
+| x                 	| Pause/Resume path finding (animations required)                      	|
+| p                 	| Take screenshot (the screenshot is placed in resources directory) 	|
+| o                 	| Take top-view high resolution screenshot of the map (experimental) 	|
+| c 	                | Toggle visibility of simulator config window                          |
+| v 	                | Toggle visibility of view editor window                               |
+| m                 	| Toggle map between Sparse and Dense                               	|
+
+## PathBench
 
 **Simulator**
 
@@ -26,29 +68,7 @@ The simulator has a custom GUI that can be used to modify the master launch conf
     <img src="./readme_files/config.png" alt="PathBench Simulator Configuration" width="400" align="middle" />
 </p>
 
-
-To run the simulator from the GUI, cd into src/, and execute the following command in a terminal window:
-```bash
-python3 main_gui.py
-```
-
-**Simulator Commands**
-
-| Key               	| Action                                                            	|
-|-------------------	|-------------------------------------------------------------------	|
-| escape            	| Exit the simulator                                                	|
-| c                 	| Find the path between the agent and goal                          	|
-| mouse left click  	| Moves agent to mouse location                                     	|
-| mouse right click 	| Moves goal to mouse location                                      	|
-| s                 	| Stop trace animation (animations required)                        	|
-| r                 	| Resume trace animation,(animations required)                      	|
-| mouse hover       	| Displays hovered cell coordinates (debug level >= Medium)         	|
-| p                 	| Take screenshot (the screenshot is placed in resources directory) 	|
-| up arrow          	| Moves agent up (depends on agent speed)                           	|
-| left arrow        	| Moves agent left (depends on agent speed)                         	|
-| down arrow        	| Moves agent down (depends on agent speed)                         	|
-| right arrow       	| Moves agent right (depends on agent speed)                        	|
-| m                 	| Toggle map between Sparse and Dense                               	|
+To run and use the simulator see [Quick Start](quick-start).
 
 <br />
 
