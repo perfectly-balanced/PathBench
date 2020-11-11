@@ -51,7 +51,7 @@ class FlatMap(MapData):
                 square_size //= 2
                 if square_size == 4:
                     break
-                
+
         self.square_size = square_size
         self.texture_w = int(self.logical_w * square_size)
         self.texture_h = int(self.logical_h * square_size)
@@ -102,7 +102,7 @@ class FlatMap(MapData):
             tpixel = to_pixel(bc)
         else:
             bc = None
-        
+
         pixel = to_pixel(c)
         wfc = blend_colours(wfc, c)
         wfpixel = to_pixel(wfc)
@@ -149,12 +149,22 @@ class FlatMap(MapData):
         img = self.texture.modify_ram_image()
         x_offset = px * self.square_size
         lsize = self.square_size * 4
+
+        # bottom wireframe lines
         for y in range(py * self.square_size, py * self.square_size + self.wf_line_cnt - 1):
             img.set_subdata((y * self.texture_w + x_offset) * 4, lsize, wfl)
+
+        # transition line between wireframe and body
         img.set_subdata(((py * self.square_size + self.wf_line_cnt - 1) * self.texture_w + x_offset) * 4, lsize, tl)
+
+        # body lines
         for y in range(py * self.square_size + self.wf_line_cnt, (py + 1) * self.square_size - self.wf_line_cnt):
             img.set_subdata((y * self.texture_w + x_offset) * 4, lsize, l)
+
+        # transition line between wireframe and body
         img.set_subdata((((py + 1) * self.square_size - self.wf_line_cnt) * self.texture_w + x_offset) * 4, lsize, tl)
+
+        # top wireframe lines
         for y in range((py + 1) * self.square_size - self.wf_line_cnt + 1, (py + 1) * self.square_size):
             img.set_subdata((y * self.texture_w + x_offset) * 4, lsize, wfl)
 
