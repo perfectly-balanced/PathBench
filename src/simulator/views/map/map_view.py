@@ -211,8 +211,15 @@ class MapView(View):
                 self.__cube_update_displays.append(display)
 
     def __update_cubes(self, refresh: bool) -> None:
+        def eager_refresh():
+            nonlocal refresh
+            refresh = True
+            for x, y, z in np.ndindex(self.map.traversables_data.shape):
+                self.__cube_modified[x, y, z] = self.map.traversables_data[x, y, z]
+        
         clr = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
-        refresh = refresh or clr != self.__deduced_traversables_colour
+        if clr != self.__deduced_traversables_colour:
+            eager_refresh()
         self.__deduced_traversables_colour = clr
 
         if self.map.dim == 3:
@@ -220,7 +227,8 @@ class MapView(View):
         else: # 2D
             wfc = self.map.traversables_wf_dc()
             wfc = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
-            refresh = refresh or wfc != self.__deduced_traversables_wf_colour
+            if wfc != self.__deduced_traversables_wf_colour:
+                eager_refresh()
             self.__deduced_traversables_wf_colour = wfc
 
             def set_colour(p, c): return self.map.render_square(p, c, wfc)
