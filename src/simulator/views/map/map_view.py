@@ -301,7 +301,6 @@ class MapView(View):
 
     def HDScreenShot(self):
         a, b, c = self.__map.traversables_data.shape
-
         # find the optimal zoom fit
         max_width = max(a, b)
 
@@ -316,8 +315,14 @@ class MapView(View):
         npCam = NodePath(cam)
         npCam.reparentTo(self.__world)
         x, y, z = self.__world.getPos()
-        npCam.setPos(x, y, z + max_width * 2)
-        npCam.setP(-90)
+        print(c)
+        # 3d case
+        if c > 1:
+            npCam.setPos(-a * 2.1, -max(a, b) * 0.5, z)
+            npCam.setH(-30)
+        else:
+            npCam.setPos(x, y, z + max_width * 2 + c)
+            npCam.setP(-90)
 
         mycamera = self._services.graphics.window.makeCamera(mybuffer, useCamera=npCam)
         myscene = self._services.graphics.window.render
@@ -325,7 +330,9 @@ class MapView(View):
         self._services.graphics.window.graphicsEngine.renderFrame()
         tex = mybuffer.getTexture()
         mybuffer.setActive(False)
-        tex.write('screenshotTexHD.png')
+
+        self._services.resources.screenshots_dir.append(
+        lambda fn: tex.write(fn))
         self._services.graphics.window.graphicsEngine.removeWindow(mybuffer)
         print("HDScreenShot taken")
 
