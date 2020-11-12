@@ -262,8 +262,6 @@ class Analyzer:
                 return 0
             res = float(val - against) / float(against) * 100
             res = round(res if not low_is_better else -res, 2)
-            if res == 0:
-                return 0
             return res
 
         # analyze results and print
@@ -288,9 +286,9 @@ class Analyzer:
         res_proc["average_distance_improvement"] = average_distance_improvement
         res_proc["average_time_improvement"] = average_time_improvement
         res_proc["average_distance_from_goal_improvement"] = average_distance_from_goal_improvement
-        res_proc["average_path_deviation"] = res_proc["average_distance"]- a_star_res_proc["average_distance"] 
-        res_proc['path_deviation_alldata'] = [ y-x for x,y in zip(res_proc['path_deviation_alldata'],a_star_res_proc["distance_alldata"])]
-        
+        res_proc["average_path_deviation"] = res_proc["average_distance"] - a_star_res_proc["average_distance"] 
+        res_proc['path_deviation_alldata'] = [ y-x for x,y in zip(res_proc['path_deviation_alldata'], a_star_res_proc["distance_alldata"])]
+
 
         self.__services.debug.write("Rate of success: {}%, (A*: {}%), (Improvement: {}%)".format(res_proc["goal_found_perc"], a_star_res_proc["goal_found_perc"], goal_found_perc_improvement), streams=[self.__analysis_stream])
         self.__services.debug.write("Average total steps: {}, (A*: {}), (Improvement: {}%)".format(res_proc["average_steps"], a_star_res_proc["average_steps"], average_steps_improvement), streams=[self.__analysis_stream])
@@ -350,14 +348,14 @@ class Analyzer:
             if "global_kernel_kernel_names" in res_proc:
                 self.__services.debug.write("Global kernel kernels: {}%".format(res_proc["global_kernel_kernel_names"]), streams=[self.__analysis_stream])
                 self.__services.debug.write("Global kernel kernel calls percentages: {}%".format(list(map(lambda r: str(r) + "%", res_proc["kernels_pick_perc"]))), streams=[self.__analysis_stream])
-        
+
         try:
             if res_proc["average_total_search_space"]:
                 pass
         except:
-            res_proc["average_total_search_space"]= float('nan')
-            res_proc['search_space_alldata']= [float('nan') for x in range(len(res_proc['path_deviation_alldata']))]
-        
+            res_proc["average_total_search_space"] = float('nan')
+            res_proc['search_space_alldata'] = [float('nan') for x in range(len(res_proc['path_deviation_alldata']))]
+
         self.__services.debug.write("\n", timestamp=False, streams=[self.__analysis_stream])
 
         # writing average data to csv file
@@ -365,11 +363,11 @@ class Analyzer:
             fieldnames = ['Algorithm', 'Average Path Deviation', 'Success Rate', 'Average Time','Average Steps', 'Average Distance', 'Average Distance from Goal','Average Original Distance from Goal','Average Search Space', 'Average Memory']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
 
-            if algorithm_type == AStar:
+            if file.tell() == 0:
                 writer.writeheader()
                  
             for lst in algorithms:
-                if lst[0] == algorithm_type and lst[3] not in algostring :
+                if lst[0] == algorithm_type and lst[3] not in algostring:
                     # lst[3] is name of the current algorithm
                     algoname1 = lst[3]
                     algostring.append(lst[3])
@@ -386,7 +384,8 @@ class Analyzer:
             fieldnames2 = ['Algorithm','Time', 'Distance', 'Distance from Goal','Path Deviation','Original Distance from Goal','Search Space','Memory']
             writer1 = csv.DictWriter(file, fieldnames=fieldnames2)
 
-            if algoname1 == 'A*':
+            if file.tell() == 0:
+                # Only write header if file is empty
                 writer1.writeheader() 
 
             for n in range(len(res_proc['time_alldata'])):
@@ -736,7 +735,7 @@ class Analyzer:
         df = pd.read_csv('pbtest.csv')
         dffull = pd.read_csv('pbtestfull.csv')
 
-        #df_t = df.T     
+        #df_t = df.T
 
         print(df)
         print('********************************')
