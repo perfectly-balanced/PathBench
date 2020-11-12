@@ -303,7 +303,7 @@ class MapView(View):
         a, b, c = self.__map.traversables_data.shape
         # find the optimal zoom fit
         max_width = max(a, b)
-
+        max_height = max(a, c)
         tex = Texture()
         width = 4096
         height = 4096
@@ -317,8 +317,11 @@ class MapView(View):
         x, y, z = self.__world.getPos()
         print(c)
         # 3d case
+
         if c > 1:
-            npCam.setPos(-a * 2.1, -max(a, b) * 0.5, z)
+            print(x,y,z)
+
+            npCam.setPos(x-a * 2.1, y - max_height * 3.6, z)
             npCam.setH(-30)
         else:
             npCam.setPos(x, y, z + max_width * 2 + c)
