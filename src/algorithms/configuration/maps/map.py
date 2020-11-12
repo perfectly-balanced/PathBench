@@ -209,14 +209,11 @@ class Map:
             #     inx = int(next_pos.x + point.x)
             #     iny = int(next_pos.y + point.y)
         else:
-            line: List[Point] = self.get_line_sequence(self.agent.position, to)
-            print(line)
-            n = 0
+            line: List[Point] = self.get_line_sequence(self.agent.position, to)[1:] # Get rid of first point = current agent pos
             for next_pos in line:
                 if not self.move(self.agent, next_pos, no_trace):
-                    if n != 0:
-                        return False
-            return True
+                    return False
+            return True        
 
     def get_line_sequence(self, frm: Point, to: Point) -> List[Point]:
         '''
