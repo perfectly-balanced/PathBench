@@ -2,6 +2,7 @@ import torch
 from typing import Tuple, List, TYPE_CHECKING, Dict, Callable, Type, Set, Any
 
 import numpy as np
+from itertools import product
 from pygame.surface import Surface
 import math
 import os
@@ -517,45 +518,47 @@ class Generator:
                         
             elif len(room_size) == 3:
                 
-                for index in product([room_top_left_point[0], room_top_left_point[0] + room_size[0] - 1], [room_top_left_point[1] + i for i in range(room_size[1])], 
-                        [room_top_left_point[2] + i for i in range(room_size[2])]):
-                    if in_bounds(Point(index)):
-                        full_edge.append(Point(index))
+                for index in product([room_top_left_point[0], room_top_left_point[0] + room_size[0] - 1], 
+                                     [room_top_left_point[1] + i for i in range(room_size[1])], 
+                                     [room_top_left_point[2] + i for i in range(room_size[2])]):
+                    if in_bounds(Point(*index)):
+                        full_edge.append(Point(*index))
                         n_y, n_z = index[1], index[2]
                         if index[0] == room_top_left_point[0]:
                             n_x = index[0] - 1
                         else:
                             n_x = index[0] + 1
                 
-                        if in_bounds(n_x, n_y, n_z) and grid[(n_x, n_y, n_z)] == DenseMap.WALL_ID:
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[(n_x, n_y, n_z)] == DenseMap.WALL_ID:
                             edges.append(q)
                         q += 1
                         
-                for index in product([room_top_left_point[0] + i for i in range(room_size[0])], [room_top_left_point[1], room_top_left_point[1] + room_size[1] - 1]
-                        [room_top_left_point[2] + i for i in range(room_size[2])]):
-                    if in_bounds(Point(index)):
-                        full_edge.append(Point(index))
+                for index in product([room_top_left_point[0] + i for i in range(room_size[0])], 
+                                     [room_top_left_point[1], room_top_left_point[1] + room_size[1] - 1],
+                                     [room_top_left_point[2] + i for i in range(room_size[2])]):
+                    if in_bounds(Point(*index)):
+                        full_edge.append(Point(*index))
                         n_x, n_z = index[0], index[2]
                         if index[1] == room_top_left_point[1]:
                             n_y = index[1] - 1
                         else:
                             n_y = index[1] + 1
                 
-                        if in_bounds(n_x, n_y, n_z) and grid[(n_x, n_y, n_z)] == DenseMap.WALL_ID:
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[(n_x, n_y, n_z)] == DenseMap.WALL_ID:
                             edges.append(q)
                         q += 1
                         
                 for index in product([room_top_left_point[0] + i for i in range(room_size[0])], [room_top_left_point[1] + i for i in range(room_size[1])]
                                      , [room_top_left_point[2], room_top_left_point[2] + room_size[2] - 1]):
-                    if in_bounds(Point(index)):
-                        full_edge.append(Point(index))
+                    if in_bounds(Point(*index)):
+                        full_edge.append(Point(*index))
                         n_x, n_y = index[0], index[1]
                         if index[2] == room_top_left_point[2]:
                             n_y = index[2] - 1
                         else:
                             n_y = index[2] + 1
                 
-                        if in_bounds(n_x, n_y, n_z) and grid[(n_x, n_y, n_z)] == DenseMap.WALL_ID:
+                        if in_bounds(Point(n_x, n_y, n_z)) and grid[(n_x, n_y, n_z)] == DenseMap.WALL_ID:
                             edges.append(q)
                         q += 1
                         
