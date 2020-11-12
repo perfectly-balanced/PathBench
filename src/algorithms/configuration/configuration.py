@@ -64,12 +64,15 @@ class Configuration:
         self.simulator_write_debug_level = DebugLevel.NONE
 
         # Generator
-        self.generator = False
-        self.generator_labelling_atlases = []
-        self.generator_nr_of_examples = 10
+        self.generator = True
+        self.generator_labelling_atlases = ['house_100']
+        self.generator_nr_of_examples = 100
         self.generator_gen_type = "house"
-        self.generator_labelling_features = []
-        self.generator_labelling_labels = []
+        self.generator_labelling_features = ["distance_to_goal_normalized",
+                "raycast_8_normalized",
+                "direction_to_goal_normalized",
+                "agent_goal_angle"]
+        self.generator_labelling_labels = ["next_position_index"]
         self.generator_single_labelling_features = []
         self.generator_single_labelling_labels = []
         self.generator_aug_labelling_features = []

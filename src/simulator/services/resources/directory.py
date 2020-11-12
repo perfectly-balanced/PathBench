@@ -68,9 +68,9 @@ class Directory(Service):
         if (isinstance(obj, np.ndarray) and np.prod(obj.shape) > 0) or obj: # disambiguates boolean check for numpy arrays
             self._services.debug.write("Loaded [{}]".format(self._full_path() + name), DebugLevel.LOW)
         else:
-            msg = "File not found [{}]".format(self._full_path() + name)
-            self._services.debug.write(msg, DebugLevel.LOW)
-            raise RuntimeError(msg)
+            self._services.debug.write("File not found [{}]".format(self._full_path() + name), DebugLevel.LOW)
+            print(self._full_path() + name)
+            #raise RuntimeError("File not found, consider running from src/")
         return obj
 
     def exists(self, name: str, extension: str) -> bool:

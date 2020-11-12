@@ -41,6 +41,9 @@ def configure_and_run(args) -> bool:
     if args.visualiser:
         config.load_simulator = True
         config.simulator_graphics = True
+    
+    if args.trainer:
+        config.trainer = True
 
         if args.visualiser_flags is not None:
             integral_pair_re = re.compile("\s*\(\s*[0-9]+\s*,\s*[0-9]+\s*\)\s*")
