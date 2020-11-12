@@ -58,10 +58,9 @@ class TrackedSet(TrackedContainer, MutableSet):
             self._elem_removed(elem)
         self._set.intersection_update(s)
 
-    # random
     def pop(self) -> Any:
-        raise NotImplementedError
-
+        elem = self._set.pop()
+        self._elem_removed(elem)
     def remove(self, element: Any) -> None:
         old_len = len(self)
         self._set.remove(element)
