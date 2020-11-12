@@ -32,6 +32,7 @@ from typing import List, Any, Tuple, Optional, Union, Set
 from heapq import heappush, heappop
 import os
 
+
 class MapView(View):
     __world: NodePath
     __map: Union[VoxelMap, FlatMap]
@@ -107,6 +108,7 @@ class MapView(View):
         """
 
         self.__circle_filled_radius = 0.06
+
         def resize_circle_filled(dim):
             if dim < 40:
                 pass
@@ -116,14 +118,17 @@ class MapView(View):
                 dim /= 2
             while (self.__circle_filled_radius < 1) and (dim / self.__circle_filled_radius > 250):
                 self.__circle_filled_radius *= 1.25
+
         resize_circle_filled(self.map.logical_w)
         resize_circle_filled(self.map.logical_h)
         resize_circle_filled(self.map.logical_d)
 
         self.__line_thickness = 2.5
+
         def change_line_thickness(dim):
             while (self.__line_thickness < 4) and (dim / self.__line_thickness > 160):
                 self.__line_thickness *= 1.25
+
         change_line_thickness(self.map.logical_w)
         change_line_thickness(self.map.logical_h)
         change_line_thickness(self.map.logical_d)
@@ -226,15 +231,17 @@ class MapView(View):
         self.__deduced_traversables_colour = clr
 
         if self.map.dim == 3:
-            def set_colour(p, c): return self.map.traversables_mesh.set_cube_colour(p, c)
-        else: # 2D
+            def set_colour(p, c):
+                return self.map.traversables_mesh.set_cube_colour(p, c)
+        else:  # 2D
             wfc = self.map.traversables_wf_dc()
             wfc = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
             if wfc != self.__deduced_traversables_wf_colour:
                 eager_refresh()
             self.__deduced_traversables_wf_colour = wfc
 
-            def set_colour(p, c): return self.map.render_square(p, c, wfc)
+            def set_colour(p, c):
+                return self.map.render_square(p, c, wfc)
 
         def update_cube_colour(p):
             self.__cube_colour = clr
@@ -293,6 +300,11 @@ class MapView(View):
             lambda fn: self._services.graphics.window.win.save_screenshot(fn))
 
     def HDScreenShot(self):
+        a, b, c = self.__map.traversables_data.shape
+
+        # find the optimal zoom fit
+        max_width = max(a, b)
+
         tex = Texture()
         width = 4096
         height = 4096
@@ -303,8 +315,8 @@ class MapView(View):
         cam.getLens().setAspectRatio(width / height)
         npCam = NodePath(cam)
         npCam.reparentTo(self.__world)
-        x,y,z = self.__world.getPos()
-        npCam.setPos(x,y+0.5,z+77.3)
+        x, y, z = self.__world.getPos()
+        npCam.setPos(x, y, z + max_width * 2)
         npCam.setP(-90)
 
         mycamera = self._services.graphics.window.makeCamera(mybuffer, useCamera=npCam)
@@ -315,8 +327,7 @@ class MapView(View):
         mybuffer.setActive(False)
         tex.write('screenshotTexHD.png')
         self._services.graphics.window.graphicsEngine.removeWindow(mybuffer)
-        print ("HDScreenShot taken")
-
+        print("HDScreenShot taken")
 
     def cube_center(self, p: Point) -> Point:
         x, y, z = self.to_point3(p)
