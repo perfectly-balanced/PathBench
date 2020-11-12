@@ -3,6 +3,7 @@ from typing import List, Optional, Set, Dict, Callable, TypeVar, Union, Tuple
 
 import math
 import numpy as np
+import torch
 from itertools import product
 
 from algorithms.configuration.entities.agent import Agent
@@ -128,7 +129,8 @@ class Map:
         :return: The index corresponding to :ref:`ALL_POINTS_MOVE_VECTOR`
         """
         # because pygame has inverted y
-        rounded_point = self.get_move_along_dir(self, direction)
+        direction = direction.tolist() if torch.is_tensor(direction) else direction
+        rounded_point = self.get_move_along_dir(direction)
         return self.ALL_POINTS_MOVE_VECTOR.index(rounded_point)
 
     def get_move_along_dir(self, direction: List[float]) -> Point:
@@ -137,6 +139,7 @@ class Map:
         :param direction: The true direction
         :return: The :ref:`ALL_POINTS_MOVE_VECTOR` point
         """
+        assert(any(direction))
         dir_length = math.sqrt(sum(i*i for i in direction))
         norm_direction = list(map(lambda i: i/dir_length, direction))
         rounded_direction = list(map(lambda i: round(i), norm_direction))

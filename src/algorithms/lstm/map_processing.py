@@ -163,7 +163,7 @@ class MapProcessing:
     @staticmethod
     def raycast_8_feature(mp: Map) -> torch.Tensor:
         ret: List[torch.Tensor] = []
-        for mv in mp.EIGHT_POINTS_MOVE_VECTOR:
+        for mv in mp.ALL_POINTS_MOVE_VECTOR:
             hit_point: torch.Tensor = MapProcessing.__get_hit_point_along_dir(mp, mv).to_tensor()
             dir: torch.Tensor = MapProcessing.__get_pos(mp.agent) - hit_point
             ret.append(torch.norm(dir))
@@ -182,8 +182,8 @@ class MapProcessing:
     @staticmethod
     def valid_moves_feature(mp: Map) -> torch.Tensor:
         neighbours: Set[Point] = set(mp.get_neighbours(mp.agent.position))
-        res: torch.Tensor = torch.zeros(8)
-        for idx, mv in enumerate(mp.EIGHT_POINTS_MOVE_VECTOR):
+        res: torch.Tensor = torch.zeros(8) if mp.size.n_dim == 2 else torch.zeros(26)
+        for idx, mv in enumerate(mp.ALL_POINTS_MOVE_VECTOR):
             next_point: Point = Map.apply_move(mv, mp.agent.position)
             if next_point in neighbours:
                 res[idx] = 1
@@ -192,6 +192,7 @@ class MapProcessing:
     @staticmethod
     def local_map_normalized_feature(mp: Map) -> torch.Tensor:
         extents: int = 4
+        dim = mp.size.n_dim
 
         if not isinstance(mp, DenseMap):
             raise Exception("mp has to be of type DenseMap")
@@ -229,18 +230,20 @@ class MapProcessing:
 
     @staticmethod
     def next_position_label(mp: Map) -> List[torch.Tensor]:
+        trace_no_dup = list(dict.fromkeys(mp.trace))
         return list(map(
             lambda el: mp.get_move_along_dir(
                 MapProcessing.__get_pos(el[1]) - MapProcessing.__get_pos(el[0])).to_tensor(),
-            zip(mp.trace, mp.trace[1:] + [Trace(mp.goal.position)]))
+            zip(trace_no_dup, trace_no_dup[1:]))
         )
 
     @staticmethod
     def next_position_index_label(mp: Map) -> List[torch.Tensor]:
+        trace_no_dup = list(dict.fromkeys(mp.trace))
         move_indexes: List[int] = list(map(
             lambda el: mp.get_move_index(
                 MapProcessing.__get_pos(el[1]) - MapProcessing.__get_pos(el[0])),
-            zip(mp.trace, mp.trace[1:] + [Trace(mp.goal.position)]))
+            zip(trace_no_dup, trace_no_dup[1:]))
         )
 
         res: List[torch.Tensor] = []

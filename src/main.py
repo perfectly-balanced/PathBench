@@ -107,6 +107,9 @@ def configure_and_run(args) -> bool:
     if args.visualiser:
         config.load_simulator = True
         config.simulator_graphics = True
+    
+    if args.trainer:
+        config.trainer = True
 
     if args.generator:
         config.generator = True
@@ -121,6 +124,7 @@ def main() -> bool:
                                      formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("-v", "--visualiser", action='store_true', help="run simulator with graphics")
     parser.add_argument("-g", "--generator", action='store_true', help="run generator")
+    parser.add_argument("--trainer", action='store_true', help="runs model trainer")
 
     args = parser.parse_args()
     print("args:{}".format(args))

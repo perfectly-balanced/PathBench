@@ -29,3 +29,6 @@ class Trace(Entity):
         if not isinstance(other, Trace):
             return False
         return super().__eq__(other)
+
+    def __hash__(self) -> int:
+        return hash(self.position)
