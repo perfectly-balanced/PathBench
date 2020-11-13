@@ -208,7 +208,7 @@ def plan(grid):
     
     for num in lst:
         try:
-            trace.append(Point(lst[counter],y=lst[counter + 1]))
+            trace.append(Point(lst[counter], lst[counter + 1]))
             counter+=2
             print (trace)
             print(counter)
