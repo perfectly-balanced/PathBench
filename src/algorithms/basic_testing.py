@@ -71,7 +71,7 @@ class BasicTesting:
 
     def check_terminated(self) -> None:
         if self._services.algorithm.instance.testing != self:
-            from simulator.models.map import AlgorithmTerminated
+            from simulator.models.map_model import AlgorithmTerminated
             raise AlgorithmTerminated()
 
     def key_frame_internal(self, ignore_key_frame_skip: bool = False, only_render: List[int] = None, root_key_frame=None) -> None:

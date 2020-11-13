@@ -5,8 +5,8 @@ from simulator.controllers.main_controller import MainController
 from simulator.controllers.map.map_controller import MapController
 from simulator.controllers.gui.gui_controller import GuiController
 
-from simulator.models.main import Main
-from simulator.models.map import Map
+from simulator.models.main_model import MainModel
+from simulator.models.map_model import MapModel
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
 from simulator.services.event_manager.events.event import Event
@@ -26,8 +26,8 @@ class Simulator:
     The main simulator class
     """
     __services: Services
-    __main: Main
-    __map: Map
+    __main: MainModel
+    __map: MapModel
     __main_controller: MainController
     __map_controller: MapController
     __gui_controller: GuiController
@@ -64,7 +64,7 @@ class Simulator:
                 self.__map_controller.destroy()
             if self.__map_view is not None:
                 self.__map_view.destroy()
-            self.__map = Map(self.__services)
+            self.__map = MapModel(self.__services)
             self.__map_view = MapView(self.__services, self.__map, self.__main_view)
             self.__map_controller = MapController(self.__map_view, self.__services, self.__map)
 
@@ -73,7 +73,7 @@ class Simulator:
         Starts simulator with graphics
         """
         # init models, views, controllers
-        self.__main = Main(self.__services)
+        self.__main = MainModel(self.__services)
 
         # init views
         self.__main_view = MainView(self.__services, self.__main, None)

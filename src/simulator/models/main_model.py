@@ -5,7 +5,7 @@ from simulator.services.event_manager.events.quit_event import QuitEvent
 from simulator.services.services import Services
 
 
-class Main(Model):
+class MainModel(Model):
     """
     Tracks the game state.
     """

@@ -12,7 +12,7 @@ from structures import Point
 class AlgorithmTerminated(Exception):
     pass
 
-class Map(Model):
+class MapModel(Model):
     speed: int
     key_frame_is_paused: bool
     last_thread: Thread
