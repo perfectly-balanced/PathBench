@@ -51,7 +51,7 @@ class Generator:
     def generate_map_from_image(self, image_name: str, rand_entities: bool = False, entity_radius: int = None, house_expo_flag: bool = False) -> Map:
         """
         Generate a map from an image
-        Load the image from the default location and lsave the map in the default location
+        Load the image from the default location and save the map in the default location
         :param image_name: The image name
         :return: The map
         """
