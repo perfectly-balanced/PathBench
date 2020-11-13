@@ -38,6 +38,7 @@ class BasicTesting:
         self.key_frame_condition = None
         self.key_frame_skip_count = 0
         self.total_time = 0
+        self.requires_key_frame = False
         self.reset()
 
     def reset(self) -> None:
@@ -85,6 +86,8 @@ class BasicTesting:
 
             if self.key_frame_condition is not None:
                 self.key_frame_condition.acquire()
+                self.requires_key_frame = True
+                self.key_frame_condition.notify()
                 self.key_frame_condition.wait()
                 self.key_frame_condition.release()
             self.key_frame_skip_count = 0

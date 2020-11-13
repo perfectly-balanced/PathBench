@@ -262,13 +262,11 @@ class MapView(View):
         self.__displays.clear()
 
     def update_view(self, refresh: bool) -> None:
-        self._services.lock.acquire()
         self.__clear_scratch()
         self.__get_displays()
         self.__render_displays(refresh)
         self.__update_cubes(refresh)
         self.renderer.render()
-        self._services.lock.release()
 
     def display_updates_cube(self) -> None:
         self.__display_updates_cube = True

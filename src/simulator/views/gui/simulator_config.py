@@ -119,7 +119,7 @@ class SimulatorConfig():
         "None": (0, 0),
         "Normal": (0.00001, 0),
         "Slow": (0.5, 0),
-        "Fast": (0.00001, 20)
+        "Fast": (0.16, 20)
     }
 
     __debug = {
