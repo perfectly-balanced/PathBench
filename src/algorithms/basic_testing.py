@@ -69,6 +69,11 @@ class BasicTesting:
                                    DebugLevel.BASIC)
         self.timer = Timer()
 
+    def check_terminated(self) -> None:
+        if self._services.algorithm.instance.testing != self:
+            from simulator.models.map import AlgorithmTerminated
+            raise AlgorithmTerminated()
+
     def key_frame_internal(self, ignore_key_frame_skip: bool = False, only_render: List[int] = None, root_key_frame=None) -> None:
         """
         Internal key frame handler
@@ -93,6 +98,8 @@ class BasicTesting:
             self.key_frame_skip_count = 0
         else:
             self.key_frame_skip_count += 1
+        
+        self.check_terminated()
         self.timer.resume()
 
     def algorithm_done(self) -> None:

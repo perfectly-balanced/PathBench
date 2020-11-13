@@ -17,16 +17,16 @@ class Map(Model):
     key_frame_is_paused: bool
     last_thread: Thread
     frame_timer: Timer
-    key_frame_condition: Condition
-    __owns_key_frame_condition: bool
+    condition: Condition
+    graphics_thread_owns_condition: bool
 
     def __init__(self, services: Services) -> None:
         super().__init__(services)
         self._services.ev_manager.register_tick_listener(self)
         self.last_thread = None
         self.key_frame_is_paused = False
-        self.key_frame_condition = Condition()
-        self.__owns_key_frame_condition = False
+        self.condition = Condition()
+        self.graphics_thread_owns_condition = False
         self.frame_timer = Timer()
         self.speed = 1 if self._services.settings.simulator_grid_display else 20
 
@@ -55,7 +55,19 @@ class Map(Model):
     def reset(self) -> None:
         self.stop_algorithm()
         self._services.algorithm.reset_algorithm()
+        if self.graphics_thread_owns_condition:
+            self.graphics_thread_owns_condition = False
+            self.requires_key_frame = False
+            self.condition.notify()
+            self.condition.release()
+        self.condition.acquire()
+        self.condition.wait_for(lambda: self.last_thread is None or self.requires_key_frame, timeout=0.8)
+        if self.last_thread is not None:
+            self.condition.notify()
+            self.condition.wait_for(lambda: self.last_thread is None, timeout=0.8)
+        self.condition.release()
         self._services.ev_manager.post(KeyFrameEvent(refresh=True))
+        self.requires_key_frame = False
 
     def move(self, to: Point) -> None:
         self.reset()
@@ -84,19 +96,19 @@ class Map(Model):
             self._services.algorithm.instance.testing.requires_key_frame = value
 
     def tick(self) -> None:
-        if self.__owns_key_frame_condition:
-            self.__owns_key_frame_condition = False
+        if self.graphics_thread_owns_condition:
+            self.graphics_thread_owns_condition = False
             self.requires_key_frame = False
-            self.key_frame_condition.notify()
-            self.key_frame_condition.release()
+            self.condition.notify()
+            self.condition.release()
 
         if not self.key_frame_is_paused and self.last_thread is not None:
             MAX_FRAME_DT = 1 / 16
             dt = self.frame_timer.stop()
             if self.requires_key_frame or (dt < MAX_FRAME_DT):
-                self.key_frame_condition.acquire()
-                if self.key_frame_condition.wait_for(lambda: self.requires_key_frame or self.last_thread is None, timeout=(MAX_FRAME_DT - dt)):
-                    self.__owns_key_frame_condition = True
+                self.condition.acquire()
+                if self.condition.wait_for(lambda: self.requires_key_frame or self.last_thread is None, timeout=(MAX_FRAME_DT - dt)):
+                    self.graphics_thread_owns_condition = True
                     self._services.ev_manager.post(KeyFrameEvent())
                 self.frame_timer = Timer()
 
@@ -109,20 +121,20 @@ class Map(Model):
         def compute_wrapper() -> None:
             self.key_frame_is_paused = False
             if self._services.settings.simulator_key_frame_speed > 0:
-                self._services.algorithm.instance.set_condition(self.key_frame_condition)
+                self._services.algorithm.instance.set_condition(self.condition)
             self._services.ev_manager.post(KeyFrameEvent(refresh=True))
             try:
                 self._services.algorithm.instance.find_path()
             except AlgorithmTerminated:
-                pass
+                print("Terminated algorithm")
             if self._services.settings.simulator_key_frame_speed == 0:
                 # no animation hence there hasn't been a chance to render
                 # the last state of the algorithm.
                 self._services.ev_manager.post(KeyFrameEvent(refresh=True))
-            self.key_frame_condition.acquire()
+            self.condition.acquire()
             self.last_thread = None
-            self.key_frame_condition.notify()
-            self.key_frame_condition.release()
+            self.condition.notify()
+            self.condition.release()
 
         self.last_thread = Thread(target=compute_wrapper, daemon=True)
         self.last_thread.start()
