@@ -15,8 +15,6 @@ from simulator.views.map.display.numbers_map_display import NumbersMapDisplay
 from structures import Point
 import copy
 
-
-
 ##################
 import sys
 import argparse
@@ -125,7 +123,8 @@ def main(grid):  # or this?
     # Instantiate a VIN model
     vin = VIN(config)
     # Load model parameters
-    vin.load_state_dict(torch.load(config.weights))
+    map_loc = None if use_GPU else torch.device("cpu")
+    vin.load_state_dict(torch.load(config.weights, map_location=map_loc))
     # Use GPU if available
     if use_GPU:
         vin = vin.cuda()
