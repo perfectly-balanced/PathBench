@@ -200,13 +200,12 @@ def plan(grid):
     counter = 0
     
     for num in lst:
-        try:
-            trace.append(Point(lst[counter], lst[counter + 1]))
-            counter+=2
-            print (trace)
-            print(counter)
-        except:
+        if counter >= len(lst):
             break
+        trace.append(Point(lst[counter], lst[counter + 1]))
+        counter += 2
+        print(trace)
+        print(counter)
 
     return trace
 
