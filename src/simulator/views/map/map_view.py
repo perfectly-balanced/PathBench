@@ -311,13 +311,7 @@ class MapView(View):
 
     def cube_center(self, p: Point) -> Point:
         x, y, z = self.to_point3(p)
-        x += 0.5
-        y += 0.5
-        if self._services.algorithm.map.size.n_dim == 3:
-            z -= 0.5
-        else:
-            z = 0.1 # have overlay be slightly above surface for 2D maps
-        return Point(x, y, z)
+        return Point(x + 0.5, y + 0.5, z - 0.5)
 
     def push_root(self, np: Optional[NodePath] = None) -> NodePath:
         if np is None:
