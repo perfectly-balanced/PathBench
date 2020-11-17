@@ -191,17 +191,10 @@ def plan(grid):
         print(x)
         print(lst)
         
-        trace=[]
-        counter = 0
-        
-        for num in lst:
-            if counter >= len(lst):
-                break
-            trace.append(Point(lst[counter], lst[counter + 1]))
-            counter += 2
+        trace = []
+        for i in range(len(lst) - 1):
+            trace.append(Point(lst[i], lst[i + 1]))
             print(trace)
-            print(counter)
-
         return trace
     else:
         print("No solution found")
