@@ -230,22 +230,19 @@ class MapProcessing:
 
     @staticmethod
     def next_position_label(mp: Map) -> List[torch.Tensor]:
-        trace_no_dup = list(dict.fromkeys(mp.trace))
         return list(map(
             lambda el: mp.get_move_along_dir(
                 MapProcessing.__get_pos(el[1]) - MapProcessing.__get_pos(el[0])).to_tensor(),
-            zip(trace_no_dup, trace_no_dup[1:]))
+            zip(mp.trace, mp.trace[1:]))
         )
 
     @staticmethod
     def next_position_index_label(mp: Map) -> List[torch.Tensor]:
-        trace_no_dup = list(dict.fromkeys(mp.trace))
         move_indexes: List[int] = list(map(
             lambda el: mp.get_move_index(
                 MapProcessing.__get_pos(el[1]) - MapProcessing.__get_pos(el[0])),
-            zip(trace_no_dup, trace_no_dup[1:]))
+            zip(mp.trace, mp.trace[1:]))
         )
-
         res: List[torch.Tensor] = []
         for move_idx in move_indexes:
             res.append(torch.tensor(float(move_idx)))
