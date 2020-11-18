@@ -3,6 +3,7 @@ from panda3d.core import GeomVertexFormat, GeomVertexData
 from panda3d.core import Geom, GeomTriangles, GeomVertexWriter, GeomVertexArrayData
 
 from numbers import Real
+from typing import Tuple
 
 from simulator.views.map.object.common import normalise
 from utility.compatibility import Final
@@ -22,7 +23,7 @@ class SquareMesh():
     __normal: GeomVertexWriter
     __texcoord: GeomVertexWriter
 
-    def __init__(self, width: int = 1, height: int = 1, depth: Real = 0.1, name: str = 'SquareMesh') -> None:
+    def __init__(self, width: int = 1, height: int = 1, depth: Real = 0.1, no_tex_coord: Tuple[float, float] = (1.0, 1.0), name: str = 'SquareMesh') -> None:
         self.name = name
         self.depth = depth
 
@@ -69,10 +70,8 @@ class SquareMesh():
                 self.__texcoord.addData2f(0.0, 0.0)
                 self.__texcoord.addData2f(1.0, 0.0)
             else:  # wrap around colour (typically wireframe)
-                self.__texcoord.addData2f(0.0, 0.0)
-                self.__texcoord.addData2f(0.0, 0.0)
-                self.__texcoord.addData2f(0.0, 0.0)
-                self.__texcoord.addData2f(0.0, 0.0)
+                for _ in range(4):
+                    self.__texcoord.addData2f(*no_tex_coord)
 
             vertex_id = self.__face_count * 4
 

@@ -1,4 +1,4 @@
-from panda3d.core import NodePath, TransparencyAttrib, LVecBase4f, Texture, PTA_uchar
+from panda3d.core import NodePath, TransparencyAttrib, LVecBase4f, Texture, SamplerState
 
 from simulator.services.services import Services
 from simulator.views.map.data.map_data import MapData
@@ -10,15 +10,16 @@ from utility.compatibility import Final
 import array
 import random
 import math
-from typing import Any, Tuple, Dict, Optional
+from typing import Any, Tuple, Dict, Optional, List
+from numbers import Real
 
 import numpy as np
 from nptyping import NDArray
 
 class FlatMap(MapData):
-    square: Final[NodePath]
-    square_mesh: Final[SquareMesh]
-    texture: Final[Texture]
+    squares: Final[List[NodePath]]
+    square_meshes: Final[List[SquareMesh]]
+    textures: Final[List[Texture]]
 
     square_size: Final[int]
     wf_thickness: Final[float]
@@ -34,7 +35,7 @@ class FlatMap(MapData):
 
     __lines: Dict[Tuple[Colour, Colour], Tuple[bytes, bytes, bytes]]
 
-    def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "flat_map", square_size: Optional[int] = None, wf_thickness: Optional[float] = None):
+    def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "flat_map", square_size: Optional[int] = None, wf_thickness: Optional[float] = None, block_size: Optional[int] = 200, depth: Real = 0.1):
         super().__init__(services, data, parent, name)
 
         self.__lines = {}
@@ -53,8 +54,15 @@ class FlatMap(MapData):
                     break
 
         self.square_size = square_size
-        self.texture_w = int(self.logical_w * square_size)
-        self.texture_h = int(self.logical_h * square_size)
+
+        if block_size is None:
+            block_size = max(self.logical_w, self.logical_h)
+        self.block_size = block_size
+        self.num_blocks_x = (self.logical_w // self.block_size) + int(self.logical_w % self.block_size != 0)
+        self.num_blocks_y = (self.logical_h // self.block_size) + int(self.logical_h % self.block_size != 0)
+
+        self.texture_w = int(self.block_size * square_size)
+        self.texture_h = self.texture_w
 
         if wf_thickness is None:
             # basic heuristic for decreasing wireframe
@@ -66,6 +74,8 @@ class FlatMap(MapData):
         self.wf_thickness = wf_thickness
         self.wf_line_cnt = int(max(1, math.ceil(self.wf_thickness + 1) // 2))
 
+        self.depth = depth
+
         self.traversables_dc = self._add_colour(MapData.TRAVERSABLES)
         self.traversables_wf_dc = self._add_colour(MapData.TRAVERSABLES_WF)
         self.obstacles_dc = self._add_colour(MapData.OBSTACLES, invoke_callback=False, callback=lambda dc: self.render_obstacles())
@@ -75,15 +85,41 @@ class FlatMap(MapData):
         self._add_colour(MapData.TRACE)
         self._add_colour(MapData.GOAL)
 
-        self.square_mesh = SquareMesh(self.obstacles_data.shape[0], self.obstacles_data.shape[1])
-        self.square = self.root.attach_new_node(self.square_mesh.geom_node)
+        self.squares = [None for _ in range(self.num_blocks_x * self.num_blocks_y)]
+        self.square_meshes = self.squares.copy()
+        self.textures = self.squares.copy()
+        for y in range(self.num_blocks_y):
+            for x in range(self.num_blocks_x):
+                idx = y * self.num_blocks_x + x
+                
+                # find a no_tex_coord that would make unseen squares transparent
+                no_tex_coord = None
+                for py in range(y * self.num_blocks_y, (y+1) * self.num_blocks_y):
+                    for px in range(x * self.num_blocks_x, (x+1) * self.num_blocks_x):
+                        if py >= self.logical_h or px >= self.logical_w:
+                            no_tex_coord = ((px % self.num_blocks_x) / self.num_blocks_x, (py % self.num_blocks_y) / self.num_blocks_y)
+                            break
+                    if no_tex_coord is not None:
+                        break
+                if no_tex_coord is None:
+                    no_tex_coord = (1.0, 1.0)
 
-        self.texture = Texture(self.name + "_texture")
-        self.texture.setup_2d_texture(self.texture_w, self.texture_h, Texture.T_unsigned_byte, Texture.F_rgba8)
-        self.square.set_texture(self.texture)
-        self.texture.set_wrap_u(Texture.WM_clamp)
-        self.texture.set_wrap_v(Texture.WM_clamp)
-        self.texture.set_clear_color(LVecBase4f(*WHITE))
+                mesh = self.square_meshes[idx] = SquareMesh(self.block_size, self.block_size, self.depth, no_tex_coord)
+                np = self.squares[idx] = self.root.attach_new_node(mesh.geom_node)
+                np.set_pos((x * self.block_size, y * self.block_size, 0))
+
+                tex = self.textures[idx] = Texture(self.name + "_texture")
+                tex.setup_2d_texture(self.texture_w, self.texture_h, Texture.T_unsigned_byte, Texture.F_rgba8)
+                np.set_texture(tex)
+                tex.set_wrap_u(Texture.WM_clamp)
+                tex.set_wrap_v(Texture.WM_clamp)
+                # tex.set_clear_color(LVecBase4f(*WHITE))
+                tex.set_border_color(LVecBase4f(*TRANSPARENT))
+
+        for y in range(self.num_blocks_y * self.block_size):
+            for x in range(self.num_blocks_x * self.block_size):
+                if y >= self.logical_h or x >= self.logical_w:
+                    self.render_square((x, y), TRANSPARENT, TRANSPARENT)
 
         self.render_obstacles()
 
@@ -145,8 +181,14 @@ class FlatMap(MapData):
     def render_square(self, p: Point, c: Colour, wfc: Colour) -> None:
         px, py = int(p[0]), int(p[1])
         l, wfl, tl = self.__lines[(c, wfc)] if (c, wfc) in self.__lines else self.__create_lines(c, wfc)
+        
+        # find corresponding block texture & offset points accordingly
+        block_x_idx = px // self.block_size
+        block_y_idx = py // self.block_size
+        img = self.textures[block_y_idx * self.num_blocks_x + block_x_idx].modify_ram_image()
+        px = px % self.block_size
+        py = py % self.block_size
 
-        img = self.texture.modify_ram_image()
         x_offset = px * self.square_size
         lsize = self.square_size * 4
 
