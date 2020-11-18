@@ -169,7 +169,8 @@ class PackedDataset(Dataset):
         self.data, self.lengths = pad_packed_sequence(packed_sequence, batch_first=True)
 
     def __getitem__(self, index: int) -> Tuple[Any, int]:
-        return self.data[index], self.lengths[index]
+        d = self.data[index], self.lengths[index]
+        return d
 
     def __len__(self) -> int:
         return len(self.data)
@@ -205,7 +206,7 @@ class MLModel(torch.nn.Module):
                 MapProcessing.pick_sequential_features(d[data_category_seq], data_seq)
             ), data))
 
-            data_features_sequence = list(filter(lambda t: t.shape != (0,), data_features_sequence))
+            #data_features_sequence = list(filter(lambda t: t.shape != (0,), data_features_sequence))
 
             data_seq_dataset: Dataset = PackedDataset(data_features_sequence)
 
@@ -391,6 +392,7 @@ class MLModel(torch.nn.Module):
             self.train()
             train_results.epoch_start()
             for _, (inputs, labels) in enumerate(data_loader, 0):
+                print(inputs, labels)
                 train_results.batch_start()
                 optimizer.zero_grad()
                 l, model_out, labels_out = self.batch_start(inputs, labels)
