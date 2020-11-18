@@ -1,6 +1,12 @@
 from structures.tracked_container import TrackedContainer
 from structures.heap import Heap
 
+""" A TrackedHeap class, used to keep track of elements, that are being added or removed from a 
+    heap data structure. TrackedHeap and heap share a common interface, in order to account for 
+    changes, while having a minimal effect on performance. Modified items are appended to the 
+    TrackedContainer's list, taking into account if the element was being removed or being added,
+    calling elem_removed(elem) or elem_added(elem) respectively."""
+
 class TrackedHeap(Heap, TrackedContainer):
     def __init__(self) -> None:
         Heap.__init__(self)

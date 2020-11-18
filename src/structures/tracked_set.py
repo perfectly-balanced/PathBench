@@ -1,7 +1,12 @@
 from typing import Iterable, Any, List
 from collections.abc import MutableSet
-
 from structures.tracked_container import TrackedContainer
+
+""" A TrackedSet class, used to keep track of elements, that are added or removed from a 
+    set data structure. TrackedSet overrides the built-in MutableSet methods in order to account for changes
+    in the set, having a minimal effect on performance. Modified items are appended to the TrackedContainer's list,
+    taking into account if the element was removed or being added, calling elem_removed(elem) or
+    elem_added(elem) respectively."""
 
 class TrackedSet(TrackedContainer, MutableSet):
     _set: set
@@ -51,7 +56,6 @@ class TrackedSet(TrackedContainer, MutableSet):
         if old_len != new_len:
             self._elem_removed(element)
 
-
     def intersection_update(self, *s: Iterable[Any]) -> None:
         __difference = self._set.difference(s)
         for elem in __difference:
@@ -61,6 +65,7 @@ class TrackedSet(TrackedContainer, MutableSet):
     def pop(self) -> Any:
         elem = self._set.pop()
         self._elem_removed(elem)
+
     def remove(self, element: Any) -> None:
         old_len = len(self)
         self._set.remove(element)

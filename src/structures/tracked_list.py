@@ -1,7 +1,13 @@
 from typing import Any, List, Tuple
 from collections.abc import MutableSequence
-
 from structures.tracked_container import TrackedContainer
+
+""" A TrackedList class, used to keep track of elements, that are being added or removed from a 
+    list data structure. TrackedList overrides the built-in MutableSequence methods, in order to account for 
+    changes in the list, having a minimal effect on performance. Modified items are appended to the TrackedContainer's 
+    list, taking into account if the element was removed or it was being added, calling elem_removed(elem) or
+    elem_added(elem) respectively."""
+
 
 class TrackedList(TrackedContainer, MutableSequence):
     _list: list
