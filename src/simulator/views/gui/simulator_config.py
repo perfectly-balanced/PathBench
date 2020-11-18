@@ -135,8 +135,10 @@ class SimulatorConfig():
         self.hidden_config = False
         self.__text = "Important runtime commands:\n \n* t - find the path between the agent and goal\n\n"\
             "* mouse click - moves agent to mouse location \n\n* mouse right click - moves goal to"\
-            " mouse location\n\n* s - stop trace animation (animations required)\n\n* r - resume trace animation  (" \
-            "animations required)\n\n* p - take screenshot"
+            " mouse location\n\n* x - stop trace animation (animations required)\n\n* r - resume trace animation  (" \
+            "animations required)\n\n* m - toggle map between Sparse and Dense\n\n* o - take a default screenshot of " \
+                      "the map\n\n* p - take a custom screenshot of the scene\n\n* wasd " \
+                      "- orbit around the map"
 
         self.__algorithms = {
             "A*": (AStar, AStarTesting, ([], {})),
@@ -204,7 +206,7 @@ class SimulatorConfig():
                                       frameColor=WINDOW_BG_COLOUR,
                                       pos=(190, 200, -350),
                                       scale=(150, 1., 150),
-                                      frameSize=(-1.6, 1.2, -4.2, 1.1))
+                                      frameSize=(-1.6, 1.2, -4.8, 1.1))
 
         # spacer #
         DirectFrame(parent=self.__window_config.frame,
@@ -326,18 +328,34 @@ class SimulatorConfig():
                                                     highlightColor=(0.65, 0.65, 0.65, 1),
                                                     textMayChange=1)
 
-        self.__start_simulator = DirectFrame(parent=self.__window_config.frame,
+        self._update_frame = DirectFrame(parent=self.__window_config.frame,
                                              frameColor=WHITE,
-                                             pos=(-0.61, 0.4, -2.1),
+                                             pos=(-1, 0.4, -2.1),
                                              borderWidth=(0.25, 0.15),
-                                             frameSize=(-0.72, 2.28, -0.54, 0.54),
+                                             frameSize=(-0.5, 0.95, -0.54, 0.54),
                                              scale=(0.50, 3.1, 0.25))
-        self.btn_s = DirectButton(
-            text="Start Simulator",
+        self._reset_frame = DirectFrame(parent=self.__window_config.frame,
+                                             frameColor=WHITE,
+                                             pos=(0.412, 0.4, -2.1),
+                                             borderWidth=(0.25, 0.15),
+                                             frameSize=(-0.5, 0.92, -0.54, 0.54),
+                                             scale=(0.50, 3.1, 0.25))
+        self.btn_update = DirectButton(
+            text="Update",
             text_fg=(0.3, 0.3, 0.3, 1.0),
             pressEffect=1,
             command=self.__start_simulator_callback,
-            pos=(-0.223, 0.4, -2.15),
+            pos=(-0.9, 0.4, -2.15),
+            parent=self.__window_config.frame,
+            scale=(0.20, 2.1, 0.15),
+            frameColor=TRANSPARENT)
+
+        self.btn_reset = DirectButton(
+            text="Reset",
+            text_fg=(0.4, 0.3, 0.3, 1.0),
+            pressEffect=1,
+            command=self.__start_simulator_callback,
+            pos=(0.51, 0.4, -2.15),
             parent=self.__window_config.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
@@ -361,6 +379,8 @@ class SimulatorConfig():
         config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = algo
         config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani  # int, int
         self.__services.reset()
+
+
 
     def notify(self, event: Event) -> None:
         if isinstance(event, ToggleSimulatorConfigEvent):

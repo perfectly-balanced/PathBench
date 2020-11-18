@@ -315,12 +315,8 @@ class MapView(View):
         npCam = NodePath(cam)
         npCam.reparentTo(self.__world)
         x, y, z = self.__world.getPos()
-        print(c)
         # 3d case
-
         if c > 1:
-            print(x,y,z)
-
             npCam.setPos(x-a * 2.1, y - max_height * 3.6, z)
             npCam.setH(-30)
         else:
