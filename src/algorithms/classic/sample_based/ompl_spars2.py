@@ -207,7 +207,7 @@ def plan(grid):
     print(lst)
     
     trace = []
-    for i in range(len(lst) - 1):
+    for i in range(0, len(lst), 2):
         trace.append(Point(lst[i], lst[i + 1]))
         print(trace)
     return trace
