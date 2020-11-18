@@ -48,9 +48,7 @@ class Algorithm(ABC):
         It is used in animations
         """
         if self.testing is not None:
-            self._services.lock.release()
             self.testing.key_frame(*args, **kwargs, root_key_frame=self.__root_key_frame)
-            self._services.lock.acquire()
 
     def set_root_key_frame(self, algo):
         self.__root_key_frame = algo
@@ -60,13 +58,11 @@ class Algorithm(ABC):
         Method for finding a path from agent to goal
         Movement should be done using the map APIs
         """
-        self._services.lock.acquire()
         if self.testing is not None:
             self.testing.algorithm_start()
         self._find_path_internal()
         if self.testing is not None:
             self.testing.algorithm_done()
-        self._services.lock.release()
 
     def _get_grid(self) -> Map:
         """

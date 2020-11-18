@@ -197,18 +197,10 @@ def plan(grid):
     print(x)
     print(lst)
     
-    trace=[]
-    counter = 0
-    
-    for num in lst:
-        try:
-            trace.append(Point(lst[counter],y=lst[counter + 1]))
-            counter+=2
-            print (trace)
-            print(counter)
-        except:
-            break
-
+    trace = []
+    for i in range(0, len(lst), 2):
+        trace.append(Point(lst[i], lst[i + 1]))
+        print(trace)
     return trace
 
 # OMPL Algorithm Class 

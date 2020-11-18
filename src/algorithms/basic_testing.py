@@ -38,6 +38,7 @@ class BasicTesting:
         self.key_frame_condition = None
         self.key_frame_skip_count = 0
         self.total_time = 0
+        self.requires_key_frame = False
         self.reset()
 
     def reset(self) -> None:
@@ -68,6 +69,11 @@ class BasicTesting:
                                    DebugLevel.BASIC)
         self.timer = Timer()
 
+    def check_terminated(self) -> None:
+        if self._services.algorithm.instance.testing != self:
+            from simulator.models.map_model import AlgorithmTerminated
+            raise AlgorithmTerminated()
+
     def key_frame_internal(self, ignore_key_frame_skip: bool = False, only_render: List[int] = None, root_key_frame=None) -> None:
         """
         Internal key frame handler
@@ -85,11 +91,15 @@ class BasicTesting:
 
             if self.key_frame_condition is not None:
                 self.key_frame_condition.acquire()
+                self.requires_key_frame = True
+                self.key_frame_condition.notify()
                 self.key_frame_condition.wait()
                 self.key_frame_condition.release()
             self.key_frame_skip_count = 0
         else:
             self.key_frame_skip_count += 1
+        
+        self.check_terminated()
         self.timer.resume()
 
     def algorithm_done(self) -> None:
