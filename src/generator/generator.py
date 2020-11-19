@@ -290,14 +290,12 @@ class Generator:
         rooms: List[Tuple[Point, Size]] = []
 
         def in_bounds(pos) -> bool:
-            # return 0 <= x < len(grid[0]) and 0 <= y < len(grid)
             return all([pos[i] >= 0 and pos[i] < grid.shape[i] for i in range(len(grid.shape))])
 
         def __place_room(grid: np.array, size: Size, top_left_corner: Point) -> None:
             for index in np.ndindex(*size):
                 p = [elem + top_left_corner[i] for i, elem in enumerate(index)]
                 if in_bounds(Point(*p)):
-                    # do we need reverse? (+other places)
                     grid[tuple(p)] = DenseMap.CLEAR_ID
                 for i in range(len(size)):
                     if index[i] == top_left_corner[i] or index[i] == top_left_corner[i] + size[i] - 1:
@@ -448,9 +446,9 @@ class Generator:
                         full_edge.append(Point(*index))
                         n_x, n_y = index[0], index[1]
                         if index[2] == room_top_left_point[2]:
-                            n_y = index[2] - 1
+                            n_z = index[2] - 1
                         else:
-                            n_y = index[2] + 1
+                            n_z = index[2] + 1
 
                         if in_bounds(Point(n_x, n_y, n_z)) and grid[(n_x, n_y, n_z)] == DenseMap.WALL_ID:
                             edges.append(q)
