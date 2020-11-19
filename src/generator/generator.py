@@ -560,9 +560,9 @@ class Generator:
                 "agent": [*mp.agent.position.pos],
                 "grid": mp.grid.tolist()
             }
-
+            dimensions_path = '_3d' if len(dimensions) == 3 else ''
             if json_save:
-                with open(self.__services.resources.maps_dir._full_path() + atlas_name + '/' + str(_) + '.json', 'w') as outfile:
+                with open(self.__services.resources.maps_dir._full_path() + atlas_name + '/' + str(_) + dimensions_path + '.json', 'w') as outfile:
                     json.dump(map_as_dict, outfile)
                     self.__services.debug.write("Dumping JSON: " + str(_) + "\n", DebugLevel.LOW)
 
@@ -787,19 +787,19 @@ class Generator:
 
         if not m.main_services.settings.generator_house_expo:
             if m.main_services.settings.generator_size == 8:  # Fill rate and nr obstacle range (1,2) is for unifrom random fill (0.1,0.2)
-                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(8, 8, 8),
+                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([8] * m.main_services.settings.num_dim)),
                                                m.main_services.settings.generator_gen_type, [0.1, 0.2], [1, 2], [3, 4], [5, 7], json_save=True)
 
             elif m.main_services.settings.generator_size == 16:
-                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(16, 16, 16),
+                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([16] * m.main_services.settings.num_dim)),
                                                m.main_services.settings.generator_gen_type, [0.3, 0.5], [2, 4], [4, 6], [8, 11], json_save=True)
 
             elif m.main_services.settings.generator_size == 28:
-                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(28, 28),
+                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([28] * m.main_services.settings.num_dim)),
                                                m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 4], [6, 10], [14, 22], json_save=True)
 
             else:
-                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(64, 64),
+                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([64] * m.main_services.settings.num_dim)),
                                                m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 6], [8, 15], [35, 45], json_save=False)
 
         # This will display 5 of the maps generated

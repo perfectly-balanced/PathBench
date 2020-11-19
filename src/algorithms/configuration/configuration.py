@@ -64,6 +64,8 @@ class Configuration:
     load_simulator: bool
     clear_cache: bool
 
+    num_dim: int
+
     def __init__(self) -> None:
         # Simulator settings
         self.simulator_grid_display = False
