@@ -1,6 +1,5 @@
 from structures import Colour
 from utility.compatibility import Final
-
 from panda3d.core import *
 from direct.gui.OnscreenImage import OnscreenImage
 from direct.gui.DirectGui import *

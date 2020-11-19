@@ -571,13 +571,14 @@ class ViewEditor():
         self.__services.ev_manager.register_listener(self)
         self.__base = self.__services.graphics.window
         self.hidden = False
+        self._zoom = self.__base.getAspectRatio()*100
 
         self.__window = Window(self.__base, "view_editor",
                                relief=DGG.RAISED,
                                borderWidth=(0.0, 0.0),
                                frameColor=WINDOW_BG_COLOUR,
-                               pos=(1900, 200, -350),
-                               scale=(150, 1., 150),
+                               pos=(1000,0,-400),
+                               scale=(self.__base.getAspectRatio()*100),
                                frameSize=(-1.1, 1.1, -5.82, 1.56))
 
         self.__colour_picker = AdvancedColourPicker(self.__base, self.__window.frame, self.__colour_picker_callback)
@@ -676,6 +677,26 @@ class ViewEditor():
             parent=self.__window.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
+        # zoom window in / out
+        self.btn_zoom_in = DirectButton(
+            text="-",
+            text_fg=WHITE,
+            pressEffect=1,
+            command=self.__zoom_out,
+            pos=(-0.7, 0.4, 1.29),
+            parent=self.__window.frame,
+            scale=(0.3, 4, 0.3),
+            frameColor=TRANSPARENT)
+
+        self.btn_zoom_out = DirectButton(
+            text="+",
+            text_fg=WHITE,
+            pressEffect=1,
+            command=self.__zoom_in,
+            pos=(-0.95, 0.4, 1.3),
+            parent=self.__window.frame,
+            scale=(0.3, 4, 0.3),
+            frameColor=TRANSPARENT)
 
         # Creating view selectors
         self.__view_selectors = []
@@ -721,6 +742,18 @@ class ViewEditor():
 
     def __update_colour(self, name: str, colour: Colour) -> None:
         self.__services.state.effective_view.colours[name].colour = colour
+
+    def __zoom_in(self):
+        if self._zoom < 230:
+            self._zoom += 20
+        print(self._zoom)
+        self.__window.frame.setScale(self._zoom)
+
+    def __zoom_out(self):
+        if self._zoom > 70:
+            self._zoom -= 20
+        print(self._zoom)
+        self.__window.frame.setScale(self._zoom)
 
     def __toggle_view_editor(self):
         if not self.hidden:

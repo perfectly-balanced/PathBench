@@ -137,7 +137,7 @@ class SimulatorConfig():
             "* mouse click - moves agent to mouse location \n\n* mouse right click - moves goal to"\
             " mouse location\n\n* x - stop trace animation (animations required)\n\n* r - resume trace animation  (" \
             "animations required)\n\n* m - toggle map between Sparse and Dense\n\n* o - take a default screenshot of " \
-                      "the map\n\n* p - take a custom screenshot of the scene\n\n* wasd " \
+                      "the map\n\n* p - take a custom screenshot of the scene\n\n* w, a, s, d " \
                       "- orbit around the map"
 
         self.__algorithms = {
@@ -199,15 +199,16 @@ class SimulatorConfig():
                 # "OMPL pSBL": (OMPL_pSBL, BasicTesting, ([], {})),
                 # "OMPL QRRT": (OMPL_QRRT, BasicTesting, ([], {})),
             })
+        self._zoom = self.__base.getAspectRatio()*100
 
         self.__window_config = Window(self.__base, "simulator_config",
                                       relief=DGG.RAISED,
                                       borderWidth=(0.0, 0.0),
                                       frameColor=WINDOW_BG_COLOUR,
-                                      pos=(190, 200, -350),
-                                      scale=(150, 1., 150),
-                                      frameSize=(-1.6, 1.2, -4.8, 1.1))
-
+                                      pos=(500,0,-400),
+                                      scale=self._zoom,
+                                      frameSize=(-1.6, 1.2, -4.8, 1.1)
+                                      )
         # spacer #
         DirectFrame(parent=self.__window_config.frame,
                     borderWidth=(.0, .0),
@@ -359,6 +360,38 @@ class SimulatorConfig():
             parent=self.__window_config.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
+
+        self.btn_zoom_in = DirectButton(
+            text="-",
+            text_fg=WHITE,
+            pressEffect=1,
+            command=self.__zoom_out,
+            pos=(-1.18, 0.4, 0.82),
+            parent=self.__window_config.frame,
+            scale=(0.3, 4, 0.3),
+            frameColor=TRANSPARENT)
+
+        self.btn_zoom_out = DirectButton(
+            text="+",
+            text_fg=WHITE,
+            pressEffect=1,
+            command=self.__zoom_in,
+            pos=(-1.4, 0.4, 0.82),
+            parent=self.__window_config.frame,
+            scale=(0.3, 4, 0.3),
+            frameColor=TRANSPARENT)
+
+    def __zoom_in(self):
+        if self._zoom < 230:
+            self._zoom += 20
+        print(self._zoom)
+        self.__window_config.frame.setScale(self._zoom)
+
+    def __zoom_out(self):
+        if self._zoom > 70:
+            self._zoom -= 20
+        print(self._zoom)
+        self.__window_config.frame.setScale(self._zoom)
 
     def __toggle_config(self):
         if not self.hidden_config:
