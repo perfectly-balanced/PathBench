@@ -23,7 +23,7 @@ class Window():
         if 'frameSize' not in kwargs:
             kwargs['frameSize'] = (-.8, .8, -1., 1.)
 
-        self.__frame = DirectFrame(*args, parent=self.__base.pixel2d, **kwargs)
+        self.__frame = DirectFrame(*args, parent=self.__base.aspect2d, **kwargs)
         self.__frame['state'] = DGG.NORMAL
         self.__frame.bind(DGG.B1PRESS, command=self.__start_drag)
         self.__frame.bind(DGG.B1RELEASE, command=self.__stop_drag)
@@ -62,4 +62,4 @@ class Window():
 
     def focus(self) -> None:
         self.__frame.detach_node()
-        self.__frame.reparent_to(self.__base.pixel2d)
+        self.__frame.reparent_to(self.__base.aspect2d)

@@ -18,6 +18,7 @@ from simulator.services.event_manager.events.toggle_view_event import ToggleView
 
 from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR, Window
 
+
 class ColourPicker:
     pick_colour_callback: Callable[[Tuple[float, float, float, float]], None]
 
@@ -32,7 +33,8 @@ class ColourPicker:
 
     enabled: bool
 
-    def __init__(self, base: ShowBase, pick_colour_callback: Callable[[Tuple[float, float, float, float]], None], **kwargs) -> None:
+    def __init__(self, base: ShowBase, pick_colour_callback: Callable[[Tuple[float, float, float, float]], None],
+                 **kwargs) -> None:
         self.__base = base
         self.pick_colour_callback = pick_colour_callback
         self.enabled = True
@@ -201,7 +203,9 @@ class ColourChannel():
     __disable_frame_overlay: DirectButton
     __enabled: bool
 
-    def __init__(self, parent: DirectFrame, text: str, value: float, slider_edit_callback: Callable[['ColourChannel', float], None], entry_edit_callback: Callable[['ColourChannel', float], None]):
+    def __init__(self, parent: DirectFrame, text: str, value: float,
+                 slider_edit_callback: Callable[['ColourChannel', float], None],
+                 entry_edit_callback: Callable[['ColourChannel', float], None]):
         self.__frame = DirectFrame(parent=parent)
         self.__slider_edit_callback = slider_edit_callback
         self.__entry_edit_callback = entry_edit_callback
@@ -310,7 +314,8 @@ class AdvancedColourPicker():
     __dirty_rem_no_hide: int
     __enabled: bool
 
-    def __init__(self, base: ShowBase, parent: DirectFrame, callback: Callable[[Colour], None], colour: Colour = Colour(0.25, 0.5, 0.75, 1.0)):
+    def __init__(self, base: ShowBase, parent: DirectFrame, callback: Callable[[Colour], None],
+                 colour: Colour = Colour(0.25, 0.5, 0.75, 1.0)):
         self.__base = base
         self.__colour = colour
         self.__callback = callback
@@ -338,6 +343,7 @@ class AdvancedColourPicker():
             c = self.__colour_picker.colour_under_mouse()
             self.__cv_hovered.colour = c
             return task.cont
+
         self.__base.taskMgr.add(update_cv_hovered, 'update_cv_hovered')
 
         c = self.__colour
@@ -353,9 +359,9 @@ class AdvancedColourPicker():
         y_base = -0.8
         y_inc = -0.25
         self.__r.frame.set_pos((x, 0.0, y_base))
-        self.__g.frame.set_pos((x, 0.0, y_base+y_inc))
-        self.__b.frame.set_pos((x, 0.0, y_base+y_inc*2))
-        self.__a.frame.set_pos((x, 0.0, y_base+y_inc*3))
+        self.__g.frame.set_pos((x, 0.0, y_base + y_inc))
+        self.__b.frame.set_pos((x, 0.0, y_base + y_inc * 2))
+        self.__a.frame.set_pos((x, 0.0, y_base + y_inc * 3))
 
         self.__dirty_rem_no_hide = 0
 
@@ -434,6 +440,7 @@ class AdvancedColourPicker():
     def enabled(self) -> bool:
         return self.__enabled
 
+
 class ViewElement():
     __name: str
     __visibility_callback: Callable[[str, bool], None]
@@ -448,7 +455,9 @@ class ViewElement():
     __visibility_btn: DirectButton
     __visibility_bar: DirectFrame
 
-    def __init__(self, name: str, visibility_callback: Callable[[str, bool], None], colour_callback: Callable[[str, Colour], None], cv_clicked_callback: Callable[['ViewElement'], None], parent: DirectFrame, visible: bool = True, colour: Colour = Colour(0.2, 0.3, 0.4, 0.5)):
+    def __init__(self, name: str, visibility_callback: Callable[[str, bool], None],
+                 colour_callback: Callable[[str, Colour], None], cv_clicked_callback: Callable[['ViewElement'], None],
+                 parent: DirectFrame, visible: bool = True, colour: Colour = Colour(0.2, 0.3, 0.4, 0.5)):
         self.__name = name
         self.__visible = visible
         self.__visibility_callback = None
@@ -559,6 +568,7 @@ class ViewElement():
         self.__label.destroy()
         self.__frame.destroy()
 
+
 class ViewEditor():
     __services: Services
     __base: ShowBase
@@ -571,15 +581,16 @@ class ViewEditor():
         self.__services.ev_manager.register_listener(self)
         self.__base = self.__services.graphics.window
         self.hidden = False
-        self._zoom = self.__base.getAspectRatio()*100
+        self._zoom = 1 / 5
 
         self.__window = Window(self.__base, "view_editor",
                                relief=DGG.RAISED,
                                borderWidth=(0.0, 0.0),
                                frameColor=WINDOW_BG_COLOUR,
-                               pos=(1000,0,-400),
-                               scale=(self.__base.getAspectRatio()*100),
-                               frameSize=(-1.1, 1.1, -5.82, 1.56))
+                               pos=(1.2, 0.5, 0.5),
+                               scale=(1 / 5),
+                               frameSize=(-1.1, 1.1, -5.82, 1.56)
+                               )
 
         self.__colour_picker = AdvancedColourPicker(self.__base, self.__window.frame, self.__colour_picker_callback)
 
@@ -641,7 +652,6 @@ class ViewEditor():
                                 scale=0.1,
                                 pressEffect=1,
                                 frameColor=TRANSPARENT)
-
 
         self.__save_outline = DirectFrame(parent=self.__window.frame,
                                           frameColor=WHITE,
@@ -723,7 +733,8 @@ class ViewEditor():
         self.__elems.clear()
 
         for name, dc in ps_colours.items():
-            self.__elems.append(ViewElement(name, self.__update_visibility, self.__update_colour, self.__select_cv, self.__elems_frame.getCanvas(), dc.visible, dc.colour))
+            self.__elems.append(ViewElement(name, self.__update_visibility, self.__update_colour, self.__select_cv,
+                                            self.__elems_frame.getCanvas(), dc.visible, dc.colour))
 
         for i in range(len(self.__elems)):
             self.__elems[i].frame.set_pos((0.15, 0.0, -0.2 * i))
@@ -744,15 +755,11 @@ class ViewEditor():
         self.__services.state.effective_view.colours[name].colour = colour
 
     def __zoom_in(self):
-        if self._zoom < 230:
-            self._zoom += 20
-        print(self._zoom)
+        self._zoom += 0.05
         self.__window.frame.setScale(self._zoom)
 
     def __zoom_out(self):
-        if self._zoom > 70:
-            self._zoom -= 20
-        print(self._zoom)
+        self._zoom -= 0.05
         self.__window.frame.setScale(self._zoom)
 
     def __toggle_view_editor(self):

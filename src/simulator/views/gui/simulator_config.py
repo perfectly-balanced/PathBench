@@ -35,6 +35,7 @@ from algorithms.classic.sample_based.rrt_star import RRT_Star
 from algorithms.classic.sample_based.rrt_connect import RRT_Connect
 
 from utility.compatibility import HAS_OMPL
+
 if HAS_OMPL:
     from algorithms.classic.sample_based.ompl_rrt import OMPL_RRT
     from algorithms.classic.sample_based.ompl_prmstar import OMPL_PRMstar
@@ -82,6 +83,7 @@ from algorithms.configuration.configuration import Configuration
 from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
 from algorithms.lstm.a_star_waypoint import WayPointNavigation
 from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
+
 
 class SimulatorConfig():
     __services: Services
@@ -133,19 +135,22 @@ class SimulatorConfig():
         self.__services.ev_manager.register_listener(self)
         self.__base = self.__services.graphics.window
         self.hidden_config = False
-        self.__text = "Important runtime commands:\n \n* t - find the path between the agent and goal\n\n"\
-            "* mouse click - moves agent to mouse location \n\n* mouse right click - moves goal to"\
-            " mouse location\n\n* x - stop trace animation (animations required)\n\n* r - resume trace animation  (" \
-            "animations required)\n\n* m - toggle map between Sparse and Dense\n\n* o - take a default screenshot of " \
+        self.__text = "Important runtime commands:\n \n* t - find the path between the agent and goal\n\n" \
+                      "* mouse click - moves agent to mouse location \n\n* mouse right click - moves goal to" \
+                      " mouse location\n\n* x - stop trace animation (animations required)\n\n* r - resume trace animation  (" \
+                      "animations required)\n\n* m - toggle map between Sparse and Dense\n\n* o - take a default screenshot of " \
                       "the map\n\n* p - take a custom screenshot of the scene\n\n* w, a, s, d " \
                       "- orbit around the map"
 
         self.__algorithms = {
             "A*": (AStar, AStarTesting, ([], {})),
-            "Global Way-point LSTM": (WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel": (CombinedOnlineLSTM, ([], {})), "global_kernel_max_it": 100})),
+            "Global Way-point LSTM": (WayPointNavigation, WayPointNavigationTesting, (
+            [], {"global_kernel": (CombinedOnlineLSTM, ([], {})), "global_kernel_max_it": 100})),
             "LSTM Bagging": (CombinedOnlineLSTM, CombinedOnlineLSTMTesting, ([], {})),
-            "CAE Online LSTM": (OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"})),
-            "Online LSTM": (OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"})),
+            "CAE Online LSTM": (
+            OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"})),
+            "Online LSTM": (OnlineLSTM, BasicTesting, (
+            [], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"})),
             "SPRM": (SPRM, BasicTesting, ([], {})),
             "RT": (RT, BasicTesting, ([], {})),
             "RRT": (RRT, BasicTesting, ([], {})),
@@ -199,14 +204,14 @@ class SimulatorConfig():
                 # "OMPL pSBL": (OMPL_pSBL, BasicTesting, ([], {})),
                 # "OMPL QRRT": (OMPL_QRRT, BasicTesting, ([], {})),
             })
-        self._zoom = self.__base.getAspectRatio()*100
+        self._zoom = 1 / 5
 
         self.__window_config = Window(self.__base, "simulator_config",
                                       relief=DGG.RAISED,
                                       borderWidth=(0.0, 0.0),
                                       frameColor=WINDOW_BG_COLOUR,
-                                      pos=(500,0,-400),
-                                      scale=self._zoom,
+                                      pos=(-1, 0.5, 0.5),
+                                      scale=1 / 5,
                                       frameSize=(-1.6, 1.2, -4.8, 1.1)
                                       )
         # spacer #
@@ -321,26 +326,26 @@ class SimulatorConfig():
                                                     textMayChange=1)
 
         self.__debug_option = DirectOptionMenu(text="options",
-                                                    scale=0.14,
-                                                    parent=self.__window_config.frame,
-                                                    initialitem=0,
-                                                    items=list(self.__debug.keys()),
-                                                    pos=(-0.1, 0.4, -1.5),
-                                                    highlightColor=(0.65, 0.65, 0.65, 1),
-                                                    textMayChange=1)
+                                               scale=0.14,
+                                               parent=self.__window_config.frame,
+                                               initialitem=0,
+                                               items=list(self.__debug.keys()),
+                                               pos=(-0.1, 0.4, -1.5),
+                                               highlightColor=(0.65, 0.65, 0.65, 1),
+                                               textMayChange=1)
 
         self._update_frame = DirectFrame(parent=self.__window_config.frame,
-                                             frameColor=WHITE,
-                                             pos=(-1, 0.4, -2.1),
-                                             borderWidth=(0.25, 0.15),
-                                             frameSize=(-0.5, 0.95, -0.54, 0.54),
-                                             scale=(0.50, 3.1, 0.25))
+                                         frameColor=WHITE,
+                                         pos=(-1, 0.4, -2.1),
+                                         borderWidth=(0.25, 0.15),
+                                         frameSize=(-0.5, 0.95, -0.54, 0.54),
+                                         scale=(0.50, 3.1, 0.25))
         self._reset_frame = DirectFrame(parent=self.__window_config.frame,
-                                             frameColor=WHITE,
-                                             pos=(0.412, 0.4, -2.1),
-                                             borderWidth=(0.25, 0.15),
-                                             frameSize=(-0.5, 0.92, -0.54, 0.54),
-                                             scale=(0.50, 3.1, 0.25))
+                                        frameColor=WHITE,
+                                        pos=(0.412, 0.4, -2.1),
+                                        borderWidth=(0.25, 0.15),
+                                        frameSize=(-0.5, 0.92, -0.54, 0.54),
+                                        scale=(0.50, 3.1, 0.25))
         self.btn_update = DirectButton(
             text="Update",
             text_fg=(0.3, 0.3, 0.3, 1.0),
@@ -382,15 +387,11 @@ class SimulatorConfig():
             frameColor=TRANSPARENT)
 
     def __zoom_in(self):
-        if self._zoom < 230:
-            self._zoom += 20
-        print(self._zoom)
+        self._zoom += 0.05
         self.__window_config.frame.setScale(self._zoom)
 
     def __zoom_out(self):
-        if self._zoom > 70:
-            self._zoom -= 20
-        print(self._zoom)
+        self._zoom -= 0.05
         self.__window_config.frame.setScale(self._zoom)
 
     def __toggle_config(self):
@@ -412,8 +413,6 @@ class SimulatorConfig():
         config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = algo
         config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani  # int, int
         self.__services.reset()
-
-
 
     def notify(self, event: Event) -> None:
         if isinstance(event, ToggleSimulatorConfigEvent):
