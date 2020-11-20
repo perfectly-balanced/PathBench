@@ -207,7 +207,7 @@ class MLModel(torch.nn.Module):
             ), data))
 
             #data_features_sequence = list(filter(lambda t: t.shape != (0,), data_features_sequence))
-
+            #import pdb; pdb.set_trace()
             data_seq_dataset: Dataset = PackedDataset(data_features_sequence)
 
         if data_single:
@@ -392,7 +392,6 @@ class MLModel(torch.nn.Module):
             self.train()
             train_results.epoch_start()
             for _, (inputs, labels) in enumerate(data_loader, 0):
-                print(inputs, labels)
                 train_results.batch_start()
                 optimizer.zero_grad()
                 l, model_out, labels_out = self.batch_start(inputs, labels)

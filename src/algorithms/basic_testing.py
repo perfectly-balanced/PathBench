@@ -201,7 +201,7 @@ class BasicTesting:
 
     @staticmethod
     def get_euclidean_distance_traveled(trace: List[Trace], agent: Agent) -> float:
-        if trace and trace[-1].position != agent.position:
+        if (not trace) or trace[-1].position != agent.position:
             trace.append(Trace(agent.position))
         dist = 0
         for i in range(1, len(trace)):
