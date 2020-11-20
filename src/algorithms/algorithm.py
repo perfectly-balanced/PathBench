@@ -39,7 +39,7 @@ class Algorithm(ABC):
         :return: A list of info displays
         """
         if self.testing is not None:
-            return self.testing.display_info
+            return self.testing.displays
         return []
 
     def key_frame(self, *args, **kwargs) -> None:
