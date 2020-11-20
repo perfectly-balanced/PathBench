@@ -80,13 +80,12 @@ class BasicTesting:
             from simulator.models.map_model import AlgorithmTerminated
             raise AlgorithmTerminated()
 
-    def key_frame_internal(self, ignore_key_frame_skip: bool = False, only_render: List[int] = None, update_displays: bool = False, root_key_frame = None) -> None:
+    def key_frame_internal(self, ignore_key_frame_skip: bool = False, only_render: List[int] = None, root_key_frame = None) -> None:
         """
         Internal key frame handler
 
         :param ignore_key_frame_skip: force key frame
         :param only_render: list of indices of the map displays to render this key frame
-        :param update_displays: update list of map displays
         :param root_key_frame: parent algorithm runner
         """
         self.timer.pause()
@@ -95,9 +94,7 @@ class BasicTesting:
             root_key_frame.instance.testing.key_frame(ignore_key_frame_skip=ignore_key_frame_skip, only_render=only_render)
 
         if ignore_key_frame_skip or self.key_frame_skip_count >= self._services.settings.simulator_key_frame_skip:
-            if update_displays or not self.__displays:
-                self.__displays = self._services.algorithm.instance.set_display_info()
-
+            self.__displays = self._services.algorithm.instance.set_display_info()
             self.__displays_to_render = [self.__displays[i] for i in only_render] if only_render else self.__displays
 
             if self.key_frame_condition is not None:
