@@ -121,16 +121,16 @@ labelling = {
 
 
 #Input hyperparametres here 
-chosen_map = 'House Expo Sample'
+chosen_map = 'House'
 algo = algorithms['A*'] #Choose which planner 
 ani = animations['Fast'] #Choose animation speed
 debug = debug['High'] #Choose debug level 
-training_algo = CombinedOnlineLSTM #Chooses the algorithm to train, either CAE, BasicLSTMModule,LSTMCAEModel
-nbr_ex = 100 #Number of maps generated
+training_algo = BasicLSTMModule #Chooses the algorithm to train, either CAE, BasicLSTMModule,LSTMCAEModel
+nbr_ex = 1000 #Number of maps generated
 show_sample_map = False #shows 5 samples
-gen_start = False
-train_start = False
-sim_start = True
+gen_start = True
+train_start = True
+sim_start = False
 config.generator_house_expo = False
 analyzer_start = False
 config.generator_size = 64 # Change the size of the maps generated
@@ -145,7 +145,7 @@ mp = maps[chosen_map]
 
 #Simulator
 config.load_simulator = sim_start
-config.simulator_graphics = True
+config.simulator_graphics = False
 config.simulator_initial_map, config.simulator_grid_display = mp
 config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = algo
 config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani
@@ -181,10 +181,7 @@ config.generator_show_gen_sample = show_sample_map
 #Trainer
 config.trainer = train_start
 config.trainer_model = training_algo #Either BasicLSTMModule or CAE or LSTMCAEModel
-config.trainer_custom_config = {
-    "local_kernel": (AStar, ([], {})),
-    "global_kernel": (CombinedOnlineLSTM, ([], {})), "global_kernel_max_it": 100
-    }
+config.trainer_custom_config = None
 
 config.trainer_pre_process_data_only = False
 config.trainer_bypass_and_replace_pre_processed_cache = False
