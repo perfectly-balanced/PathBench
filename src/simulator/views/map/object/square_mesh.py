@@ -23,8 +23,7 @@ class SquareMesh():
     __normal: GeomVertexWriter
     __texcoord: GeomVertexWriter
 
-    def __init__(self, width: int = 1, height: int = 1, depth: Real = 0.1, no_tex_coord: Tuple[float, float] = (1.0, 1.0), name: str = 'SquareMesh') -> None:
-        depth = 1
+    def __init__(self, width: int = 1, height: int = 1, depth: Real = 0.1, name: str = 'SquareMesh') -> None:
         self.name = name
         self.depth = depth
 
@@ -74,15 +73,15 @@ class SquareMesh():
 
             self.__face_count += 1
 
-        if depth == 0:
+        if self.depth == 0:
             make(0, 0, 0, width, height, 0, [(1.0, 1.0), (0.0, 1.0), (0.0, 0.0), (1.0, 0.0)])
         else:
-            make(0, height, -depth, 0, 0, 0, ((0.0, 1.0), (0.0, 0.0), (0.0, 0.0), (0.0, 1.0))) # SIDE
-            make(0, 0, -depth, width, 0, 0, ((0.0, 0.0), (1.0, 0.0), (1.0, 0.0), (0.0, 0.0)))  # SIDE
-            make(width, height, -depth, 0, height, 0, ((1.0, 1.0), (0.0, 1.0), (0.0, 1.0), (1.0, 1.0))) # SIDE
-            make(width, 0, -depth, width, height, 0, ((1.0, 0.0), (1.0, 1.0), (1.0, 1.0), (1.0, 0.0))) # SIDE
+            make(0, height, -self.depth, 0, 0, 0, ((0.0, 1.0), (0.0, 0.0), (0.0, 0.0), (0.0, 1.0))) # SIDE
+            make(0, 0, -self.depth, width, 0, 0, ((0.0, 0.0), (1.0, 0.0), (1.0, 0.0), (0.0, 0.0)))  # SIDE
+            make(width, height, -self.depth, 0, height, 0, ((1.0, 1.0), (0.0, 1.0), (0.0, 1.0), (1.0, 1.0))) # SIDE
+            make(width, 0, -self.depth, width, height, 0, ((1.0, 0.0), (1.0, 1.0), (1.0, 1.0), (1.0, 0.0))) # SIDE
             make(width, height, 0, 0, 0, 0, ((1.0, 1.0), (0.0, 1.0), (0.0, 0.0), (1.0, 0.0))) # TOP
-            make(0, height, -depth, width, 0, -depth, ((0.0, 1.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0))) # BOTTOM
+            make(0, height, -self.depth, width, 0, -self.depth, ((0.0, 1.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0))) # BOTTOM
 
         self.__triangles.close_primitive()
         self.mesh.add_primitive(self.__triangles)

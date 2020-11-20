@@ -35,7 +35,15 @@ class FlatMap(MapData):
 
     __lines: Dict[Tuple[Colour, Colour], Tuple[bytes, bytes, bytes]]
 
-    def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "flat_map", square_size: Optional[int] = None, wf_thickness: Optional[float] = None, block_size: Optional[int] = 200, depth: Real = 0.1):
+    def __init__(self,
+                 services: Services,
+                 data: NDArray[(Any, Any, Any), bool],
+                 parent: NodePath,
+                 name: str = "flat_map",
+                 square_size: Optional[int] = None,
+                 wf_thickness: Optional[float] = None,
+                 block_size: Optional[int] = None,
+                 depth: Real = 0.1):
         super().__init__(services, data, parent, name)
 
         self.__lines = {}
@@ -56,8 +64,26 @@ class FlatMap(MapData):
         self.square_size = square_size
 
         if block_size is None:
+            is_power_of_2 = lambda n: (n & (n-1) == 0) and n != 0
+            
+            # make block fit entire map
             block_size = max(self.logical_w, self.logical_h)
+
+            # ensure block size is a power of 2 so that the
+            # size of its texture is a power of 2.
+            if not is_power_of_2(block_size):
+                n = 1
+                while n < block_size:
+                    n = n << 1
+                block_size = n
+            
+            # make sure block texture size is at most 2048x2048,
+            # any higher than this would cause poor performance
+            # on low-end graphics cards.
+            while (block_size * self.square_size) > 2048:
+                block_size = block_size >> 1
         self.block_size = block_size
+
         self.num_blocks_x = (self.logical_w // self.block_size) + int(self.logical_w % self.block_size != 0)
         self.num_blocks_y = (self.logical_h // self.block_size) + int(self.logical_h % self.block_size != 0)
 
@@ -91,20 +117,8 @@ class FlatMap(MapData):
         for y in range(self.num_blocks_y):
             for x in range(self.num_blocks_x):
                 idx = y * self.num_blocks_x + x
-                
-                # find a no_tex_coord that would make unseen squares transparent
-                no_tex_coord = None
-                for py in range(y * self.num_blocks_y, (y+1) * self.num_blocks_y):
-                    for px in range(x * self.num_blocks_x, (x+1) * self.num_blocks_x):
-                        if py >= self.logical_h or px >= self.logical_w:
-                            no_tex_coord = ((px % self.num_blocks_x) / self.num_blocks_x, (py % self.num_blocks_y) / self.num_blocks_y)
-                            break
-                    if no_tex_coord is not None:
-                        break
-                if no_tex_coord is None:
-                    no_tex_coord = (1.0, 1.0)
 
-                mesh = self.square_meshes[idx] = SquareMesh(self.block_size, self.block_size, self.depth, no_tex_coord)
+                mesh = self.square_meshes[idx] = SquareMesh(self.block_size, self.block_size, self.depth)
                 np = self.squares[idx] = self.root.attach_new_node(mesh.geom_node)
                 np.set_pos((x * self.block_size, y * self.block_size, 0))
 
