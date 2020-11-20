@@ -102,7 +102,6 @@ class GradientMapDisplay(MapDisplay):
             self.__eager_colour_update_dispatch()
         else:
             rv = self.get_renderer_view()
-            self.__cube_colours.clear()
             for p in self.pts.modified:
                 clr = self.get_colour(p[0])
                 self.__cube_colours[rv.cube_requires_update(p[1])] = clr
