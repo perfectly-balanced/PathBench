@@ -83,6 +83,11 @@ class BasicTesting:
     def key_frame_internal(self, ignore_key_frame_skip: bool = False, only_render: List[int] = None, update_displays: bool = False, root_key_frame = None) -> None:
         """
         Internal key frame handler
+
+        :param ignore_key_frame_skip: force key frame
+        :param only_render: list of indices of the map displays to render this key frame
+        :param update_displays: update list of map displays
+        :param root_key_frame: parent algorithm runner
         """
         self.timer.pause()
 
@@ -120,7 +125,8 @@ class BasicTesting:
 
         if self._services.settings.simulator_graphics:
             self.__displays = self._services.algorithm.instance.set_display_info()
-            assert(self.__displays)
+            self.__displays_to_render = self.__displays
+        
         self.print_results()
         self._services.debug.write("", DebugLevel.BASIC, timestamp=False)
 
