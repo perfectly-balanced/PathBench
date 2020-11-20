@@ -246,7 +246,8 @@ class MapProcessing:
         res: List[torch.Tensor] = []
         for move_idx in move_indexes:
             res.append(torch.tensor(float(move_idx)))
-
+        if len(res) == 0:
+            res.append(torch.tensor(float(0)))
         return res
 
     """ End Labels """
