@@ -82,7 +82,7 @@ class MapView(View):
             self.__map = FlatMap(self._services, map_data, self.world)
         else:
             self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
-        self.__center(self.__map.root)
+        self.__map.center()
 
         self.__overlay = self.map.root.attach_new_node("overlay")
         self.__scratch = self.map.root.attach_new_node("scratch")
@@ -162,12 +162,6 @@ class MapView(View):
         if isinstance(v, Entity):
             v = v.position
         return Point(*v, 0) if len(v) == 2 else v
-
-    def __center(self, np: NodePath):
-        (x1, y1, z1), (x2, y2, z2) = np.get_tight_bounds()
-        np.set_pos(self.world.getX() - (x2 - x1) / 2,
-                   self.world.getY() - (y2 - y1) / 2,
-                   self.world.getZ() - (z2 - z1) / 2)
 
     @property
     def world(self) -> NodePath:

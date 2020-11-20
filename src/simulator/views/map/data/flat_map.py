@@ -232,5 +232,12 @@ class FlatMap(MapData):
             if self.obstacles_data[x, y, z]:
                 self.render_square((x, y, z), c, wfc)
 
+    def center(self) -> None:
+        world = self.root.get_parent()
+        (_, _, z1), (_, _, z2) = self.root.get_tight_bounds()
+        self.root.set_pos(-self.logical_w / 2,
+                          -self.logical_h / 2,
+                          world.getZ() - (z2 - z1) / 2)
+
     def destroy(self) -> None:
         super().destroy()
