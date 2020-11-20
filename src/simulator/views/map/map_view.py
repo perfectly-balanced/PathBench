@@ -210,8 +210,8 @@ class MapView(View):
         def eager_refresh():
             nonlocal refresh
             refresh = True
-            for x, y, z in np.ndindex(self.map.traversables_data.shape):
-                self.__cube_modified[x, y, z] = self.map.traversables_data[x, y, z]
+            for p in np.ndindex(self.map.traversables_data.shape):
+                self.__cube_modified[p] = self.map.traversables_data[p]
         
         clr = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
         if clr != self.__deduced_traversables_colour:
@@ -237,9 +237,9 @@ class MapView(View):
             self.__cube_modified[p.x, p.y, p.z] = self.__cube_colour != clr
 
         if refresh:
-            for x, y, z in np.ndindex(self.__cube_modified.shape):
-                if self.__cube_modified[x, y, z]:
-                    update_cube_colour(Point(x, y, z))
+            for p in np.ndindex(self.__cube_modified.shape):
+                if self.__cube_modified[p]:
+                    update_cube_colour(Point(*p))
         
         # update these cubes regardless of refresh
         # since it cubes that require update aren't
