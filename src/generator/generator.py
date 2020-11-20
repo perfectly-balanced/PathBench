@@ -366,46 +366,46 @@ class Generator:
 
             if(len(room_size) == 2):
 
-                for x in range(room_top_left_point.x, room_top_left_point.x + room_size.width):
-                    y = room_top_left_point.y
+                for x in range(room_top_left_point[0], room_top_left_point[0] + room_size[0]):
+                    y = room_top_left_point[1]
                     # up
-                    if in_bounds(x, y):
+                    if in_bounds(Point(x, y)):
                         full_edge.append(Point(x, y))
                         n_x, n_y = x, y - 1
-                        if in_bounds(n_x, n_y) and grid[n_y][n_x] == DenseMap.WALL_ID:
+                        if in_bounds(Point(n_x, n_y)) and grid[n_x][n_y] == DenseMap.WALL_ID:
                             edges.append(q)
                         q += 1
 
-                for y in range(room_top_left_point.y, room_top_left_point.y + room_size.height):
+                for y in range(room_top_left_point[1], room_top_left_point[1] + room_size[1]):
 
                     # right
-                    x = room_top_left_point.x + room_size.width - 1
-                    if in_bounds(x, y):
+                    x = room_top_left_point[0] + room_size[0] - 1
+                    if in_bounds(Point(x, y)):
                         full_edge.append(Point(x, y))
                         n_x, n_y = x + 1, y
-                        if in_bounds(n_x, n_y) and grid[n_y][n_x] == DenseMap.WALL_ID:
+                        if in_bounds(Point(n_x, n_y)) and grid[n_x][n_y] == DenseMap.WALL_ID:
                             edges.append(q)
                         q += 1
 
-                for x in range(room_top_left_point.x, room_top_left_point.x + room_size.width):
+                for x in range(room_top_left_point[0], room_top_left_point[0] + room_size[0]):
 
                     # bottom
-                    y = room_top_left_point.y + room_size.height - 1
-                    if in_bounds(x, y):
+                    y = room_top_left_point[1] + room_size[1] - 1
+                    if in_bounds(Point(x, y)):
                         full_edge.append(Point(x, y))
                         n_x, n_y = x, y + 1
-                        if in_bounds(n_x, n_y) and grid[n_y][n_x] == DenseMap.WALL_ID:
+                        if in_bounds(Point(n_x, n_y)) and grid[n_x][n_y] == DenseMap.WALL_ID:
                             edges.append(q)
                         q += 1
 
-                for y in range(room_top_left_point.y, room_top_left_point.y + room_size.height):
-                    x = room_top_left_point.x
+                for y in range(room_top_left_point[1], room_top_left_point[1] + room_size[1]):
+                    x = room_top_left_point[0]
 
                     # left
-                    if in_bounds(x, y):
+                    if in_bounds(Point(x, y)):
                         full_edge.append(Point(x, y))
                         n_x, n_y = x - 1, y
-                        if in_bounds(n_x, n_y) and grid[n_y][n_x] == DenseMap.WALL_ID:
+                        if in_bounds(Point(n_x, n_y)) and grid[n_x][n_y] == DenseMap.WALL_ID:
                             edges.append(q)
                         q += 1
 
@@ -502,7 +502,7 @@ class Generator:
         return DenseMap(grid)
 
     def generate_maps(self, nr_of_samples: int, dimensions: Size, gen_type: str, fill_range: List[float],
-                      nr_of_obstacle_range: List[int], min_map_range: List[int], max_map_range: List[int], json_save: bool = False) -> List[Map]:
+                      nr_of_obstacle_range: List[int], min_map_range: List[int], max_map_range: List[int], num_dim: int = 2, json_save: bool = False) -> List[Map]:
         if gen_type not in Generator.AVAILABLE_GENERATION_METHODS:
             raise Exception(
                 "Generation type {} does not exist in {}".format(gen_type, self.AVAILABLE_GENERATION_METHODS))
@@ -560,9 +560,9 @@ class Generator:
                 "agent": [*mp.agent.position.pos],
                 "grid": mp.grid.tolist()
             }
-            dimensions_path = '_3d' if len(dimensions) == 3 else ''
+            dimensions_path = '_3d' if num_dim == 3 else ''
             if json_save:
-                with open(self.__services.resources.maps_dir._full_path() + atlas_name + '/' + str(_) + dimensions_path + '.json', 'w') as outfile:
+                with open(self.__services.resources.maps_dir._full_path() + atlas_name + dimensions_path + '/' + str(_) + dimensions_path + '.json', 'w') as outfile:
                     json.dump(map_as_dict, outfile)
                     self.__services.debug.write("Dumping JSON: " + str(_) + "\n", DebugLevel.LOW)
 
@@ -788,19 +788,19 @@ class Generator:
         if not m.main_services.settings.generator_house_expo:
             if m.main_services.settings.generator_size == 8:  # Fill rate and nr obstacle range (1,2) is for unifrom random fill (0.1,0.2)
                 maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([8] * m.main_services.settings.num_dim)),
-                                               m.main_services.settings.generator_gen_type, [0.1, 0.2], [1, 2], [3, 4], [5, 7], json_save=True)
+                                               m.main_services.settings.generator_gen_type, [0.1, 0.2], [1, 2], [3, 4], [5, 7], num_dim = m.main_services.settings.num_dim, json_save=True)
 
             elif m.main_services.settings.generator_size == 16:
                 maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([16] * m.main_services.settings.num_dim)),
-                                               m.main_services.settings.generator_gen_type, [0.3, 0.5], [2, 4], [4, 6], [8, 11], json_save=True)
+                                               m.main_services.settings.generator_gen_type, [0.3, 0.5], [2, 4], [4, 6], [8, 11], num_dim = m.main_services.settings.num_dim, json_save=True)
 
             elif m.main_services.settings.generator_size == 28:
                 maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([28] * m.main_services.settings.num_dim)),
-                                               m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 4], [6, 10], [14, 22], json_save=True)
+                                               m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 4], [6, 10], [14, 22], num_dim = m.main_services.settings.num_dim, json_save=True)
 
             else:
                 maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([64] * m.main_services.settings.num_dim)),
-                                               m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 6], [8, 15], [35, 45], json_save=False)
+                                               m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 6], [8, 15], [35, 45], num_dim = m.main_services.settings.num_dim, json_save=False)
 
         # This will display 5 of the maps generated
         if m.main_services.settings.generator_show_gen_sample and not m.main_services.settings.generator_house_expo:

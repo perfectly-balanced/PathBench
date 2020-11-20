@@ -80,7 +80,7 @@ class Configuration:
 
 
         # Generator
-        self.generator = False
+        self.generator = True
         self.generator_labelling_atlases = []
         self.generator_nr_of_examples = 10
         #self.generator_gen_type = "block_map"
@@ -98,6 +98,9 @@ class Configuration:
         self.generator_show_gen_sample = False
         self.generator_house_expo = False
         self.generator_size = 8
+        
+        self.num_dim = 2
+        
         # Trainer
         self.trainer = False
         self.trainer_model = BasicLSTMModule
