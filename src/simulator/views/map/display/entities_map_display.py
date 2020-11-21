@@ -32,7 +32,7 @@ class EntitiesMapDisplay(MapDisplay):
 
         self.__cube_colours = {}
 
-    def render(self, refresh: bool) -> None:
+    def render(self, *discarded) -> None:
         rv = self.get_renderer_view()
 
         for p in self.__cube_colours:

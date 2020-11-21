@@ -18,7 +18,7 @@ class OnlineLSTMMapDisplay(MapDisplay):
     def __init__(self, services: Services, custom_map: Map = None):
         super().__init__(services, z_index=250, custom_map=custom_map)
 
-    def render(self, refresh: bool) -> None:
+    def render(self, *discarded) -> None:
         mp = copy.deepcopy(self._map)
 
         features = MapProcessing.extract_features(mp, [

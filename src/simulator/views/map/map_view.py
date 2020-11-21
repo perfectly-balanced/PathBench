@@ -161,7 +161,11 @@ class MapView(View):
         elif isinstance(event, TakeScreenshotTexEvent):
             self.HDScreenShot()
 
-    def to_point3(self, v: Union[Point, Entity]):
+    def to_logical_point(self, p: Point) -> Point:
+        x, y, z = p
+        return Point(x, y) if self.map.dim == 2 else Point(x, y, z)
+
+    def to_point3(self, v: Union[Point, Entity]) -> Point:
         if isinstance(v, Entity):
             v = v.position
         return Point(*v, 0) if len(v) == 2 else v
@@ -237,12 +241,20 @@ class MapView(View):
             for d in self.__cube_update_displays:
                 d.update_cube(p)
             set_colour(p, self.__cube_colour)
-            self.__cube_modified[p.x, p.y, p.z] = self.__cube_colour != clr
+            self.__cube_modified[tuple(p)] = self.__cube_colour != clr
 
         if refresh:
             for p in np.ndindex(self.__cube_modified.shape):
                 if self.__cube_modified[p]:
-                    update_cube_colour(Point(*p))
+                    point = Point(*p)
+                    update_cube_colour(point)
+
+                    # we don't want to track extended walls once rendered.
+                    # Note, they will still be refreshed when traversable
+                    # (wireframe) colour changes.
+                    if self._services.algorithm.map.at(self.to_logical_point(point)) == Map.EXTENDED_WALL:
+                        self.__cube_modified[p] = False
+                        self.__cubes_requiring_update.discard(point)
         
         # update these cubes regardless of refresh
         # since it cubes that require update aren't

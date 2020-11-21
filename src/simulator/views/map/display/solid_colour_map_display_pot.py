@@ -29,7 +29,7 @@ class SolidColourMapDisplaypot(MapDisplay):
         self.pts = set()
         self.__point_dim = 3
 
-    def render(self, refresh: bool) -> None:
+    def render(self, *discarded) -> None:
         points: Union[Set[Point], List[Entity]] = copy.deepcopy(self.points)
         if not points:
             return

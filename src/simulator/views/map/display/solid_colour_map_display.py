@@ -32,14 +32,14 @@ class SolidColourMapDisplay(MapDisplay):
 
         self.__deduced_colour = self.colour()
 
-    def render(self, refresh: bool) -> None:
+    def render(self, *discarded) -> None:
         if self.pts is None:
             return
 
         self._root_view.display_updates_cube()
 
         c = self.colour()
-        refresh = refresh or c != self.__deduced_colour
+        refresh = c != self.__deduced_colour
         self.__deduced_colour = c
 
         if len(self.pts) != 0:

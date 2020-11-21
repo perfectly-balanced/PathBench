@@ -76,6 +76,9 @@ class BasicTesting:
         """
         Internal key frame handler
         """
+        if self.timer is None:
+            self._services.debug.write_error("Algorithm " + str(self._services.algorithm.algorithm_type) + " hasn't started yet!")
+            return
         self.timer.pause()
 
         if root_key_frame:

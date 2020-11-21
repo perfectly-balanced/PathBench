@@ -70,11 +70,11 @@ class GradientMapDisplay(MapDisplay):
 
         return clr
 
-    def render(self, refresh: bool) -> None:
+    def render(self, *discarded) -> None:
         self.get_renderer_view().display_updates_cube()
 
         c = self.min_colour()
-        refresh = refresh or c != self.__deduced_min_colour
+        refresh = c != self.__deduced_min_colour
         self.__deduced_min_colour = c
 
         c = self.max_colour()
