@@ -127,8 +127,6 @@ class FlatMap(MapData):
                 np.set_texture(tex)
                 tex.set_wrap_u(Texture.WM_clamp)
                 tex.set_wrap_v(Texture.WM_clamp)
-                # tex.set_clear_color(LVecBase4f(*WHITE))
-                tex.set_border_color(LVecBase4f(*TRANSPARENT))
 
         for y in range(self.num_blocks_y * self.block_size):
             for x in range(self.num_blocks_x * self.block_size):

@@ -22,7 +22,7 @@ from simulator.views.util import blend_colours
 from simulator.views.view import View
 
 from structures import Point, Colour, TRANSPARENT, WHITE
-from structures.tracked_list import TrackedList
+from structures.tracked_set import TrackedSet
 
 from panda3d.core import Camera, Texture, NodePath, GeomNode, Geom, LineSegs, TextNode, PandaNode
 
@@ -84,11 +84,11 @@ class MapView(View):
 
         self.__persistent_displays = [EntitiesMapDisplay(self._services)]
 
-        extended_walls = TrackedList()
+        extended_walls = TrackedSet()
         for x, y, z in np.ndindex(map_data.shape):
             p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
             if self._services.algorithm.map.at(p) == Map.EXTENDED_WALL:
-                extended_walls.append(Point(x, y, z)) # using 3D points is more efficient
+                extended_walls.add(Point(x, y, z)) # using 3D points is more efficient
         if extended_walls:
             dc = self._services.state.add_colour("extended wall", Colour(0.5).with_a(0.5))
             self.__persistent_displays.append(SolidColourMapDisplay(self._services, extended_walls, dc, z_index=0))
