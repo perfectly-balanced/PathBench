@@ -26,7 +26,7 @@ class BasicTesting:
     timer: Timer
     display_info: List[MapDisplay]
     key_frame: Callable[[List, Dict], None]
-    key_frame_condition: Condition
+    cv: Condition
     key_frame_skip_count: int
     total_time: int
 
@@ -35,7 +35,7 @@ class BasicTesting:
         self.timer = None
         self.display_info = []
         self.key_frame = lambda *args, **kwargs: None
-        self.key_frame_condition = None
+        self.cv = None
         self.key_frame_skip_count = 0
         self.total_time = 0
         self.requires_key_frame = False
@@ -46,7 +46,7 @@ class BasicTesting:
         This method resets the testing state
         """
         self.display_info = []
-        self.key_frame_condition = None
+        self.cv = None
         self.key_frame_skip_count = 0
         self.total_time = 0
         if self._services.settings.simulator_key_frame_speed == 0 or not self._services.settings.simulator_graphics:
@@ -54,12 +54,12 @@ class BasicTesting:
         else:
             self.key_frame = self.key_frame_internal
 
-    def set_condition(self, key_frame_condition: Condition) -> None:
+    def set_condition(self, cv: Condition) -> None:
         """
         Setter for condition
-        :param key_frame_condition:  The condition is used to synchronize key frames
+        :param cv:  The condition is used to synchronize key frames
         """
-        self.key_frame_condition = key_frame_condition
+        self.cv = cv
 
     def algorithm_start(self) -> None:
         """
@@ -69,10 +69,8 @@ class BasicTesting:
                                    DebugLevel.BASIC)
         self.timer = Timer()
 
-    def check_terminated(self) -> None:
-        if self._services.algorithm.instance.testing != self:
-            from simulator.models.map_model import AlgorithmTerminated
-            raise AlgorithmTerminated()
+    def is_terminated(self) -> bool:
+        return self._services.algorithm.instance.testing != self
 
     def key_frame_internal(self, ignore_key_frame_skip: bool = False, only_render: List[int] = None, root_key_frame=None) -> None:
         """
@@ -82,24 +80,26 @@ class BasicTesting:
 
         if root_key_frame:
             root_key_frame.instance.testing.key_frame(ignore_key_frame_skip=ignore_key_frame_skip, only_render=only_render)
-
+        
         if ignore_key_frame_skip or self.key_frame_skip_count >= self._services.settings.simulator_key_frame_skip:
             self.display_info = self._services.algorithm.instance.set_display_info()
 
             if only_render:
                 self.display_info = [self.display_info[i] for i in only_render]
 
-            if self.key_frame_condition is not None:
-                self.key_frame_condition.acquire()
-                self.requires_key_frame = True
-                self.key_frame_condition.notify()
-                self.key_frame_condition.wait()
-                self.key_frame_condition.release()
+            if self.cv is not None:
+                with self.cv:
+                    self.requires_key_frame = True
+                    self.cv.notify()
+                    self.cv.wait_for(lambda: not self.requires_key_frame or self.is_terminated())
             self.key_frame_skip_count = 0
         else:
             self.key_frame_skip_count += 1
         
-        self.check_terminated()
+        if self.is_terminated():
+            from simulator.models.map_model import AlgorithmTerminated
+            raise AlgorithmTerminated()
+        
         self.timer.resume()
 
     def algorithm_done(self) -> None:
