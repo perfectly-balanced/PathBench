@@ -33,8 +33,7 @@ class BasicTesting:
     def __init__(self, services: Services) -> None:
         self._services = services
         self.timer = None
-        self.__displays = []
-        self.__displays_to_render = self.__displays
+        self.display_info = []
         self.key_frame = lambda *args, **kwargs: None
         self.key_frame_condition = None
         self.key_frame_skip_count = 0
@@ -46,8 +45,7 @@ class BasicTesting:
         """
         This method resets the testing state
         """
-        self.__displays = []
-        self.__displays_to_render = self.__displays
+        self.display_info = []
         self.key_frame_condition = None
         self.key_frame_skip_count = 0
         self.total_time = 0
@@ -55,10 +53,6 @@ class BasicTesting:
             self.key_frame = lambda *args, **kwargs: None
         else:
             self.key_frame = self.key_frame_internal
-
-    @property
-    def displays(self) -> List[MapDisplay]:
-        return self.__displays_to_render
 
     def set_condition(self, key_frame_condition: Condition) -> None:
         """
@@ -80,13 +74,9 @@ class BasicTesting:
             from simulator.models.map_model import AlgorithmTerminated
             raise AlgorithmTerminated()
 
-    def key_frame_internal(self, ignore_key_frame_skip: bool = False, only_render: List[int] = None, root_key_frame = None) -> None:
+    def key_frame_internal(self, ignore_key_frame_skip: bool = False, only_render: List[int] = None, root_key_frame=None) -> None:
         """
         Internal key frame handler
-
-        :param ignore_key_frame_skip: force key frame
-        :param only_render: list of indices of the map displays to render this key frame
-        :param root_key_frame: parent algorithm runner
         """
         self.timer.pause()
 
@@ -94,8 +84,10 @@ class BasicTesting:
             root_key_frame.instance.testing.key_frame(ignore_key_frame_skip=ignore_key_frame_skip, only_render=only_render)
 
         if ignore_key_frame_skip or self.key_frame_skip_count >= self._services.settings.simulator_key_frame_skip:
-            self.__displays = self._services.algorithm.instance.set_display_info()
-            self.__displays_to_render = [self.__displays[i] for i in only_render] if only_render else self.__displays
+            self.display_info = self._services.algorithm.instance.set_display_info()
+
+            if only_render:
+                self.display_info = [self.display_info[i] for i in only_render]
 
             if self.key_frame_condition is not None:
                 self.key_frame_condition.acquire()
@@ -121,9 +113,7 @@ class BasicTesting:
         self.total_time = self.timer.stop()
 
         if self._services.settings.simulator_graphics:
-            self.__displays = self._services.algorithm.instance.set_display_info()
-            self.__displays_to_render = self.__displays
-        
+            self.display_info = self._services.algorithm.instance.set_display_info()
         self.print_results()
         self._services.debug.write("", DebugLevel.BASIC, timestamp=False)
 
@@ -176,7 +166,7 @@ class BasicTesting:
         :return: The percentage
         """
         tokens: int = np.sum(grid == token)
-
+        
         return BasicTesting.get_occupancy_percentage_size(Size(*grid.shape), tokens)
 
     @staticmethod
