@@ -68,9 +68,9 @@ class MapView(View):
         self.__cube_modified = np.empty(map_data.shape, dtype=bool)
         for x, y, z in np.ndindex(map_data.shape):
             p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
-            valid = self._services.algorithm.map.is_agent_valid_pos(p)
-            self.__cube_modified[x, y, z] = valid
-            map_data[x, y, z] = not valid
+            is_wall = self._services.algorithm.map.at(p) == Map.WALL_ID
+            self.__cube_modified[x, y, z] = not is_wall
+            map_data[x, y, z] = is_wall
 
         if map_size.n_dim == 2:
             self.__map = FlatMap(self._services, map_data, self.world)
@@ -82,13 +82,16 @@ class MapView(View):
         self.__scratch = self.map.root.attach_new_node("scratch")
         self.renderer.push_root(self.__scratch)
 
+        self.__persistent_displays = [EntitiesMapDisplay(self._services)]
+
         extended_walls = TrackedList()
         for x, y, z in np.ndindex(map_data.shape):
             p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
             if self._services.algorithm.map.at(p) == Map.EXTENDED_WALL:
                 extended_walls.append(Point(x, y, z)) # using 3D points is more efficient
-        self.__persistent_displays = [EntitiesMapDisplay(self._services),
-                                      SolidColourMapDisplay(self._services, extended_walls, self._services.state.add_colour("extended wall", Colour(0.5).with_a(0.5)), z_index=0)]
+        if extended_walls:
+            dc = self._services.state.add_colour("extended wall", Colour(0.5).with_a(0.5))
+            self.__persistent_displays.append(SolidColourMapDisplay(self._services, extended_walls, dc, z_index=0))
 
         self.__deduced_traversables_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
         self.__deduced_traversables_wf_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
