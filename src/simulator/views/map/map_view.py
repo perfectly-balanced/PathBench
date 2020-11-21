@@ -1,15 +1,6 @@
-from time import sleep
-
-from typing import List, Any, Tuple, Optional, Union, Set
-import os
-
 from constants import DATA_PATH
-
-from heapq import heappush, heappop
-from panda3d.core import Camera
-from panda3d.core import Texture
-import time
 from algorithms.configuration.entities.entity import Entity
+from algorithms.configuration.maps.map import Map
 from simulator.models.model import Model
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
@@ -20,23 +11,26 @@ from simulator.services.event_manager.events.colour_update_event import ColourUp
 from simulator.services.event_manager.events.take_screenshot_tex_event import TakeScreenshotTexEvent
 from simulator.services.graphics.renderer import Renderer
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
+from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
 from simulator.views.map.display.numbers_map_display import NumbersMapDisplay
 from simulator.views.map.display.online_lstm_map_display import OnlineLSTMMapDisplay
-from simulator.views.view import View
-from simulator.views.util import blend_colours
-from structures import Point, Colour, TRANSPARENT, WHITE
-
 from simulator.views.map.data.map_data import MapData
 from simulator.views.map.data.voxel_map import VoxelMap
 from simulator.views.map.data.flat_map import FlatMap
+from simulator.views.util import blend_colours
+from simulator.views.view import View
 
-from panda3d.core import NodePath, GeomNode, Geom, LineSegs, TextNode, PandaNode
+from structures import Point, Colour, TRANSPARENT, WHITE
+from structures.tracked_list import TrackedList
 
-import math
+from panda3d.core import Camera, Texture, NodePath, GeomNode, Geom, LineSegs, TextNode, PandaNode
 
 import numpy as np
 from nptyping import NDArray
+from typing import List, Any, Tuple, Optional, Union, Set
+from heapq import heappush, heappop
+import os
 
 class MapView(View):
     __world: NodePath
@@ -88,7 +82,13 @@ class MapView(View):
         self.__scratch = self.map.root.attach_new_node("scratch")
         self.renderer.push_root(self.__scratch)
 
-        self.__persistent_displays = [EntitiesMapDisplay(self._services)]
+        extended_walls = TrackedList()
+        for x, y, z in np.ndindex(map_data.shape):
+            p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
+            if self._services.algorithm.map.at(p) == Map.EXTENDED_WALL:
+                extended_walls.append(Point(x, y, z)) # using 3D points is more efficient
+        self.__persistent_displays = [EntitiesMapDisplay(self._services),
+                                      SolidColourMapDisplay(self._services, extended_walls, self._services.state.add_colour("extended wall", Colour(0.5).with_a(0.5)), z_index=0)]
 
         self.__deduced_traversables_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
         self.__deduced_traversables_wf_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()

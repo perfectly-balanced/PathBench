@@ -15,6 +15,7 @@ class SolidColourMapDisplay(MapDisplay):
 
     points: Union[Set[Point], List[Entity]]
     __old_pts: Optional[Union[Set[Point], List[Entity]]]
+    __point_dim: int
 
     __deduced_colour: Colour
 
@@ -27,6 +28,7 @@ class SolidColourMapDisplay(MapDisplay):
 
         self.pts = points
         self.__old_pts = None
+        self.__point_dim = 3
 
         self.__deduced_colour = self.colour()
 
@@ -39,6 +41,9 @@ class SolidColourMapDisplay(MapDisplay):
         c = self.colour()
         refresh = refresh or c != self.__deduced_colour
         self.__deduced_colour = c
+
+        if len(self.pts) != 0:
+            self.__point_dim = next(iter(self.pts)).n_dim
 
         if not refresh and isinstance(self.pts, Tracked):
             self.__render_lazy()
@@ -65,7 +70,8 @@ class SolidColourMapDisplay(MapDisplay):
         return [self.pts] if isinstance(self.pts, Tracked) else []
 
     def update_cube(self, p: Point) -> None:
-        if self._map.size.n_dim == 2:
+        if self.__point_dim != 3:
             p = Point(p.x, p.y)
+        
         if p in self.pts:
             self._root_view.colour_cube(self.__deduced_colour)
