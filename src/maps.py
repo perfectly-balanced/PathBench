@@ -21,8 +21,8 @@ class Maps:
                       Obstacle(Point(30, 10), 5),
                       Obstacle(Point(80, 80), 5),
                       Obstacle(Point(20, 40), 5),
-                  ],
-                  Goal(Point(95, 95), 5))
+        ],
+            Goal(Point(95, 95), 5))
 
     pixel_map_empty: SparseMap = \
         SparseMap(Size(500, 500),
@@ -35,50 +35,52 @@ class Maps:
                   Agent(Point(40, 40), 10),
                   [
                       Obstacle(Point(250, 250), 50),
-                  ],
-                  Goal(Point(460, 460), 10))
-    
+        ],
+            Goal(Point(460, 460), 10))
+
     pixel_map_one_obstacle_3d: SparseMap = \
         SparseMap(Size(500, 500, 100),
                   Agent(Point(40, 40, 8), 10),
                   [
                       Obstacle(Point(250, 250, 50), 50),
-                  ],
-                  Goal(Point(460, 460, 92), 10))
+        ],
+            Goal(Point(460, 460, 92), 10))
 
     grid_map_one_obstacle: SparseMap = \
         SparseMap(Size(33, 32),
-                  Agent(Point(0, 15)),   #Point(x,y) x starts from 0 from left side (column); y starts from 0 from top (row)
+                  Agent(Point(0, 15)),  # Point(x,y) x starts from 0 from left side (column); y starts from 0 from top (row)
                   [
                       Obstacle(Point(15, 13), 5),
-                  ],
-                  Goal(Point(31, 15)))
-    
-    grid_map_one_obstacle1= grid_map_one_obstacle.convert_to_dense_map()  #DenseMap shows the obstacles as black, SparseMap shows radius of obstacle as white
+        ],
+            Goal(Point(31, 15)))
+
+    grid_map_one_obstacle1 = grid_map_one_obstacle.convert_to_dense_map()  # DenseMap shows the obstacles as black, SparseMap shows radius of obstacle as white
 
     grid_map_3d_no_obstacles: DenseMap = DenseMap([[[2, 0], [0, 0]], [[0, 0], [3, 0]]])
-    
+
     grid_map_3d_one_obstacle: DenseMap = DenseMap([[[2, 0], [0, 0]], [[0, 1], [3, 0]]])
 
     grid_map_3d_complex_with_obstacles: DenseMap = DenseMap([[[0, 0, 0], [0, 1, 0], [2, 0, 0]], [[0, 1, 0], [0, 1, 0], [1, 0, 0]], [[0, 0, 3], [0, 0, 0], [0, 1, 0]]])
-    
+
     # grid_map_labyrinth: DenseMap = DenseMap([[[0, 0, 0], [0, 0, 0], [2, 0, 0]], [[0, 0, 0], [0, 1, 0], [0, 0, 0]], [[0, 0, 3], [0, 0, 0], [0, 0, 0]]])
-    
-    grid_map_3d_example_3_3_3:  DenseMap = DenseMap([[[0, 0, 0], [0, 0, 0], [2, 0, 0]], [[0, 0, 0], [0, 1, 0], [0, 0, 0]], [[0, 0, 3], [0, 0, 0], [0, 0, 0]]])
 
-    grid_map_3d_example_4_4_3:  DenseMap = DenseMap([[[0, 0, 0, 1], [1, 0, 0, 0], [2, 0, 1, 0], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]], [[0, 0, 0, 0], [0, 0, 0, 3], [0, 0, 0, 0], [0, 0, 0, 1]]])
+    grid_map_3d_example_3_3_3: DenseMap = DenseMap([[[0, 0, 0], [0, 0, 0], [2, 0, 0]], [[0, 0, 0], [0, 1, 0], [0, 0, 0]], [[0, 0, 3], [0, 0, 0], [0, 0, 0]]])
 
-    grid_map_3d_example_4_4_4:  DenseMap = DenseMap([[[0, 0, 0, 1], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]], [[0, 0, 0, 1], [1, 0, 0, 0], [2, 0, 1, 0], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]], [[0, 0, 0, 0], [0, 0, 0, 3], [0, 0, 0, 0], [0, 0, 0, 1]]])
+    grid_map_3d_example_4_4_3: DenseMap = DenseMap([[[0, 0, 0, 1], [1, 0, 0, 0], [2, 0, 1, 0], [0, 0, 0, 0]], [[0, 0, 0, 1], [0, 0, 0, 0], [
+                                                   0, 1, 0, 0], [0, 0, 0, 1]], [[0, 0, 0, 0], [0, 0, 0, 3], [0, 0, 0, 0], [0, 0, 0, 1]]])
+
+    grid_map_3d_example_4_4_4: DenseMap = DenseMap([[[0, 0, 0, 1], [1, 0, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0]], [[0, 0, 0, 1], [1, 0, 0, 0], [2, 0, 1, 0], [0, 0, 0, 0]], [
+                                                   [0, 0, 0, 1], [0, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]], [[0, 0, 0, 0], [0, 0, 0, 3], [0, 0, 0, 0], [0, 0, 0, 1]]])
 
     large_map_one_obstacle_3d: SparseMap = \
         SparseMap(Size(20, 20, 20),
                   Agent(Point(19, 4, 8), 1),
                   [
                       Obstacle(Point(15, 15, 5), 3),
-                  ],
-                  Goal(Point(4, 19, 9), 1))
+        ],
+            Goal(Point(4, 19, 9), 1))
 
-    grid_map_3d_example:  DenseMap = large_map_one_obstacle_3d.convert_to_dense_map()
+    grid_map_3d_example: DenseMap = large_map_one_obstacle_3d.convert_to_dense_map()
 
     grid_map_labyrinth: DenseMap = DenseMap([
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -101,10 +103,9 @@ class Maps:
         [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ])
-    
 
     grid_map_labyrinth2: DenseMap = DenseMap([
-        #0 is free space; 1 is obstacle; 2 is starting location; 3 is goal location 
+        # 0 is free space; 1 is obstacle; 2 is starting location; 3 is goal location
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -183,7 +184,7 @@ class Maps:
         [1, 0, 1, 1, 1, 1, 2, 1],
         [1, 0, 1, 1, 1, 1, 0, 1],
         [3, 0, 0, 0, 0, 0, 0, 1],
-        [1, 1, 1 , 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1],
     ])
 
     grid_map_small_one_obstacle3: DenseMap = DenseMap([
@@ -224,15 +225,14 @@ class Maps:
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ])
 
-
     grid_map_28x28: SparseMap = \
         SparseMap(Size(28, 28),
-                  Agent(Point(0, 0)),   #Point(x,y) x starts from 0 from left side (column); y starts from 0 from top (row)
+                  Agent(Point(0, 0)),  # Point(x,y) x starts from 0 from left side (column); y starts from 0 from top (row)
                   [
                       Obstacle(Point(15, 13), 5),
                       Obstacle(Point(21, 22), 2),
                       Obstacle(Point(6, 5), 3),
-                  ],
-                  Goal(Point(28, 28)))
-    
-    grid_map_28x28vin= grid_map_one_obstacle.convert_to_dense_map() 
+        ],
+            Goal(Point(28, 28)))
+
+    grid_map_28x28vin = grid_map_one_obstacle.convert_to_dense_map()
