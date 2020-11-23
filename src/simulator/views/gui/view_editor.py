@@ -641,17 +641,8 @@ class ViewEditor():
                                    text_bg=WINDOW_BG_COLOUR,
                                    frameColor=WINDOW_BG_COLOUR,
                                    borderWidth=(.0, .0),
-                                   pos=(0.0, 0.0, 1.27),
+                                   pos=(-0.42, 0.0, 1.27),
                                    scale=(0.2, 3, 0.2))
-
-        # Quit button
-        self.btn = DirectButton(image=os.path.join(DATA_PATH, "quit.png"),
-                                command=self.__toggle_view_editor,
-                                pos=(0.9, 0.4, 1.32),
-                                parent=self.__window.frame,
-                                scale=0.1,
-                                pressEffect=1,
-                                frameColor=TRANSPARENT)
 
         self.__save_outline = DirectFrame(parent=self.__window.frame,
                                           frameColor=WHITE,
@@ -660,7 +651,7 @@ class ViewEditor():
                                           frameSize=(-0.62, 0.62, -0.54, 0.54),
                                           scale=(0.50, 2.1, 0.25))
 
-        self.__quit_outline = DirectFrame(parent=self.__window.frame,
+        self.__restore_outline = DirectFrame(parent=self.__window.frame,
                                           frameColor=WHITE,
                                           pos=(0.50, 0, -5.45),
                                           borderWidth=(0.25, 0.15),
@@ -693,9 +684,9 @@ class ViewEditor():
             text_fg=WHITE,
             pressEffect=1,
             command=self.__zoom_out,
-            pos=(-0.7, 0.4, 1.29),
+            pos=(0.5, 0., 1.25),
             parent=self.__window.frame,
-            scale=(0.3, 4, 0.3),
+            scale=(0.38, 4.25, 0.45),
             frameColor=TRANSPARENT)
 
         self.btn_zoom_out = DirectButton(
@@ -703,10 +694,20 @@ class ViewEditor():
             text_fg=WHITE,
             pressEffect=1,
             command=self.__zoom_in,
-            pos=(-0.95, 0.4, 1.3),
+            pos=(0.71, 0., 1.28),
             parent=self.__window.frame,
-            scale=(0.3, 4, 0.3),
+            scale=(0.35, 4.19, 0.38),
             frameColor=TRANSPARENT)
+
+        # Quit button
+        self.btn = DirectButton(text='x',
+                                text_fg=WHITE,
+                                command=self.__toggle_view_editor,
+                                pos=(0.91, 0.4, 1.3),
+                                parent=self.__window.frame,
+                                scale=(0.3, 2.9, 0.2),
+                                pressEffect=1,
+                                frameColor=TRANSPARENT)
 
         # Creating view selectors
         self.__view_selectors = []

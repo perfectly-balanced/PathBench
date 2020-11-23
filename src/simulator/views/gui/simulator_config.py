@@ -140,7 +140,7 @@ class SimulatorConfig():
                       " mouse location\n\n* x - stop trace animation (animations required)\n\n* r - resume trace animation  (" \
                       "animations required)\n\n* m - toggle map between Sparse and Dense\n\n* o - take a default screenshot of " \
                       "the map\n\n* p - take a custom screenshot of the scene\n\n* w, a, s, d " \
-                      "- orbit around the map"
+                      "- orbit around the map\n\n* c, v - toggle Simulator Configuration / View Editor"
 
         self.__algorithms = {
             "A*": (AStar, AStarTesting, ([], {})),
@@ -212,28 +212,20 @@ class SimulatorConfig():
                                       frameColor=WINDOW_BG_COLOUR,
                                       pos=(-1, 0.5, 0.5),
                                       scale=1 / 5,
-                                      frameSize=(-1.6, 1.2, -4.8, 1.1)
+                                      frameSize=(-1.7, 1.3, -4.97, 0.85)
                                       )
         # spacer #
         DirectFrame(parent=self.__window_config.frame,
                     borderWidth=(.0, .0),
                     frameColor=WIDGET_BG_COLOUR,
-                    frameSize=(-1.3, 1.3, -0.01, 0.01),
+                    frameSize=(-1.4, 1.4, -0.01, 0.01),
                     pos=(-0.2, 0.0, 0.4))
         DirectFrame(parent=self.__window_config.frame,
                     borderWidth=(.0, .0),
                     frameColor=WIDGET_BG_COLOUR,
-                    frameSize=(-1.3, 1.3, -0.01, 0.01),
+                    frameSize=(-1.4, 1.4, -0.01, 0.01),
                     pos=(-0.2, 0.0, -2.46))
 
-        self.heading_config = DirectLabel(parent=self.__window_config.frame,
-                                          text="PathBench",
-                                          text_fg=WHITE,
-                                          text_bg=WINDOW_BG_COLOUR,
-                                          frameColor=WINDOW_BG_COLOUR,
-                                          borderWidth=(.0, .0),
-                                          pos=(-0.2, 0.0, 0.8),
-                                          scale=(0.23, 3.1, 0.22))
 
         self.sim_config = DirectLabel(parent=self.__window_config.frame,
                                       text="Simulator Configuration",
@@ -241,8 +233,39 @@ class SimulatorConfig():
                                       text_bg=WINDOW_BG_COLOUR,
                                       frameColor=WINDOW_BG_COLOUR,
                                       borderWidth=(.0, .0),
-                                      pos=(-0.2, 0.0, 0.56),
-                                      scale=(0.2, 3, 0.18))
+                                      pos=(-0.53, 0.0, 0.56),
+                                      scale=(0.2, 3, 0.2))
+        # Zoom buttons
+        self.btn_zoom_in = DirectButton(
+            text="-",
+            text_fg=WHITE,
+            pressEffect=1,
+            command=self.__zoom_out,
+            pos=(0.71, 0., 0.55),
+            parent=self.__window_config.frame,
+            scale=(0.3, 4.15, 0.35),
+            frameColor=TRANSPARENT)
+
+        self.btn_zoom_out = DirectButton(
+            text="+",
+            text_fg=WHITE,
+            pressEffect=1,
+            command=self.__zoom_in,
+            pos=(0.92, 0., 0.56),
+            parent=self.__window_config.frame,
+            scale=(0.3, 4.15, 0.35),
+            frameColor=TRANSPARENT)
+
+        # Quit button
+        self.btn = DirectButton(text='x',
+                                text_fg=WHITE,
+                                command=self.__toggle_config,
+                                pos=(1.12, 0., 0.576),
+                                parent=self.__window_config.frame,
+                                scale=(0.3, 2.9, 0.2),
+                                pressEffect=1,
+                                frameColor=TRANSPARENT)
+
         self.user_information = DirectLabel(parent=self.__window_config.frame,
                                             text=self.__text,
                                             text_fg=WHITE,
@@ -250,7 +273,7 @@ class SimulatorConfig():
                                             frameColor=WINDOW_BG_COLOUR,
                                             text_align=TextNode.ALeft,
                                             borderWidth=(.0, .0),
-                                            pos=(-1.4, 0.0, -2.7),
+                                            pos=(-1.55, 0.0, -2.7),
                                             scale=(0.11, 1.1, 0.11))
         self.map_label = DirectLabel(parent=self.__window_config.frame,
                                      text="Map:",
@@ -289,14 +312,7 @@ class SimulatorConfig():
                                        pos=(-1.4, 0.4, -1.5),
                                        scale=(0.17, 1.09, 0.13))
 
-        # Quit button
-        self.btn = DirectButton(image=os.path.join(DATA_PATH, "quit.png"),
-                                command=self.__toggle_config,
-                                pos=(1., 0.4, 0.86),
-                                parent=self.__window_config.frame,
-                                scale=0.1,
-                                pressEffect=1,
-                                frameColor=TRANSPARENT)
+
 
         self.__maps_option = DirectOptionMenu(text="options",
                                               scale=0.14,
@@ -340,6 +356,7 @@ class SimulatorConfig():
                                          borderWidth=(0.25, 0.15),
                                          frameSize=(-0.5, 0.95, -0.54, 0.54),
                                          scale=(0.50, 3.1, 0.25))
+
         self._reset_frame = DirectFrame(parent=self.__window_config.frame,
                                         frameColor=WHITE,
                                         pos=(0.412, 0.4, -2.1),
@@ -366,25 +383,6 @@ class SimulatorConfig():
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
 
-        self.btn_zoom_in = DirectButton(
-            text="-",
-            text_fg=WHITE,
-            pressEffect=1,
-            command=self.__zoom_out,
-            pos=(-1.18, 0.4, 0.82),
-            parent=self.__window_config.frame,
-            scale=(0.3, 4, 0.3),
-            frameColor=TRANSPARENT)
-
-        self.btn_zoom_out = DirectButton(
-            text="+",
-            text_fg=WHITE,
-            pressEffect=1,
-            command=self.__zoom_in,
-            pos=(-1.4, 0.4, 0.82),
-            parent=self.__window_config.frame,
-            scale=(0.3, 4, 0.3),
-            frameColor=TRANSPARENT)
 
     def __zoom_in(self):
         self._zoom += 0.05
