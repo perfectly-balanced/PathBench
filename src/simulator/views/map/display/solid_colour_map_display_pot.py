@@ -27,7 +27,7 @@ class SolidColourMapDisplaypot(MapDisplay):
         self.small = min(pmaplst)
         self.range = (self.large-self.small)/6
         self.pts = set()
-        self.__point_dim = 3
+        self.__point_dim = None
 
     def render(self, *discarded) -> None:
         points: Union[Set[Point], List[Entity]] = copy.deepcopy(self.points)

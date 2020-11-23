@@ -28,7 +28,7 @@ class SolidColourMapDisplay(MapDisplay):
 
         self.pts = points
         self.__old_pts = None
-        self.__point_dim = 3
+        self.__point_dim = None
 
         self.__deduced_colour = self.colour()
 

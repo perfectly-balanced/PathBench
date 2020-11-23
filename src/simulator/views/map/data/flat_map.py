@@ -63,15 +63,13 @@ class FlatMap(MapData):
 
         self.square_size = square_size
 
-        if block_size is None:
-            is_power_of_2 = lambda n: (n & (n-1) == 0) and n != 0
-            
+        if block_size is None:            
             # make block fit entire map
             block_size = max(self.logical_w, self.logical_h)
 
             # ensure block size is a power of 2 so that the
             # size of its texture is a power of 2.
-            if not is_power_of_2(block_size):
+            if not ((block_size & (block_size - 1) == 0) and block_size != 0):
                 n = 1
                 while n < block_size:
                     n = n << 1
