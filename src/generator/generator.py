@@ -662,6 +662,7 @@ class Generator:
                         "trace",
                         "total_steps",
                         "total_distance",
+                        "smoothness_of_trajectory",
                         "total_time",
                         "algorithm_type",
                         "fringe",

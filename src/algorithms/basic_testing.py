@@ -158,6 +158,7 @@ class BasicTesting:
             self._services.debug.write("Distance to goal: " + str(results["distance_to_goal"]) + " (Original: {})".format(results["original_distance_to_goal"]))
         self._services.debug.write("Total steps: " + str(results["total_steps"]), DebugLevel.BASIC)
         self._services.debug.write("Total distance: {0:.2f}".format(results["total_distance"]), DebugLevel.BASIC)
+        self._services.debug.write("Trajectory Smoothness: {0:.2f}".format(results["smoothness_of_trajectory"]), DebugLevel.BASIC)
         self._services.debug.write("Total time: " + str(results["total_time"]) + " seconds", DebugLevel.BASIC)
         self._services.debug.write("Trace: " + str(results["trace"]), DebugLevel.MEDIUM)
 

@@ -134,12 +134,14 @@ class Analyzer:
 
         average_steps: float = Analyzer.__get_average_value(filtered_results, "total_steps")
         average_distance: float = Analyzer.__get_average_value(filtered_results, "total_distance")
+        average_smoothness: float = Analyzer.__get_average_value(filtered_results, "smoothness_of_trajectory")
         average_time: float = Analyzer.__get_average_value(filtered_results, "total_time", 4)
         average_distance_from_goal: float = Analyzer.__get_average_value(results, "distance_to_goal")
         average_original_distance_from_goal: float = Analyzer.__get_average_value(results, "original_distance_to_goal")
 
         steps_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "total_steps")
         distance_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "total_distance")
+        smoothness_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "smoothness_of_trajectory")
         time_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "total_time", 4)
         distance_from_goal_alldata: List[Any] = Analyzer.__get_values(results, "distance_to_goal")
         original_distance_from_goal_alldata: List[Any] = Analyzer.__get_values(results, "original_distance_to_goal")
@@ -151,6 +153,7 @@ class Analyzer:
             "goal_found_perc": goal_found,
             "average_steps": average_steps,
             "average_distance": average_distance,
+            "average_smoothness": average_smoothness,
             "average_time": average_time,
             "average_distance_from_goal": average_distance_from_goal,
             "average_original_distance_from_goal": average_original_distance_from_goal,
@@ -284,12 +287,14 @@ class Analyzer:
         goal_found_perc_improvement = __get_improvement(res_proc["goal_found_perc"], a_star_res_proc["goal_found_perc"], False)
         average_steps_improvement = __get_improvement(res_proc["average_steps"], a_star_res_proc["average_steps"])
         average_distance_improvement = __get_improvement(res_proc["average_distance"], a_star_res_proc["average_distance"])
+        average_smoothness_improvement = __get_improvement(res_proc["average_smoothness"], a_star_res_proc["average_smoothness"])
         average_time_improvement = __get_improvement(res_proc["average_time"], a_star_res_proc["average_time"])
         average_distance_from_goal_improvement = __get_improvement(res_proc["average_distance_from_goal"], a_star_res_proc["average_distance_from_goal"])
 
         res_proc["goal_found_perc_improvement"] = goal_found_perc_improvement
         res_proc["average_steps_improvement"] = average_steps_improvement
         res_proc["average_distance_improvement"] = average_distance_improvement
+        res_proc["average_smoothness_improvement"] = average_smoothness_improvement
         res_proc["average_time_improvement"] = average_time_improvement
         res_proc["average_distance_from_goal_improvement"] = average_distance_from_goal_improvement
         res_proc["average_path_deviation"] = res_proc["average_distance"] - a_star_res_proc["average_distance"] 
@@ -299,6 +304,7 @@ class Analyzer:
         self.__services.debug.write("Rate of success: {}%, (A*: {}%), (Improvement: {}%)".format(res_proc["goal_found_perc"], a_star_res_proc["goal_found_perc"], goal_found_perc_improvement), streams=[self.__analysis_stream])
         self.__services.debug.write("Average total steps: {}, (A*: {}), (Improvement: {}%)".format(res_proc["average_steps"], a_star_res_proc["average_steps"], average_steps_improvement), streams=[self.__analysis_stream])
         self.__services.debug.write("Average total distance: {}, (A*: {}), (Improvement: {}%)".format(res_proc["average_distance"], a_star_res_proc["average_distance"], average_distance_improvement), streams=[self.__analysis_stream])
+        self.__services.debug.write("Average trajectory smoothness: {}, (A*: {}), (Improvement: {}%)".format(res_proc["average_smoothness"], a_star_res_proc["average_smoothness"], average_smoothness_improvement), streams=[self.__analysis_stream])
         self.__services.debug.write("Average time: {} seconds, (A*: {} seconds), (Improvement: {}%)".format(res_proc["average_time"], a_star_res_proc["average_time"], average_time_improvement), streams=[self.__analysis_stream])
         self.__services.debug.write("Average distance from goal: {}, (A*: {}), (Improvement: {}%) (Average original distance from goal: {})".format(res_proc["average_distance_from_goal"], a_star_res_proc["average_distance_from_goal"], average_distance_from_goal_improvement, res_proc["average_original_distance_from_goal"]), streams=[self.__analysis_stream])
 
