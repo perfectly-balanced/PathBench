@@ -1,22 +1,21 @@
-from panda3d.core import *
-from direct.gui.OnscreenImage import OnscreenImage
-from direct.gui.DirectGui import *
+from panda3d.core import PNMImage, Filename, TextNode
+from direct.gui.DirectGui import DirectFrame, DGG, DirectButton, DirectLabel, DirectSlider, DirectEntry, DirectScrolledFrame
 from direct.showbase.ShowBase import ShowBase
 
-import os
-import math
-import json
 from typing import Tuple, Union, Callable, List
+import os
 
 from structures import Colour, WHITE, BLACK, TRANSPARENT
 from constants import DATA_PATH
 
 from simulator.services.services import Services
 from simulator.services.persistent_state import PersistentState
+from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.new_colour_event import NewColourEvent
 from simulator.services.event_manager.events.toggle_view_event import ToggleViewEvent
 
-from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR, Window
+from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
+from simulator.views.gui.window import Window
 
 
 class ColourPicker:

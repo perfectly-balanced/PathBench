@@ -1,16 +1,18 @@
-import os
-from typing import Any, Dict
-
-from panda3d.core import *
-from direct.gui.OnscreenImage import OnscreenImage
-from direct.gui.DirectGui import *
+from panda3d.core import PNMImage, TextNode
+from direct.gui.DirectGui import DirectFrame, DirectButton, DirectLabel, DGG, DirectOptionMenu
 from direct.showbase.ShowBase import ShowBase
 
+from typing import Tuple, Union, List, Any, Dict
+
+from structures import WHITE, TRANSPARENT
 from constants import DATA_PATH
-from structures import Colour, WHITE, BLACK, TRANSPARENT
-from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR, Window
+
 from simulator.services.services import Services
+from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.toggle_simulator_config_event import ToggleSimulatorConfigEvent
+
+from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
+from simulator.views.gui.window import Window
 
 from maps import Maps
 
@@ -145,12 +147,12 @@ class SimulatorConfig():
         self.__algorithms = {
             "A*": (AStar, AStarTesting, ([], {})),
             "Global Way-point LSTM": (WayPointNavigation, WayPointNavigationTesting, (
-            [], {"global_kernel": (CombinedOnlineLSTM, ([], {})), "global_kernel_max_it": 100})),
+                [], {"global_kernel": (CombinedOnlineLSTM, ([], {})), "global_kernel_max_it": 100})),
             "LSTM Bagging": (CombinedOnlineLSTM, CombinedOnlineLSTMTesting, ([], {})),
             "CAE Online LSTM": (
-            OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"})),
+                OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"})),
             "Online LSTM": (OnlineLSTM, BasicTesting, (
-            [], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"})),
+                [], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"})),
             "SPRM": (SPRM, BasicTesting, ([], {})),
             "RT": (RT, BasicTesting, ([], {})),
             "RRT": (RRT, BasicTesting, ([], {})),
@@ -225,7 +227,6 @@ class SimulatorConfig():
                     frameColor=WIDGET_BG_COLOUR,
                     frameSize=(-1.4, 1.4, -0.01, 0.01),
                     pos=(-0.2, 0.0, -2.46))
-
 
         self.sim_config = DirectLabel(parent=self.__window_config.frame,
                                       text="Simulator Configuration",
@@ -312,8 +313,6 @@ class SimulatorConfig():
                                        pos=(-1.4, 0.4, -1.5),
                                        scale=(0.17, 1.09, 0.13))
 
-
-
         self.__maps_option = DirectOptionMenu(text="options",
                                               scale=0.14,
                                               parent=self.__window_config.frame,
@@ -382,7 +381,6 @@ class SimulatorConfig():
             parent=self.__window_config.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
-
 
     def __zoom_in(self):
         self._zoom += 0.05

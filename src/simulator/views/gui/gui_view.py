@@ -2,7 +2,7 @@ from simulator.views.view import View
 from simulator.models.model import Model
 from simulator.services.services import Services
 from simulator.views.gui.view_editor import ViewEditor
-from simulator.views.gui.simulator_config import SimulatorConfig  
+from simulator.views.gui.simulator_config import SimulatorConfig
 
 from typing import Optional
 
