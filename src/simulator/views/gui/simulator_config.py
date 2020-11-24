@@ -4,11 +4,13 @@ from direct.showbase.ShowBase import ShowBase
 from direct.showbase.DirectObject import DirectObject
 
 from typing import Tuple, Union, List, Any, Dict, Callable
+import traceback
 
 from structures import Point, WHITE, TRANSPARENT
 from constants import DATA_PATH
 
 from simulator.services.services import Services
+from simulator.services.debug import DebugLevel
 from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.reset_event import ResetEvent
 from simulator.services.event_manager.events.toggle_simulator_config_event import ToggleSimulatorConfigEvent
@@ -408,6 +410,8 @@ class SimulatorConfig(DirectObject):
                     self.__animations_option.set(self.__animation_keys.index(so.ani))
                     self.__update_position_entries()
                 except:
+                    msg = "Failed to load Simulator Config state:\n{}".format(traceback.format_exc())
+                    self.__services.debug.write(msg, DebugLevel.NONE)
                     break
                 finally:
                     self.__maps_option['command'] = cmd
