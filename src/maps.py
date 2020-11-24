@@ -3,6 +3,7 @@ from algorithms.configuration.entities.goal import Goal
 from algorithms.configuration.entities.obstacle import Obstacle
 from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.maps.sparse_map import SparseMap
+from algorithms.configuration.maps.occupancy_grid_map import OccupancyGridMap
 from structures import Size, Point
 
 
@@ -236,3 +237,14 @@ class Maps:
             Goal(Point(28, 28)))
 
     grid_map_28x28vin = grid_map_one_obstacle.convert_to_dense_map()
+
+    test_occupancy_map = OccupancyGridMap([
+        [1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0.2, 0.2, 0.3, 0, 0, 1],
+        [1, 0, 0.5, 0, 0, 0, 0, 1],
+        [1, 0, 0.7, 0.3, 0, 0, 0, 1],
+        [1, 0, 1, 1, 1, 1, 2, 1],
+        [1, 0, 1, 1, 1, 1, 0, 1],
+        [3, 0, 0, 0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1],
+    ])
