@@ -33,7 +33,7 @@ class SolidColourMapDisplay(MapDisplay):
         self.__deduced_colour = self.colour()
 
     def render(self, *discarded) -> None:
-        if self.pts is None:
+        if len(self.pts) == 0:
             return
 
         self._root_view.display_updates_cube()
@@ -42,8 +42,7 @@ class SolidColourMapDisplay(MapDisplay):
         refresh = c != self.__deduced_colour
         self.__deduced_colour = c
 
-        if len(self.pts) != 0:
-            self.__point_dim = next(iter(self.pts)).n_dim
+        self.__point_dim = next(iter(self.pts)).n_dim
 
         if not refresh and isinstance(self.pts, Tracked):
             self.__render_lazy()

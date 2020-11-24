@@ -31,7 +31,7 @@ class SolidColourMapDisplaypot(MapDisplay):
 
     def render(self, *discarded) -> None:
         points: Union[Set[Point], List[Entity]] = copy.deepcopy(self.points)
-        if not points:
+        if len(points) == 0:
             return
 
         def f(pt):
