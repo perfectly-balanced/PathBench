@@ -77,8 +77,6 @@ if HAS_OMPL:
     from algorithms.classic.sample_based.ompl_stride import OMPL_STRIDE
     from algorithms.classic.sample_based.ompl_qrrt import OMPL_QRRT
 
-from algorithms.VIN.vin import VINTest
-
 from algorithms.classic.graph_based.wavefront import Wavefront
 from algorithms.configuration.configuration import Configuration
 from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
@@ -155,8 +153,7 @@ class SimulatorConfig():
             "Dijkstra": (Dijkstra, DijkstraTesting, ([], {})),
             "Bug1": (Bug1, BasicTesting, ([], {})),
             "Bug2": (Bug2, BasicTesting, ([], {})),
-            "Potential Field": (PotentialField, BasicTesting, ([], {})),
-            "VIN": (VINTest, BasicTesting, ([], {})),
+            "Potential Field": (PotentialField, BasicTesting, ([], {}))
         }
         if HAS_OMPL:
             self.__algorithms.update({

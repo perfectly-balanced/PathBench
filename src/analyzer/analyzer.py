@@ -41,7 +41,7 @@ from algorithms.classic.graph_based.potential_field import PotentialField
 from algorithms.classic.graph_based.bug1 import Bug1
 from algorithms.classic.graph_based.bug2 import Bug2
 from algorithms.classic.sample_based.rt import RT
-from algorithms.VIN.vin import VINTest
+
 # OMPL algorithms
 from algorithms.classic.sample_based.ompl_rrt import OMPL_RRT
 from algorithms.classic.sample_based.ompl_prmstar import OMPL_PRMstar
@@ -621,7 +621,6 @@ class Analyzer:
             #(Bug1, BasicTesting, ([], {}), "Bug 1"),
             #(Bug2, BasicTesting, ([], {}), "Bug 2"),
             #(PotentialField, BasicTesting, ([], {}), "Potential Field"),
-            (VINTest, BasicTesting,([], {}), "VIN" ),
             #(OMPL_RRT, BasicTesting, ([], {}), "OMPL RRT"),
             # (OMPL_PRMstar, BasicTesting, ([], {}), "OMPL PRM*"),
             #(RRT_Connect, BasicTesting, ([], {}), "RRT Connect"),
