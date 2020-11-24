@@ -1,8 +1,9 @@
 from panda3d.core import PNMImage, TextNode
 from direct.gui.DirectGui import DirectFrame, DirectButton, DirectLabel, DirectEntry, DGG, DirectOptionMenu
 from direct.showbase.ShowBase import ShowBase
+from direct.showbase.DirectObject import DirectObject
 
-from typing import Tuple, Union, List, Any, Dict
+from typing import Tuple, Union, List, Any, Dict, Callable
 
 from structures import Point, WHITE, TRANSPARENT
 from constants import DATA_PATH
@@ -89,7 +90,7 @@ from algorithms.lstm.a_star_waypoint import WayPointNavigation
 from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
 
 
-class SimulatorConfig():
+class SimulatorConfig(DirectObject):
     __services: Services
     __base: ShowBase
     __window: Window
@@ -123,7 +124,7 @@ class SimulatorConfig():
         "Fast": (0.16, 20)
     }
 
-    def __init__(self, services: Services):
+    def __init__(self, services: Services, mouse1_press_callbacks: List[Callable[[], None]]):
         self.__services = services
         self.__services.ev_manager.register_listener(self)
         self.__base = self.__services.graphics.window
@@ -202,7 +203,7 @@ class SimulatorConfig():
         self.__algorithm_keys = list(self.__algorithms.keys())
         self.__animation_keys = list(self.__animations.keys())
 
-        self.__window = Window(self.__base, "simulator_config",
+        self.__window = Window(self.__base, "simulator_config", mouse1_press_callbacks,
                                borderWidth=(0.0, 0.0),
                                frameColor=WINDOW_BG_COLOUR,
                                pos=(-1, 0.5, 0.5),
@@ -317,15 +318,20 @@ class SimulatorConfig():
 
         # Creating goal and agent's entry fields
         self.__entries = []
+        self.__entry_hovered = False
+        mouse1_press_callbacks.append(self.__entry_mouse_click_callback)
         for i in range(0, 6):
-            self.__entries.append(DirectEntry(parent=self.__window.frame,
-                                              text="",
-                                              scale=0.12,
-                                              pos=(-0.24 + (i % 3) * 0.57, 0.4, -1.5 - 0.5 * (i // 3)),
-                                              numLines=1,
-                                              width=3,
-                                              text_align=TextNode.ACenter,
-                                              ))
+            e = DirectEntry(parent=self.__window.frame,
+                            scale=0.12,
+                            pos=(-0.24 + (i % 3) * 0.57, 0.4, -1.5 - 0.5 * (i // 3)),
+                            numLines=1,
+                            width=3,
+                            suppressKeys=True,
+                            text_align=TextNode.ACenter)
+            self.__entries.append(e)
+            e.bind(DGG.EXIT, self.__entry_exit_callback)
+            e.bind(DGG.ENTER, self.__entry_enter_callback)
+            self.accept("mouse1", self.__entry_mouse_click_callback)
 
         self.__maps_option = DirectOptionMenu(text="options",
                                               scale=0.14,
@@ -407,6 +413,17 @@ class SimulatorConfig():
         self.__use_default_map_positions()
         self.__services.state.add(self.__state)
 
+    def __entry_exit_callback(self, *discard) -> None:
+        self.__entry_hovered = False
+
+    def __entry_enter_callback(self, *discard) -> None:
+        self.__entry_hovered = True
+
+    def __entry_mouse_click_callback(self, *discard) -> None:
+        if not self.__entry_hovered:
+            for e in self.__entries:
+                e['focus'] = False
+
     def __update_simulator_callback(self) -> None:
         mp = self.__maps[self.__maps_option.get()]
         algo = self.__algorithms[self.__algorithms_option.get()]
@@ -419,7 +436,7 @@ class SimulatorConfig():
             i = self.__maps_option.get()
             self.__maps[i] = (self.__services.resources.maps_dir.load(mp[0]), self.__maps[i][1])
             mp[0] = self.__maps[i][0]
-        
+
         # update state
         self.__state.mp = self.__maps_option.get()
         self.__state.algo = self.__algorithms_option.get()
@@ -429,8 +446,10 @@ class SimulatorConfig():
             nonlocal mp
             vs = []
             for i in range(default.n_dim):
-                s = entries[i].get()
-                vs.append(int(s) if s else default[i])
+                try:
+                    vs.append(int(entries[i].get()))
+                except:
+                    vs.append(default[i])
             p = Point(*vs)
             return p if mp[0].is_agent_valid_pos(p) else default
 
@@ -451,7 +470,7 @@ class SimulatorConfig():
         if refresh_map:
             mp[0].move(mp[0].agent, self.__state.agent, True)
             mp[0].move(mp[0].goal, self.__state.goal, True)
-        
+
         config.simulator_initial_map, config.simulator_grid_display = mp
         config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = algo
         config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani
@@ -465,13 +484,13 @@ class SimulatorConfig():
 
     def __use_default_map_positions(self, *discard) -> None:
         m = self.__maps[self.__maps_option.get()][0]
-        
+
         # load up map if necessary
         if isinstance(m, str):
             i = self.__maps_option.get()
             self.__maps[i] = (self.__services.resources.maps_dir.load(m), self.__maps[i][1])
             m = self.__maps[i][0]
-        
+
         self.__state.agent = m.agent.position
         self.__state.goal = m.goal.position
         self.__update_position_entries()

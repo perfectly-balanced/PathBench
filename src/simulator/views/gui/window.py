@@ -3,10 +3,12 @@ from direct.gui.DirectGui import DirectFrame, DGG
 from direct.showbase.ShowBase import ShowBase
 
 from utility.compatibility import Final
+from typing import Callable, List
 
 class Window():
     __base: Final[ShowBase]
     __name: Final[str]
+    __mouse1_press_callbacks: Final[List[Callable[[], None]]]
 
     __frame: Final[DirectFrame]
     __mouse_node: Final[NodePath]
@@ -14,9 +16,10 @@ class Window():
     __zoom: float
     __visible: bool
 
-    def __init__(self, base: ShowBase, name: str, *args, **kwargs):
+    def __init__(self, base: ShowBase, name: str, mouse1_press_callbacks: List[Callable[[], None]], *args, **kwargs):
         self.__base = base
         self.__name = name
+        self.__mouse1_press_callbacks = mouse1_press_callbacks
 
         self.__visible = True
         self.__zoom = 1 / 5
@@ -43,6 +46,8 @@ class Window():
         return task.cont
 
     def __start_drag(self, *discarded):
+        for c in self.__mouse1_press_callbacks:
+            c()
         self.__frame.wrt_reparent_to(self.__mouse_node)
 
     def __stop_drag(self, *discarded):
