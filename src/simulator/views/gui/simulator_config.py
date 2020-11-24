@@ -13,6 +13,7 @@ from simulator.services.event_manager.events.toggle_simulator_config_event impor
 
 from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
 from simulator.views.gui.window import Window
+from simulator.views.gui.simulator_config_state import SimulatorConfigState
 
 from maps import Maps
 
@@ -382,6 +383,21 @@ class SimulatorConfig():
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
 
+        # setup state & use saved state if possible
+        for so in self.__services.state.objects:
+            if isinstance(so, SimulatorConfigState):
+                self.__state = so
+                self.__maps_option.set(list(self.__maps.keys()).index(so.mp))
+                self.__algorithms_option.set(list(self.__algorithms.keys()).index(so.algo))
+                self.__animations_option.set(list(self.__animations.keys()).index(so.ani))
+                return
+        
+        self.__state = SimulatorConfigState()
+        self.__state.mp = self.__maps_option.get()
+        self.__state.algo = self.__algorithms_option.get()
+        self.__state.ani = self.__animations_option.get()
+        self.__services.state.add(self.__state)
+
     def __zoom_in(self):
         self._zoom += 0.05
         self.__window_config.frame.setScale(self._zoom)
@@ -402,6 +418,12 @@ class SimulatorConfig():
         mp = self.__maps[self.__maps_option.get()]
         algo = self.__algorithms[self.__algorithms_option.get()]
         ani = self.__animations[self.__animations_option.get()]
+
+        # save state
+        self.__state.mp = self.__maps_option.get()
+        self.__state.algo = self.__algorithms_option.get()
+        self.__state.ani = self.__animations_option.get()
+        self.__services.state.save()
 
         config = self.__services.settings
         config.simulator_initial_map, config.simulator_grid_display = mp  # Optional[Union[str, Map]], bool

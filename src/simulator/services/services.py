@@ -43,10 +43,12 @@ class Services:
         from simulator.services.persistent_state import PersistentState
         from simulator.services.torch import Torch
 
+        from simulator.views.gui.simulator_config_state import SimulatorConfigState
+
         self.__settings = config
         self.__debug = Debug(self)
         self.__ev_manager = EventManager(self)
-        self.__state = PersistentState(self)
+        self.__state = PersistentState(self, types=[SimulatorConfigState])
         self.__resources_dir = Resources(self)
         self.__torch = Torch(self)
         self.__algorithm_runner = AlgorithmRunner(self)
