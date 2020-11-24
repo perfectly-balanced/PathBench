@@ -3,7 +3,7 @@ from typing import List, Optional
 from simulator.models.model import Model
 from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.initialise_event import InitialiseEvent
-from simulator.services.event_manager.events.reset_event import ResetEvent
+from simulator.services.event_manager.events.reinit_event import ReinitEvent
 from simulator.services.services import Services
 
 
@@ -50,7 +50,7 @@ class View:
         if isinstance(event, InitialiseEvent):
             self.initialise()
             self._initialised = True
-        elif isinstance(event, ResetEvent):
+        elif isinstance(event, ReinitEvent):
             from simulator.views.main_view import MainView
             if not isinstance(self, MainView):
                 self._services.ev_manager.unregister_listener(self)

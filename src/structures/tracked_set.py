@@ -1,7 +1,12 @@
 from typing import Iterable, Any, List
 from collections.abc import MutableSet
-
 from structures.tracked_container import TrackedContainer
+
+""" A TrackedSet class, used to keep track of elements, that are added or removed from a 
+    set data structure. TrackedSet overrides the built-in MutableSet methods in order to account for changes
+    in the set, having a minimal effect on performance. Modified items are appended to the TrackedContainer's list,
+    taking into account if the element was removed or being added, calling elem_removed(elem) or
+    elem_added(elem) respectively."""
 
 class TrackedSet(TrackedContainer, MutableSet):
     _set: set
@@ -34,25 +39,52 @@ class TrackedSet(TrackedContainer, MutableSet):
             self._elem_added(elem)
 
     def clear(self) -> None:
-        raise NotImplementedError
+        for elem in self._set:
+            self._elem_removed(elem)
+        self._set.clear()
 
     def difference_update(self, *s: Iterable[Any]) -> None:
-        raise NotImplementedError
+        __intersect = self._set.intersection(s)
+        for elem in __intersect:
+            self._elem_removed(elem)
+        self._set.difference_update(s)
 
     def discard(self, element: Any) -> None:
-        raise NotImplementedError
+        old_len = len(self)
+        self._set.discard(element)
+        new_len = len(self)
+        if old_len != new_len:
+            self._elem_removed(element)
 
     def intersection_update(self, *s: Iterable[Any]) -> None:
-        raise NotImplementedError
+        __difference = self._set.difference(s)
+        for elem in __difference:
+            self._elem_removed(elem)
+        self._set.intersection_update(s)
 
     def pop(self) -> Any:
-        raise NotImplementedError
+        elem = self._set.pop()
+        self._elem_removed(elem)
 
     def remove(self, element: Any) -> None:
-        raise NotImplementedError
+        old_len = len(self)
+        self._set.remove(element)
+        new_len = len(self)
+        if old_len != new_len:
+            self._elem_removed(element)
 
     def symmetric_difference_update(self, s: Iterable[Any]) -> None:
-        raise NotImplementedError
+        sym_diff = self._set.symmetric_difference(s)
+        for elem in self._set:
+            if elem not in sym_diff:
+                self._elem_removed(elem)
+        for elem in s:
+            if elem in sym_diff:
+                self._elem_added(elem)
+        self._set.symmetric_difference(s)
 
     def update(self, *s: Iterable[Any]) -> None:
-        raise NotImplementedError
+        for elem in s:
+            if elem not in self._set:
+                self._elem_added(elem)
+        self._set.update(s)

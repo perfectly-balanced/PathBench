@@ -12,8 +12,18 @@ from typing import Dict, Any, List, Optional
 import json
 import os
 import traceback
+from abc import ABC, abstractmethod
 
-class PersistentStateView():
+class PersistentStateObject(ABC):
+    @abstractmethod
+    def _from_json(self, data: Dict[str, Any]) -> None:
+        ...
+
+    @abstractmethod
+    def _to_json(self) -> Dict[str, Any]:
+        ...
+
+class PersistentStateView(PersistentStateObject):
     __services: Services
     state: 'PersistentState'
     index: int
@@ -74,13 +84,18 @@ class PersistentState(Service):
     views: List[PersistentStateView]
     __view_idx: int
 
-    _save_task: Optional['Task']
+    types: Dict[str, Any]
+    __objects: List[PersistentStateObject]
+
+    __save_task: Optional['Task']
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **exclude_from_dict(kwargs, ["file_name"]))
+        super().__init__(*args, **exclude_from_dict(kwargs, ["file_name", "types"]))
         self.file_name = kwargs["file_name"] if "file_name" in kwargs else ".pathbench.json"
+        self.types = {o.__name__: o for o in kwargs["types"]} if "types" in kwargs else {}
 
-        self._save_task = None
+        self.__objects = []
+        self.__save_task = None
 
         self.reset(False)
         self.load()
@@ -104,7 +119,12 @@ class PersistentState(Service):
                     for v in range(self.MAX_VIEWS):
                         self.views[v]._from_json(jviews[v])
                     self.view_idx = jidx
-                except Exception as e:
+                    jobjs = jdata["objects"]
+                    for jo in jobjs:
+                        o = self.types[jo["type"]]()
+                        o._from_json(jo["data"])
+                        self.__objects.append(o)
+                except:
                     msg = "Failed to load state data from '{}', reason:\n{}".format(self.file_name, traceback.format_exc())
                     self._services.debug.write(msg, DebugLevel.NONE)
                     self.reset()
@@ -116,12 +136,13 @@ class PersistentState(Service):
         data = {}
         data["view_index"] = self.view_idx
         data["views"] = [self.views[v]._to_json() for v in range(self.MAX_VIEWS)]
+        data["objects"] = [{"type": type(o).__name__, "data": o._to_json()} for o in self.__objects]
         with open(self.file_name, 'w') as f:
             json.dump(data, f, sort_keys=True, indent=4)
 
-        if self._save_task is not None:
-            self._services.graphics.window.taskMgr.remove(self._save_task)
-            self._save_task = None
+        if self.__save_task is not None:
+            self._services.graphics.window.taskMgr.remove(self.__save_task)
+            self.__save_task = None
 
     def schedule_save(self, delay: float = 0) -> None:
         if delay < 0:
@@ -129,9 +150,9 @@ class PersistentState(Service):
 
         if delay > 0 and self._services.graphics is not None:
             tm = self._services.graphics.window.taskMgr
-            if self._save_task is None:
+            if self.__save_task is None:
                 self._services.debug.write("Scheduling state save to be executed {} seconds from now".format(delay), DebugLevel.BASIC)
-                self._save_task = tm.doMethodLater(delay, lambda _: self.save(), "save_persistent_state")
+                self.__save_task = tm.doMethodLater(delay, lambda _: self.save(), "save_persistent_state")
         else:
             self.save()
 
@@ -182,3 +203,15 @@ class PersistentState(Service):
     def view(self, v: PersistentStateView) -> None:
         assert v == self.views[v.index], "PersistentStateView is not owned by this PersistentState"
         self.view_idx = v.index
+
+    def add(self, obj: PersistentStateObject, save_delay: float = 0) -> None:
+        self.__objects.append(obj)
+        self.schedule_save(save_delay)
+
+    def remove(self, obj: PersistentStateObject, save_delay: float = 0) -> None:
+        self.__objects.remove(obj)
+        self.schedule_save(save_delay)
+
+    @property
+    def objects(self) -> List[PersistentStateObject]:
+        return self.__objects.copy()

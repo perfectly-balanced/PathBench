@@ -36,17 +36,23 @@ class AlgorithmRunner(Service):
         self.__algorithm = None
         self.__buffered_services = None
         self.__pass_root_key_frame = None
-
+        
         self.map = copy.deepcopy(self._services.settings.simulator_initial_map)
 
-    def reset_algorithm(self) -> None:
+    def reset_algorithm(self, refresh_map: bool = False) -> None:
         """
         Creates a new instance of the algorithms and setups the algorithms service
         """
-        if self.__map is None:
-            return
 
-        self.map.reset()
+        if refresh_map:
+            if self.map is not None:
+                self.map.reset()
+            self.__map = copy.deepcopy(self._services.settings.simulator_initial_map)
+        elif self.map is None:
+            return
+        else:
+            self.map.reset()
+
         testing: Optional[Type['BasicTesting']] = None
         if self.__testing_type is not None:
             testing = self.__testing_type(self._services)

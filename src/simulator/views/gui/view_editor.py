@@ -1,22 +1,23 @@
-from panda3d.core import *
-from direct.gui.OnscreenImage import OnscreenImage
-from direct.gui.DirectGui import *
+from panda3d.core import PNMImage, Filename, TextNode
+from direct.gui.DirectGui import DirectFrame, DGG, DirectButton, DirectLabel, DirectSlider, DirectEntry, DirectScrolledFrame
 from direct.showbase.ShowBase import ShowBase
+from direct.showbase.DirectObject import DirectObject
 
-import os
-import math
-import json
 from typing import Tuple, Union, Callable, List
+import os
 
 from structures import Colour, WHITE, BLACK, TRANSPARENT
 from constants import DATA_PATH
 
 from simulator.services.services import Services
 from simulator.services.persistent_state import PersistentState
+from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.new_colour_event import NewColourEvent
 from simulator.services.event_manager.events.toggle_view_event import ToggleViewEvent
 
-from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR, Window
+from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
+from simulator.views.gui.window import Window
+
 
 class ColourPicker:
     pick_colour_callback: Callable[[Tuple[float, float, float, float]], None]
@@ -32,7 +33,8 @@ class ColourPicker:
 
     enabled: bool
 
-    def __init__(self, base: ShowBase, pick_colour_callback: Callable[[Tuple[float, float, float, float]], None], **kwargs) -> None:
+    def __init__(self, base: ShowBase, pick_colour_callback: Callable[[Tuple[float, float, float, float]], None],
+                 **kwargs) -> None:
         self.__base = base
         self.pick_colour_callback = pick_colour_callback
         self.enabled = True
@@ -190,7 +192,7 @@ class ColourView():
         self.__frame.destroy()
 
 
-class ColourChannel():
+class ColourChannel(DirectObject):
     __slider_edit_callback: Callable[['ColourChannel', float], None]
     __entry_edit_callback: Callable[['ColourChannel', float], None]
 
@@ -201,7 +203,10 @@ class ColourChannel():
     __disable_frame_overlay: DirectButton
     __enabled: bool
 
-    def __init__(self, parent: DirectFrame, text: str, value: float, slider_edit_callback: Callable[['ColourChannel', float], None], entry_edit_callback: Callable[['ColourChannel', float], None]):
+    def __init__(self, parent: DirectFrame, text: str, value: float,
+                 slider_edit_callback: Callable[['ColourChannel', float], None],
+                 entry_edit_callback: Callable[['ColourChannel', float], None],
+                 mouse1_press_callbacks: List[Callable[[], None]]):
         self.__frame = DirectFrame(parent=parent)
         self.__slider_edit_callback = slider_edit_callback
         self.__entry_edit_callback = entry_edit_callback
@@ -223,13 +228,19 @@ class ColourChannel():
                                      pos=(0.05, 0.0, 0.0255),
                                      scale=(0.45, 1.0, 0.5))
 
+        self.__entry_hovered = False
+        mouse1_press_callbacks.append(self.__entry_mouse_click_callback)
         self.__entry = DirectEntry(parent=self.__frame,
                                    frameColor=WIDGET_BG_COLOUR,
                                    text_fg=WHITE,
                                    initialText=str(value),
                                    scale=0.1,
                                    width=3,
+                                   suppressKeys=True,
                                    pos=(0.55, 0.0, -0.01105))
+        self.__entry.bind(DGG.EXIT, self.__entry_exit_callback)
+        self.__entry.bind(DGG.ENTER, self.__entry_enter_callback)
+        self.accept("mouse1", self.__entry_mouse_click_callback)
 
         self.__disable_frame_overlay = DirectButton(parent=self.__frame,
                                                     frameColor=TRANSPARENT,
@@ -240,6 +251,16 @@ class ColourChannel():
         self.__enabled = True
 
         self.__set_callbacks()
+
+    def __entry_exit_callback(self, *discard) -> None:
+        self.__entry_hovered = False
+
+    def __entry_enter_callback(self, *discard) -> None:
+        self.__entry_hovered = True
+
+    def __entry_mouse_click_callback(self, *discard) -> None:
+        if not self.__entry_hovered:
+            self.__entry['focus'] = False
 
     def __unset_callbacks(self):
         self.__slider['command'] = None
@@ -310,7 +331,9 @@ class AdvancedColourPicker():
     __dirty_rem_no_hide: int
     __enabled: bool
 
-    def __init__(self, base: ShowBase, parent: DirectFrame, callback: Callable[[Colour], None], colour: Colour = Colour(0.25, 0.5, 0.75, 1.0)):
+    def __init__(self, base: ShowBase, parent: DirectFrame, callback: Callable[[Colour], None],
+                 mouse1_press_callbacks: List[Callable[[], None]],
+                 colour: Colour = Colour(0.25, 0.5, 0.75, 1.0)):
         self.__base = base
         self.__colour = colour
         self.__callback = callback
@@ -338,24 +361,25 @@ class AdvancedColourPicker():
             c = self.__colour_picker.colour_under_mouse()
             self.__cv_hovered.colour = c
             return task.cont
+
         self.__base.taskMgr.add(update_cv_hovered, 'update_cv_hovered')
 
         c = self.__colour
         f = self.__frame
         sc = self.__colour_channel_slider_edit_callback
         ec = self.__colour_channel_entry_edit_callback
-        self.__r = ColourChannel(f, "R", c[0], sc, ec)
-        self.__g = ColourChannel(f, "G", c[1], sc, ec)
-        self.__b = ColourChannel(f, "B", c[2], sc, ec)
-        self.__a = ColourChannel(f, "A", c[3], sc, ec)
+        self.__r = ColourChannel(f, "R", c[0], sc, ec, mouse1_press_callbacks)
+        self.__g = ColourChannel(f, "G", c[1], sc, ec, mouse1_press_callbacks)
+        self.__b = ColourChannel(f, "B", c[2], sc, ec, mouse1_press_callbacks)
+        self.__a = ColourChannel(f, "A", c[3], sc, ec, mouse1_press_callbacks)
 
         x = 0.14
         y_base = -0.8
         y_inc = -0.25
         self.__r.frame.set_pos((x, 0.0, y_base))
-        self.__g.frame.set_pos((x, 0.0, y_base+y_inc))
-        self.__b.frame.set_pos((x, 0.0, y_base+y_inc*2))
-        self.__a.frame.set_pos((x, 0.0, y_base+y_inc*3))
+        self.__g.frame.set_pos((x, 0.0, y_base + y_inc))
+        self.__b.frame.set_pos((x, 0.0, y_base + y_inc * 2))
+        self.__a.frame.set_pos((x, 0.0, y_base + y_inc * 3))
 
         self.__dirty_rem_no_hide = 0
 
@@ -434,6 +458,7 @@ class AdvancedColourPicker():
     def enabled(self) -> bool:
         return self.__enabled
 
+
 class ViewElement():
     __name: str
     __visibility_callback: Callable[[str, bool], None]
@@ -448,7 +473,10 @@ class ViewElement():
     __visibility_btn: DirectButton
     __visibility_bar: DirectFrame
 
-    def __init__(self, name: str, visibility_callback: Callable[[str, bool], None], colour_callback: Callable[[str, Colour], None], cv_clicked_callback: Callable[['ViewElement'], None], parent: DirectFrame, visible: bool = True, colour: Colour = Colour(0.2, 0.3, 0.4, 0.5)):
+    def __init__(self, name: str, visibility_callback: Callable[[str, bool], None],
+                 colour_callback: Callable[[str, Colour], None], cv_clicked_callback: Callable[['ViewElement'], None],
+                 parent: DirectFrame, visible: bool = True, colour: Colour = Colour(0.2, 0.3, 0.4, 0.5),
+                 mouse1_press_callbacks: List[Callable[[], None]] = []):
         self.__name = name
         self.__visible = visible
         self.__visibility_callback = None
@@ -559,6 +587,7 @@ class ViewElement():
         self.__label.destroy()
         self.__frame.destroy()
 
+
 class ViewEditor():
     __services: Services
     __base: ShowBase
@@ -566,21 +595,19 @@ class ViewEditor():
     __colour_picker: AdvancedColourPicker
     __elems: List[ViewElement]
 
-    def __init__(self, services: Services):
+    def __init__(self, services: Services, mouse1_press_callbacks: List[Callable[[], None]]):
         self.__services = services
         self.__services.ev_manager.register_listener(self)
         self.__base = self.__services.graphics.window
-        self.hidden = False
 
-        self.__window = Window(self.__base, "view_editor",
-                               relief=DGG.RAISED,
+        self.__window = Window(self.__base, "view_editor", mouse1_press_callbacks,
                                borderWidth=(0.0, 0.0),
                                frameColor=WINDOW_BG_COLOUR,
-                               pos=(1900, 200, -350),
-                               scale=(150, 1., 150),
-                               frameSize=(-1.1, 1.1, -5.82, 1.56))
+                               pos=(1.1, 0.5, 0.5),
+                               frameSize=(-1.1, 1.1, -5.79, 1.56)
+                               )
 
-        self.__colour_picker = AdvancedColourPicker(self.__base, self.__window.frame, self.__colour_picker_callback)
+        self.__colour_picker = AdvancedColourPicker(self.__base, self.__window.frame, self.__colour_picker_callback, mouse1_press_callbacks)
 
         # spacers
         DirectFrame(parent=self.__window.frame,
@@ -629,18 +656,8 @@ class ViewEditor():
                                    text_bg=WINDOW_BG_COLOUR,
                                    frameColor=WINDOW_BG_COLOUR,
                                    borderWidth=(.0, .0),
-                                   pos=(0.0, 0.0, 1.27),
+                                   pos=(-0.42, 0.0, 1.27),
                                    scale=(0.2, 3, 0.2))
-
-        # Quit button
-        self.btn = DirectButton(image=os.path.join(DATA_PATH, "quit.png"),
-                                command=self.__toggle_view_editor,
-                                pos=(0.9, 0.4, 1.32),
-                                parent=self.__window.frame,
-                                scale=0.1,
-                                pressEffect=1,
-                                frameColor=TRANSPARENT)
-
 
         self.__save_outline = DirectFrame(parent=self.__window.frame,
                                           frameColor=WHITE,
@@ -649,12 +666,12 @@ class ViewEditor():
                                           frameSize=(-0.62, 0.62, -0.54, 0.54),
                                           scale=(0.50, 2.1, 0.25))
 
-        self.__quit_outline = DirectFrame(parent=self.__window.frame,
-                                          frameColor=WHITE,
-                                          pos=(0.50, 0, -5.45),
-                                          borderWidth=(0.25, 0.15),
-                                          frameSize=(-0.62, 0.62, -0.54, 0.54),
-                                          scale=(0.65, 2.1, 0.25))
+        self.__restore_outline = DirectFrame(parent=self.__window.frame,
+                                             frameColor=WHITE,
+                                             pos=(0.50, 0, -5.45),
+                                             borderWidth=(0.25, 0.15),
+                                             frameSize=(-0.62, 0.62, -0.54, 0.54),
+                                             scale=(0.65, 2.1, 0.25))
 
         # save and restore
         self.btn_s = DirectButton(
@@ -676,6 +693,37 @@ class ViewEditor():
             parent=self.__window.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
+
+        # zoom window in / out
+        self.btn_zoom_out = DirectButton(
+            text="-",
+            text_fg=WHITE,
+            pressEffect=1,
+            command=self.__window.zoom_out,
+            pos=(0.5, 0., 1.25),
+            parent=self.__window.frame,
+            scale=(0.38, 4.25, 0.45),
+            frameColor=TRANSPARENT)
+
+        self.btn_zoom_in = DirectButton(
+            text="+",
+            text_fg=WHITE,
+            pressEffect=1,
+            command=self.__window.zoom_in,
+            pos=(0.71, 0., 1.28),
+            parent=self.__window.frame,
+            scale=(0.35, 4.19, 0.38),
+            frameColor=TRANSPARENT)
+
+        # Quit button
+        self.btn = DirectButton(text='x',
+                                text_fg=WHITE,
+                                command=self.__window.toggle_visible,
+                                pos=(0.91, 0.4, 1.3),
+                                parent=self.__window.frame,
+                                scale=(0.3, 2.9, 0.2),
+                                pressEffect=1,
+                                frameColor=TRANSPARENT)
 
         # Creating view selectors
         self.__view_selectors = []
@@ -702,7 +750,8 @@ class ViewEditor():
         self.__elems.clear()
 
         for name, dc in ps_colours.items():
-            self.__elems.append(ViewElement(name, self.__update_visibility, self.__update_colour, self.__select_cv, self.__elems_frame.getCanvas(), dc.visible, dc.colour))
+            self.__elems.append(ViewElement(name, self.__update_visibility, self.__update_colour, self.__select_cv,
+                                            self.__elems_frame.getCanvas(), dc.visible, dc.colour))
 
         for i in range(len(self.__elems)):
             self.__elems[i].frame.set_pos((0.15, 0.0, -0.2 * i))
@@ -721,15 +770,6 @@ class ViewEditor():
 
     def __update_colour(self, name: str, colour: Colour) -> None:
         self.__services.state.effective_view.colours[name].colour = colour
-
-    def __toggle_view_editor(self):
-        if not self.hidden:
-            self.__window.frame.hide()
-            self.hidden = True
-        else:
-            self.__window.frame.show()
-            self.__window.focus()
-            self.hidden = False
 
     def __colour_picker_callback(self, colour: Colour) -> None:
         self.__window.focus()
@@ -752,7 +792,7 @@ class ViewEditor():
         if isinstance(event, NewColourEvent) or self.__services.state.view_idx != self.__cur_view_idx:
             self.__reset()
         elif isinstance(event, ToggleViewEvent):
-            self.__toggle_view_editor()
+            self.__window.toggle_visible()
 
     @property
     def view_idx(self) -> str:

@@ -1,16 +1,21 @@
-import os
-from typing import Any, Dict
-
-from panda3d.core import *
-from direct.gui.OnscreenImage import OnscreenImage
-from direct.gui.DirectGui import *
+from panda3d.core import PNMImage, TextNode
+from direct.gui.DirectGui import DirectFrame, DirectButton, DirectLabel, DirectEntry, DGG, DirectOptionMenu
 from direct.showbase.ShowBase import ShowBase
+from direct.showbase.DirectObject import DirectObject
 
+from typing import Tuple, Union, List, Any, Dict, Callable
+
+from structures import Point, WHITE, TRANSPARENT
 from constants import DATA_PATH
-from structures import Colour, WHITE, BLACK, TRANSPARENT
-from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR, Window
+
 from simulator.services.services import Services
+from simulator.services.event_manager.events.event import Event
+from simulator.services.event_manager.events.reset_event import ResetEvent
 from simulator.services.event_manager.events.toggle_simulator_config_event import ToggleSimulatorConfigEvent
+
+from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
+from simulator.views.gui.window import Window
+from simulator.views.gui.simulator_config_state import SimulatorConfigState
 
 from maps import Maps
 
@@ -35,6 +40,7 @@ from algorithms.classic.sample_based.rrt_star import RRT_Star
 from algorithms.classic.sample_based.rrt_connect import RRT_Connect
 
 from utility.compatibility import HAS_OMPL
+
 if HAS_OMPL:
     from algorithms.classic.sample_based.ompl_rrt import OMPL_RRT
     from algorithms.classic.sample_based.ompl_prmstar import OMPL_PRMstar
@@ -83,18 +89,16 @@ from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
 from algorithms.lstm.a_star_waypoint import WayPointNavigation
 from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
 
-class SimulatorConfig():
+
+class SimulatorConfig(DirectObject):
     __services: Services
     __base: ShowBase
     __window: Window
 
     __maps = {
-        # "uniform_random_fill_10/0" is a directory. 0.pickle inside the uniform_random_fill_10 folder inside ./src/resources/maps
         "Uniform Random Fill": ("uniform_random_fill_10/0", True),
         "Block": ("block_map_10/6", True),
         "House": ("house_10/6", True),
-        # Maps.grid_map_labyrinth2 is a map defined inside Maps class
-        # "Long Wall": (Maps.grid_map_labyrinth2, True),
         "Long Wall": (Maps.grid_map_one_obstacle1, True),
         "Labyrinth": (Maps.grid_map_labyrinth, True),
         "3D Cube": (Maps.grid_map_3d_example, True),
@@ -120,30 +124,27 @@ class SimulatorConfig():
         "Fast": (0.16, 20)
     }
 
-    __debug = {
-        "None": (0),
-        "Basic": (0),
-        "Low": (0),
-        "Medium": (0),
-        "High": (0)
-    }
-
-    def __init__(self, services: Services):
+    def __init__(self, services: Services, mouse1_press_callbacks: List[Callable[[], None]]):
         self.__services = services
         self.__services.ev_manager.register_listener(self)
         self.__base = self.__services.graphics.window
-        self.hidden_config = False
-        self.__text = "Important runtime commands:\n \n* t - find the path between the agent and goal\n\n"\
-            "* mouse click - moves agent to mouse location \n\n* mouse right click - moves goal to"\
-            " mouse location\n\n* s - stop trace animation (animations required)\n\n* r - resume trace animation  (" \
-            "animations required)\n\n* p - take screenshot"
+        self.__text = " t - find the path between the agent and goal\n\n" \
+                      " mouse click - moves agent to mouse location \n\n mouse right click - moves goal to" \
+                      " mouse location\n\n x - toggle trace animation (animations required)\n\n" \
+                      " m - toggle map between Sparse and Dense\n\n o - take a default screenshot of " \
+                      "the map\n\n p - take a custom screenshot of the scene\n\n w, a, s, d " \
+                      "- orbit around the map\n\n c, v - toggle Simulator Configuration / View Editor"
 
         self.__algorithms = {
             "A*": (AStar, AStarTesting, ([], {})),
-            "Global Way-point LSTM": (WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel": (CombinedOnlineLSTM, ([], {})), "global_kernel_max_it": 100})),
+            "Global Way-point LSTM": (WayPointNavigation, WayPointNavigationTesting, (
+                [], {"global_kernel": (CombinedOnlineLSTM, ([], {})), "global_kernel_max_it": 100})),
             "LSTM Bagging": (CombinedOnlineLSTM, CombinedOnlineLSTMTesting, ([], {})),
-            "CAE Online LSTM": (OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"})),
-            "Online LSTM": (OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"})),
+            "CAE Online LSTM": (
+                OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"})),
+            "Online LSTM": (OnlineLSTM, BasicTesting, (
+                [],
+                {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"})),
             "SPRM": (SPRM, BasicTesting, ([], {})),
             "RT": (RT, BasicTesting, ([], {})),
             "RRT": (RRT, BasicTesting, ([], {})),
@@ -198,170 +199,320 @@ class SimulatorConfig():
                 # "OMPL QRRT": (OMPL_QRRT, BasicTesting, ([], {})),
             })
 
-        self.__window_config = Window(self.__base, "simulator_config",
-                                      relief=DGG.RAISED,
-                                      borderWidth=(0.0, 0.0),
-                                      frameColor=WINDOW_BG_COLOUR,
-                                      pos=(190, 200, -350),
-                                      scale=(150, 1., 150),
-                                      frameSize=(-1.6, 1.2, -4.2, 1.1))
+        self.__map_keys = list(self.__maps.keys())
+        self.__algorithm_keys = list(self.__algorithms.keys())
+        self.__animation_keys = list(self.__animations.keys())
 
+        self.__window = Window(self.__base, "simulator_config", mouse1_press_callbacks,
+                               borderWidth=(0.0, 0.0),
+                               frameColor=WINDOW_BG_COLOUR,
+                               pos=(-1, 0.5, 0.5),
+                               frameSize=(-1.7, 1.3, -5.15, 0.85)
+                               )
         # spacer #
-        DirectFrame(parent=self.__window_config.frame,
+        DirectFrame(parent=self.__window.frame,
                     borderWidth=(.0, .0),
                     frameColor=WIDGET_BG_COLOUR,
-                    frameSize=(-1.3, 1.3, -0.01, 0.01),
+                    frameSize=(-1.4, 1.4, -0.011, 0.011),
                     pos=(-0.2, 0.0, 0.4))
-        DirectFrame(parent=self.__window_config.frame,
+        DirectFrame(parent=self.__window.frame,
                     borderWidth=(.0, .0),
                     frameColor=WIDGET_BG_COLOUR,
-                    frameSize=(-1.3, 1.3, -0.01, 0.01),
-                    pos=(-0.2, 0.0, -2.46))
+                    frameSize=(-1.4, 1.4, -0.01, 0.01),
+                    pos=(-0.2, 0.0, -2.96))
 
-        self.heading_config = DirectLabel(parent=self.__window_config.frame,
-                                          text="PathBench",
-                                          text_fg=WHITE,
-                                          text_bg=WINDOW_BG_COLOUR,
-                                          frameColor=WINDOW_BG_COLOUR,
-                                          borderWidth=(.0, .0),
-                                          pos=(-0.2, 0.0, 0.8),
-                                          scale=(0.23, 3.1, 0.22))
-
-        self.sim_config = DirectLabel(parent=self.__window_config.frame,
+        self.sim_config = DirectLabel(parent=self.__window.frame,
                                       text="Simulator Configuration",
                                       text_fg=WHITE,
                                       text_bg=WINDOW_BG_COLOUR,
                                       frameColor=WINDOW_BG_COLOUR,
                                       borderWidth=(.0, .0),
-                                      pos=(-0.2, 0.0, 0.56),
-                                      scale=(0.2, 3, 0.18))
-        self.user_information = DirectLabel(parent=self.__window_config.frame,
+                                      pos=(-0.53, 0.0, 0.56),
+                                      scale=(0.2, 3, 0.2))
+        # Zoom buttons
+        self.btn_zoom_out = DirectButton(
+            text="-",
+            text_fg=WHITE,
+            pressEffect=1,
+            command=self.__window.zoom_out,
+            pos=(0.71, 0., 0.55),
+            parent=self.__window.frame,
+            scale=(0.3, 4.15, 0.35),
+            frameColor=TRANSPARENT)
+
+        self.btn_zoom_in = DirectButton(
+            text="+",
+            text_fg=WHITE,
+            pressEffect=1,
+            command=self.__window.zoom_in,
+            pos=(0.92, 0., 0.56),
+            parent=self.__window.frame,
+            scale=(0.3, 4.15, 0.35),
+            frameColor=TRANSPARENT)
+
+        # Quit button
+        self.btn = DirectButton(text='x',
+                                text_fg=WHITE,
+                                command=self.__window.toggle_visible,
+                                pos=(1.12, 0., 0.576),
+                                parent=self.__window.frame,
+                                scale=(0.3, 2.9, 0.2),
+                                pressEffect=1,
+                                frameColor=TRANSPARENT)
+
+        self.user_information = DirectLabel(parent=self.__window.frame,
                                             text=self.__text,
                                             text_fg=WHITE,
                                             text_bg=WINDOW_BG_COLOUR,
                                             frameColor=WINDOW_BG_COLOUR,
                                             text_align=TextNode.ALeft,
                                             borderWidth=(.0, .0),
-                                            pos=(-1.4, 0.0, -2.7),
+                                            pos=(-1.55, 0.0, -3.2),
                                             scale=(0.11, 1.1, 0.11))
-        self.map_label = DirectLabel(parent=self.__window_config.frame,
+        self.map_label = DirectLabel(parent=self.__window.frame,
                                      text="Map:",
                                      text_fg=WHITE,
                                      text_bg=WINDOW_BG_COLOUR,
                                      text_align=TextNode.ALeft,
                                      frameColor=WINDOW_BG_COLOUR,
                                      borderWidth=(.0, .0),
-                                     pos=(-1.4, 0.4, 0.),
+                                     pos=(-1.52, 0.4, 0.),
                                      scale=(0.17, 1.09, 0.13))
-        self.algo_label = DirectLabel(parent=self.__window_config.frame,
+        self.algo_label = DirectLabel(parent=self.__window.frame,
                                       text="Algorithm:",
                                       text_fg=WHITE,
                                       text_bg=WINDOW_BG_COLOUR,
                                       frameColor=WINDOW_BG_COLOUR,
                                       text_align=TextNode.ALeft,
                                       borderWidth=(.0, .0),
-                                      pos=(-1.4, 0.4, -0.5),
+                                      pos=(-1.52, 0.4, -0.5),
                                       scale=(0.17, 1.09, 0.13))
-        self.animation_label = DirectLabel(parent=self.__window_config.frame,
+        self.animation_label = DirectLabel(parent=self.__window.frame,
                                            text="Animation:",
                                            text_fg=WHITE,
                                            text_bg=WINDOW_BG_COLOUR,
                                            frameColor=WINDOW_BG_COLOUR,
                                            text_align=TextNode.ALeft,
                                            borderWidth=(.0, .0),
-                                           pos=(-1.4, 0.4, -1),
+                                           pos=(-1.52, 0.4, -1),
                                            scale=(0.17, 1.09, 0.13))
-        self.debug_label = DirectLabel(parent=self.__window_config.frame,
-                                       text="Debug Level:",
+        self.agent_label = DirectLabel(parent=self.__window.frame,
+                                       text="Agent:",
                                        text_fg=WHITE,
                                        text_bg=WINDOW_BG_COLOUR,
                                        frameColor=WINDOW_BG_COLOUR,
                                        text_align=TextNode.ALeft,
                                        borderWidth=(.0, .0),
-                                       pos=(-1.4, 0.4, -1.5),
+                                       pos=(-1.52, 0.4, -1.5),
                                        scale=(0.17, 1.09, 0.13))
 
-        # Quit button
-        self.btn = DirectButton(image=os.path.join(DATA_PATH, "quit.png"),
-                                command=self.__toggle_config,
-                                pos=(1., 0.4, 0.86),
-                                parent=self.__window_config.frame,
-                                scale=0.1,
-                                pressEffect=1,
-                                frameColor=TRANSPARENT)
+        self.goal_label = DirectLabel(parent=self.__window.frame,
+                                      text="Goal:",
+                                      text_fg=WHITE,
+                                      text_bg=WINDOW_BG_COLOUR,
+                                      frameColor=WINDOW_BG_COLOUR,
+                                      text_align=TextNode.ALeft,
+                                      borderWidth=(.0, .0),
+                                      pos=(-1.52, 0.4, -2),
+                                      scale=(0.17, 1.09, 0.13))
+
+        # Creating goal and agent's entry fields
+        self.__entries = []
+        self.__entry_hovered = False
+        mouse1_press_callbacks.append(self.__entry_mouse_click_callback)
+        for i in range(0, 6):
+            e = DirectEntry(parent=self.__window.frame,
+                            scale=0.12,
+                            pos=(-0.24 + (i % 3) * 0.57, 0.4, -1.5 - 0.5 * (i // 3)),
+                            numLines=1,
+                            width=3,
+                            suppressKeys=True,
+                            text_align=TextNode.ACenter)
+            self.__entries.append(e)
+            e.bind(DGG.EXIT, self.__entry_exit_callback)
+            e.bind(DGG.ENTER, self.__entry_enter_callback)
+            self.accept("mouse1", self.__entry_mouse_click_callback)
 
         self.__maps_option = DirectOptionMenu(text="options",
                                               scale=0.14,
-                                              parent=self.__window_config.frame,
-                                              initialitem=1,
-                                              items=list(self.__maps.keys()),
+                                              parent=self.__window.frame,
+                                              initialitem=self.__map_keys.index("Labyrinth"),
+                                              items=self.__map_keys,
                                               pos=(-0.65, 0.4, 0.),
                                               highlightColor=(0.65, 0.65, 0.65, 1),
-                                              textMayChange=1)
+                                              textMayChange=1,
+                                              command=self.__use_default_map_positions)
 
         self.__algorithms_option = DirectOptionMenu(text="options",
                                                     scale=0.14,
-                                                    parent=self.__window_config.frame,
+                                                    parent=self.__window.frame,
                                                     initialitem=1,
-                                                    items=list(self.__algorithms.keys()),
+                                                    items=self.__algorithm_keys,
                                                     pos=(-0.46, 0.4, -0.5),
                                                     highlightColor=(0.65, 0.65, 0.65, 1),
                                                     textMayChange=1)
 
         self.__animations_option = DirectOptionMenu(text="options",
                                                     scale=0.14,
-                                                    parent=self.__window_config.frame,
+                                                    parent=self.__window.frame,
                                                     initialitem=0,
-                                                    items=list(self.__animations.keys()),
-                                                    pos=(-0.1, 0.4, -1),
+                                                    items=self.__animation_keys,
+                                                    pos=(-0.45, 0.4, -1),
                                                     highlightColor=(0.65, 0.65, 0.65, 1),
                                                     textMayChange=1)
 
-        self.__debug_option = DirectOptionMenu(text="options",
-                                                    scale=0.14,
-                                                    parent=self.__window_config.frame,
-                                                    initialitem=0,
-                                                    items=list(self.__debug.keys()),
-                                                    pos=(-0.1, 0.4, -1.5),
-                                                    highlightColor=(0.65, 0.65, 0.65, 1),
-                                                    textMayChange=1)
+        self._update_frame = DirectFrame(parent=self.__window.frame,
+                                         frameColor=WHITE,
+                                         pos=(-1, 0.4, -2.6),
+                                         borderWidth=(0.25, 0.15),
+                                         frameSize=(-0.5, 0.95, -0.54, 0.54),
+                                         scale=(0.50, 3.1, 0.25))
 
-        self.__start_simulator = DirectFrame(parent=self.__window_config.frame,
-                                             frameColor=WHITE,
-                                             pos=(-0.61, 0.4, -2.1),
-                                             borderWidth=(0.25, 0.15),
-                                             frameSize=(-0.72, 2.28, -0.54, 0.54),
-                                             scale=(0.50, 3.1, 0.25))
-        self.btn_s = DirectButton(
-            text="Start Simulator",
+        self._reset_frame = DirectFrame(parent=self.__window.frame,
+                                        frameColor=WHITE,
+                                        pos=(0.412, 0.4, -2.6),
+                                        borderWidth=(0.25, 0.15),
+                                        frameSize=(-0.5, 0.92, -0.54, 0.54),
+                                        scale=(0.50, 3.1, 0.25))
+        self.btn_update = DirectButton(
+            text="Update",
             text_fg=(0.3, 0.3, 0.3, 1.0),
             pressEffect=1,
-            command=self.__start_simulator_callback,
-            pos=(-0.223, 0.4, -2.15),
-            parent=self.__window_config.frame,
+            command=self.__update_simulator_callback,
+            pos=(-0.9, 0.4, -2.65),
+            parent=self.__window.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
 
-    def __toggle_config(self):
-        if not self.hidden_config:
-            self.__window_config.frame.hide()
-            self.hidden_config = True
-        else:
-            self.__window_config.frame.show()
-            self.hidden_config = False
+        self.btn_reset = DirectButton(
+            text="Reset",
+            text_fg=(0.4, 0.3, 0.3, 1.0),
+            pressEffect=1,
+            command=self.__reset_simulator_callback,
+            pos=(0.51, 0.4, -2.65),
+            parent=self.__window.frame,
+            scale=(0.20, 2.1, 0.15),
+            frameColor=TRANSPARENT)
 
-    def __start_simulator_callback(self) -> None:
+        # setup state & use saved state if possible
+        for so in self.__services.state.objects:
+            if isinstance(so, SimulatorConfigState):
+                self.__state = so
+                cmd = self.__maps_option['command']
+                self.__maps_option.set(self.__map_keys.index(so.mp))
+                self.__maps_option['command'] = cmd
+                self.__algorithms_option.set(self.__algorithm_keys.index(so.algo))
+                self.__animations_option.set(self.__animation_keys.index(so.ani))
+                self.__update_position_entries()
+                return
+
+        self.__state = SimulatorConfigState()
+        self.__state.mp = self.__maps_option.get()
+        self.__state.algo = self.__algorithms_option.get()
+        self.__state.ani = self.__animations_option.get()
+        self.__use_default_map_positions()
+        self.__services.state.add(self.__state)
+
+    def __entry_exit_callback(self, *discard) -> None:
+        self.__entry_hovered = False
+
+    def __entry_enter_callback(self, *discard) -> None:
+        self.__entry_hovered = True
+
+    def __entry_mouse_click_callback(self, *discard) -> None:
+        if not self.__entry_hovered:
+            for e in self.__entries:
+                e['focus'] = False
+
+    def __update_simulator_callback(self) -> None:
         mp = self.__maps[self.__maps_option.get()]
         algo = self.__algorithms[self.__algorithms_option.get()]
         ani = self.__animations[self.__animations_option.get()]
 
+        # load up map if necessary
+        # occurs when initial map
+        # is a string.
+        if isinstance(mp[0], str):
+            i = self.__maps_option.get()
+            self.__maps[i] = (self.__services.resources.maps_dir.load(mp[0]), self.__maps[i][1])
+            mp[0] = self.__maps[i][0]
+
+        # update state
+        self.__state.mp = self.__maps_option.get()
+        self.__state.algo = self.__algorithms_option.get()
+        self.__state.ani = self.__animations_option.get()
+
+        def deduce_pos(default, entries) -> Point:
+            nonlocal mp
+            vs = []
+            for i in range(default.n_dim):
+                try:
+                    vs.append(int(entries[i].get()))
+                except:
+                    vs.append(default[i])
+            p = Point(*vs)
+            return p if mp[0].is_agent_valid_pos(p) else default
+
+        self.__state.agent = deduce_pos(mp[0].agent.position, self.__entries[:3])
+        self.__state.goal = deduce_pos(mp[0].goal.position, self.__entries[3:])
+        self.__update_position_entries()  # update if user-provided point was invalid
+
+        # save state
+        self.__services.state.save()
+
+        # launch simulation
         config = self.__services.settings
-        config.simulator_initial_map, config.simulator_grid_display = mp  # Optional[Union[str, Map]], bool
-        # Optional[Type[Algorithm]],Optional[Type[BasicTesting]], Tuple[List, Dict]
+
+        refresh_map = (self.__state.agent != mp[0].agent.position) or \
+                      (self.__state.goal != mp[0].goal.position) or \
+                      (mp[0] != config.simulator_initial_map)
+
+        if refresh_map:
+            mp[0].move(mp[0].agent, self.__state.agent, True)
+            mp[0].move(mp[0].goal, self.__state.goal, True)
+
+        config.simulator_initial_map, config.simulator_grid_display = mp
         config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = algo
-        config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani  # int, int
-        self.__services.reset()
+        config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani
+        self.__services.reinit(refresh_map=refresh_map)
+
+    def __reset_simulator_callback(self) -> None:
+        self.__maps_option.set(self.__map_keys.index(self.__state.mp))
+        self.__algorithms_option.set(self.__algorithm_keys.index(self.__state.algo))
+        self.__animations_option.set(self.__animation_keys.index(self.__state.ani))
+        self.__services.ev_manager.post(ResetEvent())
+
+    def __use_default_map_positions(self, *discard) -> None:
+        m = self.__maps[self.__maps_option.get()][0]
+
+        # load up map if necessary
+        if isinstance(m, str):
+            i = self.__maps_option.get()
+            self.__maps[i] = (self.__services.resources.maps_dir.load(m), self.__maps[i][1])
+            m = self.__maps[i][0]
+
+        self.__state.agent = m.agent.position
+        self.__state.goal = m.goal.position
+        self.__update_position_entries()
+
+    def __update_position_entries(self) -> None:
+        def update_entries(entries, pos):
+            entries[0].enterText(str(pos[0]))
+            entries[1].enterText(str(pos[1]))
+            if pos.n_dim == 3:
+                entries[2].enterText(str(pos[2]))
+                entries[2].show()
+            else:
+                entries[2].hide()
+
+        update_entries(self.__entries[:3], self.__state.agent)
+        update_entries(self.__entries[3:], self.__state.goal)
+
+        # user has performed an action such as pressing a
+        # button, therefore all entries should lose focus
+        for e in self.__entries:
+            e['focus'] = False
 
     def notify(self, event: Event) -> None:
         if isinstance(event, ToggleSimulatorConfigEvent):
-            self.__toggle_config()
+            self.__window.toggle_visible()

@@ -32,6 +32,7 @@ from typing import List, Any, Tuple, Optional, Union, Set
 from heapq import heappush, heappop
 import os
 
+
 class MapView(View):
     __world: NodePath
     __map: Union[VoxelMap, FlatMap]
@@ -107,6 +108,7 @@ class MapView(View):
         """
 
         self.__circle_filled_radius = 0.06
+
         def resize_circle_filled(dim):
             if dim < 40:
                 pass
@@ -116,14 +118,17 @@ class MapView(View):
                 dim /= 2
             while (self.__circle_filled_radius < 1) and (dim / self.__circle_filled_radius > 250):
                 self.__circle_filled_radius *= 1.25
+
         resize_circle_filled(self.map.logical_w)
         resize_circle_filled(self.map.logical_h)
         resize_circle_filled(self.map.logical_d)
 
         self.__line_thickness = 2.5
+
         def change_line_thickness(dim):
             while (self.__line_thickness < 4) and (dim / self.__line_thickness > 160):
                 self.__line_thickness *= 1.25
+
         change_line_thickness(self.map.logical_w)
         change_line_thickness(self.map.logical_h)
         change_line_thickness(self.map.logical_d)
@@ -159,7 +164,7 @@ class MapView(View):
         elif isinstance(event, TakeScreenshotEvent):
             self.take_screenshot()
         elif isinstance(event, TakeScreenshotTexEvent):
-            self.HDScreenShot()
+            self.take_hd_screenshot()
 
     def to_logical_point(self, p: Point) -> Point:
         x, y, z = p
@@ -226,15 +231,17 @@ class MapView(View):
         self.__deduced_traversables_colour = clr
 
         if self.map.dim == 3:
-            def set_colour(p, c): return self.map.traversables_mesh.set_cube_colour(p, c)
-        else: # 2D
+            def set_colour(p, c):
+                return self.map.traversables_mesh.set_cube_colour(p, c)
+        else:  # 2D
             wfc = self.map.traversables_wf_dc()
             wfc = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
             if wfc != self.__deduced_traversables_wf_colour:
                 eager_refresh()
             self.__deduced_traversables_wf_colour = wfc
 
-            def set_colour(p, c): return self.map.render_square(p, c, wfc)
+            def set_colour(p, c):
+                return self.map.render_square(p, c, wfc)
 
         def update_cube_colour(p):
             self.__cube_colour = clr
@@ -292,31 +299,42 @@ class MapView(View):
         self._services.resources.screenshots_dir.append(
             lambda fn: self._services.graphics.window.win.save_screenshot(fn))
 
-    def HDScreenShot(self):
+    def take_hd_screenshot(self):
+        mx, my, mz = self.__map.traversables_data.shape
+
+        # find the optimal zoom fit
+        max_width = max(mx, my)
+        max_height = max(mx, mz)
         tex = Texture()
         width = 4096
         height = 4096
-        mybuffer = self._services.graphics.window.win.makeTextureBuffer('HDScreenshotBuff', width, height, tex, True)
+        ss_buf = self._services.graphics.window.win.make_texture_buffer('hd_screenshot_buff', width, height, tex, True)
 
-        cam = Camera('HDCam')
-        cam.setLens(self._services.graphics.window.camLens.makeCopy())
-        cam.getLens().setAspectRatio(width / height)
-        npCam = NodePath(cam)
-        npCam.reparentTo(self.__world)
-        x,y,z = self.__world.getPos()
-        npCam.setPos(x,y+0.5,z+77.3)
-        npCam.setP(-90)
+        cam = Camera('hd_cam')
+        cam.set_lens(self._services.graphics.window.camLens.make_copy())
+        cam.get_lens().set_aspect_ratio(width / height)
+        np_cam = NodePath(cam)
+        np_cam.reparent_to(self.__world)
+        x, y, z = self.__world.get_pos()
 
-        mycamera = self._services.graphics.window.makeCamera(mybuffer, useCamera=npCam)
-        myscene = self._services.graphics.window.render
-        mycamera.node().setScene(myscene)
-        self._services.graphics.window.graphicsEngine.renderFrame()
-        tex = mybuffer.getTexture()
-        mybuffer.setActive(False)
-        tex.write('screenshotTexHD.png')
-        self._services.graphics.window.graphicsEngine.removeWindow(mybuffer)
-        print ("HDScreenShot taken")
+        if mz > 1:
+            # 3D map
+            np_cam.set_pos(x - mx * 2.1, y - max_height * 3.6, z)
+            np_cam.set_h(-30)
+        else:
+            # 2D map
+            np_cam.set_pos(x, y, z + max_width * 2 + 1)
+            np_cam.set_p(-90)
 
+        ss_cam = self._services.graphics.window.make_camera(ss_buf, useCamera=np_cam)
+        ss_scene = self._services.graphics.window.render
+        ss_cam.node().set_scene(ss_scene)
+        self._services.graphics.window.graphicsEngine.render_frame()
+        tex = ss_buf.get_texture()
+        ss_buf.set_active(False)
+
+        self._services.resources.screenshots_dir.append(lambda fn: tex.write(fn))
+        self._services.graphics.window.graphicsEngine.remove_window(ss_buf)
 
     def cube_center(self, p: Point) -> Point:
         x, y, z = self.to_point3(p)
