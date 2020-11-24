@@ -2,6 +2,7 @@ import resource
 import psutil
 import copy
 import random
+import tracemalloc
 from typing import TYPE_CHECKING, List, Tuple, Type, Any, Dict, Union, Optional
 import csv
 import pandas as pd
@@ -231,19 +232,22 @@ class Analyzer:
 
         sim: Simulator = Simulator(Services(config))
         
-        memory1 = psutil.virtual_memory()
+        tracemalloc.start()
         # print("_*************((((((((((((((((()))))))))))))))))))))%^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         # print ('Memory usage initially:')
-        before = memory1.used
 
         resu = sim.start().get_results()
         
+        current, peak = tracemalloc.get_traced_memory()
+        
+        tracemalloc.stop()
+        
         # print ('resu===============================================',resu)
         # print ('Memory usage finally:')
-        memory2 = psutil.virtual_memory()
-        after = memory2.used
-        print('############################################################Memory used =====', (abs(after - before)/1000),'KB')
-        resu ['memory'] = (abs(after - before)/1000)
+
+        print('############################################################Memory used =====', peak/1000,'KB')
+        #resu ['memory'] = 0
+        resu ['memory'] = (peak/1000)
         
         #print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> resu = ", resu)
         
