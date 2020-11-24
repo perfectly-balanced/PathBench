@@ -27,9 +27,9 @@ class MapData(ABC):
     
     # OPTIONAL COLOURS / COMPONENTS #
     TRAVERSABLES: Final[str] = "traversables"
-    TRAVERSABLES_WF: Final[str] = "traversables_wf"
+    TRAVERSABLES_WF: Final[str] = "traversables w.f."
     OBSTACLES: Final[str] = "obstacles"
-    OBSTACLES_WF: Final[str] = "obstacles_wf"
+    OBSTACLES_WF: Final[str] = "obstacles w.f."
     AGENT: Final[str] = "agent"
     TRACE: Final[str] = "trace"
     GOAL: Final[str] = "goal"
