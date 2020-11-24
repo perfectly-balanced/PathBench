@@ -97,8 +97,7 @@ class MapView(View):
             dc = self._services.state.add_colour("extended wall", Colour(0.5).with_a(0.5))
             self.__persistent_displays.append(SolidColourMapDisplay(self._services, extended_walls, dc, z_index=0))
 
-        self.__is_ogm = hasattr(self._services.algorithm.map, "weight_grid")
-        if self.__is_ogm:
+        if hasattr(self._services.algorithm.map, "weight_grid"):
             wm = self._services.algorithm.map.weight_grid
             wl = TrackedList()
             for idx in np.ndindex(*wm.shape):
@@ -110,7 +109,7 @@ class MapView(View):
             display = GradientMapDisplay(self._services, pts=wl, min_colour=dc_min, max_colour=dc_max)
             self.__persistent_displays.append(display)
 
-        self.__deduced_traversables_colour = TRANSPARENT if self.__is_ogm else self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
+        self.__deduced_traversables_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
         self.__deduced_traversables_wf_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
 
         self.__sphere_scale = 0.2
@@ -241,7 +240,7 @@ class MapView(View):
             for p in np.ndindex(self.map.traversables_data.shape):
                 self.__cube_modified[p] = self.map.traversables_data[p]
         
-        clr = TRANSPARENT if self.__is_ogm else self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
+        clr = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
         if clr != self.__deduced_traversables_colour:
             eager_refresh()
         self.__deduced_traversables_colour = clr
