@@ -584,7 +584,7 @@ class ViewEditor():
                                borderWidth=(0.0, 0.0),
                                frameColor=WINDOW_BG_COLOUR,
                                pos=(1.1, 0.5, 0.5),
-                               frameSize=(-1.1, 1.1, -5.82, 1.56)
+                               frameSize=(-1.1, 1.1, -5.79, 1.56)
                                )
 
         self.__colour_picker = AdvancedColourPicker(self.__base, self.__window.frame, self.__colour_picker_callback)

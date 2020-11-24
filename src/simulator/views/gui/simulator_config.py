@@ -126,17 +126,16 @@ class SimulatorConfig():
         "Fast": (0.16, 20)
     }
 
-
     def __init__(self, services: Services):
         self.__services = services
         self.__services.ev_manager.register_listener(self)
         self.__base = self.__services.graphics.window
-        self.__text = "Important runtime commands:\n \n* t - find the path between the agent and goal\n\n" \
-                      "* mouse click - moves agent to mouse location \n\n* mouse right click - moves goal to" \
-                      " mouse location\n\n* x - stop trace animation (animations required)\n\n* r - resume trace animation  (" \
-                      "animations required)\n\n* m - toggle map between Sparse and Dense\n\n* o - take a default screenshot of " \
-                      "the map\n\n* p - take a custom screenshot of the scene\n\n* w, a, s, d " \
-                      "- orbit around the map\n\n* c, v - toggle Simulator Configuration / View Editor"
+        self.__text = " t - find the path between the agent and goal\n\n" \
+                      " mouse click - moves agent to mouse location \n\n mouse right click - moves goal to" \
+                      " mouse location\n\n x - toggle trace animation (animations required)\n\n" \
+                      " m - toggle map between Sparse and Dense\n\n o - take a default screenshot of " \
+                      "the map\n\n p - take a custom screenshot of the scene\n\n w, a, s, d " \
+                      "- orbit around the map\n\n c, v - toggle Simulator Configuration / View Editor"
 
         self.__algorithms = {
             "A*": (AStar, AStarTesting, ([], {})),
@@ -146,7 +145,8 @@ class SimulatorConfig():
             "CAE Online LSTM": (
                 OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"})),
             "Online LSTM": (OnlineLSTM, BasicTesting, (
-                [], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"})),
+                [],
+                {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"})),
             "SPRM": (SPRM, BasicTesting, ([], {})),
             "RT": (RT, BasicTesting, ([], {})),
             "RRT": (RRT, BasicTesting, ([], {})),
@@ -209,13 +209,13 @@ class SimulatorConfig():
                                borderWidth=(0.0, 0.0),
                                frameColor=WINDOW_BG_COLOUR,
                                pos=(-1, 0.5, 0.5),
-                               frameSize=(-1.7, 1.3, -5.97, 0.85)
+                               frameSize=(-1.7, 1.3, -5.15, 0.85)
                                )
         # spacer #
         DirectFrame(parent=self.__window.frame,
                     borderWidth=(.0, .0),
                     frameColor=WIDGET_BG_COLOUR,
-                    frameSize=(-1.4, 1.4, -0.01, 0.01),
+                    frameSize=(-1.4, 1.4, -0.011, 0.011),
                     pos=(-0.2, 0.0, 0.4))
         DirectFrame(parent=self.__window.frame,
                     borderWidth=(.0, .0),
@@ -307,18 +307,6 @@ class SimulatorConfig():
                                        borderWidth=(.0, .0),
                                        pos=(-1.4, 0.4, -1.5),
                                        scale=(0.17, 1.09, 0.13))
-        self.entry_agent = DirectEntry(parent=self.__window.frame,
-                                       text="",
-                                       scale=0.12,
-                                       #command=do_some_logic_here,
-                                       pos=(-0.7, 0.4, -1.5),
-                                       initialText="x",
-                                       numLines=1,
-                                       width=1.2,
-                                       focus=1,
-                                       text_align=TextNode.ACenter,
-                                       focusInCommand=self.clear_text
-                                       )
 
         self.goal_label = DirectLabel(parent=self.__window.frame,
                                       text="Goal:",
@@ -329,6 +317,25 @@ class SimulatorConfig():
                                       borderWidth=(.0, .0),
                                       pos=(-1.4, 0.4, -2),
                                       scale=(0.17, 1.09, 0.13))
+
+        # Creating goal and agent's entry fields
+        self.__entries = []
+        self.__xyz = ['x', 'y', 'z']
+        for i in range(0, 6):
+            self.__entries.append(DirectEntry(parent=self.__window.frame,
+                                              text="",
+                                              scale=0.12,
+                                              # command=do_some_logic_here,
+                                              pos=(-0.22 + (i % 3) * 0.562, 0.4, -1.5 - 0.5 * (i // 3)),
+                                              initialText=self.__xyz[i % 3],
+                                              numLines=1,
+                                              width=3,
+                                              # focus=1,
+                                              text_align=TextNode.ACenter,
+                                              # focusInCommand=self.clear_text, #clears text on click
+                                              # extraArgs=[i]
+                                              ))
+
         self.__maps_option = DirectOptionMenu(text="options",
                                               scale=0.14,
                                               parent=self.__window.frame,
@@ -355,7 +362,6 @@ class SimulatorConfig():
                                                     pos=(-0.1, 0.4, -1),
                                                     highlightColor=(0.65, 0.65, 0.65, 1),
                                                     textMayChange=1)
-
 
         self._update_frame = DirectFrame(parent=self.__window.frame,
                                          frameColor=WHITE,
@@ -389,7 +395,6 @@ class SimulatorConfig():
             parent=self.__window.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
-
 
         # setup state & use saved state if possible
         for so in self.__services.state.objects:
@@ -430,8 +435,8 @@ class SimulatorConfig():
         self.__animations_option.set(self.__animation_keys.index(self.__state.ani))
         self.__services.ev_manager.post(ResetEvent())
 
-    def clear_text(self):
-        self.entry_agent.enterText('')
+    def clear_text(self, i):
+        self.__entries[i].enterText('')
 
     def notify(self, event: Event) -> None:
         if isinstance(event, ToggleSimulatorConfigEvent):
