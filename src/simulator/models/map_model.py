@@ -68,8 +68,9 @@ class MapModel(Model):
                 self.requires_key_frame = False
                 self.cv.notify_all()
                 self.cv.wait_for(lambda: self.last_thread is None, timeout=0.8)
-            self._services.ev_manager.post(KeyFrameEvent(refresh=True))
             self.requires_key_frame = False
+            if self.last_thread is None:
+                self._services.ev_manager.post(KeyFrameEvent(refresh=True))
 
     def move(self, to: Point) -> None:
         self.reset()
