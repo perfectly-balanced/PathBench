@@ -8,8 +8,6 @@ import copy
 import sys
 import argparse
 
-from os import sys
-
 from algorithms.configuration.configuration import Configuration
 from algorithms.lstm.trainer import Trainer
 from analyzer.analyzer import Analyzer
@@ -127,7 +125,6 @@ def main() -> bool:
     args = parser.parse_args()
     print("args:{}".format(args))
     return configure_and_run(args)
-
 
 if __name__ == "__main__":
     ret = main()
