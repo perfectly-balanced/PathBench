@@ -57,10 +57,10 @@ class Services:
         if self.__settings.simulator_graphics:
             self.__graphics = GraphicsManager(self)
 
-    def reinit(self) -> None:
+    def reinit(self, refresh_map: bool = False) -> None:
         from simulator.services.algorithm_runner import AlgorithmRunner
         self.__algorithm_runner = AlgorithmRunner(self)
-        self.__algorithm_runner.reset_algorithm()
+        self.__algorithm_runner.reset_algorithm(refresh_map)
         self.ev_manager.post(ReinitEvent())
 
     @property

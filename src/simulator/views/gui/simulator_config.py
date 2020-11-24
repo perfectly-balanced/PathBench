@@ -4,7 +4,7 @@ from direct.showbase.ShowBase import ShowBase
 
 from typing import Tuple, Union, List, Any, Dict
 
-from structures import WHITE, TRANSPARENT
+from structures import Point, WHITE, TRANSPARENT
 from constants import DATA_PATH
 
 from simulator.services.services import Services
@@ -95,12 +95,9 @@ class SimulatorConfig():
     __window: Window
 
     __maps = {
-        # "uniform_random_fill_10/0" is a directory. 0.pickle inside the uniform_random_fill_10 folder inside ./src/resources/maps
         "Uniform Random Fill": ("uniform_random_fill_10/0", True),
         "Block": ("block_map_10/6", True),
         "House": ("house_10/6", True),
-        # Maps.grid_map_labyrinth2 is a map defined inside Maps class
-        # "Long Wall": (Maps.grid_map_labyrinth2, True),
         "Long Wall": (Maps.grid_map_one_obstacle1, True),
         "Labyrinth": (Maps.grid_map_labyrinth, True),
         "3D Cube": (Maps.grid_map_3d_example, True),
@@ -320,30 +317,25 @@ class SimulatorConfig():
 
         # Creating goal and agent's entry fields
         self.__entries = []
-        self.__xyz = ['x', 'y', 'z']
         for i in range(0, 6):
             self.__entries.append(DirectEntry(parent=self.__window.frame,
                                               text="",
                                               scale=0.12,
-                                              # command=do_some_logic_here,
                                               pos=(-0.24 + (i % 3) * 0.57, 0.4, -1.5 - 0.5 * (i // 3)),
-                                              initialText=self.__xyz[i % 3],
                                               numLines=1,
                                               width=3,
-                                              # focus=1,
                                               text_align=TextNode.ACenter,
-                                              # focusInCommand=self.clear_text, #clears text on click
-                                              # extraArgs=[i]
                                               ))
 
         self.__maps_option = DirectOptionMenu(text="options",
                                               scale=0.14,
                                               parent=self.__window.frame,
-                                              initialitem=1,
+                                              initialitem=self.__map_keys.index("Labyrinth"),
                                               items=self.__map_keys,
                                               pos=(-0.65, 0.4, 0.),
                                               highlightColor=(0.65, 0.65, 0.65, 1),
-                                              textMayChange=1)
+                                              textMayChange=1,
+                                              command=self.__use_default_map_positions)
 
         self.__algorithms_option = DirectOptionMenu(text="options",
                                                     scale=0.14,
@@ -400,15 +392,19 @@ class SimulatorConfig():
         for so in self.__services.state.objects:
             if isinstance(so, SimulatorConfigState):
                 self.__state = so
+                cmd = self.__maps_option['command']
                 self.__maps_option.set(self.__map_keys.index(so.mp))
+                self.__maps_option['command'] = cmd
                 self.__algorithms_option.set(self.__algorithm_keys.index(so.algo))
                 self.__animations_option.set(self.__animation_keys.index(so.ani))
+                self.__update_position_entries()
                 return
 
         self.__state = SimulatorConfigState()
         self.__state.mp = self.__maps_option.get()
         self.__state.algo = self.__algorithms_option.get()
         self.__state.ani = self.__animations_option.get()
+        self.__use_default_map_positions()
         self.__services.state.add(self.__state)
 
     def __update_simulator_callback(self) -> None:
@@ -416,18 +412,50 @@ class SimulatorConfig():
         algo = self.__algorithms[self.__algorithms_option.get()]
         ani = self.__animations[self.__animations_option.get()]
 
-        # save state
+        # load up map if necessary
+        # occurs when initial map
+        # is a string.
+        if isinstance(mp[0], str):
+            i = self.__maps_option.get()
+            self.__maps[i] = (self.__services.resources.maps_dir.load(mp[0]), self.__maps[i][1])
+            mp[0] = self.__maps[i][0]
+        
+        # update state
         self.__state.mp = self.__maps_option.get()
         self.__state.algo = self.__algorithms_option.get()
         self.__state.ani = self.__animations_option.get()
+
+        def deduce_pos(default, entries) -> Point:
+            nonlocal mp
+            vs = []
+            for i in range(default.n_dim):
+                s = entries[i].get()
+                vs.append(int(s) if s else default[i])
+            p = Point(*vs)
+            return p if mp[0].is_agent_valid_pos(p) else default
+
+        self.__state.agent = deduce_pos(mp[0].agent.position, self.__entries[:3])
+        self.__state.goal = deduce_pos(mp[0].goal.position, self.__entries[3:])
+        self.__update_position_entries()  # update if user-provided point was invalid
+
+        # save state
         self.__services.state.save()
 
+        # launch simulation
         config = self.__services.settings
-        config.simulator_initial_map, config.simulator_grid_display = mp  # Optional[Union[str, Map]], bool
-        # Optional[Type[Algorithm]],Optional[Type[BasicTesting]], Tuple[List, Dict]
+
+        refresh_map = (self.__state.agent != mp[0].agent.position) or \
+                      (self.__state.goal != mp[0].goal.position) or \
+                      (mp[0] != config.simulator_initial_map)
+
+        if refresh_map:
+            mp[0].move(mp[0].agent, self.__state.agent, True)
+            mp[0].move(mp[0].goal, self.__state.goal, True)
+        
+        config.simulator_initial_map, config.simulator_grid_display = mp
         config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = algo
-        config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani  # int, int
-        self.__services.reinit()
+        config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani
+        self.__services.reinit(refresh_map=refresh_map)
 
     def __reset_simulator_callback(self) -> None:
         self.__maps_option.set(self.__map_keys.index(self.__state.mp))
@@ -435,8 +463,36 @@ class SimulatorConfig():
         self.__animations_option.set(self.__animation_keys.index(self.__state.ani))
         self.__services.ev_manager.post(ResetEvent())
 
-    def clear_text(self, i):
-        self.__entries[i].enterText('')
+    def __use_default_map_positions(self, *discard) -> None:
+        m = self.__maps[self.__maps_option.get()][0]
+        
+        # load up map if necessary
+        if isinstance(m, str):
+            i = self.__maps_option.get()
+            self.__maps[i] = (self.__services.resources.maps_dir.load(m), self.__maps[i][1])
+            m = self.__maps[i][0]
+        
+        self.__state.agent = m.agent.position
+        self.__state.goal = m.goal.position
+        self.__update_position_entries()
+
+    def __update_position_entries(self) -> None:
+        def update_entries(entries, pos):
+            entries[0].enterText(str(pos[0]))
+            entries[1].enterText(str(pos[1]))
+            if pos.n_dim == 3:
+                entries[2].enterText(str(pos[2]))
+                entries[2].show()
+            else:
+                entries[2].hide()
+
+        update_entries(self.__entries[:3], self.__state.agent)
+        update_entries(self.__entries[3:], self.__state.goal)
+
+        # user has performed an action such as pressing a
+        # button, therefore all entries should lose focus
+        for e in self.__entries:
+            e['focus'] = False
 
     def notify(self, event: Event) -> None:
         if isinstance(event, ToggleSimulatorConfigEvent):
