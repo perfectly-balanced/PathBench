@@ -583,7 +583,7 @@ class ViewEditor():
         self.__window = Window(self.__base, "view_editor",
                                borderWidth=(0.0, 0.0),
                                frameColor=WINDOW_BG_COLOUR,
-                               pos=(1.2, 0.5, 0.5),
+                               pos=(1.1, 0.5, 0.5),
                                frameSize=(-1.1, 1.1, -5.82, 1.56)
                                )
 

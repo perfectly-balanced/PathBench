@@ -1,5 +1,5 @@
 from panda3d.core import PNMImage, TextNode
-from direct.gui.DirectGui import DirectFrame, DirectButton, DirectLabel, DGG, DirectOptionMenu
+from direct.gui.DirectGui import DirectFrame, DirectButton, DirectLabel, DirectEntry, DGG, DirectOptionMenu
 from direct.showbase.ShowBase import ShowBase
 
 from typing import Tuple, Union, List, Any, Dict
@@ -126,13 +126,6 @@ class SimulatorConfig():
         "Fast": (0.16, 20)
     }
 
-    __debug = {
-        "None": (0),
-        "Basic": (0),
-        "Low": (0),
-        "Medium": (0),
-        "High": (0)
-    }
 
     def __init__(self, services: Services):
         self.__services = services
@@ -216,7 +209,7 @@ class SimulatorConfig():
                                borderWidth=(0.0, 0.0),
                                frameColor=WINDOW_BG_COLOUR,
                                pos=(-1, 0.5, 0.5),
-                               frameSize=(-1.7, 1.3, -4.97, 0.85)
+                               frameSize=(-1.7, 1.3, -5.97, 0.85)
                                )
         # spacer #
         DirectFrame(parent=self.__window.frame,
@@ -228,7 +221,7 @@ class SimulatorConfig():
                     borderWidth=(.0, .0),
                     frameColor=WIDGET_BG_COLOUR,
                     frameSize=(-1.4, 1.4, -0.01, 0.01),
-                    pos=(-0.2, 0.0, -2.46))
+                    pos=(-0.2, 0.0, -2.96))
 
         self.sim_config = DirectLabel(parent=self.__window.frame,
                                       text="Simulator Configuration",
@@ -276,7 +269,7 @@ class SimulatorConfig():
                                             frameColor=WINDOW_BG_COLOUR,
                                             text_align=TextNode.ALeft,
                                             borderWidth=(.0, .0),
-                                            pos=(-1.55, 0.0, -2.7),
+                                            pos=(-1.55, 0.0, -3.2),
                                             scale=(0.11, 1.1, 0.11))
         self.map_label = DirectLabel(parent=self.__window.frame,
                                      text="Map:",
@@ -305,8 +298,8 @@ class SimulatorConfig():
                                            borderWidth=(.0, .0),
                                            pos=(-1.4, 0.4, -1),
                                            scale=(0.17, 1.09, 0.13))
-        self.debug_label = DirectLabel(parent=self.__window.frame,
-                                       text="Debug Level:",
+        self.agent_label = DirectLabel(parent=self.__window.frame,
+                                       text="Agent:",
                                        text_fg=WHITE,
                                        text_bg=WINDOW_BG_COLOUR,
                                        frameColor=WINDOW_BG_COLOUR,
@@ -314,7 +307,28 @@ class SimulatorConfig():
                                        borderWidth=(.0, .0),
                                        pos=(-1.4, 0.4, -1.5),
                                        scale=(0.17, 1.09, 0.13))
+        self.entry_agent = DirectEntry(parent=self.__window.frame,
+                                       text="",
+                                       scale=0.12,
+                                       #command=do_some_logic_here,
+                                       pos=(-0.7, 0.4, -1.5),
+                                       initialText="x",
+                                       numLines=1,
+                                       width=1.2,
+                                       focus=1,
+                                       text_align=TextNode.ACenter,
+                                       focusInCommand=self.clear_text
+                                       )
 
+        self.goal_label = DirectLabel(parent=self.__window.frame,
+                                      text="Goal:",
+                                      text_fg=WHITE,
+                                      text_bg=WINDOW_BG_COLOUR,
+                                      frameColor=WINDOW_BG_COLOUR,
+                                      text_align=TextNode.ALeft,
+                                      borderWidth=(.0, .0),
+                                      pos=(-1.4, 0.4, -2),
+                                      scale=(0.17, 1.09, 0.13))
         self.__maps_option = DirectOptionMenu(text="options",
                                               scale=0.14,
                                               parent=self.__window.frame,
@@ -342,25 +356,17 @@ class SimulatorConfig():
                                                     highlightColor=(0.65, 0.65, 0.65, 1),
                                                     textMayChange=1)
 
-        self.__debug_option = DirectOptionMenu(text="options",
-                                               scale=0.14,
-                                               parent=self.__window.frame,
-                                               initialitem=0,
-                                               items=list(self.__debug.keys()),
-                                               pos=(-0.1, 0.4, -1.5),
-                                               highlightColor=(0.65, 0.65, 0.65, 1),
-                                               textMayChange=1)
 
         self._update_frame = DirectFrame(parent=self.__window.frame,
                                          frameColor=WHITE,
-                                         pos=(-1, 0.4, -2.1),
+                                         pos=(-1, 0.4, -2.6),
                                          borderWidth=(0.25, 0.15),
                                          frameSize=(-0.5, 0.95, -0.54, 0.54),
                                          scale=(0.50, 3.1, 0.25))
 
         self._reset_frame = DirectFrame(parent=self.__window.frame,
                                         frameColor=WHITE,
-                                        pos=(0.412, 0.4, -2.1),
+                                        pos=(0.412, 0.4, -2.6),
                                         borderWidth=(0.25, 0.15),
                                         frameSize=(-0.5, 0.92, -0.54, 0.54),
                                         scale=(0.50, 3.1, 0.25))
@@ -369,7 +375,7 @@ class SimulatorConfig():
             text_fg=(0.3, 0.3, 0.3, 1.0),
             pressEffect=1,
             command=self.__update_simulator_callback,
-            pos=(-0.9, 0.4, -2.15),
+            pos=(-0.9, 0.4, -2.65),
             parent=self.__window.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
@@ -379,10 +385,11 @@ class SimulatorConfig():
             text_fg=(0.4, 0.3, 0.3, 1.0),
             pressEffect=1,
             command=self.__reset_simulator_callback,
-            pos=(0.51, 0.4, -2.15),
+            pos=(0.51, 0.4, -2.65),
             parent=self.__window.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
+
 
         # setup state & use saved state if possible
         for so in self.__services.state.objects:
@@ -422,6 +429,9 @@ class SimulatorConfig():
         self.__algorithms_option.set(self.__algorithm_keys.index(self.__state.algo))
         self.__animations_option.set(self.__animation_keys.index(self.__state.ani))
         self.__services.ev_manager.post(ResetEvent())
+
+    def clear_text(self):
+        self.entry_agent.enterText('')
 
     def notify(self, event: Event) -> None:
         if isinstance(event, ToggleSimulatorConfigEvent):
