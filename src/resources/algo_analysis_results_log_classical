@@ -1,23 +1,23 @@
 
-[2020-08-05 15:26:03] - Starting basic analysis: number of maps = 45, number of algorithms = 2
+[2020-11-20 15:43:42] - Starting basic analysis: number of maps = 45, number of algorithms = 2
 
-[2020-08-05 15:26:03] - 0. A*
-[2020-08-05 15:26:03] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0%)
-[2020-08-05 15:26:03] - Average total steps: 17.42, (A*: 17.42), (Improvement: 0%)
-[2020-08-05 15:26:03] - Average total distance: 8.94, (A*: 8.94), (Improvement: 0%)
-[2020-08-05 15:26:03] - Average time: 0.0031 seconds, (A*: 0.0031 seconds), (Improvement: 0%)
-[2020-08-05 15:26:03] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 8.01)
-[2020-08-05 15:26:03] - Average search space (no fringe): 6.85%
-[2020-08-05 15:26:03] - Average fringe: 10.62%
-[2020-08-05 15:26:03] - Average total search space: 17.47%
+[2020-11-20 15:43:42] - 0. A*
+[2020-11-20 15:43:47] - Rate of success: 100.0%, (A*: 100.0%), (Improvement: 0.0%)
+[2020-11-20 15:43:47] - Average total steps: 17.42, (A*: 17.42), (Improvement: -0.0%)
+[2020-11-20 15:43:47] - Average total distance: 8.94, (A*: 8.94), (Improvement: -0.0%)
+[2020-11-20 15:43:47] - Average time: 0.07 seconds, (A*: 0.07 seconds), (Improvement: -0.0%)
+[2020-11-20 15:43:47] - Average distance from goal: 0.0, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 8.01)
+[2020-11-20 15:43:47] - Average search space (no fringe): 6.81%
+[2020-11-20 15:43:47] - Average fringe: 10.41%
+[2020-11-20 15:43:47] - Average total search space: 17.21%
 
 
-[2020-08-05 15:26:03] - 1. VIN
-[2020-08-05 15:26:14] - Rate of success: 80.0%, (A*: 100.0%), (Improvement: -20.0%)
-[2020-08-05 15:26:14] - Average total steps: 103.64, (A*: 14.94), (Improvement: -593.71%)
-[2020-08-05 15:26:14] - Average total distance: 7.86, (A*: 7.67), (Improvement: -2.48%)
-[2020-08-05 15:26:14] - Average time: 0.1495 seconds, (A*: 0.0027 seconds), (Improvement: -5437.04%)
-[2020-08-05 15:26:14] - Average distance from goal: 2.49, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 8.01)
+[2020-11-20 15:43:47] - 1. VIN
+[2020-11-20 15:44:46] - Rate of success: 51.11%, (A*: 100.0%), (Improvement: -48.89%)
+[2020-11-20 15:44:46] - Average total steps: 103.78, (A*: 14.09), (Improvement: -636.55%)
+[2020-11-20 15:44:46] - Average total distance: 8.03, (A*: 7.3), (Improvement: -10.0%)
+[2020-11-20 15:44:46] - Average time: 0.4925 seconds, (A*: 0.06 seconds), (Improvement: -720.83%)
+[2020-11-20 15:44:46] - Average distance from goal: 3.8, (A*: 0.0), (Improvement: 0%) (Average original distance from goal: 8.01)
 
 
 \begin{table}[] 
@@ -42,9 +42,9 @@
 \hline
 \textbf{Nr.} & \textbf{Success Rate} & \textbf{Distance} & \textbf{Time} & \textbf{Distance Left}\\
 \hline
-0 & 100.0\% (I: 0\%) & 8.94 (A*: 8.94) (I: 0\%) & 0.0031s & 0.0\\
+0 & 100.0\% (I: 0.0\%) & 8.94 (A*: 8.94) (I: -0.0\%) & 0.07s & 0.0\\
 \hline
-1 & 80.0\% (I: -20.0\%) & 7.86 (A*: 7.67) (I: -2.48\%) & 0.1495s & 2.49\\
+1 & 51.11\% (I: -48.89\%) & 8.03 (A*: 7.3) (I: -10.0\%) & 0.4925s & 3.8\\
 \hline
 \end{tabular}
 
@@ -73,7 +73,7 @@
 \hline
 \textbf{Nr.} & \textbf{Total Search} & \textbf{Total Fringe} & \textbf{Session Search} & \textbf{Session Fringe}\\
 \hline
-0 & 17.47\% & 10.62\% & 17.47\% & 10.62\%\\
+0 & 17.21\% & 10.41\% & 17.21\% & 10.41\%\\
 \hline
 \end{tabular}
 

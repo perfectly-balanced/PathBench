@@ -293,12 +293,13 @@ class Generator:
             return all([pos[i] >= 0 and pos[i] < grid.shape[i] for i in range(len(grid.shape))])
 
         def __place_room(grid: np.array, size: Size, top_left_corner: Point) -> None:
-            for index in np.ndindex(*size):
+            size_exc = tuple(x - 1 for x in size)
+            for index in np.ndindex(*size_exc):
                 p = [elem + top_left_corner[i] for i, elem in enumerate(index)]
                 if in_bounds(Point(*p)):
                     grid[tuple(p)] = DenseMap.CLEAR_ID
                 for i in range(len(size)):
-                    if index[i] == top_left_corner[i] or index[i] == top_left_corner[i] + size[i] - 1:
+                    if p[i] == top_left_corner[i] or p[i] == top_left_corner[i] + size[i] - 1:
                         if in_bounds(Point(*p)):
                             grid[tuple(p)] = DenseMap.WALL_ID
 
@@ -441,7 +442,9 @@ class Generator:
                             edges.append(q)
                         q += 1
 
-                for index in product([room_top_left_point[0] + i for i in range(room_size[0])], [room_top_left_point[1] + i for i in range(room_size[1])], [room_top_left_point[2], room_top_left_point[2] + room_size[2] - 1]):
+                for index in product([room_top_left_point[0] + i for i in range(room_size[0])], 
+                                     [room_top_left_point[1] + i for i in range(room_size[1])], 
+                                     [room_top_left_point[2], room_top_left_point[2] + room_size[2] - 1]):
                     if in_bounds(Point(*index)):
                         full_edge.append(Point(*index))
                         n_x, n_y = index[0], index[1]

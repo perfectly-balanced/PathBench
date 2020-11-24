@@ -97,9 +97,9 @@ class Configuration:
         self.generator_modify = None
         self.generator_show_gen_sample = False
         self.generator_house_expo = False
-        self.generator_size = 8
+        self.generator_size = 28
         
-        self.num_dim = 2
+        self.num_dim = 3
         
         # Trainer
         self.trainer = False
