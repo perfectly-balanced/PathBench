@@ -278,7 +278,7 @@ class SimulatorConfig():
                                      text_align=TextNode.ALeft,
                                      frameColor=WINDOW_BG_COLOUR,
                                      borderWidth=(.0, .0),
-                                     pos=(-1.4, 0.4, 0.),
+                                     pos=(-1.52, 0.4, 0.),
                                      scale=(0.17, 1.09, 0.13))
         self.algo_label = DirectLabel(parent=self.__window.frame,
                                       text="Algorithm:",
@@ -287,7 +287,7 @@ class SimulatorConfig():
                                       frameColor=WINDOW_BG_COLOUR,
                                       text_align=TextNode.ALeft,
                                       borderWidth=(.0, .0),
-                                      pos=(-1.4, 0.4, -0.5),
+                                      pos=(-1.52, 0.4, -0.5),
                                       scale=(0.17, 1.09, 0.13))
         self.animation_label = DirectLabel(parent=self.__window.frame,
                                            text="Animation:",
@@ -296,7 +296,7 @@ class SimulatorConfig():
                                            frameColor=WINDOW_BG_COLOUR,
                                            text_align=TextNode.ALeft,
                                            borderWidth=(.0, .0),
-                                           pos=(-1.4, 0.4, -1),
+                                           pos=(-1.52, 0.4, -1),
                                            scale=(0.17, 1.09, 0.13))
         self.agent_label = DirectLabel(parent=self.__window.frame,
                                        text="Agent:",
@@ -305,7 +305,7 @@ class SimulatorConfig():
                                        frameColor=WINDOW_BG_COLOUR,
                                        text_align=TextNode.ALeft,
                                        borderWidth=(.0, .0),
-                                       pos=(-1.4, 0.4, -1.5),
+                                       pos=(-1.52, 0.4, -1.5),
                                        scale=(0.17, 1.09, 0.13))
 
         self.goal_label = DirectLabel(parent=self.__window.frame,
@@ -315,7 +315,7 @@ class SimulatorConfig():
                                       frameColor=WINDOW_BG_COLOUR,
                                       text_align=TextNode.ALeft,
                                       borderWidth=(.0, .0),
-                                      pos=(-1.4, 0.4, -2),
+                                      pos=(-1.52, 0.4, -2),
                                       scale=(0.17, 1.09, 0.13))
 
         # Creating goal and agent's entry fields
@@ -326,7 +326,7 @@ class SimulatorConfig():
                                               text="",
                                               scale=0.12,
                                               # command=do_some_logic_here,
-                                              pos=(-0.22 + (i % 3) * 0.562, 0.4, -1.5 - 0.5 * (i // 3)),
+                                              pos=(-0.24 + (i % 3) * 0.57, 0.4, -1.5 - 0.5 * (i // 3)),
                                               initialText=self.__xyz[i % 3],
                                               numLines=1,
                                               width=3,
@@ -359,7 +359,7 @@ class SimulatorConfig():
                                                     parent=self.__window.frame,
                                                     initialitem=0,
                                                     items=self.__animation_keys,
-                                                    pos=(-0.1, 0.4, -1),
+                                                    pos=(-0.45, 0.4, -1),
                                                     highlightColor=(0.65, 0.65, 0.65, 1),
                                                     textMayChange=1)
 
