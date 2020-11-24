@@ -4,6 +4,8 @@ import time
 from algorithms.configuration.maps.sparse_map import SparseMap
 from simulator.models.model import Model
 from simulator.services.debug import DebugLevel
+from simulator.services.event_manager.events.event import Event
+from simulator.services.event_manager.events.reset_event import ResetEvent
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
 from simulator.services.services import Services
 from simulator.services.timer import Timer
@@ -89,7 +91,7 @@ class MapModel(Model):
     @property
     def requires_key_frame(self) -> bool:
         return self._services.algorithm.instance.testing is not None and self._services.algorithm.instance.testing.requires_key_frame
-    
+
     @requires_key_frame.setter
     def requires_key_frame(self, value) -> None:
         if self._services.algorithm.instance.testing is not None:
@@ -126,7 +128,8 @@ class MapModel(Model):
             try:
                 self._services.algorithm.instance.find_path()
             except AlgorithmTerminated:
-                self._services.debug.write("Algorithm terminated")
+                print("Terminated algorithm")
+                self._services.ev_manager.post(KeyFrameEvent(refresh=True))
             if self._services.settings.simulator_key_frame_speed == 0:
                 # no animation hence there hasn't been a chance to render
                 # the last state of the algorithm.
@@ -153,3 +156,11 @@ class MapModel(Model):
         self._services.debug.write("Done converting. Total time: " + str(timer.stop()), DebugLevel.BASIC)
         self._services.debug.write(self._services.algorithm.map, DebugLevel.MEDIUM)
         self._services.ev_manager.post(KeyFrameEvent())
+
+    def notify(self, event: Event) -> None:
+        """
+        Called by an event in the message queue.
+        """
+
+        if isinstance(event, ResetEvent):
+            self.reset()

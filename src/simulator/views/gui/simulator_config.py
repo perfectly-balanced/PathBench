@@ -9,6 +9,7 @@ from constants import DATA_PATH
 
 from simulator.services.services import Services
 from simulator.services.event_manager.events.event import Event
+from simulator.services.event_manager.events.reset_event import ResetEvent
 from simulator.services.event_manager.events.toggle_simulator_config_event import ToggleSimulatorConfigEvent
 
 from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
@@ -207,6 +208,11 @@ class SimulatorConfig():
                 # "OMPL pSBL": (OMPL_pSBL, BasicTesting, ([], {})),
                 # "OMPL QRRT": (OMPL_QRRT, BasicTesting, ([], {})),
             })
+
+        self.__map_keys = list(self.__maps.keys())
+        self.__algorithm_keys = list(self.__algorithms.keys())
+        self.__animation_keys = list(self.__animations.keys())
+
         self._zoom = 1 / 5
 
         self.__window_config = Window(self.__base, "simulator_config",
@@ -318,7 +324,7 @@ class SimulatorConfig():
                                               scale=0.14,
                                               parent=self.__window_config.frame,
                                               initialitem=1,
-                                              items=list(self.__maps.keys()),
+                                              items=self.__map_keys,
                                               pos=(-0.65, 0.4, 0.),
                                               highlightColor=(0.65, 0.65, 0.65, 1),
                                               textMayChange=1)
@@ -327,7 +333,7 @@ class SimulatorConfig():
                                                     scale=0.14,
                                                     parent=self.__window_config.frame,
                                                     initialitem=1,
-                                                    items=list(self.__algorithms.keys()),
+                                                    items=self.__algorithm_keys,
                                                     pos=(-0.46, 0.4, -0.5),
                                                     highlightColor=(0.65, 0.65, 0.65, 1),
                                                     textMayChange=1)
@@ -336,7 +342,7 @@ class SimulatorConfig():
                                                     scale=0.14,
                                                     parent=self.__window_config.frame,
                                                     initialitem=0,
-                                                    items=list(self.__animations.keys()),
+                                                    items=self.__animation_keys,
                                                     pos=(-0.1, 0.4, -1),
                                                     highlightColor=(0.65, 0.65, 0.65, 1),
                                                     textMayChange=1)
@@ -367,7 +373,7 @@ class SimulatorConfig():
             text="Update",
             text_fg=(0.3, 0.3, 0.3, 1.0),
             pressEffect=1,
-            command=self.__start_simulator_callback,
+            command=self.__update_simulator_callback,
             pos=(-0.9, 0.4, -2.15),
             parent=self.__window_config.frame,
             scale=(0.20, 2.1, 0.15),
@@ -377,7 +383,7 @@ class SimulatorConfig():
             text="Reset",
             text_fg=(0.4, 0.3, 0.3, 1.0),
             pressEffect=1,
-            command=self.__start_simulator_callback,
+            command=self.__reset_simulator_callback,
             pos=(0.51, 0.4, -2.15),
             parent=self.__window_config.frame,
             scale=(0.20, 2.1, 0.15),
@@ -387,11 +393,11 @@ class SimulatorConfig():
         for so in self.__services.state.objects:
             if isinstance(so, SimulatorConfigState):
                 self.__state = so
-                self.__maps_option.set(list(self.__maps.keys()).index(so.mp))
-                self.__algorithms_option.set(list(self.__algorithms.keys()).index(so.algo))
-                self.__animations_option.set(list(self.__animations.keys()).index(so.ani))
+                self.__maps_option.set(self.__map_keys.index(so.mp))
+                self.__algorithms_option.set(self.__algorithm_keys.index(so.algo))
+                self.__animations_option.set(self.__animation_keys.index(so.ani))
                 return
-        
+
         self.__state = SimulatorConfigState()
         self.__state.mp = self.__maps_option.get()
         self.__state.algo = self.__algorithms_option.get()
@@ -414,7 +420,7 @@ class SimulatorConfig():
             self.__window_config.frame.show()
             self.hidden_config = False
 
-    def __start_simulator_callback(self) -> None:
+    def __update_simulator_callback(self) -> None:
         mp = self.__maps[self.__maps_option.get()]
         algo = self.__algorithms[self.__algorithms_option.get()]
         ani = self.__animations[self.__animations_option.get()]
@@ -430,7 +436,13 @@ class SimulatorConfig():
         # Optional[Type[Algorithm]],Optional[Type[BasicTesting]], Tuple[List, Dict]
         config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = algo
         config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani  # int, int
-        self.__services.reset()
+        self.__services.reinit()
+
+    def __reset_simulator_callback(self) -> None:
+        self.__maps_option.set(self.__map_keys.index(self.__state.mp))
+        self.__algorithms_option.set(self.__algorithm_keys.index(self.__state.algo))
+        self.__animations_option.set(self.__animation_keys.index(self.__state.ani))
+        self.__services.ev_manager.post(ResetEvent())
 
     def notify(self, event: Event) -> None:
         if isinstance(event, ToggleSimulatorConfigEvent):

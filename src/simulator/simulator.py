@@ -10,7 +10,7 @@ from simulator.models.map_model import MapModel
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
 from simulator.services.event_manager.events.event import Event
-from simulator.services.event_manager.events.reset_event import ResetEvent
+from simulator.services.event_manager.events.reinit_event import ReinitEvent
 from simulator.views.main_view import MainView
 from simulator.views.map.map_view import MapView
 from simulator.views.gui.gui_view import GuiView
@@ -123,7 +123,7 @@ Additional runtime commands:
 """, DebugLevel.BASIC, timestamp=False)
 
     def notify(self, event: Event) -> None:
-        if isinstance(event, ResetEvent):
+        if isinstance(event, ReinitEvent):
             if self.__map:
                 """
                 self.__map.stop_algorithm()
