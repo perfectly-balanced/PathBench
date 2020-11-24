@@ -145,8 +145,7 @@ class CubeMesh():
         self.__cube_default_coloured[tuple(pos)] = True
 
     def reset_all_cubes(self) -> None:
-        for x, y, z in np.ndindex(self.structure.shape):
-            p = (x, y, z)
+        for p in np.ndindex(self.structure.shape):
             if self.structure[p] and not self.__cube_default_coloured[p]:
                 self.reset_cube(p)
 
@@ -261,8 +260,7 @@ class CubeMesh():
         self.__default_colour = value
 
         # update colour of cubes that have old clear colour
-        for x, y, z in np.ndindex(self.structure.shape):
-            p = (x, y, z)
+        for p in np.ndindex(self.structure.shape):
             if self.structure[p] and self.__cube_default_coloured[p]:
                 self.reset_cube(p)
 

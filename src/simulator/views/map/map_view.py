@@ -1,15 +1,6 @@
-from time import sleep
-
-from typing import List, Any, Tuple, Optional, Union, Set
-import os
-
 from constants import DATA_PATH
-
-from heapq import heappush, heappop
-from panda3d.core import Camera
-from panda3d.core import Texture
-import time
 from algorithms.configuration.entities.entity import Entity
+from algorithms.configuration.maps.map import Map
 from simulator.models.model import Model
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
@@ -20,23 +11,26 @@ from simulator.services.event_manager.events.colour_update_event import ColourUp
 from simulator.services.event_manager.events.take_screenshot_tex_event import TakeScreenshotTexEvent
 from simulator.services.graphics.renderer import Renderer
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
+from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
 from simulator.views.map.display.numbers_map_display import NumbersMapDisplay
 from simulator.views.map.display.online_lstm_map_display import OnlineLSTMMapDisplay
-from simulator.views.view import View
-from simulator.views.util import blend_colours
-from structures import Point, Colour, TRANSPARENT, WHITE
-
 from simulator.views.map.data.map_data import MapData
 from simulator.views.map.data.voxel_map import VoxelMap
 from simulator.views.map.data.flat_map import FlatMap
+from simulator.views.util import blend_colours
+from simulator.views.view import View
 
-from panda3d.core import NodePath, GeomNode, Geom, LineSegs, TextNode, PandaNode
+from structures import Point, Colour, TRANSPARENT, WHITE
+from structures.tracked_set import TrackedSet
 
-import math
+from panda3d.core import Camera, Texture, NodePath, GeomNode, Geom, LineSegs, TextNode, PandaNode
 
 import numpy as np
 from nptyping import NDArray
+from typing import List, Any, Tuple, Optional, Union, Set
+from heapq import heappush, heappop
+import os
 
 class MapView(View):
     __world: NodePath
@@ -74,21 +68,30 @@ class MapView(View):
         self.__cube_modified = np.empty(map_data.shape, dtype=bool)
         for x, y, z in np.ndindex(map_data.shape):
             p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
-            valid = self._services.algorithm.map.is_agent_valid_pos(p)
-            self.__cube_modified[x, y, z] = valid
-            map_data[x, y, z] = not valid
+            is_wall = self._services.algorithm.map.at(p) == Map.WALL_ID
+            self.__cube_modified[x, y, z] = not is_wall
+            map_data[x, y, z] = is_wall
 
         if map_size.n_dim == 2:
             self.__map = FlatMap(self._services, map_data, self.world)
         else:
             self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
-        self.__center(self.__map.root)
+        self.__map.center()
 
         self.__overlay = self.map.root.attach_new_node("overlay")
         self.__scratch = self.map.root.attach_new_node("scratch")
         self.renderer.push_root(self.__scratch)
 
         self.__persistent_displays = [EntitiesMapDisplay(self._services)]
+
+        extended_walls = TrackedSet()
+        for x, y, z in np.ndindex(map_data.shape):
+            p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
+            if self._services.algorithm.map.at(p) == Map.EXTENDED_WALL:
+                extended_walls.add(Point(x, y, z)) # using 3D points is more efficient
+        if extended_walls:
+            dc = self._services.state.add_colour("extended wall", Colour(0.5).with_a(0.5))
+            self.__persistent_displays.append(SolidColourMapDisplay(self._services, extended_walls, dc, z_index=0))
 
         self.__deduced_traversables_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
         self.__deduced_traversables_wf_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
@@ -158,16 +161,14 @@ class MapView(View):
         elif isinstance(event, TakeScreenshotTexEvent):
             self.HDScreenShot()
 
-    def to_point3(self, v: Union[Point, Entity]):
+    def to_logical_point(self, p: Point) -> Point:
+        x, y, z = p
+        return Point(x, y) if self.map.dim == 2 else Point(x, y, z)
+
+    def to_point3(self, v: Union[Point, Entity]) -> Point:
         if isinstance(v, Entity):
             v = v.position
         return Point(*v, 0) if len(v) == 2 else v
-
-    def __center(self, np: NodePath):
-        (x1, y1, z1), (x2, y2, z2) = np.get_tight_bounds()
-        np.set_pos(self.world.getX() - (x2 - x1) / 2,
-                   self.world.getY() - (y2 - y1) / 2,
-                   self.world.getZ() - (z2 - z1) / 2)
 
     @property
     def world(self) -> NodePath:
@@ -216,8 +217,8 @@ class MapView(View):
         def eager_refresh():
             nonlocal refresh
             refresh = True
-            for x, y, z in np.ndindex(self.map.traversables_data.shape):
-                self.__cube_modified[x, y, z] = self.map.traversables_data[x, y, z]
+            for p in np.ndindex(self.map.traversables_data.shape):
+                self.__cube_modified[p] = self.map.traversables_data[p]
         
         clr = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
         if clr != self.__deduced_traversables_colour:
@@ -240,12 +241,20 @@ class MapView(View):
             for d in self.__cube_update_displays:
                 d.update_cube(p)
             set_colour(p, self.__cube_colour)
-            self.__cube_modified[p.x, p.y, p.z] = self.__cube_colour != clr
+            self.__cube_modified[tuple(p)] = self.__cube_colour != clr
 
         if refresh:
-            for x, y, z in np.ndindex(self.__cube_modified.shape):
-                if self.__cube_modified[x, y, z]:
-                    update_cube_colour(Point(x, y, z))
+            for p in np.ndindex(self.__cube_modified.shape):
+                if self.__cube_modified[p]:
+                    point = Point(*p)
+                    update_cube_colour(point)
+
+                    # we don't want to track extended walls once rendered.
+                    # Note, they will still be refreshed when traversable
+                    # (wireframe) colour changes.
+                    if self._services.algorithm.map.at(self.to_logical_point(point)) == Map.EXTENDED_WALL:
+                        self.__cube_modified[p] = False
+                        self.__cubes_requiring_update.discard(point)
         
         # update these cubes regardless of refresh
         # since it cubes that require update aren't
@@ -311,13 +320,7 @@ class MapView(View):
 
     def cube_center(self, p: Point) -> Point:
         x, y, z = self.to_point3(p)
-        x += 0.5
-        y += 0.5
-        if self._services.algorithm.map.size.n_dim == 3:
-            z -= 0.5
-        else:
-            z = 0.1 # have overlay be slightly above surface for 2D maps
-        return Point(x, y, z)
+        return Point(x + 0.5, y + 0.5, z - 0.5)
 
     def push_root(self, np: Optional[NodePath] = None) -> NodePath:
         if np is None:

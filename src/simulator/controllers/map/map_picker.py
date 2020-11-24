@@ -44,7 +44,7 @@ class MapPicker():
         self.__cnp = self.__map.root.attach_new_node(self.__cn)
         self.__ctrav.add_collider(self.__cnp, self.__cqueue)
 
-        z_offset = 1 if self.__map.dim == 3 else self.__map.square_mesh.depth
+        z_offset = 1 if self.__map.dim == 3 else self.__map.depth
         for x in range(len(self.__data)):
             for y in range(len(self.__data[x])):
                 for z in range(len(self.__data[x][y])):
@@ -89,17 +89,14 @@ class MapPicker():
 
         # compute & return logical cube position
         x, y, z = self.__cqueue.get_entry(0).getSurfacePoint(self.__map.root)
-        if self.__map.dim == 2 and math.isclose(z, -self.__map.square_mesh.depth, rel_tol=1e-3):
-            return None  # no picking from underneath
-        pos = [max(math.floor(x), 0), max(math.floor(y), 0), max(math.ceil(z), 0)]
-        if pos[0] == len(self.__data):
-            pos[0] -= 1
-        if pos[1] == len(self.__data[pos[0]]):
-            pos[1] -= 1
-        if pos[2] == len(self.__data[pos[0]][pos[1]]):
-            pos[2] -= 1
-        pos = Point(*pos)
-        return pos
+        x, y, z = [max(math.floor(x), 0), max(math.floor(y), 0), max(math.ceil(z), 0)]
+        if x == len(self.__data):
+            x -= 1
+        if y == len(self.__data[x]):
+            y -= 1
+        if z == len(self.__data[x][y]):
+            z -= 1
+        return Point(x, y, z)
 
     def destroy(self) -> None:
         self.__cqueue.clearEntries()

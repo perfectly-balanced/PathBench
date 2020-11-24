@@ -96,6 +96,13 @@ class MapData(ABC):
             callback(dc)
         return dc
     
+    def center(self) -> None:
+        world = self.root.get_parent()
+        (x1, y1, z1), (x2, y2, z2) = self.root.get_tight_bounds()
+        self.root.set_pos(world.getX() - (x2 - x1) / 2,
+                          world.getY() - (y2 - y1) / 2,
+                          world.getZ() - (z2 - z1) / 2)
+
     def destroy(self) -> None:
         self.__root.remove_node()
         self._services.ev_manager.unregister_listener(self)
