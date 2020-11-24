@@ -104,7 +104,7 @@ class MainRunner:
 def configure_and_run(args) -> bool:
     config = Configuration()
 
-    if args.graphics:
+    if args.visualiser:
         config.load_simulator = True
         config.simulator_graphics = True
 
