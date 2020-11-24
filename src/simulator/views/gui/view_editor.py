@@ -579,15 +579,11 @@ class ViewEditor():
         self.__services = services
         self.__services.ev_manager.register_listener(self)
         self.__base = self.__services.graphics.window
-        self.hidden = False
-        self._zoom = 1 / 5
 
         self.__window = Window(self.__base, "view_editor",
-                               relief=DGG.RAISED,
                                borderWidth=(0.0, 0.0),
                                frameColor=WINDOW_BG_COLOUR,
                                pos=(1.2, 0.5, 0.5),
-                               scale=(1 / 5),
                                frameSize=(-1.1, 1.1, -5.82, 1.56)
                                )
 
@@ -651,11 +647,11 @@ class ViewEditor():
                                           scale=(0.50, 2.1, 0.25))
 
         self.__restore_outline = DirectFrame(parent=self.__window.frame,
-                                          frameColor=WHITE,
-                                          pos=(0.50, 0, -5.45),
-                                          borderWidth=(0.25, 0.15),
-                                          frameSize=(-0.62, 0.62, -0.54, 0.54),
-                                          scale=(0.65, 2.1, 0.25))
+                                             frameColor=WHITE,
+                                             pos=(0.50, 0, -5.45),
+                                             borderWidth=(0.25, 0.15),
+                                             frameSize=(-0.62, 0.62, -0.54, 0.54),
+                                             scale=(0.65, 2.1, 0.25))
 
         # save and restore
         self.btn_s = DirectButton(
@@ -677,22 +673,23 @@ class ViewEditor():
             parent=self.__window.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
+
         # zoom window in / out
-        self.btn_zoom_in = DirectButton(
+        self.btn_zoom_out = DirectButton(
             text="-",
             text_fg=WHITE,
             pressEffect=1,
-            command=self.__zoom_out,
+            command=self.__window.zoom_out,
             pos=(0.5, 0., 1.25),
             parent=self.__window.frame,
             scale=(0.38, 4.25, 0.45),
             frameColor=TRANSPARENT)
 
-        self.btn_zoom_out = DirectButton(
+        self.btn_zoom_in = DirectButton(
             text="+",
             text_fg=WHITE,
             pressEffect=1,
-            command=self.__zoom_in,
+            command=self.__window.zoom_in,
             pos=(0.71, 0., 1.28),
             parent=self.__window.frame,
             scale=(0.35, 4.19, 0.38),
@@ -701,7 +698,7 @@ class ViewEditor():
         # Quit button
         self.btn = DirectButton(text='x',
                                 text_fg=WHITE,
-                                command=self.__toggle_view_editor,
+                                command=self.__window.toggle_visible,
                                 pos=(0.91, 0.4, 1.3),
                                 parent=self.__window.frame,
                                 scale=(0.3, 2.9, 0.2),
@@ -754,23 +751,6 @@ class ViewEditor():
     def __update_colour(self, name: str, colour: Colour) -> None:
         self.__services.state.effective_view.colours[name].colour = colour
 
-    def __zoom_in(self):
-        self._zoom += 0.05
-        self.__window.frame.setScale(self._zoom)
-
-    def __zoom_out(self):
-        self._zoom -= 0.05
-        self.__window.frame.setScale(self._zoom)
-
-    def __toggle_view_editor(self):
-        if not self.hidden:
-            self.__window.frame.hide()
-            self.hidden = True
-        else:
-            self.__window.frame.show()
-            self.__window.focus()
-            self.hidden = False
-
     def __colour_picker_callback(self, colour: Colour) -> None:
         self.__window.focus()
         if self.__selected_cv_elem is not None:
@@ -792,7 +772,7 @@ class ViewEditor():
         if isinstance(event, NewColourEvent) or self.__services.state.view_idx != self.__cur_view_idx:
             self.__reset()
         elif isinstance(event, ToggleViewEvent):
-            self.__toggle_view_editor()
+            self.__window.toggle_visible()
 
     @property
     def view_idx(self) -> str:

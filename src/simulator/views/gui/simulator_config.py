@@ -138,7 +138,6 @@ class SimulatorConfig():
         self.__services = services
         self.__services.ev_manager.register_listener(self)
         self.__base = self.__services.graphics.window
-        self.hidden_config = False
         self.__text = "Important runtime commands:\n \n* t - find the path between the agent and goal\n\n" \
                       "* mouse click - moves agent to mouse location \n\n* mouse right click - moves goal to" \
                       " mouse location\n\n* x - stop trace animation (animations required)\n\n* r - resume trace animation  (" \
@@ -213,29 +212,25 @@ class SimulatorConfig():
         self.__algorithm_keys = list(self.__algorithms.keys())
         self.__animation_keys = list(self.__animations.keys())
 
-        self._zoom = 1 / 5
-
-        self.__window_config = Window(self.__base, "simulator_config",
-                                      relief=DGG.RAISED,
-                                      borderWidth=(0.0, 0.0),
-                                      frameColor=WINDOW_BG_COLOUR,
-                                      pos=(-1, 0.5, 0.5),
-                                      scale=1 / 5,
-                                      frameSize=(-1.7, 1.3, -4.97, 0.85)
-                                      )
+        self.__window = Window(self.__base, "simulator_config",
+                               borderWidth=(0.0, 0.0),
+                               frameColor=WINDOW_BG_COLOUR,
+                               pos=(-1, 0.5, 0.5),
+                               frameSize=(-1.7, 1.3, -4.97, 0.85)
+                               )
         # spacer #
-        DirectFrame(parent=self.__window_config.frame,
+        DirectFrame(parent=self.__window.frame,
                     borderWidth=(.0, .0),
                     frameColor=WIDGET_BG_COLOUR,
                     frameSize=(-1.4, 1.4, -0.01, 0.01),
                     pos=(-0.2, 0.0, 0.4))
-        DirectFrame(parent=self.__window_config.frame,
+        DirectFrame(parent=self.__window.frame,
                     borderWidth=(.0, .0),
                     frameColor=WIDGET_BG_COLOUR,
                     frameSize=(-1.4, 1.4, -0.01, 0.01),
                     pos=(-0.2, 0.0, -2.46))
 
-        self.sim_config = DirectLabel(parent=self.__window_config.frame,
+        self.sim_config = DirectLabel(parent=self.__window.frame,
                                       text="Simulator Configuration",
                                       text_fg=WHITE,
                                       text_bg=WINDOW_BG_COLOUR,
@@ -244,37 +239,37 @@ class SimulatorConfig():
                                       pos=(-0.53, 0.0, 0.56),
                                       scale=(0.2, 3, 0.2))
         # Zoom buttons
-        self.btn_zoom_in = DirectButton(
+        self.btn_zoom_out = DirectButton(
             text="-",
             text_fg=WHITE,
             pressEffect=1,
-            command=self.__zoom_out,
+            command=self.__window.zoom_out,
             pos=(0.71, 0., 0.55),
-            parent=self.__window_config.frame,
+            parent=self.__window.frame,
             scale=(0.3, 4.15, 0.35),
             frameColor=TRANSPARENT)
 
-        self.btn_zoom_out = DirectButton(
+        self.btn_zoom_in = DirectButton(
             text="+",
             text_fg=WHITE,
             pressEffect=1,
-            command=self.__zoom_in,
+            command=self.__window.zoom_in,
             pos=(0.92, 0., 0.56),
-            parent=self.__window_config.frame,
+            parent=self.__window.frame,
             scale=(0.3, 4.15, 0.35),
             frameColor=TRANSPARENT)
 
         # Quit button
         self.btn = DirectButton(text='x',
                                 text_fg=WHITE,
-                                command=self.__toggle_config,
+                                command=self.__window.toggle_visible,
                                 pos=(1.12, 0., 0.576),
-                                parent=self.__window_config.frame,
+                                parent=self.__window.frame,
                                 scale=(0.3, 2.9, 0.2),
                                 pressEffect=1,
                                 frameColor=TRANSPARENT)
 
-        self.user_information = DirectLabel(parent=self.__window_config.frame,
+        self.user_information = DirectLabel(parent=self.__window.frame,
                                             text=self.__text,
                                             text_fg=WHITE,
                                             text_bg=WINDOW_BG_COLOUR,
@@ -283,7 +278,7 @@ class SimulatorConfig():
                                             borderWidth=(.0, .0),
                                             pos=(-1.55, 0.0, -2.7),
                                             scale=(0.11, 1.1, 0.11))
-        self.map_label = DirectLabel(parent=self.__window_config.frame,
+        self.map_label = DirectLabel(parent=self.__window.frame,
                                      text="Map:",
                                      text_fg=WHITE,
                                      text_bg=WINDOW_BG_COLOUR,
@@ -292,7 +287,7 @@ class SimulatorConfig():
                                      borderWidth=(.0, .0),
                                      pos=(-1.4, 0.4, 0.),
                                      scale=(0.17, 1.09, 0.13))
-        self.algo_label = DirectLabel(parent=self.__window_config.frame,
+        self.algo_label = DirectLabel(parent=self.__window.frame,
                                       text="Algorithm:",
                                       text_fg=WHITE,
                                       text_bg=WINDOW_BG_COLOUR,
@@ -301,7 +296,7 @@ class SimulatorConfig():
                                       borderWidth=(.0, .0),
                                       pos=(-1.4, 0.4, -0.5),
                                       scale=(0.17, 1.09, 0.13))
-        self.animation_label = DirectLabel(parent=self.__window_config.frame,
+        self.animation_label = DirectLabel(parent=self.__window.frame,
                                            text="Animation:",
                                            text_fg=WHITE,
                                            text_bg=WINDOW_BG_COLOUR,
@@ -310,7 +305,7 @@ class SimulatorConfig():
                                            borderWidth=(.0, .0),
                                            pos=(-1.4, 0.4, -1),
                                            scale=(0.17, 1.09, 0.13))
-        self.debug_label = DirectLabel(parent=self.__window_config.frame,
+        self.debug_label = DirectLabel(parent=self.__window.frame,
                                        text="Debug Level:",
                                        text_fg=WHITE,
                                        text_bg=WINDOW_BG_COLOUR,
@@ -322,7 +317,7 @@ class SimulatorConfig():
 
         self.__maps_option = DirectOptionMenu(text="options",
                                               scale=0.14,
-                                              parent=self.__window_config.frame,
+                                              parent=self.__window.frame,
                                               initialitem=1,
                                               items=self.__map_keys,
                                               pos=(-0.65, 0.4, 0.),
@@ -331,7 +326,7 @@ class SimulatorConfig():
 
         self.__algorithms_option = DirectOptionMenu(text="options",
                                                     scale=0.14,
-                                                    parent=self.__window_config.frame,
+                                                    parent=self.__window.frame,
                                                     initialitem=1,
                                                     items=self.__algorithm_keys,
                                                     pos=(-0.46, 0.4, -0.5),
@@ -340,7 +335,7 @@ class SimulatorConfig():
 
         self.__animations_option = DirectOptionMenu(text="options",
                                                     scale=0.14,
-                                                    parent=self.__window_config.frame,
+                                                    parent=self.__window.frame,
                                                     initialitem=0,
                                                     items=self.__animation_keys,
                                                     pos=(-0.1, 0.4, -1),
@@ -349,21 +344,21 @@ class SimulatorConfig():
 
         self.__debug_option = DirectOptionMenu(text="options",
                                                scale=0.14,
-                                               parent=self.__window_config.frame,
+                                               parent=self.__window.frame,
                                                initialitem=0,
                                                items=list(self.__debug.keys()),
                                                pos=(-0.1, 0.4, -1.5),
                                                highlightColor=(0.65, 0.65, 0.65, 1),
                                                textMayChange=1)
 
-        self._update_frame = DirectFrame(parent=self.__window_config.frame,
+        self._update_frame = DirectFrame(parent=self.__window.frame,
                                          frameColor=WHITE,
                                          pos=(-1, 0.4, -2.1),
                                          borderWidth=(0.25, 0.15),
                                          frameSize=(-0.5, 0.95, -0.54, 0.54),
                                          scale=(0.50, 3.1, 0.25))
 
-        self._reset_frame = DirectFrame(parent=self.__window_config.frame,
+        self._reset_frame = DirectFrame(parent=self.__window.frame,
                                         frameColor=WHITE,
                                         pos=(0.412, 0.4, -2.1),
                                         borderWidth=(0.25, 0.15),
@@ -375,7 +370,7 @@ class SimulatorConfig():
             pressEffect=1,
             command=self.__update_simulator_callback,
             pos=(-0.9, 0.4, -2.15),
-            parent=self.__window_config.frame,
+            parent=self.__window.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
 
@@ -385,7 +380,7 @@ class SimulatorConfig():
             pressEffect=1,
             command=self.__reset_simulator_callback,
             pos=(0.51, 0.4, -2.15),
-            parent=self.__window_config.frame,
+            parent=self.__window.frame,
             scale=(0.20, 2.1, 0.15),
             frameColor=TRANSPARENT)
 
@@ -403,22 +398,6 @@ class SimulatorConfig():
         self.__state.algo = self.__algorithms_option.get()
         self.__state.ani = self.__animations_option.get()
         self.__services.state.add(self.__state)
-
-    def __zoom_in(self):
-        self._zoom += 0.05
-        self.__window_config.frame.setScale(self._zoom)
-
-    def __zoom_out(self):
-        self._zoom -= 0.05
-        self.__window_config.frame.setScale(self._zoom)
-
-    def __toggle_config(self):
-        if not self.hidden_config:
-            self.__window_config.frame.hide()
-            self.hidden_config = True
-        else:
-            self.__window_config.frame.show()
-            self.hidden_config = False
 
     def __update_simulator_callback(self) -> None:
         mp = self.__maps[self.__maps_option.get()]
@@ -446,4 +425,4 @@ class SimulatorConfig():
 
     def notify(self, event: Event) -> None:
         if isinstance(event, ToggleSimulatorConfigEvent):
-            self.__toggle_config()
+            self.__window.toggle_visible()
