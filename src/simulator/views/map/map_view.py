@@ -164,7 +164,7 @@ class MapView(View):
         elif isinstance(event, TakeScreenshotEvent):
             self.take_screenshot()
         elif isinstance(event, TakeScreenshotTexEvent):
-            self.HDScreenShot()
+            self.take_hd_screenshot()
 
     def to_logical_point(self, p: Point) -> Point:
         x, y, z = p
@@ -299,41 +299,42 @@ class MapView(View):
         self._services.resources.screenshots_dir.append(
             lambda fn: self._services.graphics.window.win.save_screenshot(fn))
 
-    def HDScreenShot(self):
-        a, b, c = self.__map.traversables_data.shape
+    def take_hd_screenshot(self):
+        mx, my, mz = self.__map.traversables_data.shape
+
         # find the optimal zoom fit
-        max_width = max(a, b)
-        max_height = max(a, c)
+        max_width = max(mx, my)
+        max_height = max(mx, mz)
         tex = Texture()
         width = 4096
         height = 4096
-        mybuffer = self._services.graphics.window.win.makeTextureBuffer('HDScreenshotBuff', width, height, tex, True)
+        ss_buf = self._services.graphics.window.win.make_texture_buffer('hd_screenshot_buff', width, height, tex, True)
 
-        cam = Camera('HDCam')
-        cam.setLens(self._services.graphics.window.camLens.makeCopy())
-        cam.getLens().setAspectRatio(width / height)
-        npCam = NodePath(cam)
-        npCam.reparentTo(self.__world)
-        x, y, z = self.__world.getPos()
-        # 3d case
-        if c > 1:
-            npCam.setPos(x-a * 2.1, y - max_height * 3.6, z)
-            npCam.setH(-30)
+        cam = Camera('hd_cam')
+        cam.set_lens(self._services.graphics.window.camLens.make_copy())
+        cam.get_lens().set_aspect_ratio(width / height)
+        np_cam = NodePath(cam)
+        np_cam.reparent_to(self.__world)
+        x, y, z = self.__world.get_pos()
+
+        if mz > 1:
+            # 3D map
+            np_cam.set_pos(x - mx * 2.1, y - max_height * 3.6, z)
+            np_cam.set_h(-30)
         else:
-            npCam.setPos(x, y, z + max_width * 2 + c)
-            npCam.setP(-90)
+            # 2D map
+            np_cam.set_pos(x, y, z + max_width * 2 + 1)
+            np_cam.set_p(-90)
 
-        mycamera = self._services.graphics.window.makeCamera(mybuffer, useCamera=npCam)
-        myscene = self._services.graphics.window.render
-        mycamera.node().setScene(myscene)
-        self._services.graphics.window.graphicsEngine.renderFrame()
-        tex = mybuffer.getTexture()
-        mybuffer.setActive(False)
+        ss_cam = self._services.graphics.window.make_camera(ss_buf, useCamera=np_cam)
+        ss_scene = self._services.graphics.window.render
+        ss_cam.node().set_scene(ss_scene)
+        self._services.graphics.window.graphicsEngine.render_frame()
+        tex = ss_buf.get_texture()
+        ss_buf.set_active(False)
 
-        self._services.resources.screenshots_dir.append(
-        lambda fn: tex.write(fn))
-        self._services.graphics.window.graphicsEngine.removeWindow(mybuffer)
-        print("HDScreenShot taken")
+        self._services.resources.screenshots_dir.append(lambda fn: tex.write(fn))
+        self._services.graphics.window.graphicsEngine.remove_window(ss_buf)
 
     def cube_center(self, p: Point) -> Point:
         x, y, z = self.to_point3(p)
