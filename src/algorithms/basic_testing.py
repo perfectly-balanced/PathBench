@@ -202,6 +202,17 @@ class BasicTesting:
             dist += np.linalg.norm(np.array(trace[i - 1].position) - np.array(trace[i].position))
         return dist
 
+    @staticmethod
+    def get_smoothness(trace: List[Trace], agent: Agent) -> float:
+        trace.append(Trace(agent.position))
+        angle = 0
+        for i in range(1, len(trace)):
+            unit_vector1 = np.array(trace[i - 1].position) / np.linalg.norm(np.array(trace[i - 1].position))
+            unit_vector2 = np.array(trace[i].position) / np.linalg.norm(np.array(trace[i].position))
+            dot_product = np.dot(unit_vector1, unit_vector2)
+            angle += np.arccos(dot_product)
+        return (angle / len(trace))
+
     @property
     def map(self) -> str:
         return "map"
