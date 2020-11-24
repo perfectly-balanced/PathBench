@@ -1,5 +1,0 @@
-<class 'algorithms.classic.graph_based.dijkstra.Dijkstra'>,0.0794
-Algorithm,Average Time
-<class 'algorithms.classic.graph_based.a_star.AStar'>,0.0429
-<class 'algorithms.classic.graph_based.wavefront.Wavefront'>,0.0687
-<class 'algorithms.classic.graph_based.dijkstra.Dijkstra'>,0.0788

@@ -39,8 +39,9 @@ class MainRunner:
 
 
 #Work in progress
+
     def run_multiple(self):
-        #Two options, generator 
+        # Two options, generator
         if self.main_services.settings.generator and self.main_services.settings.trainer:
             Generator.main(self)
             Trainer.main(self)
@@ -51,7 +52,7 @@ class MainRunner:
             Generator.main(self)
             simulator: Simulator = Simulator(self.main_services)
             simulator.start()
-        #Three options, generator
+        # Three options, generator
         elif self.main_services.settings.generator and self.main_services.settings.trainer and self.main_services.settings.analyzer:
             Generator.main(self)
             Trainer.main(self)
@@ -61,14 +62,14 @@ class MainRunner:
             simulator.start()
             Generator.main(self)
             Trainer.main(self)
-        #Four options 
+        # Four options
         elif self.main_services.settings.generator and self.main_services.settings.trainer and self.main_services.settings.analyzer and self.main_services.settings.load_simulator:
             simulator: Simulator = Simulator(self.main_services)
             simulator.start()
             Generator.main(self)
             Trainer.main(self)
             Analyzer.main(self)
-        #Trainer
+        # Trainer
         elif self.main_services.settings.trainer and self.main_services.settings.analyzer:
             Trainer.main(self)
             Analyzer.main(self)
@@ -81,12 +82,12 @@ class MainRunner:
             simulator.start()
             Trainer.main(self)
             Analyzer.main(self)
-        #Analyzer
+        # Analyzer
         elif self.main_services.settings.analyzer and self.main_services.settings.load_simulator:
             simulator: Simulator = Simulator(self.main_services)
             simulator.start()
             Analyzer.main(self)
-        #Singles
+        # Singles
         elif self.main_services.settings.generator:
             Generator.main(self)
         elif self.main_services.settings.trainer:
@@ -103,7 +104,7 @@ class MainRunner:
 def configure_and_run(args) -> bool:
     config = Configuration()
 
-    if args.graphics:
+    if args.visualiser:
         config.load_simulator = True
         config.simulator_graphics = True
 
@@ -115,11 +116,12 @@ def main() -> bool:
     parser = argparse.ArgumentParser(prog="main.py",
                                      description="PathBench runner",
                                      formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument("--graphics", action='store_true', help="run grahpical simulator")
+    parser.add_argument("-v", "--visualiser", action='store_true', help="run simulator with graphics")
 
     args = parser.parse_args()
     print("args:{}".format(args))
     return configure_and_run(args)
+
 
 if __name__ == "__main__":
     ret = main()
