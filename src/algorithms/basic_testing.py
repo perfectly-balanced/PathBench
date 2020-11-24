@@ -140,6 +140,7 @@ class BasicTesting:
             "trace": trace,
             "total_steps": len(trace),
             "total_distance": self.get_euclidean_distance_traveled(trace, grid.agent),
+            "smoothness_of_trajectory": self.get_smoothness(trace, grid.agent),
             "total_time": self.total_time,
             "algorithm_type": self._services.algorithm.algorithm_type,
         }
