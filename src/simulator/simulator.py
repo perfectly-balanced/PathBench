@@ -85,10 +85,6 @@ class Simulator:
         self.__gui_controller = GuiController(self.__gui_view, self.__services,self.__main)
 
         self.__try_setup_map_graphics()
-
-        self.__services.debug.write("", DebugLevel.BASIC, timestamp=False)
-        self.display_help()
-        self.__services.debug.write("", DebugLevel.LOW, timestamp=False)
         self.__main.run()
 
     def __start_without_graphics(self) -> Optional[BasicTesting]:
@@ -98,29 +94,6 @@ class Simulator:
         """
         self.__services.algorithm.instance.find_path()
         return self.__services.algorithm.instance.testing
-
-    def display_help(self) -> None:
-        """
-        Displays the help panel at init
-        """
-        self.__services.debug.write(
-            """Important runtime commands:
-    * escape - exit the simulator
-    * c - find the path between the agent and goal
-    * mouse click - moves agent to mouse location 
-    * mouse right click - moves goal to mouse location
-    
-Additional runtime commands:    
-    * s - stop trace animation (animations required)
-    * r - resume trace animation  (animations required)
-    * mouse hover - displays hovered cell coordinates (debug level >= Medium)
-    * p - take screenshot (the screenshot is placed in resources directory)
-    * up arrow - moves agent up (depends on agent speed) 
-    * left arrow - moves agent left (depends on agent speed) 
-    * down arrow - moves agent down (depends on agent speed) 
-    * right arrow - moves agent right (depends on agent speed)
-    * m - toggle map between Sparse and Dense
-""", DebugLevel.BASIC, timestamp=False)
 
     def notify(self, event: Event) -> None:
         if isinstance(event, ReinitEvent):
