@@ -105,8 +105,8 @@ class MapView(View):
                 val = wm[idx]
                 if val > 0 and val < OccupancyGridMap.IMPASSABLE_THRESHOLD:
                     wl.append((val, Point(*idx)))
-            dc_min = self._services.state.add_colour("min. occupancy", BLACK.with_a(0))
-            dc_max = self._services.state.add_colour("max. occupancy", BLACK)
+            dc_min = self._services.state.add_colour("min occupancy", BLACK.with_a(0))
+            dc_max = self._services.state.add_colour("max occupancy", BLACK)
             display = GradientMapDisplay(self._services, pts=wl, min_colour=dc_min, max_colour=dc_max)
             self.__persistent_displays.append(display)
 
