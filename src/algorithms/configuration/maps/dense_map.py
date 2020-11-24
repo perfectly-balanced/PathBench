@@ -174,7 +174,7 @@ class DenseMap(Map):
         return copy.deepcopy(self)
 
     def __deepcopy__(self, memo: Dict) -> 'DenseMap':
-        dense_map = DenseMap(copy.deepcopy(self.grid), transpose=False)
+        dense_map = self.__class__(copy.deepcopy(self.grid), transpose=False)
         dense_map.trace = copy.deepcopy(self.trace)
         dense_map.agent = copy.deepcopy(self.agent)
         dense_map.goal = copy.deepcopy(self.goal)
