@@ -9,7 +9,7 @@ from constants import DATA_PATH
 pyautogui.click(1003, 218)
 
 
-# Select map Labyrinth, A* algorithm, update
+# Select map Labyrinth, RRT algorithm
 x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Map.png'), confidence=0.5)
 pyautogui.click(x+160, y+5)
 x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Labyrinth.png'), confidence=0.5)

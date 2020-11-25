@@ -2,21 +2,24 @@ import time
 import pyautogui
 import os
 import sys
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))), "src"))
+
+sys.path.append(os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))),
+    "src"))
 from constants import DATA_PATH
 
 pyautogui.click(1003, 218)
 
-# Pick 3d cube with RRT
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Map.png'), confidence=0.5)
-pyautogui.click(x+160, y+5)
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH,'3dCube.png'), confidence=0.9)
+# Pick 3d cube with A*
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Map.png'), confidence=0.5)
+pyautogui.click(x + 160, y + 5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, '3dCube.png'), confidence=0.9)
 pyautogui.click(x, y)
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH,'Algorithm.png'), confidence=0.5)
-pyautogui.click(x+150, y)
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'A.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Algorithm.png'), confidence=0.5)
+pyautogui.click(x + 150, y)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'A.png'), confidence=0.5)
 pyautogui.click(x, y)
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'update.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'update.png'), confidence=0.5)
 pyautogui.click(x, y)
 time.sleep(5)
 
@@ -29,10 +32,10 @@ pyautogui.press('t')
 time.sleep(1)
 
 # pick colours and other modifications of the map
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'traversables.png'), confidence=0.5)
-pyautogui.click(x-78, y)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'traversables.png'), confidence=0.5)
+pyautogui.click(x - 78, y)
 time.sleep(0.5)
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH,'color1.png'), confidence=0.7)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'color1.png'), confidence=0.7)
 pyautogui.click(x, y)
 
 # take transparent default ss
@@ -54,4 +57,3 @@ time.sleep(0.5)
 # restore changes
 pyautogui.press('v')
 pyautogui.press('c')
-
