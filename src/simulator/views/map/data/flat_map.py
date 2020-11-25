@@ -2,7 +2,7 @@ from panda3d.core import NodePath, TransparencyAttrib, LVecBase4f, Texture, Samp
 
 from simulator.services.services import Services
 from simulator.views.map.data.map_data import MapData
-from simulator.views.map.object.square_mesh import SquareMesh
+from simulator.views.map.meshes.square_mesh import SquareMesh
 from simulator.views.util import blend_colours
 from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 from utility.compatibility import Final

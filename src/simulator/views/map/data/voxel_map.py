@@ -2,7 +2,7 @@ from panda3d.core import NodePath, TransparencyAttrib, LVecBase4f, LineSegs
 
 from simulator.services.services import Services
 from simulator.views.map.data.map_data import MapData
-from simulator.views.map.object.cube_mesh import CubeMesh
+from simulator.views.map.meshes.cube_mesh import CubeMesh
 
 from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 

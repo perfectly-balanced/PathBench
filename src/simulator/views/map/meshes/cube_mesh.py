@@ -12,7 +12,7 @@ import numpy as np
 from nptyping import NDArray
 
 from structures import Point, Colour, WHITE
-from simulator.views.map.object.common import normalise
+from simulator.views.map.meshes.common import normalise
 
 @unique
 class Face(IntEnum):

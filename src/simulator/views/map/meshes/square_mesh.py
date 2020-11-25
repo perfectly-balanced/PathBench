@@ -5,7 +5,7 @@ from panda3d.core import Geom, GeomTriangles, GeomVertexWriter, GeomVertexArrayD
 from numbers import Real
 from typing import Tuple
 
-from simulator.views.map.object.common import normalise
+from simulator.views.map.meshes.common import normalise
 from utility.compatibility import Final
 
 class SquareMesh():
