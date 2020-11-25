@@ -42,24 +42,25 @@ time.sleep(1)
 # take texture ss
 pyautogui.press('o')
 
-# hide gui
-pyautogui.press('c')
-time.sleep(1)
-pyautogui.press('v')
-
-
 #make traversibles transparent for the other ss
 x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH,'traversables.png'), confidence=0.5)
 pyautogui.click(x-120, y)
+
+# hide gui
+pyautogui.press('c')
+time.sleep(0.5)
+pyautogui.press('v')
+time.sleep(1)
 
 #take scene ss
 pyautogui.press('p')
 time.sleep(1)
 
 # restore changes
-pyautogui.press('c')
-time.sleep(1)
 pyautogui.press('v')
+time.sleep(0.5)
+pyautogui.press('c')
+time.sleep(0.5)
 x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH,'traversables.png'), confidence=0.5)
 pyautogui.click(x-120, y)
 
