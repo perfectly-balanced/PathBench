@@ -1,6 +1,7 @@
 from constants import DATA_PATH
 from algorithms.configuration.entities.entity import Entity
 from algorithms.configuration.maps.map import Map
+from algorithms.configuration.maps.occupancy_grid_map import OccupancyGridMap
 from simulator.models.model import Model
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
@@ -10,6 +11,7 @@ from simulator.services.event_manager.events.take_screenshot_event import TakeSc
 from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
 from simulator.services.event_manager.events.take_screenshot_tex_event import TakeScreenshotTexEvent
 from simulator.services.graphics.renderer import Renderer
+from simulator.views.map.display.gradient_map_display import GradientMapDisplay
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
 from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
@@ -21,8 +23,9 @@ from simulator.views.map.data.flat_map import FlatMap
 from simulator.views.util import blend_colours
 from simulator.views.view import View
 
-from structures import Point, Colour, TRANSPARENT, WHITE
+from structures import Point, Colour, TRANSPARENT, WHITE, BLACK
 from structures.tracked_set import TrackedSet
+from structures.tracked_list import TrackedList
 
 from panda3d.core import Camera, Texture, NodePath, GeomNode, Geom, LineSegs, TextNode, PandaNode
 
@@ -93,6 +96,18 @@ class MapView(View):
         if extended_walls:
             dc = self._services.state.add_colour("extended wall", Colour(0.5).with_a(0.5))
             self.__persistent_displays.append(SolidColourMapDisplay(self._services, extended_walls, dc, z_index=0))
+
+        if hasattr(self._services.algorithm.map, "weight_grid"):
+            wm = self._services.algorithm.map.weight_grid
+            wl = TrackedList()
+            for idx in np.ndindex(*wm.shape):
+                val = wm[idx]
+                if val > 0 and val < OccupancyGridMap.IMPASSABLE_THRESHOLD:
+                    wl.append((val, Point(*idx)))
+            dc_min = self._services.state.add_colour("min occupancy", BLACK.with_a(0))
+            dc_max = self._services.state.add_colour("max occupancy", BLACK)
+            display = GradientMapDisplay(self._services, pts=wl, min_colour=dc_min, max_colour=dc_max)
+            self.__persistent_displays.append(display)
 
         self.__deduced_traversables_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
         self.__deduced_traversables_wf_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()

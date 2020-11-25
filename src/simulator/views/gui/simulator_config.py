@@ -4,11 +4,13 @@ from direct.showbase.ShowBase import ShowBase
 from direct.showbase.DirectObject import DirectObject
 
 from typing import Tuple, Union, List, Any, Dict, Callable
+import traceback
 
 from structures import Point, WHITE, TRANSPARENT
 from constants import DATA_PATH
 
 from simulator.services.services import Services
+from simulator.services.debug import DebugLevel
 from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.reset_event import ResetEvent
 from simulator.services.event_manager.events.toggle_simulator_config_event import ToggleSimulatorConfigEvent
@@ -109,6 +111,8 @@ class SimulatorConfig(DirectObject):
         "vin test 16x16 -2": (Maps.grid_map_complex_obstacle2, True),
         "vin test 28x28 -1": (Maps.grid_map_28x28vin, True),
         "Small Obstacle": (Maps.grid_map_one_obstacle.convert_to_dense_map(), True),
+        "2D Occupancy Grid Map": (Maps.ogm_2d, True),
+        "3D Occupancy Grid Map": (Maps.ogm_3d, True),
         "SLAM Map 1": ("map10", False),
         "SLAM Map 1 (compressed)": ("map11", True),
         "SLAM Map 2": ("map14", False),
@@ -346,7 +350,7 @@ class SimulatorConfig(DirectObject):
         self.__algorithms_option = DirectOptionMenu(text="options",
                                                     scale=0.14,
                                                     parent=self.__window.frame,
-                                                    initialitem=1,
+                                                    initialitem=self.__algorithm_keys.index("A*"),
                                                     items=self.__algorithm_keys,
                                                     pos=(-0.46, 0.4, -0.5),
                                                     highlightColor=(0.65, 0.65, 0.65, 1),
@@ -355,7 +359,7 @@ class SimulatorConfig(DirectObject):
         self.__animations_option = DirectOptionMenu(text="options",
                                                     scale=0.14,
                                                     parent=self.__window.frame,
-                                                    initialitem=0,
+                                                    initialitem=self.__animation_keys.index("Fast"),
                                                     items=self.__animation_keys,
                                                     pos=(-0.45, 0.4, -1),
                                                     highlightColor=(0.65, 0.65, 0.65, 1),
@@ -395,23 +399,34 @@ class SimulatorConfig(DirectObject):
             frameColor=TRANSPARENT)
 
         # setup state & use saved state if possible
+        self.__state = None
         for so in self.__services.state.objects:
             if isinstance(so, SimulatorConfigState):
                 self.__state = so
                 cmd = self.__maps_option['command']
-                self.__maps_option.set(self.__map_keys.index(so.mp))
-                self.__maps_option['command'] = cmd
-                self.__algorithms_option.set(self.__algorithm_keys.index(so.algo))
-                self.__animations_option.set(self.__animation_keys.index(so.ani))
-                self.__update_position_entries()
+                try:
+                    self.__maps_option.set(self.__map_keys.index(so.mp))
+                    self.__algorithms_option.set(self.__algorithm_keys.index(so.algo))
+                    self.__animations_option.set(self.__animation_keys.index(so.ani))
+                    self.__update_position_entries()
+                except:
+                    msg = "Failed to load Simulator Config state:\n{}".format(traceback.format_exc())
+                    self.__services.debug.write(msg, DebugLevel.NONE)
+                    break
+                finally:
+                    self.__maps_option['command'] = cmd
                 return
-
-        self.__state = SimulatorConfigState()
+        new_state = self.__state is None
+        if new_state:
+            self.__state = SimulatorConfigState()
         self.__state.mp = self.__maps_option.get()
         self.__state.algo = self.__algorithms_option.get()
         self.__state.ani = self.__animations_option.get()
         self.__use_default_map_positions()
-        self.__services.state.add(self.__state)
+        if new_state:
+            self.__services.state.add(self.__state)
+        else:
+            self.__services.state.save()
 
     def __entry_exit_callback(self, *discard) -> None:
         self.__entry_hovered = False

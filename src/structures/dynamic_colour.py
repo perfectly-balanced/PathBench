@@ -1,6 +1,6 @@
 from typing import Optional, Callable
 
-from structures.colour import Colour
+from structures.colour import Colour, TRANSPARENT
 from utility.compatibility import Final
 
 class DynamicColour:
