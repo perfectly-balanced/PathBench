@@ -208,11 +208,25 @@ class BasicTesting:
     def get_smoothness(trace: List[Trace], agent: Agent) -> float:
         trace.append(Trace(agent.position))
         angle = 0
+        prev_angle = None
+        
+        #print(trace)
         for i in range(1, len(trace)):
-            unit_vector1 = np.array(trace[i - 1].position) / np.linalg.norm(np.array(trace[i - 1].position))
-            unit_vector2 = np.array(trace[i].position) / np.linalg.norm(np.array(trace[i].position))
-            dot_product = np.dot(unit_vector1, unit_vector2)
-            angle += np.arccos(dot_product)
+
+            if(not trace[i - 1].position == trace[i].position):
+                
+                unit_vector1 = np.array(trace[i - 1].position - trace[i].position) / np.linalg.norm(np.array(trace[i - 1].position - trace[i].position))
+                t = [0] * (len(agent.position) - 1)
+                t = tuple([1] + t)
+                dot_product = np.dot(unit_vector1, t)
+                if prev_angle is None:
+                    prev_angle = np.arccos(dot_product)
+                    continue
+                
+               
+                angle += abs(prev_angle - np.arccos(dot_product))
+                prev_angle = np.arccos(dot_product)
+            
         return (angle / len(trace))
 
     @property

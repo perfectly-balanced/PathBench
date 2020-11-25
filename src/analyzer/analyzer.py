@@ -246,6 +246,8 @@ class Analyzer:
         
         tracemalloc.stop()
         
+        #print("smoothness result!!!!!!!", resu['smoothness_of_trajectory'])
+        
         # print ('resu===============================================',resu)
         # print ('Memory usage finally:')
 
@@ -277,6 +279,8 @@ class Analyzer:
         # analyze results and print
         # returns a_star_results if modified
         res_proc = self.__get_results(results)
+        
+        #print("average smoothness!!!!!!!!!!!!!!!!!!!!!!!", res_proc["average_smoothness"])
 
         if algorithm_type == AStar:
             a_star_res = results
@@ -373,7 +377,7 @@ class Analyzer:
 
         # writing average data to csv file
         with open('pbtest.csv', 'a+', newline='') as file:
-            fieldnames = ['Algorithm', 'Average Path Deviation', 'Success Rate', 'Average Time','Average Steps', 'Average Distance', 'Average Distance from Goal','Average Original Distance from Goal', 'Average Trajectory Smoothness''Average Search Space', 'Average Memory']
+            fieldnames = ['Algorithm', 'Average Path Deviation', 'Success Rate', 'Average Time','Average Steps', 'Average Distance', 'Average Distance from Goal','Average Original Distance from Goal', 'Average Trajectory Smoothness', 'Average Search Space', 'Average Memory']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
 
             if file.tell() == 0:
@@ -394,7 +398,7 @@ class Analyzer:
         # writing all data points to csv file
 
         with open('pbtestfull.csv', 'a+', newline='') as file:
-            fieldnames2 = ['Algorithm','Time', 'Distance', 'Distance from Goal','Path Deviation','Original Distance from Goal','Search Space','Memory']
+            fieldnames2 = ['Algorithm','Time', 'Distance', 'Distance from Goal','Path Deviation','Original Distance from Goal','Trajectory Smoothness', 'Search Space','Memory']
             writer1 = csv.DictWriter(file, fieldnames=fieldnames2)
 
             if file.tell() == 0:
