@@ -240,6 +240,7 @@ class ColourChannel(DirectObject):
                                    pos=(0.55, 0.0, -0.01105))
         self.__entry.bind(DGG.EXIT, self.__entry_exit_callback)
         self.__entry.bind(DGG.ENTER, self.__entry_enter_callback)
+        self.__entry.bind(DGG.B1PRESS, self.__entry_mouse_click_callback)
         self.accept("mouse1", self.__entry_mouse_click_callback)
 
         self.__disable_frame_overlay = DirectButton(parent=self.__frame,
@@ -259,7 +260,13 @@ class ColourChannel(DirectObject):
         self.__entry_hovered = True
 
     def __entry_mouse_click_callback(self, *discard) -> None:
-        if not self.__entry_hovered:
+        if self.__entry_hovered:
+            try:
+                f = float(self.__entry.get())
+            except:
+                return
+            self.__entry_edit_callback(self, f)
+        else:
             self.__entry['focus'] = False
 
     def __unset_callbacks(self):
@@ -267,8 +274,18 @@ class ColourChannel(DirectObject):
         self.__entry['command'] = None
 
     def __set_callbacks(self):
-        self.__slider['command'] = lambda: self.__slider_edit_callback(self, self.__slider['value'])
-        self.__entry['command'] = lambda s: self.__entry_edit_callback(self, float(s))
+        def slider_callback() -> None:
+            self.__slider_edit_callback(self, self.__slider['value'])
+
+        def entry_callback(s) -> None:
+            try:
+                f = float(s)
+            except:
+                return
+            self.__entry_edit_callback(self, f)
+
+        self.__slider['command'] = slider_callback
+        self.__entry['command'] = entry_callback
 
     @property
     def frame(self) -> DirectFrame:

@@ -335,6 +335,7 @@ class SimulatorConfig(DirectObject):
             self.__entries.append(e)
             e.bind(DGG.EXIT, self.__entry_exit_callback)
             e.bind(DGG.ENTER, self.__entry_enter_callback)
+            e.bind(DGG.B1PRESS, self.__entry_mouse_click_callback)
             self.accept("mouse1", self.__entry_mouse_click_callback)
 
         self.__maps_option = DirectOptionMenu(text="options",
@@ -435,10 +436,12 @@ class SimulatorConfig(DirectObject):
         self.__entry_hovered = True
 
     def __entry_mouse_click_callback(self, *discard) -> None:
-        if not self.__entry_hovered:
+        if self.__entry_hovered:
+            self.__window.focus()
+        else:
             for e in self.__entries:
                 e['focus'] = False
-
+            
     def __update_simulator_callback(self) -> None:
         mp = self.__maps[self.__maps_option.get()]
         algo = self.__algorithms[self.__algorithms_option.get()]
