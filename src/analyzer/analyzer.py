@@ -159,6 +159,7 @@ class Analyzer:
             "average_original_distance_from_goal": average_original_distance_from_goal,
             "steps_alldata": steps_alldata,
             "distance_alldata": distance_alldata,
+            "smoothness_alldata": smoothness_alldata,
             "time_alldata": time_alldata,
             "distance_from_goal_alldata": distance_from_goal_alldata,
             "original_distance_from_goal_alldata": original_distance_from_goal_alldata,
@@ -372,7 +373,7 @@ class Analyzer:
 
         # writing average data to csv file
         with open('pbtest.csv', 'a+', newline='') as file:
-            fieldnames = ['Algorithm', 'Average Path Deviation', 'Success Rate', 'Average Time','Average Steps', 'Average Distance', 'Average Distance from Goal','Average Original Distance from Goal','Average Search Space', 'Average Memory']
+            fieldnames = ['Algorithm', 'Average Path Deviation', 'Success Rate', 'Average Time','Average Steps', 'Average Distance', 'Average Distance from Goal','Average Original Distance from Goal', 'Average Trajectory Smoothness''Average Search Space', 'Average Memory']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
 
             if file.tell() == 0:
@@ -387,8 +388,8 @@ class Analyzer:
 
             writer.writerow({'Algorithm': algoname1, 'Success Rate':res_proc["goal_found_perc"], 'Average Time': res_proc["average_time"],'Average Steps': res_proc["average_steps"]\
                 ,'Average Distance': res_proc["average_distance"],'Average Distance from Goal': res_proc["average_distance_from_goal"]\
-                    ,'Average Original Distance from Goal': res_proc["average_original_distance_from_goal"], 'Average Path Deviation': res_proc["average_path_deviation"], 'Average Search Space': res_proc["average_total_search_space"]\
-                        , 'Average Memory': res_proc["average memory"] })
+                    ,'Average Original Distance from Goal': res_proc["average_original_distance_from_goal"], 'Average Path Deviation': res_proc["average_path_deviation"], 'Average Trajectory Smoothness': res_proc["average_smoothness"]\
+                    , 'Average Search Space': res_proc["average_total_search_space"], 'Average Memory': res_proc["average memory"] })
 
         # writing all data points to csv file
 
@@ -402,7 +403,7 @@ class Analyzer:
 
             for n in range(len(res_proc['time_alldata'])):
                 writer1.writerow({'Algorithm': algoname1,  'Time': res_proc["time_alldata"][n], 'Distance': res_proc['distance_alldata'][n],'Path Deviation':res_proc['path_deviation_alldata'][n],'Distance from Goal': res_proc['distance_from_goal_alldata'][n]\
-                    , 'Original Distance from Goal': res_proc['original_distance_from_goal_alldata'][n], 'Search Space': res_proc['search_space_alldata'][n]\
+                    , 'Original Distance from Goal': res_proc['original_distance_from_goal_alldata'][n], 'Trajectory Smoothness': res_proc['smoothness_alldata'][n], 'Search Space': res_proc['search_space_alldata'][n]\
                     , 'Memory': res_proc['memory_alldata'][n]})
 
             '''writer.writerow({'Algorithm': algoname1, 'Time': res_proc["time_alldata"], 'Distance': res_proc["distance_alldata"]\
