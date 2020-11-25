@@ -261,8 +261,9 @@ class ColourChannel(DirectObject):
 
     def __entry_mouse_click_callback(self, *discard) -> None:
         if self.__entry_hovered:
+            s = self.__entry.get()
             try:
-                f = float(self.__entry.get())
+                f = float(s)
             except:
                 return
             self.__entry_edit_callback(self, f)
