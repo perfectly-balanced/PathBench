@@ -2,6 +2,9 @@ import time
 import pyautogui
 import os
 import sys
+import glob
+import cv2
+from compare_ss import mse
 
 sys.path.append(os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))),
@@ -30,7 +33,7 @@ x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'lightblue.png'), 
 pyautogui.click(x, y)
 
 # start and end goals
-pyautogui.rightClick(900, 964)
+pyautogui.rightClick(900, 960)
 time.sleep(0.5)
 pyautogui.click(1511, 815)
 time.sleep(1)
@@ -51,8 +54,20 @@ time.sleep(1)
 pyautogui.press('v')
 time.sleep(1)
 
+# get the latest taken screenshot (transparent one)
+list_of_ss = glob.glob('../../../../src/resources/screenshots/*.png')
+transparent = max(list_of_ss, key=os.path.getctime)
+print("transparent file is: " + transparent)
+
+# take the full screen ss
 pyautogui.press('p')
 time.sleep(0.5)
+
+# get latest screenshot
+list_of_ss = glob.glob('../../../../src/resources/screenshots/*.png')
+full_screen = max(list_of_ss, key=os.path.getctime)
+
+print("full screen file is: " + full_screen)
 
 # revert changes
 pyautogui.press('c')
@@ -61,3 +76,18 @@ pyautogui.press('v')
 time.sleep(0.5)
 x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'traversables.png'), confidence=0.5)
 pyautogui.click(x - 120, y)
+
+# compare the 2 new screenshots with the expected ones
+expected_transparent = cv2.imread("../../../../src/resources/screenshots/expectedLATransparent.png")
+expected_full = cv2.imread("../../../../src/resources/screenshots/expectedLAFull.png")
+transparent = cv2.imread(transparent)
+full_screen = cv2.imread(full_screen)
+
+# Small error allowed for the top screen high res ss, usually very close to 0
+print(mse(expected_transparent, transparent))
+assert mse(expected_transparent, transparent) < 10
+
+# Bigger error allowed for full screen ss
+print(mse(expected_full, full_screen))
+assert mse(expected_full, full_screen) < 1600
+print(mse(expected_full, full_screen))
