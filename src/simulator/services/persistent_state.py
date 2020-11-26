@@ -137,8 +137,12 @@ class PersistentState(Service):
         data["view_index"] = self.view_idx
         data["views"] = [self.views[v]._to_json() for v in range(self.MAX_VIEWS)]
         data["objects"] = [{"type": type(o).__name__, "data": o._to_json()} for o in self.__objects]
-        with open(self.file_name, 'w') as f:
-            json.dump(data, f, sort_keys=True, indent=4)
+        try:
+            with open(self.file_name, 'w') as f:
+                json.dump(data, f, sort_keys=True, indent=4)
+        except:
+            msg = "Failed to save state data to '{}', reason:\n{}State data attempted to be save:\n{}".format(self.file_name, traceback.format_exc(), data)
+            self._services.debug.write(msg, DebugLevel.NONE)
 
         if self.__save_task is not None:
             self._services.graphics.window.taskMgr.remove(self.__save_task)
