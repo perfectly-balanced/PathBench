@@ -113,8 +113,8 @@ class CubeMesh():
         self.__triangles.close_primitive()
         self.mesh.add_primitive(self.__triangles)
 
-    def get_cube_colour(self, pos: Point) -> Colour:
-        faces = self.__cube_face_map[tuple(pos)]
+    def get_cube_colour(self, p: Point) -> Colour:
+        faces = self.__cube_face_map[p.pos]
         for i in range(len(faces)):
             if faces[i] != None:
                 self.__colour.setRow(faces[i] * 4)
@@ -127,9 +127,9 @@ class CubeMesh():
 
         return self.default_colour
 
-    def set_cube_colour(self, pos: Point, colour: Colour) -> None:
-        self.__cube_default_coloured[tuple(pos)] = False
-        faces = self.__cube_face_map[tuple(pos)]
+    def set_cube_colour(self, p: Point, colour: Colour) -> None:
+        self.__cube_default_coloured[p.pos] = False
+        faces = self.__cube_face_map[p.pos]
         for i in range(len(faces)):
             if faces[i] != None:
                 c = self.__face_colour(colour, Face(i))
@@ -140,9 +140,9 @@ class CubeMesh():
                 self.__colour.addData4f(*c)
                 self.__colour.addData4f(*c)
 
-    def reset_cube(self, pos: Point) -> None:
-        self.set_cube_colour(pos, self.default_colour)
-        self.__cube_default_coloured[tuple(pos)] = True
+    def reset_cube(self, p: Point) -> None:
+        self.set_cube_colour(p, self.default_colour)
+        self.__cube_default_coloured[p.pos] = True
 
     def reset_all_cubes(self) -> None:
         for p in np.ndindex(self.structure.shape):
@@ -262,7 +262,7 @@ class CubeMesh():
         # update colour of cubes that have old clear colour
         for p in np.ndindex(self.structure.shape):
             if self.structure[p] and self.__cube_default_coloured[p]:
-                self.reset_cube(p)
+                self.reset_cube(Point(*p))
 
     @property
     def structure(self) -> str:
@@ -272,8 +272,8 @@ class CubeMesh():
     def structure(self) -> NDArray[(Any, Any, Any), bool]:
         return self.__structure
 
-    def cube_visible(self, pos: Point) -> bool:
-        for f in self.__cube_face_map[tuple(pos)]:
+    def cube_visible(self, p: Point) -> bool:
+        for f in self.__cube_face_map[p.pos]:
             if f is not None:
                 return True
         return False
