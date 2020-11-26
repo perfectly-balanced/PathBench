@@ -40,6 +40,9 @@ class Map:
     def at(self, p: Point) -> int:
         raise NotImplementedError("Have not implemented this for the given map yet.")
 
+    def update_point(self, p: Point, val: int) -> bool:
+        raise NotImplementedError("Have not implemented this for the given map yet.")
+
     def init_direction_vectors(self):
         """
         This function generates the neighbouring coordinates using the cartesian product.

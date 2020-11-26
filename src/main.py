@@ -108,6 +108,9 @@ def configure_and_run(args) -> bool:
         config.load_simulator = True
         config.simulator_graphics = True
 
+    if args.generator:
+        config.generator = True
+    
     mr = MainRunner(config)
     mr.run_multiple()
     return True
@@ -117,11 +120,11 @@ def main() -> bool:
                                      description="PathBench runner",
                                      formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("-v", "--visualiser", action='store_true', help="run simulator with graphics")
+    parser.add_argument("-g", "--generator", action='store_true', help="run generator")
 
     args = parser.parse_args()
     print("args:{}".format(args))
     return configure_and_run(args)
-
 
 if __name__ == "__main__":
     ret = main()

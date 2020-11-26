@@ -87,6 +87,13 @@ class DenseMap(Map):
         assert not p.is_float, f"Can't look up a floating point Point in dense_map: {p}"
         return self.grid[p.pos]
 
+    def update_point(self, p: Point, val: int) -> bool:
+        if self.at(p) == val:
+            return False
+        else:
+            self.grid[p.pos] = val
+            return True
+
     def move(self, entity: Entity, to: Point, no_trace: bool = False) -> bool:
         """
         Read super description
