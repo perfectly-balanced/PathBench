@@ -43,46 +43,48 @@ from algorithms.classic.graph_based.bug2 import Bug2
 from algorithms.classic.sample_based.rt import RT
 
 # OMPL algorithms
-from algorithms.classic.sample_based.ompl_rrt import OMPL_RRT
-from algorithms.classic.sample_based.ompl_prmstar import OMPL_PRMstar
-from algorithms.classic.sample_based.ompl_lazyprmstar import OMPL_LazyPRMstar
-from algorithms.classic.sample_based.ompl_rrtstar import OMPL_RRTstar
-from algorithms.classic.sample_based.ompl_rrtsharp import OMPL_RRTsharp
-from algorithms.classic.sample_based.ompl_rrtx import OMPL_RRTXstatic
-from algorithms.classic.sample_based.ompl_informedrrt import OMPL_InformedRRT
-from algorithms.classic.sample_based.ompl_kpiece1 import OMPL_KPIECE1
-from algorithms.classic.sample_based.ompl_ltlplanner import OMPL_LTLPlanner
-from algorithms.classic.sample_based.ompl_pdst import OMPL_PDST
-from algorithms.classic.sample_based.ompl_sst import OMPL_SST
-from algorithms.classic.sample_based.ompl_aitstar import OMPL_AITstar
-from algorithms.classic.sample_based.ompl_anytimepathshortening import OMPL_AnytimePathShortening
-from algorithms.classic.sample_based.ompl_bfmt import OMPL_BFMT
-from algorithms.classic.sample_based.ompl_biest import OMPL_BiEST
-from algorithms.classic.sample_based.ompl_rrtconnect import OMPL_RRTConnect
-from algorithms.classic.sample_based.ompl_trrt import OMPL_TRRT
-from algorithms.classic.sample_based.ompl_birlrt import OMPL_BiRLRT
-from algorithms.classic.sample_based.ompl_bitrrt import OMPL_BiTRRT 
-from algorithms.classic.sample_based.ompl_bitstar import OMPL_BITstar
-from algorithms.classic.sample_based.ompl_bkpiece1 import OMPL_BKPIECE1
-from algorithms.classic.sample_based.ompl_syclop import OMPL_Syclop 
-from algorithms.classic.sample_based.ompl_cforest import OMPL_CForest
-from algorithms.classic.sample_based.ompl_est import OMPL_EST
-from algorithms.classic.sample_based.ompl_fmt import OMPL_FMT
-from algorithms.classic.sample_based.ompl_lazylbtrrt import OMPL_LazyLBTRRT
-from algorithms.classic.sample_based.ompl_lazyprm import OMPL_LazyPRM
-from algorithms.classic.sample_based.ompl_lazyrrt import OMPL_LazyRRT
-from algorithms.classic.sample_based.ompl_lbkpiece1 import OMPL_LBKPIECE1
-from algorithms.classic.sample_based.ompl_lbtrrt import OMPL_LBTRRT
-from algorithms.classic.sample_based.ompl_prm import OMPL_PRM
-from algorithms.classic.sample_based.ompl_spars import OMPL_SPARS
-from algorithms.classic.sample_based.ompl_spars2 import OMPL_SPARS2
-from algorithms.classic.sample_based.ompl_vfrrt import OMPL_VFRRT
-from algorithms.classic.sample_based.ompl_prrt import OMPL_pRRT
-from algorithms.classic.sample_based.ompl_tsrrt import OMPL_TSRRT
-from algorithms.classic.sample_based.ompl_psbl import OMPL_pSBL
-from algorithms.classic.sample_based.ompl_sbl import OMPL_SBL
-from algorithms.classic.sample_based.ompl_stride import OMPL_STRIDE
-from algorithms.classic.sample_based.ompl_qrrt import OMPL_QRRT
+from utility.compatibility import HAS_OMPL
+if HAS_OMPL:
+    from algorithms.classic.sample_based.ompl_rrt import OMPL_RRT
+    from algorithms.classic.sample_based.ompl_prmstar import OMPL_PRMstar
+    from algorithms.classic.sample_based.ompl_lazyprmstar import OMPL_LazyPRMstar
+    from algorithms.classic.sample_based.ompl_rrtstar import OMPL_RRTstar
+    from algorithms.classic.sample_based.ompl_rrtsharp import OMPL_RRTsharp
+    from algorithms.classic.sample_based.ompl_rrtx import OMPL_RRTXstatic
+    from algorithms.classic.sample_based.ompl_informedrrt import OMPL_InformedRRT
+    from algorithms.classic.sample_based.ompl_kpiece1 import OMPL_KPIECE1
+    from algorithms.classic.sample_based.ompl_ltlplanner import OMPL_LTLPlanner
+    from algorithms.classic.sample_based.ompl_pdst import OMPL_PDST
+    from algorithms.classic.sample_based.ompl_sst import OMPL_SST
+    from algorithms.classic.sample_based.ompl_aitstar import OMPL_AITstar
+    from algorithms.classic.sample_based.ompl_anytimepathshortening import OMPL_AnytimePathShortening
+    from algorithms.classic.sample_based.ompl_bfmt import OMPL_BFMT
+    from algorithms.classic.sample_based.ompl_biest import OMPL_BiEST
+    from algorithms.classic.sample_based.ompl_rrtconnect import OMPL_RRTConnect
+    from algorithms.classic.sample_based.ompl_trrt import OMPL_TRRT
+    from algorithms.classic.sample_based.ompl_birlrt import OMPL_BiRLRT
+    from algorithms.classic.sample_based.ompl_bitrrt import OMPL_BiTRRT 
+    from algorithms.classic.sample_based.ompl_bitstar import OMPL_BITstar
+    from algorithms.classic.sample_based.ompl_bkpiece1 import OMPL_BKPIECE1
+    from algorithms.classic.sample_based.ompl_syclop import OMPL_Syclop 
+    from algorithms.classic.sample_based.ompl_cforest import OMPL_CForest
+    from algorithms.classic.sample_based.ompl_est import OMPL_EST
+    from algorithms.classic.sample_based.ompl_fmt import OMPL_FMT
+    from algorithms.classic.sample_based.ompl_lazylbtrrt import OMPL_LazyLBTRRT
+    from algorithms.classic.sample_based.ompl_lazyprm import OMPL_LazyPRM
+    from algorithms.classic.sample_based.ompl_lazyrrt import OMPL_LazyRRT
+    from algorithms.classic.sample_based.ompl_lbkpiece1 import OMPL_LBKPIECE1
+    from algorithms.classic.sample_based.ompl_lbtrrt import OMPL_LBTRRT
+    from algorithms.classic.sample_based.ompl_prm import OMPL_PRM
+    from algorithms.classic.sample_based.ompl_spars import OMPL_SPARS
+    from algorithms.classic.sample_based.ompl_spars2 import OMPL_SPARS2
+    from algorithms.classic.sample_based.ompl_vfrrt import OMPL_VFRRT
+    from algorithms.classic.sample_based.ompl_prrt import OMPL_pRRT
+    from algorithms.classic.sample_based.ompl_tsrrt import OMPL_TSRRT
+    from algorithms.classic.sample_based.ompl_psbl import OMPL_pSBL
+    from algorithms.classic.sample_based.ompl_sbl import OMPL_SBL
+    from algorithms.classic.sample_based.ompl_stride import OMPL_STRIDE
+    from algorithms.classic.sample_based.ompl_qrrt import OMPL_QRRT
 
 if TYPE_CHECKING:
     from main import MainRunner
