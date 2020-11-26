@@ -22,6 +22,6 @@ class SimulatorConfigState(PersistentStateObject):
         data["mp"] = self.mp
         data["algo"] = self.algo
         data["ani"] = self.ani
-        data["agent"] = tuple(self.agent)
-        data["goal"] = tuple(self.goal)
+        data["agent"] = tuple([int(x) for x in self.agent])
+        data["goal"] = tuple([int(x) for x in self.goal])
         return data
