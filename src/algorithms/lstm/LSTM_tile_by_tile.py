@@ -125,7 +125,7 @@ class BasicLSTMModule(MLModel):
             ],
             "save_name": "tile_by_tile",
             "training_data": [
-                'training_house_1000'
+                'training_uniform_random_fill_100_block_map_100_house_100'
                 # "training__house_expo"
                 #"training_house_100", #Impt
             ],
