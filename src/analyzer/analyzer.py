@@ -12,7 +12,6 @@ import seaborn as sns
 
 from io import StringIO
 
-from memory_profiler import profile
 from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.classic.testing.a_star_testing import AStarTesting
@@ -222,7 +221,6 @@ class Analyzer:
                         ret["kernels_pick_perc"][idx] = round(ret["kernels_pick_perc"][idx], 2)
         return ret
 
-    #@profile (precision=4)
     def __run_simulation(self, grid: Map, algorithm_type: Type[Algorithm], testing_type: Type[BasicTesting],
                          algo_params: Tuple[list, dict], agent_pos: Point = None) -> Dict[str, Any]:
         config = Configuration()
@@ -237,25 +235,15 @@ class Analyzer:
         sim: Simulator = Simulator(Services(config))
         
         tracemalloc.start()
-        # print("_*************((((((((((((((((()))))))))))))))))))))%^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-        # print ('Memory usage initially:')
 
         resu = sim.start().get_results()
         
-        current, peak = tracemalloc.get_traced_memory()
+        _, peak = tracemalloc.get_traced_memory() # current, peak
         
         tracemalloc.stop()
         
-        #print("smoothness result!!!!!!!", resu['smoothness_of_trajectory'])
-        
-        # print ('resu===============================================',resu)
-        # print ('Memory usage finally:')
 
-        print('############################################################Memory used =====', peak/1000,'KB')
-        #resu ['memory'] = 0
         resu ['memory'] = (peak/1000)
-        
-        #print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> resu = ", resu)
         
         return resu
 
@@ -632,12 +620,13 @@ class Analyzer:
             #(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (CombinedOnlineLSTM, ([], {}))}), "WayPointNavigation (Bagging)"),
             #(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"}))}), "WayPointNavigation (Map -block training)"),
             #(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}))}), "WayPointNavigation (Map -urf training)"),
-            #(RT, BasicTesting, ([], {})),
-            #(RRT, BasicTesting, ([], {})),
+            #(RT, BasicTesting, ([], {}), "RT"),
+            #(RRT, BasicTesting, ([], {}), "RRT"),
             #(RRT_Star, BasicTesting, ([], {}), "RRT*"),
             #(Bug1, BasicTesting, ([], {}), "Bug 1"),
             #(Bug2, BasicTesting, ([], {}), "Bug 2"),
             #(PotentialField, BasicTesting, ([], {}), "Potential Field"),
+            (VINTest, BasicTesting,([], {}), "VIN"),
             #(OMPL_RRT, BasicTesting, ([], {}), "OMPL RRT"),
             # (OMPL_PRMstar, BasicTesting, ([], {}), "OMPL PRM*"),
             #(RRT_Connect, BasicTesting, ([], {}), "RRT Connect"),
@@ -665,70 +654,10 @@ class Analyzer:
 
         ]
 
-        '''algorithm_names: List[str] = [
-            "A*",
-            "Wave-front",
-            "Dijkstra",               
-            "Online LSTM on uniform_random_fill_10000 (paper solution)", # View Module
-            "Online LSTM on block_map_10000",
-            "Online LSTM on house_10000",
-            "Online LSTM on uniform_random_fill_10000_block_map_10000",
-            "Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000",
-            "CAE Online LSTM on uniform_random_fill_10000", # Map Module
-            "CAE Online LSTM on block_map_10000 (paper solution)",
-            "CAE Online LSTM on house_10000",
-            "CAE Online LSTM on uniform_random_fill_10000_block_map_10000",
-            "CAE Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000",
-            "Combined Online LSTM (proposed solution)", # Bagging Module
-            "WayPointNavigation with local kernel: A* and global kernel: CAE Online LSTM on block_map_10000 (paper solution)",
-            "WayPointNavigation with local kernel: A* and global kernel: Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000 (paper solution)",
-            "WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)",
-        ]'''
-
-        algorithm_names: List[str] = [
-            "A*",
-            #"Wave-front",
-            #"Dijkstra",
-            #"Online LSTM on uniform_random_fill_10000 (paper solution)",
-            #"Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000",
-            #"CAE Online LSTM on uniform_random_fill_10000",
-            #"CAE Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000",
-            #"Combined Online LSTM (proposed solution)",
-            #"WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)",
-            #"WayPointNavigation with local kernel: A* and global kernel: CAE Online LSTM on block_map_10000 (paper solution)",
-            #"WayPointNavigation with local kernel: A* and global kernel: Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000 (paper solution)",                                           
-            #"RT",
-            #"RRT",
-            #"RRT*",
-            #"Bug1",
-            #"Bug2",
-            #"PotentialField",
-            "VIN",
-            #"OMPL RRT",
-            # "OMPL PRM*",
-            #"RRT-Connect",
-            # "OMPL Lazy PRM*",
-            # "OMPL RRT*",
-            # "OMPL RRT#",
-            # "OMPL RRTX",
-            # "OMPL KPIECE1",
-            # "OMPL PDST",
-            # "OMPL SST",
-            # "OMPL BiEst",
-            # "OMPL TRRT",
-            # "OMPL RRTConnect",
-            # "OMPL BITstar",
-            # "OMPL BKPIECE1",
-            # "OMPL EST",
-            # "OMPL LazyLBTRRT",
-            # "OMPL LazyPRM",
-            # "OMPL LazyRRT",
-            # "OMPL LBKPIECE1",
-            # "OMPL LBTRRT",
-            # "OMPL PRM",
-            # "OMPL STRIDE",
-            # "OMPL SBL",
-        ]
+        algorithm_names: List[str] = list(map(
+            lambda algo: algo[3],
+            algorithms
+        ))
 
         self.__services.debug.write("", timestamp=False, streams=[self.__analysis_stream])
         self.__services.debug.write("Starting basic analysis: number of maps = {}, number of algorithms = {}".format(len(maps), len(algorithms)), end="\n\n", streams=[self.__analysis_stream])
