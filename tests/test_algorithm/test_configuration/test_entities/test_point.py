@@ -54,6 +54,12 @@ class TestPoint(unittest.TestCase):
         point2: Point = Point(2, 3)
         self.assertNotEqual(point1, point2)
 
+    def test_conversion(self) -> None:
+        point: Point = Point(2, 3, 4)
+        self.assertEqual(tuple(point), (2, 3, 4))
+        self.assertEqual(point.pos, (2, 3, 4))
+        self.assertEqual(list(point), [2, 3, 4])
+
 
 if __name__ == '__main__':
-    TestEntity().run()
+    TestPoint().run()

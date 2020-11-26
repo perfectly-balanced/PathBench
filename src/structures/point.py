@@ -55,6 +55,9 @@ class Point(torch.Tensor):
     def __getitem__(self, idx) -> Union[float, int]:
         return self._pos[idx]
 
+    def __iter__(self) -> Union[Tuple[float, ...], Tuple[int, ...]]:
+        return iter(self._pos)
+
     def to_tensor(self) -> torch.Tensor:
         return torch.Tensor([float(c) for c in self._pos])
 
