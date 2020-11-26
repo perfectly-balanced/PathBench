@@ -14,7 +14,7 @@ The following installation and run instructions have been used for running PathB
 ### Installing dependencies
 ```bash
 sudo apt install python3-tk python3-pandas python3-sklearn
-sudo pip3 install torch numpy nptyping pygame torchvision memory-profiler seaborn dataset datafreeze normality dill natsort
+sudo pip3 install torch numpy nptyping pygame torchvision memory-profiler seaborn dataset datafreeze normality dill natsort panda3d
 ```
 
 Optional dependency is `ompl` with installation not covered here.
@@ -30,7 +30,7 @@ To find `<path-to-dataset-package>` on Linux you can run the following,
 ### Simulator Visualiser Usage
 ```bash
 cd src
-python3 main_gui.py
+python3 main.py -v
 ```
 You **must** run the main script from the `src` directory as some files are still using paths relative to the current working directory.
 
@@ -39,7 +39,7 @@ You **must** run the main script from the `src` directory as some files are stil
 | escape            	| Exit the simulator                                                	|
 | mouse left click  	| Moves agent to mouse location                                     	|
 | mouse right click 	| Moves goal to mouse location                                      	|
-| W A S D               | Rotate orbital camera around map                                      |
+| w a s d               | Rotate orbital camera around map                                      |
 | t                 	| Find the path between the agent and goal                            	|
 | x                 	| Pause/Resume path finding (animations required)                      	|
 | p                 	| Take screenshot (the screenshot is placed in resources directory) 	|
