@@ -143,8 +143,8 @@ class AlgorithmRunner(Service):
         self.reset_algorithm()
         if self._services.settings.simulator_key_frame_speed > 0:
             self.instance.set_root_key_frame(self.__pass_root_key_frame)
-        if agent_pos is not None:
+        if agent_pos:
             self.map.move_agent(agent_pos, True)
-        if goal_pos is not None:
+        if goal_pos:
             self.map.move(self.map.goal, goal_pos, True)
         self.instance.find_path()

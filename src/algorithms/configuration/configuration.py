@@ -80,9 +80,9 @@ class Configuration:
 
 
         # Generator
-        self.generator = True
+        self.generator = False
         self.generator_labelling_atlases = ['house_100']
-        self.generator_nr_of_examples = 100
+        self.generator_nr_of_examples = 10
         self.generator_gen_type = "house"
         self.generator_labelling_features = ["distance_to_goal_normalized",
                 "raycast_8_normalized",
@@ -100,7 +100,7 @@ class Configuration:
         self.generator_house_expo = False
         self.generator_size = 28
         
-        self.num_dim = 3
+        self.num_dim = 2
         
         # Trainer
         self.trainer = False
