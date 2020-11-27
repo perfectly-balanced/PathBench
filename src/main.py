@@ -94,6 +94,19 @@ def configure_and_run(args) -> bool:
     if args.generator:
         config.generator = True
 
+    if args.debug == 'NONE':
+        config.simulator_write_debug_level = DebugLevel.NONE
+    elif args.debug == 'BASIC':
+        config.simulator_write_debug_level = DebugLevel.BASIC
+    elif args.debug == 'LOW':
+        config.simulator_write_debug_level = DebugLevel.LOW
+    elif args.debug == 'MEDIUM':
+        config.simulator_write_debug_level = DebugLevel.MEDIUM
+    elif args.debug == 'HIGH':
+        config.simulator_write_debug_level = DebugLevel.HIGH
+    else:
+        raise NotImplementedError
+    
     mr = MainRunner(config)
     mr.run()
     return True
@@ -104,6 +117,8 @@ def main() -> bool:
                                      formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("-v", "--visualiser", action='store_true', help="run simulator with graphics")
     parser.add_argument("-g", "--generator", action='store_true', help="run generator")
+    parser.add_argument("-t", "--trainer", action='store_true', help="runs model trainer")
+    parser.add_argument("-d", "--debug", choices=['NONE', 'BASIC', 'LOW', 'MEDIUM', 'HIGH'], default='HIGH', help="set the debug level when running, default is high")
     parser.add_argument("-V", dest="visualiser_flags", metavar="VISUALISER_FLAG", action='append',
                         help="Visualiser options (overriding Panda3D's default Config.prc - see https://docs.panda3d.org/1.10/python/programming/configuration/configuring-panda3d#configuring-panda3d for options [windowed-fullscreen is an additional custom option])")
 

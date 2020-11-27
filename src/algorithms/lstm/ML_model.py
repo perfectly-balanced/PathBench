@@ -169,8 +169,7 @@ class PackedDataset(Dataset):
         self.data, self.lengths = pad_packed_sequence(packed_sequence, batch_first=True)
 
     def __getitem__(self, index: int) -> Tuple[Any, int]:
-        d = self.data[index], self.lengths[index]
-        return d
+        return self.data[index], self.lengths[index]
 
     def __len__(self) -> int:
         return len(self.data)

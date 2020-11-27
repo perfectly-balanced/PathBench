@@ -69,8 +69,6 @@ class Directory(Service):
             self._services.debug.write("Loaded [{}]".format(self._full_path() + name), DebugLevel.LOW)
         else:
             self._services.debug.write("File not found [{}]".format(self._full_path() + name), DebugLevel.LOW)
-            print(self._full_path() + name)
-            #raise RuntimeError("File not found, consider running from src/")
         return obj
 
     def exists(self, name: str, extension: str) -> bool:
