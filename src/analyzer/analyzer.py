@@ -134,6 +134,7 @@ class Analyzer:
         average_steps: float = Analyzer.__get_average_value(filtered_results, "total_steps")
         average_distance: float = Analyzer.__get_average_value(filtered_results, "total_distance")
         average_smoothness: float = Analyzer.__get_average_value(filtered_results, "smoothness_of_trajectory")
+        average_clearance: float = Analyzer.__get_average_value(filtered_results, "obstacle_clearance")
         average_time: float = Analyzer.__get_average_value(filtered_results, "total_time", 4)
         average_distance_from_goal: float = Analyzer.__get_average_value(results, "distance_to_goal")
         average_original_distance_from_goal: float = Analyzer.__get_average_value(results, "original_distance_to_goal")
@@ -141,6 +142,7 @@ class Analyzer:
         steps_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "total_steps")
         distance_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "total_distance")
         smoothness_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "smoothness_of_trajectory")
+        clearance_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "obstacle_clearance")
         time_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "total_time", 4)
         distance_from_goal_alldata: List[Any] = Analyzer.__get_values(results, "distance_to_goal")
         original_distance_from_goal_alldata: List[Any] = Analyzer.__get_values(results, "original_distance_to_goal")
@@ -153,12 +155,14 @@ class Analyzer:
             "average_steps": average_steps,
             "average_distance": average_distance,
             "average_smoothness": average_smoothness,
+            "average_clearance": average_clearance,
             "average_time": average_time,
             "average_distance_from_goal": average_distance_from_goal,
             "average_original_distance_from_goal": average_original_distance_from_goal,
             "steps_alldata": steps_alldata,
             "distance_alldata": distance_alldata,
             "smoothness_alldata": smoothness_alldata,
+            "clearance_alldata": clearance_alldata,
             "time_alldata": time_alldata,
             "distance_from_goal_alldata": distance_from_goal_alldata,
             "original_distance_from_goal_alldata": original_distance_from_goal_alldata,
@@ -268,8 +272,6 @@ class Analyzer:
         # returns a_star_results if modified
         res_proc = self.__get_results(results)
         
-        #print("average smoothness!!!!!!!!!!!!!!!!!!!!!!!", res_proc["average_smoothness"])
-
         if algorithm_type == AStar:
             a_star_res = results
 
@@ -281,6 +283,7 @@ class Analyzer:
         average_steps_improvement = __get_improvement(res_proc["average_steps"], a_star_res_proc["average_steps"])
         average_distance_improvement = __get_improvement(res_proc["average_distance"], a_star_res_proc["average_distance"])
         average_smoothness_improvement = __get_improvement(res_proc["average_smoothness"], a_star_res_proc["average_smoothness"])
+        average_clearance_improvement = __get_improvement(res_proc["average_clearance"], a_star_res_proc["average_clearance"])
         average_time_improvement = __get_improvement(res_proc["average_time"], a_star_res_proc["average_time"])
         average_distance_from_goal_improvement = __get_improvement(res_proc["average_distance_from_goal"], a_star_res_proc["average_distance_from_goal"])
 
@@ -288,6 +291,7 @@ class Analyzer:
         res_proc["average_steps_improvement"] = average_steps_improvement
         res_proc["average_distance_improvement"] = average_distance_improvement
         res_proc["average_smoothness_improvement"] = average_smoothness_improvement
+        res_proc["average_clearance_improvement"] = average_clearance_improvement
         res_proc["average_time_improvement"] = average_time_improvement
         res_proc["average_distance_from_goal_improvement"] = average_distance_from_goal_improvement
         res_proc["average_path_deviation"] = res_proc["average_distance"] - a_star_res_proc["average_distance"] 
@@ -298,6 +302,7 @@ class Analyzer:
         self.__services.debug.write("Average total steps: {}, (A*: {}), (Improvement: {}%)".format(res_proc["average_steps"], a_star_res_proc["average_steps"], average_steps_improvement), streams=[self.__analysis_stream])
         self.__services.debug.write("Average total distance: {}, (A*: {}), (Improvement: {}%)".format(res_proc["average_distance"], a_star_res_proc["average_distance"], average_distance_improvement), streams=[self.__analysis_stream])
         self.__services.debug.write("Average trajectory smoothness: {}, (A*: {}), (Improvement: {}%)".format(res_proc["average_smoothness"], a_star_res_proc["average_smoothness"], average_smoothness_improvement), streams=[self.__analysis_stream])
+        self.__services.debug.write("Average trajectory clearance: {}, (A*: {}), (Improvement: {}%)".format(res_proc["average_clearance"], a_star_res_proc["average_clearance"], average_clearance_improvement), streams=[self.__analysis_stream])
         self.__services.debug.write("Average time: {} seconds, (A*: {} seconds), (Improvement: {}%)".format(res_proc["average_time"], a_star_res_proc["average_time"], average_time_improvement), streams=[self.__analysis_stream])
         self.__services.debug.write("Average distance from goal: {}, (A*: {}), (Improvement: {}%) (Average original distance from goal: {})".format(res_proc["average_distance_from_goal"], a_star_res_proc["average_distance_from_goal"], average_distance_from_goal_improvement, res_proc["average_original_distance_from_goal"]), streams=[self.__analysis_stream])
 
@@ -365,7 +370,7 @@ class Analyzer:
 
         # writing average data to csv file
         with open('pbtest.csv', 'a+', newline='') as file:
-            fieldnames = ['Algorithm', 'Average Path Deviation', 'Success Rate', 'Average Time','Average Steps', 'Average Distance', 'Average Distance from Goal','Average Original Distance from Goal', 'Average Trajectory Smoothness', 'Average Search Space', 'Average Memory']
+            fieldnames = ['Algorithm', 'Average Path Deviation', 'Success Rate', 'Average Time','Average Steps', 'Average Distance', 'Average Distance from Goal','Average Original Distance from Goal', 'Average Trajectory Smoothness', 'Average Obstacle Clearance', 'Average Search Space', 'Average Memory']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
 
             if file.tell() == 0:
@@ -380,13 +385,14 @@ class Analyzer:
 
             writer.writerow({'Algorithm': algoname1, 'Success Rate':res_proc["goal_found_perc"], 'Average Time': res_proc["average_time"],'Average Steps': res_proc["average_steps"]\
                 ,'Average Distance': res_proc["average_distance"],'Average Distance from Goal': res_proc["average_distance_from_goal"]\
-                    ,'Average Original Distance from Goal': res_proc["average_original_distance_from_goal"], 'Average Path Deviation': res_proc["average_path_deviation"], 'Average Trajectory Smoothness': res_proc["average_smoothness"]\
+                    ,'Average Original Distance from Goal': res_proc["average_original_distance_from_goal"], 'Average Path Deviation': res_proc["average_path_deviation"]\
+                    ,'Average Trajectory Smoothness': res_proc["average_smoothness"], 'Average Obstacle Clearance': res_proc["average_clearance"]\
                     , 'Average Search Space': res_proc["average_total_search_space"], 'Average Memory': res_proc["average memory"] })
 
         # writing all data points to csv file
 
         with open('pbtestfull.csv', 'a+', newline='') as file:
-            fieldnames2 = ['Algorithm','Time', 'Distance', 'Distance from Goal','Path Deviation','Original Distance from Goal','Trajectory Smoothness', 'Search Space','Memory']
+            fieldnames2 = ['Algorithm','Time', 'Distance', 'Distance from Goal','Path Deviation','Original Distance from Goal','Trajectory Smoothness', 'Obstacle Clearance', 'Search Space','Memory']
             writer1 = csv.DictWriter(file, fieldnames=fieldnames2)
 
             if file.tell() == 0:
@@ -395,7 +401,9 @@ class Analyzer:
 
             for n in range(len(res_proc['time_alldata'])):
                 writer1.writerow({'Algorithm': algoname1,  'Time': res_proc["time_alldata"][n], 'Distance': res_proc['distance_alldata'][n],'Path Deviation':res_proc['path_deviation_alldata'][n],'Distance from Goal': res_proc['distance_from_goal_alldata'][n]\
-                    , 'Original Distance from Goal': res_proc['original_distance_from_goal_alldata'][n], 'Trajectory Smoothness': res_proc['smoothness_alldata'][n], 'Search Space': res_proc['search_space_alldata'][n]\
+                    , 'Original Distance from Goal': res_proc['original_distance_from_goal_alldata'][n]\
+                    , 'Trajectory Smoothness': res_proc['smoothness_alldata'][n], 'Search Space': res_proc['search_space_alldata'][n]\
+                    , 'Obstacle Clearance': res_proc['clearance_alldata'][n]\
                     , 'Memory': res_proc['memory_alldata'][n]})
 
             '''writer.writerow({'Algorithm': algoname1, 'Time': res_proc["time_alldata"], 'Distance': res_proc["distance_alldata"]\
