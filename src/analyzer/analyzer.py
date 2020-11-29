@@ -684,7 +684,43 @@ class Analyzer:
         print(df)
         print('********************************')
         print(dffull)
+        
+        plot4, axs3 = plt.subplots(ncols=3)
+        plot4.set_size_inches(18, 12)
+        
+        p1b = sns.barplot(x="Algorithm", y="Average Memory", data=df, ax=axs3[0])
+        p1b.set_xticklabels(p1b.get_xticklabels(), rotation=40, ha="right", fontsize=9)
+        p1b.set_title('Average Memory vs. Algorithm ')
+        p1b.set_ylabel('Average Memory (s)')
 
+        p2b = sns.barplot(x="Algorithm", y="Average Trajectory Smoothness", data=df, ax=axs3[1])
+        p2b.set_xticklabels(p1b.get_xticklabels(), rotation=40, ha="right", fontsize=9)
+        p2b.set_title('Average Trajectory Smoothness vs. Algorithm ')
+        p2b.set_ylabel('Average Trajectory Smoothness (rad/move)')
+
+        p3b = sns.barplot(x="Algorithm", y="Average Obstacle Clearance", data=df, ax=axs3[2])
+        p3b.set_xticklabels(p1b.get_xticklabels(), rotation=40, ha="right", fontsize=9)
+        p3b.set_title('Average Obstacle Clearance vs. Algorithm ')
+        p3b.set_ylabel('Average Obstacle Clearance')
+        
+        plot3, axs2 = plt.subplots(ncols=3)
+        plot3.set_size_inches(18, 12)
+        
+        p1a = sns.violinplot(x="Algorithm", y="Memory", data=dffull, ax=axs2[0])
+        p1a.set_xticklabels(p1a.get_xticklabels(), rotation=40, ha="right", fontsize=9)
+        p1a.set_title('Memory vs. Algorithm ')
+        p1a.set_ylabel('Memory (KiB)')
+
+        p2a = sns.violinplot(x="Algorithm", y='Trajectory Smoothness', data=dffull, ax=axs2[1])
+        p2a.set_xticklabels(p1a.get_xticklabels(), rotation=40, ha="right", fontsize=9)
+        p2a.set_title('Trajectory Smoothness vs. Algorithm ')
+        p2a.set_ylabel('Trajectory Smoothness (rad/move)')
+        
+        p3a = sns.violinplot(x="Algorithm", y='Obstacle Clearance', data=dffull, ax=axs2[2])
+        p3a.set_xticklabels(p1a.get_xticklabels(), rotation=40, ha="right", fontsize=9)
+        p3a.set_title('Obstacle Clearance vs. Algorithm ')
+        p3a.set_ylabel('Obstacle Clearance')
+        
         plot2, axs1 = plt.subplots(ncols=5)
         plot2.set_size_inches(18, 12)
 
