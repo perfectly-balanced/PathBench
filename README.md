@@ -13,8 +13,7 @@ The following installation and run instructions have been used for running PathB
 
 ### Installing dependencies
 ```bash
-sudo apt install python3-tk python3-pandas python3-sklearn
-sudo pip3 install torch numpy nptyping pygame torchvision memory-profiler seaborn dataset datafreeze normality dill natsort panda3d
+sudo pip3 install torch numpy nptyping pygame torchvision memory-profiler seaborn dataset datafreeze normality dill natsort panda3d pandas sklearn
 ```
 
 Optional dependency is `ompl` with installation not covered here.
