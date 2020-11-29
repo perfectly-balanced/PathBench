@@ -4,6 +4,7 @@ from operator import mul
 from functools import reduce
 
 import numpy as np
+from structures.heap import Heap
 
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.trace import Trace
@@ -140,6 +141,8 @@ class BasicTesting:
             "trace": trace,
             "total_steps": len(trace),
             "total_distance": self.get_euclidean_distance_traveled(trace, grid.agent),
+            "smoothness_of_trajectory": self.get_smoothness(trace, grid.agent),
+            "obstacle_clearance": self.get_average_clearance(trace, self._services.algorithm.map),
             "total_time": self.total_time,
             "algorithm_type": self._services.algorithm.algorithm_type,
         }
@@ -157,6 +160,7 @@ class BasicTesting:
             self._services.debug.write("Distance to goal: " + str(results["distance_to_goal"]) + " (Original: {})".format(results["original_distance_to_goal"]))
         self._services.debug.write("Total steps: " + str(results["total_steps"]), DebugLevel.BASIC)
         self._services.debug.write("Total distance: {0:.2f}".format(results["total_distance"]), DebugLevel.BASIC)
+        self._services.debug.write("Trajectory Smoothness: {0:.2f}".format(results["smoothness_of_trajectory"]), DebugLevel.BASIC)
         self._services.debug.write("Total time: " + str(results["total_time"]) + " seconds", DebugLevel.BASIC)
         self._services.debug.write("Trace: " + str(results["trace"]), DebugLevel.MEDIUM)
 
@@ -201,6 +205,65 @@ class BasicTesting:
         for i in range(1, len(trace)):
             dist += np.linalg.norm(np.array(trace[i - 1].position) - np.array(trace[i].position))
         return dist
+
+    @staticmethod
+    def get_smoothness(trace: List[Trace], agent: Agent) -> float:
+        trace.append(Trace(agent.position))
+        angle = 0
+        prev_angle = None
+        
+        #print(trace)
+        for i in range(1, len(trace)):
+
+            if(not trace[i - 1].position == trace[i].position):
+                
+                unit_vector1 = np.array(trace[i - 1].position - trace[i].position) / np.linalg.norm(np.array(trace[i - 1].position - trace[i].position))
+                t = [0] * (len(agent.position) - 1)
+                t = tuple([1] + t)
+                dot_product = np.dot(unit_vector1, t)
+                if prev_angle is None:
+                    prev_angle = np.arccos(dot_product)
+                    continue
+                
+               
+                angle += abs(prev_angle - np.arccos(dot_product))
+                prev_angle = np.arccos(dot_product)
+            
+        return (angle / len(trace))
+
+    @staticmethod
+    def get_average_clearance(trace: List[Trace], grid: Map) -> float:
+        """ # Super slow
+        distance_grid = np.full(tuple(grid.size), np.inf)
+        distance_queue = Heap()
+        visited = set()
+        for obstacle in np.transpose(np.where(grid.grid == grid.WALL_ID)):
+            obstacle = tuple(obstacle)
+            distance_queue.push((0, obstacle))
+            visited.add(obstacle)
+
+        while len(distance_queue) > 0:
+            dist, pos = distance_queue.pop()
+            distance_grid[pos] = dist
+            for next_pos in grid.get_next_positions(Point(*pos)):
+                if next_pos.pos in visited: continue
+                if distance_grid[next_pos.pos] == np.inf:
+                    distance_queue.push((dist+1, next_pos.pos))
+                    visited.add(next_pos.pos)
+        
+        # Sum along path
+        path_points = map(lambda t: t.position.pos, trace)
+        obstacle_dist = list(map(lambda pos: distance_grid[pos], path_points))
+        return sum(obstacle_dist) / len(obstacle_dist)"""
+        obstacles = np.transpose(np.where(grid.grid == grid.WALL_ID))
+        obstacle_dists = []
+        for t in trace:
+            pos = np.array(t.position.pos)
+            obstacles_shifted = obstacles - pos
+            norms = np.linalg.norm(obstacles_shifted, axis=1)
+            min_dist = np.min(norms)
+            obstacle_dists.append(min_dist)
+        return sum(obstacle_dists) / len(obstacle_dists)
 
     @property
     def map(self) -> str:

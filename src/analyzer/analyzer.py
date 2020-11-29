@@ -1,49 +1,47 @@
+from utility.compatibility import HAS_OMPL
+from algorithms.classic.sample_based.rt import RT
+from algorithms.classic.graph_based.bug2 import Bug2
+from algorithms.classic.graph_based.bug1 import Bug1
+from algorithms.classic.graph_based.potential_field import PotentialField
+from algorithms.classic.graph_based.wavefront import Wavefront
+from algorithms.classic.sample_based.rrt_connect import RRT_Connect
+from algorithms.classic.sample_based.rrt_star import RRT_Star
+from algorithms.classic.sample_based.rrt import RRT
+from algorithms.classic.graph_based.dijkstra import Dijkstra
+from algorithms.classic.graph_based.a_star import AStar
+from structures import Point
+from simulator.simulator import Simulator
+from simulator.services.services import Services
+from simulator.services.debug import DebugLevel, Debug
+from maps import Maps
+from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
+from algorithms.lstm.a_star_waypoint import WayPointNavigation
+from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
+from algorithms.configuration.maps.map import Map
+from algorithms.configuration.maps.dense_map import DenseMap
+from algorithms.configuration.configuration import Configuration
+from algorithms.classic.testing.way_point_navigation_testing import WayPointNavigationTesting
+from algorithms.classic.testing.combined_online_lstm_testing import CombinedOnlineLSTMTesting
+from algorithms.classic.testing.wavefront_testing import WavefrontTesting
+from algorithms.classic.testing.dijkstra_testing import DijkstraTesting
+from algorithms.classic.testing.a_star_testing import AStarTesting
+from algorithms.basic_testing import BasicTesting
+from algorithms.algorithm import Algorithm
+from io import StringIO
+import seaborn as sns
+import matplotlib.pyplot as plt
 import resource
 import psutil
 import copy
 import random
+import tracemalloc
 from typing import TYPE_CHECKING, List, Tuple, Type, Any, Dict, Union, Optional
 import csv
 import pandas as pd
 pd.plotting.register_matplotlib_converters()
-import matplotlib.pyplot as plt
-import seaborn as sns
 
-from io import StringIO
-
-from memory_profiler import profile
-from algorithms.algorithm import Algorithm
-from algorithms.basic_testing import BasicTesting
-from algorithms.classic.testing.a_star_testing import AStarTesting
-from algorithms.classic.testing.dijkstra_testing import DijkstraTesting
-from algorithms.classic.testing.wavefront_testing import WavefrontTesting
-from algorithms.classic.testing.combined_online_lstm_testing import CombinedOnlineLSTMTesting
-from algorithms.classic.testing.way_point_navigation_testing import WayPointNavigationTesting
-from algorithms.configuration.configuration import Configuration
-from algorithms.configuration.maps.dense_map import DenseMap
-from algorithms.configuration.maps.map import Map
-from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
-from algorithms.lstm.a_star_waypoint import WayPointNavigation
-from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
-from maps import Maps
-from simulator.services.debug import DebugLevel, Debug
-from simulator.services.services import Services
-from simulator.simulator import Simulator
-from structures import Point
-
-from algorithms.classic.graph_based.a_star import AStar
-from algorithms.classic.graph_based.dijkstra import Dijkstra
-from algorithms.classic.sample_based.rrt import RRT
-from algorithms.classic.sample_based.rrt_star import RRT_Star
-from algorithms.classic.sample_based.rrt_connect import RRT_Connect
-from algorithms.classic.graph_based.wavefront import Wavefront
-from algorithms.classic.graph_based.potential_field import PotentialField
-from algorithms.classic.graph_based.bug1 import Bug1
-from algorithms.classic.graph_based.bug2 import Bug2
-from algorithms.classic.sample_based.rt import RT
 
 # OMPL algorithms
-from utility.compatibility import HAS_OMPL
 if HAS_OMPL:
     from algorithms.classic.sample_based.ompl_rrt import OMPL_RRT
     from algorithms.classic.sample_based.ompl_prmstar import OMPL_PRMstar
@@ -63,10 +61,10 @@ if HAS_OMPL:
     from algorithms.classic.sample_based.ompl_rrtconnect import OMPL_RRTConnect
     from algorithms.classic.sample_based.ompl_trrt import OMPL_TRRT
     from algorithms.classic.sample_based.ompl_birlrt import OMPL_BiRLRT
-    from algorithms.classic.sample_based.ompl_bitrrt import OMPL_BiTRRT 
+    from algorithms.classic.sample_based.ompl_bitrrt import OMPL_BiTRRT
     from algorithms.classic.sample_based.ompl_bitstar import OMPL_BITstar
     from algorithms.classic.sample_based.ompl_bkpiece1 import OMPL_BKPIECE1
-    from algorithms.classic.sample_based.ompl_syclop import OMPL_Syclop 
+    from algorithms.classic.sample_based.ompl_syclop import OMPL_Syclop
     from algorithms.classic.sample_based.ompl_cforest import OMPL_CForest
     from algorithms.classic.sample_based.ompl_est import OMPL_EST
     from algorithms.classic.sample_based.ompl_fmt import OMPL_FMT
@@ -106,8 +104,8 @@ class Analyzer:
     def __get_average_value(results: List[Dict[str, Any]], attribute: str, decimal_places: int = 2) -> float:
         if len(results) == 0:
             return 0
-        #list of data for each result type
-        #lstdata =list(map(lambda r: r[attribute], results)))
+        # list of data for each result type
+        # lstdata =list(map(lambda r: r[attribute], results)))
         val: float = sum(list(map(lambda r: r[attribute], results)))
         val = round(float(val) / len(results), decimal_places)
         return val
@@ -116,9 +114,9 @@ class Analyzer:
     def __get_values(results: List[Dict[str, Any]], attribute: str, decimal_places: int = 2) -> float:
         if len(results) == 0:
             return 0
-        
-        #list of data for each result type
-        lstdata =list(map(lambda r: r[attribute], results))
+
+        # list of data for each result type
+        lstdata = list(map(lambda r: r[attribute], results))
 
         return lstdata
 
@@ -133,43 +131,50 @@ class Analyzer:
 
         average_steps: float = Analyzer.__get_average_value(filtered_results, "total_steps")
         average_distance: float = Analyzer.__get_average_value(filtered_results, "total_distance")
+        average_smoothness: float = Analyzer.__get_average_value(filtered_results, "smoothness_of_trajectory")
+        average_clearance: float = Analyzer.__get_average_value(filtered_results, "obstacle_clearance")
         average_time: float = Analyzer.__get_average_value(filtered_results, "total_time", 4)
         average_distance_from_goal: float = Analyzer.__get_average_value(results, "distance_to_goal")
         average_original_distance_from_goal: float = Analyzer.__get_average_value(results, "original_distance_to_goal")
 
-        steps_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "total_steps")
-        distance_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "total_distance")
-        time_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "total_time", 4)
+        steps_alldata: List[Any] = Analyzer.__get_values(filtered_results, "total_steps")
+        distance_alldata: List[Any] = Analyzer.__get_values(filtered_results, "total_distance")
+        smoothness_alldata: List[Any] = Analyzer.__get_values(filtered_results, "smoothness_of_trajectory")
+        clearance_alldata: List[Any] = Analyzer.__get_values(filtered_results, "obstacle_clearance")
+        time_alldata: List[Any] = Analyzer.__get_values(filtered_results, "total_time", 4)
         distance_from_goal_alldata: List[Any] = Analyzer.__get_values(results, "distance_to_goal")
         original_distance_from_goal_alldata: List[Any] = Analyzer.__get_values(results, "original_distance_to_goal")
-        path_deviation_alldata: List[Any]  = Analyzer.__get_values(filtered_results, "total_distance")
+        path_deviation_alldata: List[Any] = Analyzer.__get_values(filtered_results, "total_distance")
         memory_alldata = Analyzer.__get_values(filtered_results, "memory")
         average_memory = Analyzer.__get_average_value(results, "memory")
-  
+
         ret = {
             "goal_found_perc": goal_found,
             "average_steps": average_steps,
             "average_distance": average_distance,
+            "average_smoothness": average_smoothness,
+            "average_clearance": average_clearance,
             "average_time": average_time,
             "average_distance_from_goal": average_distance_from_goal,
             "average_original_distance_from_goal": average_original_distance_from_goal,
             "steps_alldata": steps_alldata,
             "distance_alldata": distance_alldata,
+            "smoothness_alldata": smoothness_alldata,
+            "clearance_alldata": clearance_alldata,
             "time_alldata": time_alldata,
             "distance_from_goal_alldata": distance_from_goal_alldata,
             "original_distance_from_goal_alldata": original_distance_from_goal_alldata,
             'path_deviation_alldata': distance_alldata,
             'memory_alldata': memory_alldata,
             'average memory': average_memory
-            }
+        }
 
         if results:
             if "fringe" in results[0]:
                 ret["average_fringe"] = Analyzer.__get_average_value(filtered_results, "fringe")
                 ret["average_search_space"] = Analyzer.__get_average_value(filtered_results, "search_space")
                 ret["average_total_search_space"] = Analyzer.__get_average_value(filtered_results, "total_search_space")
-                ret['search_space_alldata']= Analyzer.__get_values(filtered_results, "total_search_space")
-
+                ret['search_space_alldata'] = Analyzer.__get_values(filtered_results, "total_search_space")
 
             # combined lstm
             if "kernels" in results[0]:
@@ -198,9 +203,9 @@ class Analyzer:
                 ret["average_local_kernel_average_fringe"] = Analyzer.__get_average_value(filtered_results, "local_kernel_average_fringe")
                 ret["average_local_kernel_average_total"] = Analyzer.__get_average_value(filtered_results, "local_kernel_average_total")
                 ret["average_total_search_space"] = Analyzer.__get_average_value(filtered_results, "local_kernel_total_search_space")
-                ret['search_space_alldata']= Analyzer.__get_values(filtered_results, "local_kernel_total_search_space") #
-                ret["average_total_search_space"] = Analyzer.__get_average_value(filtered_results, "local_kernel_total_search_space") #
-                
+                ret['search_space_alldata'] = Analyzer.__get_values(filtered_results, "local_kernel_total_search_space")
+                ret["average_total_search_space"] = Analyzer.__get_average_value(filtered_results, "local_kernel_total_search_space")
+
                 # with combined lstm
                 if "global_kernel_kernel_names" in results[0]:
                     ret["global_kernel_kernel_names"] = results[0]["global_kernel_kernel_names"]
@@ -217,7 +222,6 @@ class Analyzer:
                         ret["kernels_pick_perc"][idx] = round(ret["kernels_pick_perc"][idx], 2)
         return ret
 
-    #@profile (precision=4)
     def __run_simulation(self, grid: Map, algorithm_type: Type[Algorithm], testing_type: Type[BasicTesting],
                          algo_params: Tuple[list, dict], agent_pos: Point = None) -> Dict[str, Any]:
         config = Configuration()
@@ -230,23 +234,17 @@ class Analyzer:
             config.simulator_initial_map.move_agent(agent_pos, True, False)
 
         sim: Simulator = Simulator(Services(config))
-        
-        memory1 = psutil.virtual_memory()
-        # print("_*************((((((((((((((((()))))))))))))))))))))%^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-        # print ('Memory usage initially:')
-        before = memory1.used
+
+        tracemalloc.start()
 
         resu = sim.start().get_results()
-        
-        # print ('resu===============================================',resu)
-        # print ('Memory usage finally:')
-        memory2 = psutil.virtual_memory()
-        after = memory2.used
-        print('############################################################Memory used =====', (abs(after - before)/1000),'KB')
-        resu ['memory'] = (abs(after - before)/1000)
-        
-        #print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> resu = ", resu)
-        
+
+        _, peak = tracemalloc.get_traced_memory()  # current, peak
+
+        tracemalloc.stop()
+
+        resu['memory'] = (peak/1000)
+
         return resu
 
     def __convert_maps(self, maps: List[Map]) -> List[Map]:
@@ -280,23 +278,35 @@ class Analyzer:
         goal_found_perc_improvement = __get_improvement(res_proc["goal_found_perc"], a_star_res_proc["goal_found_perc"], False)
         average_steps_improvement = __get_improvement(res_proc["average_steps"], a_star_res_proc["average_steps"])
         average_distance_improvement = __get_improvement(res_proc["average_distance"], a_star_res_proc["average_distance"])
+        average_smoothness_improvement = __get_improvement(res_proc["average_smoothness"], a_star_res_proc["average_smoothness"])
+        average_clearance_improvement = __get_improvement(res_proc["average_clearance"], a_star_res_proc["average_clearance"])
         average_time_improvement = __get_improvement(res_proc["average_time"], a_star_res_proc["average_time"])
         average_distance_from_goal_improvement = __get_improvement(res_proc["average_distance_from_goal"], a_star_res_proc["average_distance_from_goal"])
 
         res_proc["goal_found_perc_improvement"] = goal_found_perc_improvement
         res_proc["average_steps_improvement"] = average_steps_improvement
         res_proc["average_distance_improvement"] = average_distance_improvement
+        res_proc["average_smoothness_improvement"] = average_smoothness_improvement
+        res_proc["average_clearance_improvement"] = average_clearance_improvement
         res_proc["average_time_improvement"] = average_time_improvement
         res_proc["average_distance_from_goal_improvement"] = average_distance_from_goal_improvement
-        res_proc["average_path_deviation"] = res_proc["average_distance"] - a_star_res_proc["average_distance"] 
-        res_proc['path_deviation_alldata'] = [ y-x for x,y in zip(res_proc['path_deviation_alldata'], a_star_res_proc["distance_alldata"])]
+        res_proc["average_path_deviation"] = res_proc["average_distance"] - a_star_res_proc["average_distance"]
+        res_proc['path_deviation_alldata'] = [y-x for x, y in zip(res_proc['path_deviation_alldata'], a_star_res_proc["distance_alldata"])]
 
-
-        self.__services.debug.write("Rate of success: {}%, (A*: {}%), (Improvement: {}%)".format(res_proc["goal_found_perc"], a_star_res_proc["goal_found_perc"], goal_found_perc_improvement), streams=[self.__analysis_stream])
-        self.__services.debug.write("Average total steps: {}, (A*: {}), (Improvement: {}%)".format(res_proc["average_steps"], a_star_res_proc["average_steps"], average_steps_improvement), streams=[self.__analysis_stream])
-        self.__services.debug.write("Average total distance: {}, (A*: {}), (Improvement: {}%)".format(res_proc["average_distance"], a_star_res_proc["average_distance"], average_distance_improvement), streams=[self.__analysis_stream])
-        self.__services.debug.write("Average time: {} seconds, (A*: {} seconds), (Improvement: {}%)".format(res_proc["average_time"], a_star_res_proc["average_time"], average_time_improvement), streams=[self.__analysis_stream])
-        self.__services.debug.write("Average distance from goal: {}, (A*: {}), (Improvement: {}%) (Average original distance from goal: {})".format(res_proc["average_distance_from_goal"], a_star_res_proc["average_distance_from_goal"], average_distance_from_goal_improvement, res_proc["average_original_distance_from_goal"]), streams=[self.__analysis_stream])
+        self.__services.debug.write("Rate of success: {}%, (A*: {}%), (Improvement: {}%)".format(
+            res_proc["goal_found_perc"], a_star_res_proc["goal_found_perc"], goal_found_perc_improvement), streams=[self.__analysis_stream])
+        self.__services.debug.write("Average total steps: {}, (A*: {}), (Improvement: {}%)".format(
+            res_proc["average_steps"], a_star_res_proc["average_steps"], average_steps_improvement), streams=[self.__analysis_stream])
+        self.__services.debug.write("Average total distance: {}, (A*: {}), (Improvement: {}%)".format(
+            res_proc["average_distance"], a_star_res_proc["average_distance"], average_distance_improvement), streams=[self.__analysis_stream])
+        self.__services.debug.write("Average trajectory smoothness: {}, (A*: {}), (Improvement: {}%)".format(
+            res_proc["average_smoothness"], a_star_res_proc["average_smoothness"], average_smoothness_improvement), streams=[self.__analysis_stream])
+        self.__services.debug.write("Average trajectory clearance: {}, (A*: {}), (Improvement: {}%)".format(
+            res_proc["average_clearance"], a_star_res_proc["average_clearance"], average_clearance_improvement), streams=[self.__analysis_stream])
+        self.__services.debug.write("Average time: {} seconds, (A*: {} seconds), (Improvement: {}%)".format(
+            res_proc["average_time"], a_star_res_proc["average_time"], average_time_improvement), streams=[self.__analysis_stream])
+        self.__services.debug.write("Average distance from goal: {}, (A*: {}), (Improvement: {}%) (Average original distance from goal: {})".format(
+            res_proc["average_distance_from_goal"], a_star_res_proc["average_distance_from_goal"], average_distance_from_goal_improvement, res_proc["average_original_distance_from_goal"]), streams=[self.__analysis_stream])
 
         if "average_fringe" in res_proc:
             self.__services.debug.write("Average search space (no fringe): {}%".format(res_proc["average_search_space"]), streams=[self.__analysis_stream])
@@ -313,8 +323,9 @@ class Analyzer:
         if "average_global_kernel_nr_of_way_points" in res_proc:
             self.__services.debug.write("Average number of way points: {}".format(res_proc["average_global_kernel_nr_of_way_points"]), streams=[self.__analysis_stream])
             self.__services.debug.write("Average number of global kernel steps: {}".format(res_proc["average_global_kernel_steps"]), streams=[self.__analysis_stream])
-            self.__services.debug.write("Average global kernel distance: {}".format(res_proc["average_global_kernel_distance"]),streams=[self.__analysis_stream])
-            self.__services.debug.write("Average last way point distance to goal: {}".format(res_proc["average_global_kernel_last_way_point_distance_from_goal"]), streams=[self.__analysis_stream])
+            self.__services.debug.write("Average global kernel distance: {}".format(res_proc["average_global_kernel_distance"]), streams=[self.__analysis_stream])
+            self.__services.debug.write("Average last way point distance to goal: {}".format(
+                res_proc["average_global_kernel_last_way_point_distance_from_goal"]), streams=[self.__analysis_stream])
             self.__services.debug.write("Average number of global kernel calls: {}".format(res_proc["average_global_nr_of_global_kernel_calls"]), streams=[self.__analysis_stream])
             self.__services.debug.write("Average global kernel improvement: {}%".format(res_proc["average_global_kernel_improvement"]), streams=[self.__analysis_stream])
             self.__services.debug.write("Average way point in-between distance: {}".format(res_proc["average_global_average_way_point_distance"]), streams=[self.__analysis_stream])
@@ -322,7 +333,8 @@ class Analyzer:
             average_local_kernel_total_search_space_improvement = __get_improvement(res_proc["average_local_kernel_total_search_space"], a_star_res_proc["average_search_space"])
             average_local_kernel_total_fringe_improvement = __get_improvement(res_proc["average_local_kernel_total_fringe"], a_star_res_proc["average_fringe"])
             average_local_kernel_total_total_improvement = __get_improvement(res_proc["average_local_kernel_total_total"], a_star_res_proc["average_total_search_space"])
-            average_local_kernel_session_search_space_improvement = __get_improvement(res_proc["average_local_kernel_average_search_space"], a_star_res_proc["average_search_space"])
+            average_local_kernel_session_search_space_improvement = __get_improvement(
+                res_proc["average_local_kernel_average_search_space"], a_star_res_proc["average_search_space"])
             average_local_kernel_session_fringe_improvement = __get_improvement(res_proc["average_local_kernel_average_fringe"], a_star_res_proc["average_fringe"])
             average_local_kernel_session_total_improvement = __get_improvement(res_proc["average_local_kernel_average_total"], a_star_res_proc["average_total_search_space"])
 
@@ -340,16 +352,23 @@ class Analyzer:
             res_proc["a_star_res_proc"]["average_local_kernel_average_fringe"] = a_star_res_proc["average_fringe"]
             res_proc["a_star_res_proc"]["average_local_kernel_average_total"] = a_star_res_proc["average_total_search_space"]
 
-            self.__services.debug.write("Average local kernel all search space (no fringe): {}%, (A*: {}%), (Improvement: {}%)".format(res_proc["average_local_kernel_total_search_space"], a_star_res_proc["average_search_space"], average_local_kernel_total_search_space_improvement), streams=[self.__analysis_stream])
-            self.__services.debug.write("Average local kernel all fringe: {}%, (A*: {}%), (Improvement: {}%)".format(res_proc["average_local_kernel_total_fringe"], a_star_res_proc["average_fringe"], average_local_kernel_total_fringe_improvement), streams=[self.__analysis_stream])
-            self.__services.debug.write("Average local kernel all total search space: {}%, (A*: {}%), (Improvement: {}%)".format(res_proc["average_local_kernel_total_total"], a_star_res_proc["average_total_search_space"], average_local_kernel_total_total_improvement), streams=[self.__analysis_stream])
-            self.__services.debug.write("Average local kernel session search space (no fringe): {}%, (A*: {}%), (Improvement: {}%)".format(res_proc["average_local_kernel_average_search_space"], a_star_res_proc["average_search_space"], average_local_kernel_session_search_space_improvement), streams=[self.__analysis_stream])
-            self.__services.debug.write("Average local kernel session fringe: {}%, (A*: {}%), (Improvement: {}%)".format(res_proc["average_local_kernel_average_fringe"], a_star_res_proc["average_fringe"], average_local_kernel_session_fringe_improvement), streams=[self.__analysis_stream])
-            self.__services.debug.write("Average local kernel session total search space: {}%, (A*: {}%), (Improvement: {}%)".format(res_proc["average_local_kernel_average_total"], a_star_res_proc["average_total_search_space"], average_local_kernel_session_total_improvement), streams=[self.__analysis_stream])
+            self.__services.debug.write("Average local kernel all search space (no fringe): {}%, (A*: {}%), (Improvement: {}%)".format(
+                res_proc["average_local_kernel_total_search_space"], a_star_res_proc["average_search_space"], average_local_kernel_total_search_space_improvement), streams=[self.__analysis_stream])
+            self.__services.debug.write("Average local kernel all fringe: {}%, (A*: {}%), (Improvement: {}%)".format(
+                res_proc["average_local_kernel_total_fringe"], a_star_res_proc["average_fringe"], average_local_kernel_total_fringe_improvement), streams=[self.__analysis_stream])
+            self.__services.debug.write("Average local kernel all total search space: {}%, (A*: {}%), (Improvement: {}%)".format(
+                res_proc["average_local_kernel_total_total"], a_star_res_proc["average_total_search_space"], average_local_kernel_total_total_improvement), streams=[self.__analysis_stream])
+            self.__services.debug.write("Average local kernel session search space (no fringe): {}%, (A*: {}%), (Improvement: {}%)".format(
+                res_proc["average_local_kernel_average_search_space"], a_star_res_proc["average_search_space"], average_local_kernel_session_search_space_improvement), streams=[self.__analysis_stream])
+            self.__services.debug.write("Average local kernel session fringe: {}%, (A*: {}%), (Improvement: {}%)".format(
+                res_proc["average_local_kernel_average_fringe"], a_star_res_proc["average_fringe"], average_local_kernel_session_fringe_improvement), streams=[self.__analysis_stream])
+            self.__services.debug.write("Average local kernel session total search space: {}%, (A*: {}%), (Improvement: {}%)".format(
+                res_proc["average_local_kernel_average_total"], a_star_res_proc["average_total_search_space"], average_local_kernel_session_total_improvement), streams=[self.__analysis_stream])
 
             if "global_kernel_kernel_names" in res_proc:
                 self.__services.debug.write("Global kernel kernels: {}%".format(res_proc["global_kernel_kernel_names"]), streams=[self.__analysis_stream])
-                self.__services.debug.write("Global kernel kernel calls percentages: {}%".format(list(map(lambda r: str(r) + "%", res_proc["kernels_pick_perc"]))), streams=[self.__analysis_stream])
+                self.__services.debug.write("Global kernel kernel calls percentages: {}%".format(
+                    list(map(lambda r: str(r) + "%", res_proc["kernels_pick_perc"]))), streams=[self.__analysis_stream])
 
         try:
             if res_proc["average_total_search_space"]:
@@ -362,12 +381,13 @@ class Analyzer:
 
         # writing average data to csv file
         with open('pbtest.csv', 'a+', newline='') as file:
-            fieldnames = ['Algorithm', 'Average Path Deviation', 'Success Rate', 'Average Time','Average Steps', 'Average Distance', 'Average Distance from Goal','Average Original Distance from Goal','Average Search Space', 'Average Memory']
+            fieldnames = ['Algorithm', 'Average Path Deviation', 'Success Rate', 'Average Time', 'Average Steps', 'Average Distance', 'Average Distance from Goal',
+                          'Average Original Distance from Goal', 'Average Trajectory Smoothness', 'Average Obstacle Clearance', 'Average Search Space', 'Average Memory']
             writer = csv.DictWriter(file, fieldnames=fieldnames)
 
             if file.tell() == 0:
                 writer.writeheader()
-                 
+
             for lst in algorithms:
                 if lst[0] == algorithm_type and lst[3] not in algostring:
                     # lst[3] is name of the current algorithm
@@ -375,25 +395,23 @@ class Analyzer:
                     algostring.append(lst[3])
                     break
 
-            writer.writerow({'Algorithm': algoname1, 'Success Rate':res_proc["goal_found_perc"], 'Average Time': res_proc["average_time"],'Average Steps': res_proc["average_steps"]\
-                ,'Average Distance': res_proc["average_distance"],'Average Distance from Goal': res_proc["average_distance_from_goal"]\
-                    ,'Average Original Distance from Goal': res_proc["average_original_distance_from_goal"], 'Average Path Deviation': res_proc["average_path_deviation"], 'Average Search Space': res_proc["average_total_search_space"]\
-                        , 'Average Memory': res_proc["average memory"] })
+            writer.writerow({'Algorithm': algoname1, 'Success Rate': res_proc["goal_found_perc"], 'Average Time': res_proc["average_time"], 'Average Steps': res_proc["average_steps"], 'Average Distance': res_proc["average_distance"], 'Average Distance from Goal': res_proc["average_distance_from_goal"], 'Average Original Distance from Goal': res_proc[
+                            "average_original_distance_from_goal"], 'Average Path Deviation': res_proc["average_path_deviation"], 'Average Trajectory Smoothness': res_proc["average_smoothness"], 'Average Obstacle Clearance': res_proc["average_clearance"], 'Average Search Space': res_proc["average_total_search_space"], 'Average Memory': res_proc["average memory"]})
 
         # writing all data points to csv file
 
         with open('pbtestfull.csv', 'a+', newline='') as file:
-            fieldnames2 = ['Algorithm','Time', 'Distance', 'Distance from Goal','Path Deviation','Original Distance from Goal','Search Space','Memory']
+            fieldnames2 = ['Algorithm', 'Time', 'Distance', 'Distance from Goal', 'Path Deviation',
+                           'Original Distance from Goal', 'Trajectory Smoothness', 'Obstacle Clearance', 'Search Space', 'Memory']
             writer1 = csv.DictWriter(file, fieldnames=fieldnames2)
 
             if file.tell() == 0:
                 # Only write header if file is empty
-                writer1.writeheader() 
+                writer1.writeheader()
 
             for n in range(len(res_proc['time_alldata'])):
-                writer1.writerow({'Algorithm': algoname1,  'Time': res_proc["time_alldata"][n], 'Distance': res_proc['distance_alldata'][n],'Path Deviation':res_proc['path_deviation_alldata'][n],'Distance from Goal': res_proc['distance_from_goal_alldata'][n]\
-                    , 'Original Distance from Goal': res_proc['original_distance_from_goal_alldata'][n], 'Search Space': res_proc['search_space_alldata'][n]\
-                    , 'Memory': res_proc['memory_alldata'][n]})
+                writer1.writerow({'Algorithm': algoname1, 'Time': res_proc["time_alldata"][n], 'Distance': res_proc['distance_alldata'][n], 'Path Deviation': res_proc['path_deviation_alldata'][n], 'Distance from Goal': res_proc['distance_from_goal_alldata'][n], 'Original Distance from Goal': res_proc[
+                                 'original_distance_from_goal_alldata'][n], 'Trajectory Smoothness': res_proc['smoothness_alldata'][n], 'Search Space': res_proc['search_space_alldata'][n], 'Obstacle Clearance': res_proc['clearance_alldata'][n], 'Memory': res_proc['memory_alldata'][n]})
 
             '''writer.writerow({'Algorithm': algoname1, 'Time': res_proc["time_alldata"], 'Distance': res_proc["distance_alldata"]\
                 ,'Distance from Goal': res_proc["distance_from_goal_alldata"],})'''
@@ -518,13 +536,13 @@ class Analyzer:
                                            })
 
         latex_table1 = self.__create_table(algorithm_kernels, algorithm_results,
-                                          {
-                                              "nr": ("Nr.", ""),
-                                              "goal_found_perc": ("Success Rate", "%"),
-                                              "average_distance": ("Distance", ""),
-                                              "average_time": ("Time", "s"),
-                                              "average_distance_from_goal": ("Distance Left", "")
-                                          }, show_a_star_res=["average_distance"], show_improvement=["goal_found_perc", "average_distance"])
+                                           {
+                                               "nr": ("Nr.", ""),
+                                               "goal_found_perc": ("Success Rate", "%"),
+                                               "average_distance": ("Distance", ""),
+                                               "average_time": ("Time", "s"),
+                                               "average_distance_from_goal": ("Distance Left", "")
+                                           }, show_a_star_res=["average_distance"], show_improvement=["goal_found_perc", "average_distance"])
 
         latex_table2 = self.__create_table(algorithm_kernels, algorithm_results,
                                            {
@@ -585,26 +603,6 @@ class Analyzer:
         # maps = self.__convert_maps(maps)
         # maps = [Maps.grid_map_small_one_obstacle2]#], Maps.grid_map_labyrinth2]
 
-        '''algorithms: List[Tuple[Type[Algorithm], Type[BasicTesting], Tuple[list, dict]]] = [
-            (AStar, AStarTesting, ([], {})),
-            (Wavefront, WavefrontTesting, ([], {})),
-            (Dijkstra, DijkstraTesting, ([], {})),            
-            (OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_model"})),
-            (OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_block_map_10000_model"})),
-            (OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_house_10000_model"})),
-            (OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model"})),
-            (OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"})),
-            (OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_uniform_random_fill_10000_model"})),
-            (OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"})),
-            (OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_house_10000_model"})),
-            (OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model"})),
-            (OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model"})),
-            (CombinedOnlineLSTM, CombinedOnlineLSTMTesting, ([], {})),
-            (WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"}))})),
-            (WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}))})),
-            (WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (CombinedOnlineLSTM, ([], {}))})),
-        ]'''
-
         algorithms: List[Tuple[Type[Algorithm], Type[BasicTesting], Tuple[list, dict]]] = [
             (AStar, AStarTesting, ([], {}), "A*"),
             #(Wavefront, WavefrontTesting, ([], {}), "Wave-front" ),
@@ -617,117 +615,64 @@ class Analyzer:
             #(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (CombinedOnlineLSTM, ([], {}))}), "WayPointNavigation (Bagging)"),
             #(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"}))}), "WayPointNavigation (Map -block training)"),
             #(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}))}), "WayPointNavigation (Map -urf training)"),
-            #(RT, BasicTesting, ([], {})),
-            #(RRT, BasicTesting, ([], {})),
-            #(RRT_Star, BasicTesting, ([], {}), "RRT*"),
+            #(RT, BasicTesting, ([], {}), "RT"),
+            #(RRT, BasicTesting, ([], {}), "RRT"),
+            (RRT_Star, BasicTesting, ([], {}), "RRT*"),
             #(Bug1, BasicTesting, ([], {}), "Bug 1"),
             #(Bug2, BasicTesting, ([], {}), "Bug 2"),
             #(PotentialField, BasicTesting, ([], {}), "Potential Field"),
-            #(OMPL_RRT, BasicTesting, ([], {}), "OMPL RRT"),
-            # (OMPL_PRMstar, BasicTesting, ([], {}), "OMPL PRM*"),
-            #(RRT_Connect, BasicTesting, ([], {}), "RRT Connect"),
-            # (OMPL_LazyPRMstar, BasicTesting, ([], {}), "OMPL Lazy PRM*"),
-            # (OMPL_RRTXstatic, BasicTesting, ([], {}), "OMPL RRTX"),
-            # (OMPL_RRTstar, BasicTesting, ([], {}), "OMPL RRT*"),
-            # (OMPL_RRTsharp, BasicTesting, ([], {}), "OMPL RRT#"),
-            # (OMPL_KPIECE1, BasicTesting, ([], {}), "OMPL KPIECE1"),
-            # (OMPL_PDST, BasicTesting, ([], {}), "OMPL PDST"),
-            # (OMPL_SST, BasicTesting, ([], {}), "OMPL SST"),
-            # (OMPL_BiEST, BasicTesting, ([], {}), "OMPL BiEST"),
-            # (OMPL_TRRT, BasicTesting, ([], {}), "OMPL TRRT"),
-            # (OMPL_RRTConnect, BasicTesting, ([], {}), "OMPL RRT Connect"),
-            # (OMPL_BITstar, BasicTesting, ([], {}), "OMPL BIT*"),
-            # (OMPL_BKPIECE1, BasicTesting, ([], {}), "OMPL BKPIECE1"),
-            # (OMPL_EST, BasicTesting, ([], {}), "OMPL EST"),
-            # (OMPL_LazyLBTRRT, BasicTesting, ([], {}), "OMPL LazyLBTRRT"),
-            # (OMPL_LazyPRM, BasicTesting, ([], {}), "OMPL LazyPRM"),
-            # (OMPL_LazyRRT, BasicTesting, ([], {}), "OMPL LazyRRT"),
-            # (OMPL_LBKPIECE1, BasicTesting, ([], {}), "OMPL LBKPIECE1"),
-            # (OMPL_LBTRRT, BasicTesting, ([], {}), "OMPL LBTRRT"),
-            # (OMPL_PRM, BasicTesting, ([], {}), "OMPL PRM"),
-            # (OMPL_STRIDE, BasicTesting, ([], {}), "OMPL STRIDE"), 
-            # (OMPL_SBL, BasicTesting, ([], {}), "OMPL SBL"),
-
+            #(VINTest, BasicTesting, ([], {}), "VIN"),
+            #(RRT_Connect, BasicTesting, ([], {}), "RRT Connect")
         ]
 
-        '''algorithm_names: List[str] = [
-            "A*",
-            "Wave-front",
-            "Dijkstra",               
-            "Online LSTM on uniform_random_fill_10000 (paper solution)", # View Module
-            "Online LSTM on block_map_10000",
-            "Online LSTM on house_10000",
-            "Online LSTM on uniform_random_fill_10000_block_map_10000",
-            "Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000",
-            "CAE Online LSTM on uniform_random_fill_10000", # Map Module
-            "CAE Online LSTM on block_map_10000 (paper solution)",
-            "CAE Online LSTM on house_10000",
-            "CAE Online LSTM on uniform_random_fill_10000_block_map_10000",
-            "CAE Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000",
-            "Combined Online LSTM (proposed solution)", # Bagging Module
-            "WayPointNavigation with local kernel: A* and global kernel: CAE Online LSTM on block_map_10000 (paper solution)",
-            "WayPointNavigation with local kernel: A* and global kernel: Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000 (paper solution)",
-            "WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)",
-        ]'''
+        if HAS_OMPL:
+            """
+            algorithms.extend([
+                (OMPL_RRT, BasicTesting, ([], {}), "OMPL RRT"),
+                (OMPL_PRMstar, BasicTesting, ([], {}), "OMPL PRM*"),
+                (OMPL_LazyPRMstar, BasicTesting, ([], {}), "OMPL Lazy PRM*"),
+                (OMPL_RRTXstatic, BasicTesting, ([], {}), "OMPL RRTX"),
+                (OMPL_RRTstar, BasicTesting, ([], {}), "OMPL RRT*"),
+                (OMPL_RRTsharp, BasicTesting, ([], {}), "OMPL RRT#"),
+                (OMPL_KPIECE1, BasicTesting, ([], {}), "OMPL KPIECE1"),
+                (OMPL_PDST, BasicTesting, ([], {}), "OMPL PDST"),
+                (OMPL_SST, BasicTesting, ([], {}), "OMPL SST"),
+                (OMPL_BiEST, BasicTesting, ([], {}), "OMPL BiEST"),
+                (OMPL_TRRT, BasicTesting, ([], {}), "OMPL TRRT"),
+                (OMPL_RRTConnect, BasicTesting, ([], {}), "OMPL RRT Connect"),
+                (OMPL_BITstar, BasicTesting, ([], {}), "OMPL BIT*"),
+                (OMPL_BKPIECE1, BasicTesting, ([], {}), "OMPL BKPIECE1"),
+                (OMPL_EST, BasicTesting, ([], {}), "OMPL EST"),
+                (OMPL_LazyLBTRRT, BasicTesting, ([], {}), "OMPL LazyLBTRRT"),
+                (OMPL_LazyPRM, BasicTesting, ([], {}), "OMPL LazyPRM"),
+                (OMPL_LazyRRT, BasicTesting, ([], {}), "OMPL LazyRRT"),
+                (OMPL_LBKPIECE1, BasicTesting, ([], {}), "OMPL LBKPIECE1"),
+                (OMPL_LBTRRT, BasicTesting, ([], {}), "OMPL LBTRRT"),
+                (OMPL_PRM, BasicTesting, ([], {}), "OMPL PRM"),
+                (OMPL_STRIDE, BasicTesting, ([], {}), "OMPL STRIDE"), 
+                (OMPL_SBL, BasicTesting, ([], {}), "OMPL SBL"),
+            ])
+            """
 
-        algorithm_names: List[str] = [
-            "A*",
-            #"Wave-front",
-            #"Dijkstra",
-            #"Online LSTM on uniform_random_fill_10000 (paper solution)",
-            #"Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000",
-            #"CAE Online LSTM on uniform_random_fill_10000",
-            #"CAE Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000",
-            #"Combined Online LSTM (proposed solution)",
-            #"WayPointNavigation with local kernel: A* and global kernel: Combined Online LSTM (proposed solution)",
-            #"WayPointNavigation with local kernel: A* and global kernel: CAE Online LSTM on block_map_10000 (paper solution)",
-            #"WayPointNavigation with local kernel: A* and global kernel: Online LSTM on uniform_random_fill_10000_block_map_10000_house_10000 (paper solution)",                                           
-            #"RT",
-            #"RRT",
-            #"RRT*",
-            #"Bug1",
-            #"Bug2",
-            #"PotentialField",
-            "VIN",
-            #"OMPL RRT",
-            # "OMPL PRM*",
-            #"RRT-Connect",
-            # "OMPL Lazy PRM*",
-            # "OMPL RRT*",
-            # "OMPL RRT#",
-            # "OMPL RRTX",
-            # "OMPL KPIECE1",
-            # "OMPL PDST",
-            # "OMPL SST",
-            # "OMPL BiEst",
-            # "OMPL TRRT",
-            # "OMPL RRTConnect",
-            # "OMPL BITstar",
-            # "OMPL BKPIECE1",
-            # "OMPL EST",
-            # "OMPL LazyLBTRRT",
-            # "OMPL LazyPRM",
-            # "OMPL LazyRRT",
-            # "OMPL LBKPIECE1",
-            # "OMPL LBTRRT",
-            # "OMPL PRM",
-            # "OMPL STRIDE",
-            # "OMPL SBL",
-        ]
+        algorithm_names: List[str] = list(map(
+            lambda algo: algo[3],
+            algorithms
+        ))
 
         self.__services.debug.write("", timestamp=False, streams=[self.__analysis_stream])
-        self.__services.debug.write("Starting basic analysis: number of maps = {}, number of algorithms = {}".format(len(maps), len(algorithms)), end="\n\n", streams=[self.__analysis_stream])
+        self.__services.debug.write("Starting basic analysis: number of maps = {}, number of algorithms = {}".format(
+            len(maps), len(algorithms)), end="\n\n", streams=[self.__analysis_stream])
 
         a_star_res: List[Dict[str, Any]] = None
         algorithm_results: List[Dict[str, Any]] = [None for _ in range(len(algorithms))]
 
-        for idx, (algorithm_type, testing_type, algo_params , algoname) in enumerate(algorithms):
+        for idx, (algorithm_type, testing_type, algo_params, algoname) in enumerate(algorithms):
             self.__services.debug.write(str(idx) + ". " + algorithm_names[idx], DebugLevel.BASIC, streams=[self.__analysis_stream])
-            
+
             results: List[Dict[str, Any]] = []
 
             for _, grid in enumerate(maps):
-                results.append(self.__run_simulation(grid, algorithm_type, testing_type, algo_params))  #gets data for the result on map 
+                results.append(self.__run_simulation(grid, algorithm_type, testing_type, algo_params))  # gets data for the result on map
 
             a_star_res, res = self.__report_results(results, a_star_res, algorithm_type, algorithms)
             algorithm_results[idx] = res
@@ -736,22 +681,14 @@ class Analyzer:
         df = pd.read_csv('pbtest.csv')
         dffull = pd.read_csv('pbtestfull.csv')
 
-        #df_t = df.T
-
         print(df)
         print('********************************')
         print(dffull)
 
-        #fig, ax = plt.subplots()
-        #fig.set_size_inches(11, 9)
-
-
-
-
         plot2, axs1 = plt.subplots(ncols=5)
         plot2.set_size_inches(18, 12)
 
-        # 'Algorithm': algostring, 'Time': res_proc["time_alldata"][n], 'Distance': res_proc['distance_alldata'][n],'Distance from Goal': 
+        # 'Algorithm': algostring, 'Time': res_proc["time_alldata"][n], 'Distance': res_proc['distance_alldata'][n],'Distance from Goal':
         # res_proc['distance_from_goal_alldata'][n], 'Original Distance from Goal': res_proc['original_distance_from_goal_alldata'][n]}
 
         p1f = sns.violinplot(x="Algorithm", y="Time", data=dffull, ax=axs1[0])
@@ -784,16 +721,14 @@ class Analyzer:
         # p1f.set_title('Time vs. Algorithm ')
         # p1f.set_ylabel('Time (s)')
 
-     
         plot1, axs = plt.subplots(ncols=5)
         plot1.set_size_inches(18, 11)
 
-        #bar plots
+        # bar plots
         p1 = sns.barplot(x="Algorithm", y="Average Time", data=df, ax=axs[0])
         p1.set_xticklabels(p1.get_xticklabels(), rotation=40, ha="right", fontsize=9)
         p1.set_title('Average Time vs. Algorithm ')
         p1.set_ylabel('Average Time (s)')
-
 
         p2 = sns.barplot(x="Algorithm", y="Average Distance", data=df, ax=axs[1])
         p2.set_xticklabels(p1.get_xticklabels(), rotation=40, ha="right", fontsize=9)
@@ -803,32 +738,30 @@ class Analyzer:
         p3 = sns.barplot(x="Algorithm", y="Average Steps", data=df, ax=axs[2])
         p3.set_xticklabels(p1.get_xticklabels(), rotation=40, ha="right", fontsize=9)
         p3.set_title('Average Steps vs. Algorithm ')
-        p3.set_ylabel('Average Steps')      
+        p3.set_ylabel('Average Steps')
 
         p4 = sns.barplot(x="Algorithm", y='Success Rate', data=df, ax=axs[3])
         p4.set_xticklabels(p1.get_xticklabels(), rotation=40, ha="right", fontsize=9)
         p4.set_title('Success Rate vs. Algorithm ')
-        p4.set_ylabel('Success Rate') 
+        p4.set_ylabel('Success Rate')
 
         # p5 = sns.barplot(x="Algorithm", y="Average Distance from Goal", data=df, ax=axs[4])
         # p5.set_xticklabels(p1.get_xticklabels(), rotation=40, ha="right", fontsize=9)
         # p5.set_title('Average Distance from Goal vs. Algorithm ')
-        # p5.set_ylabel('Average Distance from Goal')  
+        # p5.set_ylabel('Average Distance from Goal')
 
         p6 = sns.barplot(x="Algorithm", y='Average Path Deviation', data=df, ax=axs[4])
         p6.set_xticklabels(p1f.get_xticklabels(), rotation=40, ha="right", fontsize=9)
         p6.set_title('Average Path Deviation vs. Algorithm ')
-        p6.set_ylabel('Average Path Deviation') 
-        
+        p6.set_ylabel('Average Path Deviation')
+
         #ax = sns.barplot(x="Algorithm", y="Average Time", data=df)
-        #plt.xticks(rotation=45)
+        # plt.xticks(rotation=45)
         plt.tight_layout(pad=2.5, w_pad=1.5, h_pad=1.5)
         plt.show()
-        
-
 
         # Complex Analysis begins here
-            
+
         # # 6 maps for complex analysis
         # maps: List[Map] = [
         #     # Maps.pixel_map_one_obstacle.convert_to_dense_map(),
@@ -840,7 +773,6 @@ class Analyzer:
         #     Maps.grid_map_one_obstacle.convert_to_dense_map(),
         # ]
 
-       
         # map_names: List[str] = [
         #     "uniform_random_fill_10/4",
         #     "block_map_10/6",
@@ -1007,6 +939,3 @@ class Analyzer:
         analyzer.analyze_algorithms()
         # analyzer._Analyzer__analysis_stream = StringIO()
         # analyzer._Analyzer__print_ascii_map(Maps.grid_map_labyrinth)
-
-
-
