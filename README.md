@@ -41,11 +41,13 @@ You **must** run the main script from the `src` directory as some files are stil
 | w a s d               | Rotate orbital camera around map                                      |
 | t                 	| Find the path between the agent and goal                            	|
 | x                 	| Pause/Resume path finding (animations required)                      	|
-| p                 	| Take screenshot (the screenshot is placed in resources directory) 	|
-| o                 	| Take top-view high resolution screenshot of the map (experimental) 	|
+| p                 	| Take screenshot                                                    	|
+| o                 	| Take top-view high resolution screenshot of the map                	|
 | c 	                | Toggle visibility of simulator config window                          |
 | v 	                | Toggle visibility of view editor window                               |
 | m                 	| Toggle map between Sparse and Dense                               	|
+
+Note, screenshots are placed in resources directory.
 
 ## PathBench
 
