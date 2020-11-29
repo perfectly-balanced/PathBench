@@ -617,12 +617,12 @@ class Analyzer:
             #(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}))}), "WayPointNavigation (Map -urf training)"),
             #(RT, BasicTesting, ([], {}), "RT"),
             #(RRT, BasicTesting, ([], {}), "RRT"),
-            #(RRT_Star, BasicTesting, ([], {}), "RRT*"),
+            (RRT_Star, BasicTesting, ([], {}), "RRT*"),
             #(Bug1, BasicTesting, ([], {}), "Bug 1"),
             #(Bug2, BasicTesting, ([], {}), "Bug 2"),
             #(PotentialField, BasicTesting, ([], {}), "Potential Field"),
-            (VINTest, BasicTesting, ([], {}), "VIN"),
-            # (RRT_Connect, BasicTesting, ([], {}), "RRT Connect")
+            #(VINTest, BasicTesting, ([], {}), "VIN"),
+            #(RRT_Connect, BasicTesting, ([], {}), "RRT Connect")
         ]
 
         if HAS_OMPL:
