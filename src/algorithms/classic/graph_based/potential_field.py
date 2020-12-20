@@ -221,7 +221,7 @@ class PotentialField(Algorithm):
             minp = float("inf")
             minIxs = [-1] * grid.agent.position.n_dim
             for point in motion:
-                ins = [int(iss[n] + point.pos[n]) for n in range(grid.agent.position.n_dim)]
+                ins = [int(iss[n] + point.values[n]) for n in range(grid.agent.position.n_dim)]
          
                 setInf = False
 

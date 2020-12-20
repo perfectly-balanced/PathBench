@@ -263,7 +263,7 @@ class MapView(View):
             for d in self.__cube_update_displays:
                 d.update_cube(p)
             set_colour(p, self.__cube_colour)
-            self.__cube_modified[p.pos] = self.__cube_colour != clr
+            self.__cube_modified[p.values] = self.__cube_colour != clr
 
         if refresh:
             for p in np.ndindex(self.__cube_modified.shape):

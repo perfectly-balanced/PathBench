@@ -114,7 +114,7 @@ class CubeMesh():
         self.mesh.add_primitive(self.__triangles)
 
     def get_cube_colour(self, p: Point) -> Colour:
-        faces = self.__cube_face_map[p.pos]
+        faces = self.__cube_face_map[p.values]
         for i in range(len(faces)):
             if faces[i] != None:
                 self.__colour.setRow(faces[i] * 4)
@@ -128,8 +128,8 @@ class CubeMesh():
         return self.default_colour
 
     def set_cube_colour(self, p: Point, colour: Colour) -> None:
-        self.__cube_default_coloured[p.pos] = False
-        faces = self.__cube_face_map[p.pos]
+        self.__cube_default_coloured[p.values] = False
+        faces = self.__cube_face_map[p.values]
         for i in range(len(faces)):
             if faces[i] != None:
                 c = self.__face_colour(colour, Face(i))
@@ -142,7 +142,7 @@ class CubeMesh():
 
     def reset_cube(self, p: Point) -> None:
         self.set_cube_colour(p, self.default_colour)
-        self.__cube_default_coloured[p.pos] = True
+        self.__cube_default_coloured[p.values] = True
 
     def reset_all_cubes(self) -> None:
         for p in np.ndindex(self.structure.shape):
@@ -273,7 +273,7 @@ class CubeMesh():
         return self.__structure
 
     def cube_visible(self, p: Point) -> bool:
-        for f in self.__cube_face_map[p.pos]:
+        for f in self.__cube_face_map[p.values]:
             if f is not None:
                 return True
         return False

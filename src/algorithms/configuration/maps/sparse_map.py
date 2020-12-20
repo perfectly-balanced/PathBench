@@ -77,9 +77,9 @@ class SparseMap(Map):
                         grid[tuple(p)] = DenseMap.EXTENDED_WALL
                     if dist <= obstacle.radius:
                         grid[tuple(p)] = DenseMap.WALL_ID
-
-        grid[self.agent.position.pos] = DenseMap.AGENT_ID
-        grid[self.goal.position.pos] = DenseMap.GOAL_ID
+        
+        grid[self.agent.position.values] = DenseMap.AGENT_ID
+        grid[self.goal.position.values] = DenseMap.GOAL_ID
         dense_map: DenseMap = DenseMap(grid, self._services, transpose=False)
         dense_map.agent = copy.deepcopy(self.agent)
         dense_map.goal = copy.deepcopy(self.goal)

@@ -162,8 +162,8 @@ class Generator:
         while nr_of_obstacles < fill:
             obst_pos: Point = self.__get_rand_position(dimensions)
 
-            if grid[obst_pos.pos] == DenseMap.CLEAR_ID:
-                grid[obst_pos.pos] = DenseMap.WALL_ID
+            if grid[obst_pos.values] == DenseMap.CLEAR_ID:
+                grid[obst_pos.values] = DenseMap.WALL_ID
                 nr_of_obstacles += 1
 
         self.__place_random_agent_and_goal(grid, dimensions)
@@ -175,15 +175,15 @@ class Generator:
         while True:
             agent_pos: Point = self.__get_rand_position(dimensions)
 
-            if grid[agent_pos.pos] == DenseMap.CLEAR_ID:
-                grid[agent_pos.pos] = DenseMap.AGENT_ID  # Changes the value of pos on grid to 2 for agent id
+            if grid[agent_pos.values] == DenseMap.CLEAR_ID:
+                grid[agent_pos.values] = DenseMap.AGENT_ID  # Changes the value of pos on grid to 2 for agent id
                 break
 
         while True:
             goal_pos: Point = self.__get_rand_position(dimensions)
 
-            if grid[goal_pos.pos] == DenseMap.CLEAR_ID:
-                grid[goal_pos.pos] = DenseMap.GOAL_ID  # Changes the value of pos on grid to 3 for goal id
+            if grid[goal_pos.values] == DenseMap.CLEAR_ID:
+                grid[goal_pos.values] = DenseMap.GOAL_ID  # Changes the value of pos on grid to 3 for goal id
                 break
 
     def __place_entity_near_corner(self, entity: Type[Entity], corner: int, grid: List[List[int]], dimensions: Size) -> \
@@ -271,7 +271,7 @@ class Generator:
 
     def __place_square(self, grid: np.array, size: Size, top_left_corner: Point) -> None:
         for index in np.ndindex(*size):
-            p = tuple(np.add(index, top_left_corner.pos))
+            p = tuple(np.add(index, top_left_corner.values))
             grid[p] = DenseMap.WALL_ID
 
     def __can_place_square(self, size: Size, top_left_corner: Point, dimensions: Size) -> bool:
@@ -497,7 +497,7 @@ class Generator:
                     next_door = neighbours[i] + start
                     for q in range(door_size):
                         pt = full_edge[(next_door + q) % len(full_edge)]
-                        grid[pt.pos] = DenseMap.CLEAR_ID
+                        grid[pt.values] = DenseMap.CLEAR_ID
                         doors.add(pt)
 
         self.__place_random_agent_and_goal(grid, dimensions)
@@ -559,8 +559,8 @@ class Generator:
             map_as_dict = {
                 "type": "DenseMap",
                 "version": 1,
-                "goal": [*mp.goal.position.pos],
-                "agent": [*mp.agent.position.pos],
+                "goal": [*mp.goal.position.values],
+                "agent": [*mp.agent.position.values],
                 "grid": mp.grid.tolist()
             }
             dimensions_path = '_3d' if num_dim == 3 else ''

@@ -85,13 +85,13 @@ class DenseMap(Map):
 
     def at(self, p: Point) -> int:
         assert not p.is_float, f"Can't look up a floating point Point in dense_map: {p}"
-        return self.grid[p.pos]
+        return self.grid[p.values]
 
     def update_point(self, p: Point, val: int) -> bool:
         if self.at(p) == val:
             return False
         else:
-            self.grid[p.pos] = val
+            self.grid[p.values] = val
             return True
 
     def move(self, entity: Entity, to: Point, no_trace: bool = False) -> bool:
@@ -108,14 +108,14 @@ class DenseMap(Map):
             self.agent.position = to
         elif isinstance(entity, Goal):
             prev_pos = self.goal.position
-            self.grid[self.goal.position.pos] = self.CLEAR_ID
+            self.grid[self.goal.position.values] = self.CLEAR_ID
             self.goal.position = to
         else:
             raise NotImplementedError()
 
-        self.grid[prev_pos.pos] = self.CLEAR_ID
-        self.grid[self.goal.position.pos] = self.GOAL_ID
-        self.grid[self.agent.position.pos] = self.AGENT_ID        
+        self.grid[prev_pos.values] = self.CLEAR_ID
+        self.grid[self.goal.position.values] = self.GOAL_ID
+        self.grid[self.agent.position.values] = self.AGENT_ID        
 
         for i in range(len(self.obstacles)):
             if self.obstacles[i].position == self.goal.position:

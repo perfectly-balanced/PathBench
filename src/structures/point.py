@@ -1,5 +1,4 @@
 from typing import Union, Tuple
-from deprecated import deprecated
 
 import torch
 import copy
@@ -9,7 +8,7 @@ class Point(torch.Tensor):
     A point has a variable number of coordinates specified in the constructor.
     Each point is immutable.
     """
-    _pos: Union[Tuple[float, ...], Tuple[int, ...]]
+    _values: Union[Tuple[float, ...], Tuple[int, ...]]
     _is_float: bool
 
     def __new__(cls, *ords, **kwargs):
@@ -45,13 +44,9 @@ class Point(torch.Tensor):
     def n_dim(self) -> int:
         return len(self._values)
 
+    @property
     def values(self) -> Union[Tuple[float, ...], Tuple[int, ...]]:
         return self._values
-
-    @deprecated(reason="Use Point.values instead.")
-    @property
-    def pos(self) -> Union[Tuple[float, ...], Tuple[int, ...]]:
-        return self.values
 
     @property
     def is_float(self) -> bool:
@@ -72,14 +67,14 @@ class Point(torch.Tensor):
         return Point(*[int(torch.round(inp[i])) for i in range(list(inp.size())[0])])
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, Point) and (self._values == other._pos)
+        return isinstance(other, Point) and (self._values == other._values)
 
     def __ne__(self, other: object) -> bool:
         return not (self == other)
 
     def __lt__(self, other: object) -> bool:
         assert isinstance(other, Point), "Must compare with another point"
-        return self._values < other._pos
+        return self._values < other._values
 
     def __hash__(self) -> int:
         return hash(self._values)

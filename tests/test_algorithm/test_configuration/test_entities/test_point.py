@@ -57,7 +57,7 @@ class TestPoint(unittest.TestCase):
     def test_conversion(self) -> None:
         point: Point = Point(2, 3, 4)
         self.assertEqual(tuple(point), (2, 3, 4))
-        self.assertEqual(point.pos, (2, 3, 4))
+        self.assertEqual(point.values, (2, 3, 4))
         self.assertEqual(list(point), [2, 3, 4])
 
 

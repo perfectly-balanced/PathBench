@@ -1,0 +1,119 @@
+import rospy
+import numpy as np
+
+from nav_msgs.msg import OccupancyGrid
+from geometry_msgs.msg import PoseWithCovarianceStamped, Twist, PoseStamped
+
+import threading
+from threading import Lock, Condition
+
+import os
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from algorithms.classic.graph_based.a_star import AStar
+from algorithms.classic.testing.a_star_testing import AStarTesting
+from algorithms.configuration.configuration import Configuration
+from algorithms.configuration.entities.agent import Agent
+from algorithms.configuration.entities.goal import Goal
+from algorithms.configuration.maps.dense_map import DenseMap
+from algorithms.configuration.maps.ros_map import RosMap
+from simulator.services.debug import DebugLevel
+from simulator.services.services import Services
+from simulator.simulator import Simulator
+from structures import Size, Point
+from maps import Maps
+
+class Ros:
+    _resolution: float
+    _origin: Point
+    _size: Size
+    _grid: np.ndarray
+
+    _grid_lock: Lock
+    _agent_lock: Lock
+
+    def __init__(self):
+        self._resolution = None
+        self._origin = None
+        self._size = None
+        self._grid = None
+
+        self._grid_lock = Lock()
+        self._agent_lock = Lock()
+
+        rospy.init_node("algo")
+        rospy.Subscriber("/map", OccupancyGrid, self._set_slam)
+        self.agent = None
+        self.grid = None
+        rospy.sleep(2)
+
+    def _set_slam(self, msg):
+        self._grid_lock.acquire()
+
+        minfo = msg.info
+        rgrid = msg.data
+
+        self._resolution = minfo.resolution
+        self._origin = Point(minfo.origin.position.x, minfo.origin.position.y)
+        self._size = Size(minfo.width, minfo.height)
+        self._grid = np.empty(self._size, dtype=np.int32)
+
+        for idx in np.ndindex(*self._size):
+            self._grid[idx] = rgrid[idx[0] * self._size[1] + idx[1]]
+
+        print(self._grid)
+        self._grid_lock.release()
+
+    def _get_grid(self):
+        self._grid_lock.acquire()
+        grid = self._grid
+        self._grid_lock.release()
+        return grid
+
+    def _set_agent_pos(self, odom_msg):
+        self._agent_lock.acquire()
+        self.agent = odom_msg
+        self._agent_lock.release()
+
+    def _get_agent_pos(self):
+        self._agent_lock.acquire()
+        ret = self.agent
+        self._agent_lock.release()
+        return ret
+
+    def _update_requested(self):
+        pass  # request slam
+
+    def _setup_sim(self) -> Simulator:
+        config = Configuration()
+
+        config.simulator_graphics = True
+        config.simulator_write_debug_level = DebugLevel.LOW
+        config.simulator_key_frame_speed = 0.1
+        config.simulator_algorithm_type = AStar
+        config.simulator_algorithm_parameters = ([], {})
+        config.simulator_testing_type = AStarTesting
+        config.simulator_initial_map = RosMap(self._size,
+                                              Agent(Point(0, 0)),
+                                              Goal(Point(0, 1)),
+                                              self._get_grid,
+                                              self._update_requested)
+        s = Services(config)
+        s.algorithm.map.request_update()
+        s.reinit()
+        sim = Simulator(s)
+        return sim
+
+    def _find_goal(self):
+        rospy.loginfo("Starting Simulator")
+        sim = self._setup_sim()
+        sim.start()
+
+    def start(self):
+        self._find_goal()
+
+
+if __name__ == "__main__":
+    ros = Ros()
+    ros.start()

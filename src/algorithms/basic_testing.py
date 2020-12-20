@@ -246,19 +246,19 @@ class BasicTesting:
             dist, pos = distance_queue.pop()
             distance_grid[pos] = dist
             for next_pos in grid.get_next_positions(Point(*pos)):
-                if next_pos.pos in visited: continue
-                if distance_grid[next_pos.pos] == np.inf:
-                    distance_queue.push((dist+1, next_pos.pos))
-                    visited.add(next_pos.pos)
+                if next_pos.values in visited: continue
+                if distance_grid[next_pos.values] == np.inf:
+                    distance_queue.push((dist+1, next_pos.values))
+                    visited.add(next_pos.values)
         
         # Sum along path
-        path_points = map(lambda t: t.position.pos, trace)
+        path_points = map(lambda t: t.position.values, trace)
         obstacle_dist = list(map(lambda pos: distance_grid[pos], path_points))
         return sum(obstacle_dist) / len(obstacle_dist)"""
         obstacles = np.transpose(np.where(grid.grid == grid.WALL_ID))
         obstacle_dists = []
         for t in trace:
-            pos = np.array(t.position.pos)
+            pos = np.array(t.position.values)
             obstacles_shifted = obstacles - pos
             norms = np.linalg.norm(obstacles_shifted, axis=1)
             min_dist = np.min(norms)

@@ -114,6 +114,8 @@ class SimulatorConfig(DirectObject):
         "vin test 16x16 -2": (Maps.grid_map_complex_obstacle2, True),
         "vin test 28x28 -1": (Maps.grid_map_28x28vin, True),
         "Small Obstacle": (Maps.grid_map_one_obstacle.convert_to_dense_map(), True),
+        "Occupancy Grid 2D": (Maps.ogm_2d, True),
+        "Occupancy Grid 3D": (Maps.ogm_3d, True),
         "SLAM Map 1": ("map10", False),
         "SLAM Map 1 (compressed)": ("map11", True),
         "SLAM Map 2": ("map14", False),

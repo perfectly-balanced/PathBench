@@ -4,6 +4,7 @@ from algorithms.configuration.maps.map import Map
 from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.goal import Goal
+from algorithms.configuration.entities.obstacle import Obstacle
 
 from structures import Point, Size
 
@@ -13,58 +14,41 @@ class OccupancyGridMap(DenseMap):
     representing the obstacles.
     """
     IMPASSABLE_THRESHOLD: float = 0.99
-    weight_grid: np.array
+    _weight_grid: np.array
 
-    # Assumes that floats passed into the grid between 0 and 1 are obstacles (movement to be decided later)
-    def set_grid(self, grid: np.array, transpose) -> None:
-        self.grid = np.transpose(grid) if transpose else grid
-        self.weight_grid = np.array(self.grid, copy=True)
-        self.grid = np.where((self.weight_grid >= OccupancyGridMap.IMPASSABLE_THRESHOLD) & (self.weight_grid <= 1),
-                             self.WALL_ID, self.weight_grid)
+    @property
+    def weight_grid(self) -> np.array:
+        return self._weight_grid
 
+    def set_weight_grid(self, weight_grid: np.array) -> None:
+        self._weight_grid = np.array(weight_grid, copy=True)
+        self.grid = np.where((self._weight_grid >= OccupancyGridMap.IMPASSABLE_THRESHOLD) & (self._weight_grid <= 1),
+                             self.WALL_ID, self.CLEAR_ID)
         self.size = Size(*self.grid.shape)
 
+        self.obstacles.clear()
         for index in np.ndindex(*self.size):
             val: float = self.grid[index]
             if val == self.AGENT_ID:
                 self.agent = Agent(Point(*index))
             elif val == self.GOAL_ID:
                 self.goal = Goal(Point(*index))
+            elif val == self.WALL_ID:
+                self.obstacles.append(Obstacle(Point(*index)))
+
+        self.grid[self.agent.position.values] = self.AGENT_ID
+        self.grid[self.goal.position.values] = self.GOAL_ID
+        self.extend_walls()
 
     def at(self, p: Point) -> int:
-        return self.grid[p.pos]
+        return self.grid[p.values]
 
     def __repr__(self) -> str:
         return "Occupancy grid map: " + super().__repr__()
 
-    def extend_walls(self, extend_weight_grid: bool = False) -> None:
+    def extend_walls(self) -> None:
         super().extend_walls()
-
-        if not extend_weight_grid:
-            return
-
-        # TODO: to implement, we want to take the max over each area considered in the loop
-        raise NotImplementedError()
-
-        """def extend_obstacle_bound() -> None:
-            for b in bounds:
-                for index in np.ndindex(*(len(self.size) * [self.agent.radius*2 + 1])):
-                    # We want the max of all these indeces
-                    p = [elem + b[i] - self.agent.radius for i, elem in enumerate(index)]
-                    if not self.is_out_of_bounds_pos(Point(*p)):
-                        dist: Union[float, np.ndarray] = np.linalg.norm(np.array(p) - np.array(b))
-                        if dist <= self.agent.radius and self.at(Point(*p)) == DenseMap.CLEAR_ID:
-                            self.grid[tuple(p)] = DenseMap.EXTENDED_WALL
-                            self.obstacles.append(ExtendedWall(Point(*p)))
-                            visited.add(Point(*p))
-
-
-        visited: Set[Point] = set()
-
-        for index in np.ndindex(*self.size):
-            if (Point(*index) not in visited) and (self.grid[index] == self.WALL_ID):
-                bounds: Set[Point] = self.get_obstacle_bound(Point(*index), visited)
-                extend_obstacle_bound()"""
+        # TODO: extend walls in weight grid
 
     def convert_to_sparse_map(self) -> None:
         raise NotImplementedError()
