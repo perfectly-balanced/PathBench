@@ -1,5 +1,4 @@
 from typing import Union, Tuple
-from deprecated import deprecated
 
 import torch
 import copy
@@ -45,13 +44,9 @@ class Point(torch.Tensor):
     def n_dim(self) -> int:
         return len(self._values)
 
+    @property
     def values(self) -> Union[Tuple[float, ...], Tuple[int, ...]]:
         return self._values
-
-    @deprecated(reason="Use Point.values instead.")
-    @property
-    def pos(self) -> Union[Tuple[float, ...], Tuple[int, ...]]:
-        return self.values
 
     @property
     def is_float(self) -> bool:
