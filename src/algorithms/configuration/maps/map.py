@@ -80,8 +80,8 @@ class Map:
         self._services = services
         self.size = size
         self.trace = []
-        self.agent: None
-        self.goal: None
+        self.agent = None
+        self.goal = None
         self.obstacles = []
         self.init_direction_vectors()
 

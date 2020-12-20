@@ -92,17 +92,18 @@ class MapView(View):
         for x, y, z in np.ndindex(map_data.shape):
             p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
             if self._services.algorithm.map.at(p) == Map.EXTENDED_WALL:
-                extended_walls.add(Point(x, y, z)) # using 3D points is more efficient
+                extended_walls.add(Point(x, y, z))  # using 3D points is more efficient
         if extended_walls:
             dc = self._services.state.add_colour("extended wall", Colour(0.5).with_a(0.5))
             self.__persistent_displays.append(SolidColourMapDisplay(self._services, extended_walls, dc, z_index=0))
 
         if hasattr(self._services.algorithm.map, "weight_grid"):
+            threshold = self._services.algorithm.map.traversable_threshold
             wm = self._services.algorithm.map.weight_grid
             wl = TrackedList()
             for idx in np.ndindex(*wm.shape):
                 val = wm[idx]
-                if val > 0 and val < OccupancyGridMap.IMPASSABLE_THRESHOLD:
+                if val < threshold:
                     wl.append((val, Point(*idx)))
             dc_min = self._services.state.add_colour("min occupancy", BLACK.with_a(0))
             dc_max = self._services.state.add_colour("max occupancy", BLACK)
@@ -239,7 +240,7 @@ class MapView(View):
             refresh = True
             for p in np.ndindex(self.map.traversables_data.shape):
                 self.__cube_modified[p] = self.map.traversables_data[p]
-        
+
         clr = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
         if clr != self.__deduced_traversables_colour:
             eager_refresh()
@@ -277,7 +278,7 @@ class MapView(View):
                     if self._services.algorithm.map.at(self.to_logical_point(point)) == Map.EXTENDED_WALL:
                         self.__cube_modified[p] = False
                         self.__cubes_requiring_update.discard(point)
-        
+
         # update these cubes regardless of refresh
         # since it cubes that require update aren't
         # necessarily modified.
