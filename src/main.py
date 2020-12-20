@@ -10,7 +10,7 @@ import argparse
 
 from algorithms.configuration.configuration import Configuration
 from algorithms.lstm.trainer import Trainer
-from analyzer.analyzer import Analyzer
+from analyzer.analyzer import Analyzer, available_algorithms
 from generator.generator import Generator
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services, GenericServices
@@ -26,11 +26,11 @@ class MainRunner:
     def run(self):
         if self.main_services.settings.generator:
             Generator.main(self)
-        elif self.main_services.settings.trainer:
+        if self.main_services.settings.trainer:
             Trainer.main(self)
-        elif self.main_services.settings.analyzer:
+        if self.main_services.settings.analyzer:
             Analyzer.main(self)
-        elif self.main_services.settings.load_simulator:
+        if self.main_services.settings.load_simulator:
             simulator: Simulator = Simulator(self.main_services)
             simulator.start()
 
@@ -38,71 +38,23 @@ class MainRunner:
             self.main_services.resources.cache_dir.clear()
 
 
-#Work in progress
-
-    def run_multiple(self):
-        # Two options, generator
-        if self.main_services.settings.generator and self.main_services.settings.trainer:
-            Generator.main(self)
-            Trainer.main(self)
-        elif self.main_services.settings.generator and self.main_services.settings.analyzer:
-            Generator.main(self)
-            Analyzer.main(self)
-        elif self.main_services.settings.generator and self.main_services.settings.load_simulator:
-            Generator.main(self)
-            simulator: Simulator = Simulator(self.main_services)
-            simulator.start()
-        # Three options, generator
-        elif self.main_services.settings.generator and self.main_services.settings.trainer and self.main_services.settings.analyzer:
-            Generator.main(self)
-            Trainer.main(self)
-            Analyzer.main(self)
-        elif self.main_services.settings.generator and self.main_services.settings.trainer and self.main_services.settings.load_simulator:
-            simulator: Simulator = Simulator(self.main_services)
-            simulator.start()
-            Generator.main(self)
-            Trainer.main(self)
-        # Four options
-        elif self.main_services.settings.generator and self.main_services.settings.trainer and self.main_services.settings.analyzer and self.main_services.settings.load_simulator:
-            simulator: Simulator = Simulator(self.main_services)
-            simulator.start()
-            Generator.main(self)
-            Trainer.main(self)
-            Analyzer.main(self)
-        # Trainer
-        elif self.main_services.settings.trainer and self.main_services.settings.analyzer:
-            Trainer.main(self)
-            Analyzer.main(self)
-        elif self.main_services.settings.trainer and self.main_services.settings.load_simulator:
-            simulator: Simulator = Simulator(self.main_services)
-            simulator.start()
-            Trainer.main(self)
-        elif self.main_services.settings.trainer and self.main_services.settings.analyzer and self.main_services.settings.load_simulator:
-            simulator: Simulator = Simulator(self.main_services)
-            simulator.start()
-            Trainer.main(self)
-            Analyzer.main(self)
-        # Analyzer
-        elif self.main_services.settings.analyzer and self.main_services.settings.load_simulator:
-            simulator: Simulator = Simulator(self.main_services)
-            simulator.start()
-            Analyzer.main(self)
-        # Singles
-        elif self.main_services.settings.generator:
-            Generator.main(self)
-        elif self.main_services.settings.trainer:
-            Trainer.main(self)
-        elif self.main_services.settings.analyzer:
-            Analyzer.main(self)
-        elif self.main_services.settings.load_simulator:
-            simulator: Simulator = Simulator(self.main_services)
-            simulator.start()
-
-        if self.main_services.settings.clear_cache:
-            self.main_services.resources.cache_dir.clear()
-
-def configure_and_run(args) -> bool:
+def configure_and_run(args):
     config = Configuration()
+
+    if args.list_algorithms:
+        print("Available algorithms:")
+        for key in available_algorithms.keys():
+            print(f"  {key}")
+        return True
+    if args.analyzer_algorithms:
+        config.analyzer_algorithms = args.analyzer_algorithms
+        if not all(key in available_algorithms for key in config.analyzer_algorithms):
+            invalid_algorithms = [key for key in config.analyzer_algorithms if not key in available_algorithms]
+            invalid_str = ",".join('"' + a + '"' for a in invalid_algorithms)
+            valid_str = ",".join('"' + a + '"' for a in available_algorithms)
+            print(f"Invalid algorithm(s) specified: {invalid_str}")
+            print(f"Available algorithms: {valid_str}")
+            return False
 
     if args.visualiser:
         config.load_simulator = True
@@ -110,9 +62,12 @@ def configure_and_run(args) -> bool:
 
     if args.generator:
         config.generator = True
+
+    if args.analyzer or args.analyzer_algorithms: # analyzer_algorithms implies analyzer
+        config.analyzer = True
     
     mr = MainRunner(config)
-    mr.run_multiple()
+    mr.run()
     return True
 
 def main() -> bool:
@@ -121,6 +76,9 @@ def main() -> bool:
                                      formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("-v", "--visualiser", action='store_true', help="run simulator with graphics")
     parser.add_argument("-g", "--generator", action='store_true', help="run generator")
+    parser.add_argument("-a", "--analyzer", action='store_true', help="run analyzer")
+    parser.add_argument("--analyzer-algorithms", help="Select the algorithms to analyze", nargs="+")
+    parser.add_argument("--list-algorithms", action="store_true", help="Print out a list of available algorithms")
 
     args = parser.parse_args()
     print("args:{}".format(args))

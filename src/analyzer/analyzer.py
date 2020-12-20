@@ -40,6 +40,27 @@ import csv
 import pandas as pd
 pd.plotting.register_matplotlib_converters()
 
+available_algorithms = {
+    "A*": (AStar, AStarTesting, ([], {}), "A*"),
+    "Wave-front" : (Wavefront, WavefrontTesting, ([], {}), "Wave-front" ),
+    "Dijkstra": (Dijkstra, DijkstraTesting, ([], {}), "Dijkstra"),
+    "Online LSTM": (OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_model"}), "Online LSTM"),
+    "Online LSTM (ubh 10000 training)": (OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}), "Online LSTM (ubh 10000 training)"),
+    "CAE Online LSTM": (OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_uniform_random_fill_10000_model"}), "CAE Online LSTM"),
+    "CAE Online LSTM (ubh 10000 training)": (OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}), "CAE Online LSTM (ubh 10000 training)"),
+    "Combined Online LSTM": (CombinedOnlineLSTM, CombinedOnlineLSTMTesting, ([], {}), "Combined Online LSTM"),
+    "WayPointNavigation (Bagging)": (WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (CombinedOnlineLSTM, ([], {}))}), "WayPointNavigation (Bagging)"),
+    "WayPointNavigation (Map -block training)": (WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"}))}), "WayPointNavigation (Map -block training)"),
+    "WayPointNavigation (Map -urf training)": (WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}))}), "WayPointNavigation (Map -urf training)"),
+    "RT": (RT, BasicTesting, ([], {}), "RT"),
+    "RRT": (RRT, BasicTesting, ([], {}), "RRT"),
+    "RRT*": (RRT_Star, BasicTesting, ([], {}), "RRT*"),
+    "Bug 1": (Bug1, BasicTesting, ([], {}), "Bug 1"),
+    "Bug 2": (Bug2, BasicTesting, ([], {}), "Bug 2"),
+    "Potential Field": (PotentialField, BasicTesting, ([], {}), "Potential Field"),
+    #"VIN": (VINTest, BasicTesting, ([], {}), "VIN"),
+    "RRT Connect": (RRT_Connect, BasicTesting, ([], {}), "RRT Connect")
+}
 
 # OMPL algorithms
 if HAS_OMPL:
@@ -83,6 +104,31 @@ if HAS_OMPL:
     from algorithms.classic.sample_based.ompl_sbl import OMPL_SBL
     from algorithms.classic.sample_based.ompl_stride import OMPL_STRIDE
     from algorithms.classic.sample_based.ompl_qrrt import OMPL_QRRT
+    available_algorithms.extend({
+        "OMPL RRT": (OMPL_RRT, BasicTesting, ([], {}), "OMPL RRT"),
+        "OMPL PRM*": (OMPL_PRMstar, BasicTesting, ([], {}), "OMPL PRM*"),
+        "OMPL Lazy PRM*": (OMPL_LazyPRMstar, BasicTesting, ([], {}), "OMPL Lazy PRM*"),
+        "OMPL RRTX": (OMPL_RRTXstatic, BasicTesting, ([], {}), "OMPL RRTX"),
+        "OMPL RRT*": (OMPL_RRTstar, BasicTesting, ([], {}), "OMPL RRT*"),
+        "OMPL RRT#": (OMPL_RRTsharp, BasicTesting, ([], {}), "OMPL RRT#"),
+        "OMPL KPIECE1": (OMPL_KPIECE1, BasicTesting, ([], {}), "OMPL KPIECE1"),
+        "OMPL PDST": (OMPL_PDST, BasicTesting, ([], {}), "OMPL PDST"),
+        "OMPL SST": (OMPL_SST, BasicTesting, ([], {}), "OMPL SST"),
+        "OMPL BiEST": (OMPL_BiEST, BasicTesting, ([], {}), "OMPL BiEST"),
+        "OMPL TRRT": (OMPL_TRRT, BasicTesting, ([], {}), "OMPL TRRT"),
+        "OMPL RRT Connect": (OMPL_RRTConnect, BasicTesting, ([], {}), "OMPL RRT Connect"),
+        "OMPL BIT*": (OMPL_BITstar, BasicTesting, ([], {}), "OMPL BIT*"),
+        "OMPL BKPIECE1": (OMPL_BKPIECE1, BasicTesting, ([], {}), "OMPL BKPIECE1"),
+        "OMPL EST": (OMPL_EST, BasicTesting, ([], {}), "OMPL EST"),
+        "OMPL LazyLBTRRT": (OMPL_LazyLBTRRT, BasicTesting, ([], {}), "OMPL LazyLBTRRT"),
+        "OMPL LazyPRM": (OMPL_LazyPRM, BasicTesting, ([], {}), "OMPL LazyPRM"),
+        "OMPL LazyRRT": (OMPL_LazyRRT, BasicTesting, ([], {}), "OMPL LazyRRT"),
+        "OMPL LBKPIECE1": (OMPL_LBKPIECE1, BasicTesting, ([], {}), "OMPL LBKPIECE1"),
+        "OMPL LBTRRT": (OMPL_LBTRRT, BasicTesting, ([], {}), "OMPL LBTRRT"),
+        "OMPL PRM": (OMPL_PRM, BasicTesting, ([], {}), "OMPL PRM"),
+        "OMPL STRIDE": (OMPL_STRIDE, BasicTesting, ([], {}), "OMPL STRIDE"), 
+        "OMPL SBL": (OMPL_SBL, BasicTesting, ([], {}), "OMPL SBL"),
+    })
 
 if TYPE_CHECKING:
     from main import MainRunner
@@ -602,28 +648,10 @@ class Analyzer:
 
         # maps = self.__convert_maps(maps)
         # maps = [Maps.grid_map_small_one_obstacle2]#], Maps.grid_map_labyrinth2]
+        algorithm_names = self.__services.settings.analyzer_algorithms
 
-        algorithms: List[Tuple[Type[Algorithm], Type[BasicTesting], Tuple[list, dict]]] = [
-            (AStar, AStarTesting, ([], {}), "A*"),
-            #(Wavefront, WavefrontTesting, ([], {}), "Wave-front" ),
-            #(Dijkstra, DijkstraTesting, ([], {}), "Dijkstra"),
-            #(OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_model"}), "Online LSTM"),
-            #(OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}), "Online LSTM (ubh 10000 training)"),
-            #(OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_uniform_random_fill_10000_model"}), "CAE Online LSTM"),
-            #(OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}), "CAE Online LSTM (ubh 10000 training)"),
-            #(CombinedOnlineLSTM, CombinedOnlineLSTMTesting, ([], {}), "Combined Online LSTM"),
-            #(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (CombinedOnlineLSTM, ([], {}))}), "WayPointNavigation (Bagging)"),
-            #(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"}))}), "WayPointNavigation (Map -block training)"),
-            #(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}))}), "WayPointNavigation (Map -urf training)"),
-            #(RT, BasicTesting, ([], {}), "RT"),
-            #(RRT, BasicTesting, ([], {}), "RRT"),
-            (RRT_Star, BasicTesting, ([], {}), "RRT*"),
-            #(Bug1, BasicTesting, ([], {}), "Bug 1"),
-            #(Bug2, BasicTesting, ([], {}), "Bug 2"),
-            #(PotentialField, BasicTesting, ([], {}), "Potential Field"),
-            #(VINTest, BasicTesting, ([], {}), "VIN"),
-            #(RRT_Connect, BasicTesting, ([], {}), "RRT Connect")
-        ]
+        algorithms: List[Tuple[Type[Algorithm], Type[BasicTesting], Tuple[list, dict]]] = \
+                list(map(lambda alg: available_algorithms[alg], algorithm_names))
 
         if HAS_OMPL:
             """

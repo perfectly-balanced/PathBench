@@ -149,7 +149,7 @@ class Generator:
 
     def __get_rand_position(self, dimensions: Size, start: Optional[Point] = None) -> Point:
 
-        if(start is None):
+        if start is None:
             start = Point(*([0] * dimensions.n_dim))
 
         return Point(*np.random.randint([*start], [*dimensions]))

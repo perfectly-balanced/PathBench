@@ -16,6 +16,7 @@ class Size:
             if "depth" in kwargs:
                 sizes = (*sizes, kwargs["depth"])
         self._size = Point(*sizes)
+        assert not self._size.is_float, "Floating-point size does not make sense"
 
     @property
     def size(self):

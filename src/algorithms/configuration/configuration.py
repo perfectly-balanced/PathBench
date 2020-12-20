@@ -61,6 +61,7 @@ class Configuration:
     trainer_custom_config: Optional[Dict[str, Any]]
     trainer_pre_process_data_only: bool
     analyzer: bool
+    analyzer_algorithms: List[str]
     load_simulator: bool
     clear_cache: bool
 
@@ -110,6 +111,7 @@ class Configuration:
 
         # Custom behaviour settings
         self.analyzer = False
+        self.analyzer_algorithms = ["A*", "Dijkstra"]
 
         # Simulator
         self.load_simulator = False

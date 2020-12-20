@@ -76,11 +76,14 @@ class Point(torch.Tensor):
         assert isinstance(other, Point), "Must compare with another point"
         return self._pos < other._pos
 
+    def __add__(self, other: object) -> 'Point':
+        assert isinstance(other, Point), "Must add to another point"
+        return Point(*(i+j for i, j in zip(self._pos, other._pos)))
+
     def __hash__(self) -> int:
         return hash(self._pos)
 
     def __repr__(self) -> str:
-        # want to print floats as ints for test, if doing so wouldn't change them
         return f"Point({', '.join(str(i) for i in self._pos)})"
 
     def __copy__(self) -> 'Point':
