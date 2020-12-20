@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union, Dict
+from typing import List, Tuple, Union, Dict, Optional
 
 import numpy as np
 
@@ -23,6 +23,7 @@ class GradientMapDisplay(MapDisplay):
     def __init__(self, services: Services, grid: List[List[Union[int, float]]] = None,
                  pts: List[Tuple[Union[int, float], Point]] = None,
                  min_colour: DynamicColour = None, max_colour: DynamicColour = None,
+                 value_bounds: Optional[Tuple[Union[int, float], Union[int, float]]] = None,
                  z_index=50, inverted: bool = False, custom_map: Map = None) -> None:
         super().__init__(services, z_index=z_index, custom_map=custom_map)
 
@@ -39,8 +40,12 @@ class GradientMapDisplay(MapDisplay):
         self.min_colour = min_colour
         self.max_colour = max_colour
         self.inverted = inverted
-        self.min_val = np.inf
-        self.max_val = -np.inf
+        self.value_bounds = value_bounds
+        if self.value_bounds is None:
+            self.min_val = np.inf
+            self.max_val = -np.inf
+        else:
+            self.min_val, self.max_val = self.value_bounds
 
         self.__deduced_min_colour = self.min_colour()
         self.__deduced_max_colour = self.max_colour()
@@ -88,30 +93,33 @@ class GradientMapDisplay(MapDisplay):
 
     def __render_lazy(self) -> None:
         if self.pts.elems_were_removed:
-            # todo: could probably add some laziness here
+            # todo: could add some laziness here
             self.__render_eager()
             return
 
-        old_min_val = self.min_val
-        old_max_val = self.max_val
-        for p in self.pts.modified:
-            self.min_val = min(self.min_val, p[0])
-            self.max_val = max(self.max_val, p[0])
-
-        if old_min_val != self.min_val or old_max_val != self.max_val:
-            self.__eager_colour_update_dispatch()
-        else:
-            rv = self.get_renderer_view()
+        if self.value_bounds is None:
+            old_min_val = self.min_val
+            old_max_val = self.max_val
             for p in self.pts.modified:
-                clr = self.get_colour(p[0])
-                self.__cube_colours[rv.cube_requires_update(p[1])] = clr
+                self.min_val = min(self.min_val, p[0])
+                self.max_val = max(self.max_val, p[0])
+
+            if old_min_val != self.min_val or old_max_val != self.max_val:
+                self.__eager_colour_update_dispatch()
+                return
+
+        rv = self.get_renderer_view()
+        for p in self.pts.modified:
+            clr = self.get_colour(p[0])
+            self.__cube_colours[rv.cube_requires_update(p[1])] = clr
 
     def __render_eager(self) -> None:
-        self.min_val: float = np.inf
-        self.max_val: float = -np.inf
-        for p in self.pts:
-            self.min_val = min(self.min_val, p[0])
-            self.max_val = max(self.max_val, p[0])
+        if self.value_bounds is None:
+            self.min_val: float = np.inf
+            self.max_val: float = -np.inf
+            for p in self.pts:
+                self.min_val = min(self.min_val, p[0])
+                self.max_val = max(self.max_val, p[0])
         self.__eager_colour_update_dispatch()
 
     def __eager_colour_update_dispatch(self) -> None:

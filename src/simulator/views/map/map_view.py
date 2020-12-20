@@ -98,8 +98,9 @@ class MapView(View):
             self.__persistent_displays.append(SolidColourMapDisplay(self._services, extended_walls, dc, z_index=0))
 
         if hasattr(self._services.algorithm.map, "weight_grid"):
-            threshold = self._services.algorithm.map.traversable_threshold
-            wm = self._services.algorithm.map.weight_grid
+            mp = self._services.algorithm.map
+            threshold = mp.traversable_threshold
+            wm = mp.weight_grid
             wl = TrackedList()
             for idx in np.ndindex(*wm.shape):
                 val = wm[idx]
@@ -107,7 +108,7 @@ class MapView(View):
                     wl.append((val, Point(*idx)))
             dc_min = self._services.state.add_colour("min occupancy", BLACK.with_a(0))
             dc_max = self._services.state.add_colour("max occupancy", BLACK)
-            display = GradientMapDisplay(self._services, pts=wl, min_colour=dc_min, max_colour=dc_max)
+            display = GradientMapDisplay(self._services, pts=wl, min_colour=dc_min, max_colour=dc_max, value_bounds=mp.weight_bounds)
             self.__persistent_displays.append(display)
 
         self.__deduced_traversables_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
