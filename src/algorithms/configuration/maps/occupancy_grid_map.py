@@ -78,16 +78,13 @@ class OccupancyGridMap(DenseMap):
 
         self.grid[self.agent.position.values] = self.AGENT_ID
         self.grid[self.goal.position.values] = self.GOAL_ID
+        self.extend_walls()
 
     def at(self, p: Point) -> int:
         return self.grid[p.values]
 
     def __repr__(self) -> str:
         return "Occupancy Grid: " + super().__repr__()
-
-    def extend_walls(self) -> None:
-        super().extend_walls()
-        # TODO: extend walls in weight grid
 
     def convert_to_sparse_map(self) -> None:
         raise NotImplementedError()

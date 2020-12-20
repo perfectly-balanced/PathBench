@@ -99,13 +99,10 @@ class MapView(View):
 
         if hasattr(self._services.algorithm.map, "weight_grid"):
             mp = self._services.algorithm.map
-            threshold = mp.traversable_threshold
-            wm = mp.weight_grid
             wl = TrackedList()
-            for idx in np.ndindex(*wm.shape):
-                val = wm[idx]
-                if val < threshold:
-                    wl.append((val, Point(*idx)))
+            for idx in np.ndindex(*mp.size):
+                if mp.grid[idx] in (Map.CLEAR_ID, Map.AGENT_ID, Map.GOAL_ID):
+                    wl.append((mp.weight_grid[idx], Point(*idx)))
             dc_min = self._services.state.add_colour("min occupancy", BLACK.with_a(0))
             dc_max = self._services.state.add_colour("max occupancy", BLACK)
             display = GradientMapDisplay(self._services, pts=wl, min_colour=dc_min, max_colour=dc_max, value_bounds=mp.weight_bounds)
