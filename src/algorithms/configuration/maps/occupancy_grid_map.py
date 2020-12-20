@@ -1,54 +1,41 @@
 import numpy as np
-import copy
 
 from typing import Dict, List, Any, Optional, Tuple
 from numbers import Real
+import copy
 
 from simulator.services.services import Services
-
 from algorithms.configuration.maps.map import Map
 from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.goal import Goal
 from algorithms.configuration.entities.obstacle import Obstacle
-
+from utility.utils import flatten, array_shape
 from structures import Point, Size
 
-from collections.abc import Iterable
-
-def flatten(l):
-    for el in l:
-        if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
-            yield from flatten(el)
-        else:
-            yield el
-
 class OccupancyGridMap(DenseMap):
-    """
-    For now, this map is simply DenseMap representation with floats
-    representing the obstacles.
-    """
     weight_grid: np.array
     traversable_threshold: float
 
-    def __init__(self, weight_grid: List[Any], agent: Agent, goal: Goal, weight_bounds: Optional[Tuple[Real, Real]] = None, traversable_threshold: Optional[Real] = None, services: Services = None) -> None:
+    def __init__(self,
+                 weight_grid: Optional[List[Any]] = None,
+                 agent: Optional[Agent] = None,
+                 goal: Optional[Goal] = None,
+                 weight_bounds: Optional[Tuple[Real, Real]] = None,
+                 traversable_threshold: Optional[Real] = None,
+                 services: Services = None) -> None:
         super().__init__(None, services)
         self.agent = agent
         self.goal = goal
-        self.set_grid(weight_grid, weight_bounds)
+        if weight_grid is not None:
+            self.set_grid(weight_grid, weight_bounds)
 
     @property
     def weight_bounds(self):
         return (0, 1)
 
     def set_grid(self, weight_grid: List[Any], weight_bounds: Optional[Tuple[Real, Real]] = None, traversable_threshold: Optional[Real] = None) -> None:
-        def array_size(a) -> Tuple[int, ...]:
-            if isinstance(a[0], Iterable):
-                return (len(a), *array_size(a[0]))
-            else:
-                return (len(a),)
-
-        self.size = Size(*array_size(weight_grid))
+        self.size = Size(*array_shape(weight_grid))
         self.grid = np.empty(self.size, dtype=np.uint8)
         self.weight_grid = np.empty(self.size, dtype=np.float32)
 
@@ -90,10 +77,10 @@ class OccupancyGridMap(DenseMap):
         raise NotImplementedError()
 
     def __deepcopy__(self, memo: Dict) -> 'OccupancyGridMap':
-        dense_map = self.__class__(copy.deepcopy(self.weight_grid),
-                                   copy.deepcopy(self.agent), copy.deepcopy(self.goal),
-                                   traversable_threshold=self.traversable_threshold,
-                                   services=self._services)
-        dense_map.trace = copy.deepcopy(self.trace)
-        dense_map.obstacles = copy.deepcopy(self.obstacles)
-        return dense_map
+        mp = self.__class__(copy.deepcopy(self.weight_grid),
+                            copy.deepcopy(self.agent), copy.deepcopy(self.goal),
+                            traversable_threshold=self.traversable_threshold,
+                            services=self._services)
+        mp.trace = copy.deepcopy(self.trace)
+        mp.obstacles = copy.deepcopy(self.obstacles)
+        return mp

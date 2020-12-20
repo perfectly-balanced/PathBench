@@ -1,6 +1,9 @@
 import numpy as np
 import torch
 
+from collections.abc import Iterable
+from typing import Tuple
+
 
 def fmt_row(width, row):
     out = " | ".join(fmt_item(x, width) for x in row)
@@ -11,8 +14,10 @@ def fmt_item(x, l):
     if isinstance(x, np.ndarray):
         assert x.ndim == 0
         x = x.item()
-    if isinstance(x, float): rep = "%g" % x
-    else: rep = str(x)
+    if isinstance(x, float):
+        rep = "%g" % x
+    else:
+        rep = str(x)
     return " " * (l - len(rep)) + rep
 
 
@@ -36,3 +41,16 @@ def print_header():
 
 def exclude_from_dict(dict, keys):
     return {key: t[key] for key in dict if key not in keys}
+
+def flatten(l):
+    for el in l:
+        if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
+            yield from flatten(el)
+        else:
+            yield el
+
+def array_shape(a) -> Tuple[int, ...]:
+    if isinstance(a[0], Iterable):
+        return (len(a), *array_shape(a[0]))
+    else:
+        return (len(a),)
