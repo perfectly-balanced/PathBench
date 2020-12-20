@@ -11,11 +11,13 @@ from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.goal import Goal
 from algorithms.configuration.entities.obstacle import Obstacle
 from utility.utils import flatten, array_shape
+from utility.compatibility import Final
 from structures import Point, Size
 
 class OccupancyGridMap(DenseMap):
     weight_grid: np.array
     traversable_threshold: float
+    DEFAULT_TRAVERSABLE_THRESHOLD: Final[float] = 0.95
 
     def __init__(self,
                  weight_grid: Optional[List[Any]] = None,
@@ -27,6 +29,8 @@ class OccupancyGridMap(DenseMap):
         super().__init__(None, services)
         self.agent = agent
         self.goal = goal
+        self.weight_grid = None
+        self.traversable_threshold = self.DEFAULT_TRAVERSABLE_THRESHOLD
         if weight_grid is not None:
             self.set_grid(weight_grid, weight_bounds)
 
@@ -47,7 +51,7 @@ class OccupancyGridMap(DenseMap):
 
         # threshold
         if traversable_threshold is None:
-            traversable_threshold = min(weight_bounds[0] + (weight_bounds[1] - weight_bounds[0]) * 0.95, weight_bounds[1])
+            traversable_threshold = min(weight_bounds[0] + (weight_bounds[1] - weight_bounds[0]) * self.DEFAULT_TRAVERSABLE_THRESHOLD, weight_bounds[1])
         self.traversable_threshold = normalise(traversable_threshold)
 
         self.obstacles.clear()
@@ -65,7 +69,7 @@ class OccupancyGridMap(DenseMap):
 
         self.grid[self.agent.position.values] = self.AGENT_ID
         self.grid[self.goal.position.values] = self.GOAL_ID
-        self.extend_walls()
+        # self.extend_walls()
 
     def at(self, p: Point) -> int:
         return self.grid[p.values]
@@ -83,4 +87,5 @@ class OccupancyGridMap(DenseMap):
                             services=self._services)
         mp.trace = copy.deepcopy(self.trace)
         mp.obstacles = copy.deepcopy(self.obstacles)
+        mp.grid = copy.deepcopy(self.grid)
         return mp

@@ -62,14 +62,13 @@ class Ros:
         for idx in np.ndindex(*self._size):
             self._grid[idx] = rgrid[idx[0] * self._size[1] + idx[1]]
 
-        print(self._grid)
         self._grid_lock.release()
 
     def _get_grid(self):
         self._grid_lock.acquire()
         grid = self._grid
         self._grid_lock.release()
-        return grid
+        return (grid, (0, 100))
 
     def _set_agent_pos(self, odom_msg):
         self._agent_lock.acquire()
@@ -101,7 +100,6 @@ class Ros:
                                               self._update_requested)
         s = Services(config)
         s.algorithm.map.request_update()
-        s.reinit()
         sim = Simulator(s)
         return sim
 

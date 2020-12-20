@@ -1,5 +1,6 @@
 import copy
-from typing import List, Callable, Dict, Any, Optional
+from typing import List, Tuple, Callable, Dict, Any, Optional
+from numbers import Real
 
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.goal import Goal
@@ -14,15 +15,15 @@ import numpy as np
 
 class RosMap(OccupancyGridMap):
     __update_requested: Optional[Callable[[], None]]
-    __get_grid: Callable[[], List[List[int]]]
+    __get_grid: Callable[[], Tuple[List[Any], Optional[Tuple[Real, Real]], Optional[Real]]]
     __wp_publish: Optional[Callable[[Point], None]]
 
     def __init__(self, size: Size, agent: Agent, goal: Goal,
-                 get_grid: Callable[[], List[List[int]]],
+                 get_grid: Callable[[], Tuple[List[Any], Optional[Tuple[Real, Real]], Optional[Real]]],
                  wp_publish: Optional[Callable[[Point], None]] = None,
                  update_requested: Optional[Callable[[], None]] = None,
                  services: Services = None) -> None:
-        super().__init__(None, services)
+        super().__init__(services=services)
 
         self.__get_grid = get_grid
         self.__wp_publish = wp_publish
@@ -35,7 +36,7 @@ class RosMap(OccupancyGridMap):
             self.request_update = self._services.debug.debug_func(DebugLevel.LOW)(self.request_update)
 
     def request_update(self):
-        self.set_grid(copy.deepcopy(self.__get_grid()))
+        self.set_grid(*self.__get_grid())
 
         if self.__update_requested:
             self.__update_requested()
@@ -47,11 +48,12 @@ class RosMap(OccupancyGridMap):
         return copy.deepcopy(self)
 
     def __deepcopy__(self, memo: Dict) -> 'RosMap':
-        dense_map = RosMap(self.size, self.agent, self.goal, self.__get_grid, self.__wp_publish,
-                           self.__update_requested, self._services)
-        dense_map.grid = copy.deepcopy(self.grid)
-        dense_map.trace = copy.deepcopy(self.trace)
-        dense_map.agent = copy.deepcopy(self.agent)
-        dense_map.goal = copy.deepcopy(self.goal)
-        dense_map.obstacles = copy.deepcopy(self.obstacles)
-        return dense_map
+        mp = RosMap(copy.deepcopy(self.size), copy.deepcopy(self.agent), copy.deepcopy(self.goal),
+                    self.__get_grid, self.__wp_publish, self.__update_requested,
+                    services=self._services)
+        mp.weight_grid = copy.deepcopy(self.weight_grid)
+        mp.traversable_threshold = copy.deepcopy(self.traversable_threshold)
+        mp.trace = copy.deepcopy(self.trace)
+        mp.obstacles = copy.deepcopy(self.obstacles)
+        mp.grid = copy.deepcopy(self.grid)
+        return mp
