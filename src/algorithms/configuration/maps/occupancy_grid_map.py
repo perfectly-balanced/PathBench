@@ -1,4 +1,10 @@
 import numpy as np
+import copy
+
+from typing import Dict, List, Any, Optional, Tuple
+from numbers import Real
+
+from simulator.services.services import Services
 
 from typing import Dict, List, Any, Optional, Tuple
 from numbers import Real
@@ -13,6 +19,15 @@ from algorithms.configuration.entities.obstacle import Obstacle
 from utility.utils import flatten, array_shape
 from utility.compatibility import Final
 from structures import Point, Size
+
+from collections.abc import Iterable
+
+def flatten(l):
+    for el in l:
+        if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
+            yield from flatten(el)
+        else:
+            yield el
 
 class OccupancyGridMap(DenseMap):
     weight_grid: np.array
