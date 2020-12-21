@@ -3,6 +3,7 @@ from simulator.services.resources.directories import ModelDir, CacheDir, ImagesD
 from simulator.services.resources.directory import Directory
 from simulator.services.services import Services
 
+from definitions import SRC_DIR
 
 class Resources(Directory):
     model_dir: ModelDir
@@ -14,7 +15,9 @@ class Resources(Directory):
     house_expo_dir: HouseExpoDir
 
     def __init__(self, services: Services):
-        super().__init__(services, "resources", "./")
+        src = SRC_DIR + '/'
+
+        super().__init__(services, "resources", src)
 
         self.model_dir = ModelDir(self._services, "algorithms", self._full_path())
         self.cache_dir = CacheDir(self._services, "cache", self._full_path())
