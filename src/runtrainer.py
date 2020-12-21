@@ -43,10 +43,6 @@ from algorithms.classic.testing.wavefront_testing import WavefrontTesting
 from algorithms.classic.testing.way_point_navigation_testing import WayPointNavigationTesting
 
 
-#Dictionaries of possible options
-from main_gui import GUI
-
-
 config = type(Configuration)
 
 config = Configuration()
