@@ -41,6 +41,13 @@ Note, screenshots are placed in resources directory.
 
 ## Headless Testing
 
+Dependencies:
+
+```bash
+sudo apt-get install x11vnc xvfb xtightvncviewer
+pip3 install xlib
+```
+
 Execute the following in the same order as they appear and each one in different terminals (keep everything running):
 
 ```bash
@@ -71,12 +78,6 @@ import pyautogui
 import os
 import Xlib.display
 pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ['DISPLAY'])
-```
-
-Dependencies:
-
-```bash
-pip3 install xlib
 ```
 
 ## PathBench
