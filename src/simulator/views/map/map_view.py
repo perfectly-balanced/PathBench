@@ -299,7 +299,7 @@ class MapView(View):
                             self.__cubes_requiring_update.discard(point)
 
         # update these cubes regardless of refresh
-        # since it cubes that require update aren't
+        # since the cubes that require update aren't
         # necessarily modified.
         for p in self.__cubes_requiring_update:
             update_cube_colour(p)
