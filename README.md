@@ -56,7 +56,7 @@ x11vnc -display :99 -localhost
 vncviewer -display :0
 ```
 
-Note, after executing vncviewer, press enter when the white dialog box opens, this will then launch the actual view. Quitting the view will terminate both the view and x11vnc process. Need to re-execute both commands to re-view.
+Note, after executing `vncviewer`, press `Enter` when the white dialog box opens, this will then launch the actual view. Quitting the view will terminate both the `vncviewer` and `x11vnc` processes. Need to re-execute both commands to re-view.
 
 To view a screenshot of the screen, execute the following:
 
@@ -64,7 +64,7 @@ To view a screenshot of the screen, execute the following:
 xwud -in /var/tmp/Xvfb_screen0
 ```
 
-For any PyAutoGUI testing, before executing any actions add the following:
+When implementing `pyautogui` tests, before calling any `pyautogui` methods, add the following (some places do this implicitly when calling a common `init()`):
 
 ```python
 import os
