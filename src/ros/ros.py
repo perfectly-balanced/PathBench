@@ -57,7 +57,7 @@ class Ros:
 
     def _get_grid(self):
         grid = self._grid
-        return (grid, (0, 1))
+        return (grid, (0, 1), 0.95)
 
     def _set_agent_pos(self, odom_msg):
         self.agent = odom_msg
