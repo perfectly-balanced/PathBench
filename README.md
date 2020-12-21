@@ -67,6 +67,7 @@ xwud -in /var/tmp/Xvfb_screen0
 When implementing `pyautogui` tests, before calling any `pyautogui` methods, add the following (some places do this implicitly when calling a common `init()`):
 
 ```python
+import pyautogui
 import os
 import Xlib.display
 pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ['DISPLAY'])
