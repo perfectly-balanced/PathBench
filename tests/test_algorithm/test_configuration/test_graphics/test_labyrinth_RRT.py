@@ -1,10 +1,12 @@
+from common import init
+init()
+
+from constants import DATA_PATH
+
 import time
 import pyautogui
 import os
 import sys
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))), "src"))
-from constants import DATA_PATH
-
 
 pyautogui.click(1003, 218)
 

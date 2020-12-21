@@ -39,6 +39,45 @@ You **must** run the main script from the `src` directory as some files are stil
 
 Note, screenshots are placed in resources directory.
 
+## Headless Testing
+
+Execute the following in the same order as they appear and each one in different terminals (keep everything running):
+
+```bash
+Xvfb :99 -screen 0 2112x1376x24 -fbdir /var/tmp
+env "DISPLAY=:99" "PATH_BENCH_FULLSCREEN=1" python3 main.py -v
+env "DISPLAY=:99" python3 ../tests/test_algorithm/test_configuration/test_graphics/test_labyrinth_with_A.py
+```
+
+To have a live view of the screen, execute the following in the same order as they appear and each one in different terminals (keep everything running):
+
+```bash
+x11vnc -display :99 -localhost
+vncviewer -display :0
+```
+
+Note, after executing vncviewer, press enter when the white dialog box opens, this will then launch the actual view. Quitting the view will terminate both the view and x11vnc process. Need to re-execute both commands to re-view.
+
+To view a screenshot of the screen, execute the following:
+
+```bash
+xwud -in /var/tmp/Xvfb_screen0
+```
+
+For any PyAutoGUI testing, before executing any actions add the following:
+
+```python
+import os
+import Xlib.display
+pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ['DISPLAY'])
+```
+
+Dependencies:
+
+```bash
+pip3 install xlib
+```
+
 ## PathBench
 
 **Simulator**

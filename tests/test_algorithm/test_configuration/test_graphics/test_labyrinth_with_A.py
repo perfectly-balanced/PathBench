@@ -1,15 +1,14 @@
+from common import init, mse
+init()
+
+from constants import DATA_PATH
+
 import time
-import pyautogui
 import os
 import sys
 import glob
 import cv2
-from compare_ss import mse
-
-sys.path.append(os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))),
-    "src"))
-from constants import DATA_PATH
+import pyautogui
 
 pyautogui.click(1003, 218)
 
