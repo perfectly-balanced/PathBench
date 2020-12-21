@@ -44,7 +44,7 @@ class Size:
         return len(self._size)
 
     def to_tensor(self) -> torch.Tensor:
-        return torch.Tensor([float(i) for i in self._size.pos])
+        return torch.Tensor([float(i) for i in self._size.values])
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Size) and self._size == other._size
@@ -53,4 +53,4 @@ class Size:
         return not (self == other)
 
     def __repr__(self) -> str:
-        return f"Size({', '.join(str(i) for i in self._size.pos)})"
+        return f"Size({', '.join(str(i) for i in self._size.values)})"

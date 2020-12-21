@@ -69,7 +69,7 @@ class Wavefront(Algorithm):
         #print("queue=",queue)
         
         #make the goal cell 1
-        self.step_grid[goal.position.pos] = 1
+        self.step_grid[goal.position.values] = 1
             
         #print("________________________________________________________\n")
         #print("self.step_grid=",self.step_grid)
@@ -82,12 +82,12 @@ class Wavefront(Algorithm):
             count: int
             next_node, count = queue.pop(0)
             for n in grid.get_next_positions(next_node):
-                if self.step_grid[n.pos] == 0:
-                    self.step_grid[n.pos] = count
+                if self.step_grid[n.values] == 0:
+                    self.step_grid[n.values] = count
                     queue.append((n, count + 1))
                 if self.__equal_pos(n, agent.position):
                     agent_reached = True
-                    self.step_grid[n.pos] = count
+                    self.step_grid[n.values] = count
                     break
             self.key_frame()
 
@@ -113,9 +113,9 @@ class Wavefront(Algorithm):
         """
         trace: List[Point] = [current]
         #find the trace of the path by looking at neighbours at each point and moving the current towards the agent position. (number to next lowest numb(-1))
-        while self.step_grid[current.pos] != 1:
+        while self.step_grid[current.values] != 1:
             for n in grid.get_next_positions(current):
-                if self.step_grid[n.pos] == self.step_grid[current.pos] - 1:
+                if self.step_grid[n.values] == self.step_grid[current.values] - 1:
                     trace.append(n)
                     current = n
                     break

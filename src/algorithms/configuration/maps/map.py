@@ -29,13 +29,26 @@ class Map:
     GOAL_ID: int = 3
     EXTENDED_WALL: int = 4
 
-    size: Size
     agent: Agent
     goal: Goal
     obstacles: List[Obstacle]
     trace: List[Trace]
+    _size: Size
     _services: Optional[Services]
     __cached_move_costs: List[float] = []
+
+    @property
+    def size(self) -> str:
+        return 'size'
+
+    @size.getter
+    def size(self) -> Size:
+        return self._size
+    
+    @size.setter
+    def size(self, value) -> None:
+        self._size = value
+        self.init_direction_vectors()
 
     def at(self, p: Point) -> int:
         raise NotImplementedError("Have not implemented this for the given map yet.")
@@ -80,8 +93,8 @@ class Map:
         self._services = services
         self.size = size
         self.trace = []
-        self.agent: None
-        self.goal: None
+        self.agent = None
+        self.goal = None
         self.obstacles = []
         self.init_direction_vectors()
 
