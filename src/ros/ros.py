@@ -30,17 +30,11 @@ class Ros:
     _size: Size
     _grid: np.ndarray
 
-    _grid_lock: Lock
-    _agent_lock: Lock
-
     def __init__(self):
         self._resolution = None
         self._origin = None
         self._size = None
         self._grid = None
-
-        self._grid_lock = Lock()
-        self._agent_lock = Lock()
 
         rospy.init_node("algo")
         rospy.Subscriber("/map", OccupancyGrid, self._set_slam)
@@ -49,36 +43,27 @@ class Ros:
         rospy.sleep(2)
 
     def _set_slam(self, msg):
-        self._grid_lock.acquire()
-
         minfo = msg.info
-        rgrid = msg.data
+        rgrid = np.array(msg.data, dtype=np.int8).astype(np.uint8)
 
         self._resolution = minfo.resolution
         self._origin = Point(minfo.origin.position.x, minfo.origin.position.y)
         self._size = Size(minfo.width, minfo.height)
-        self._grid = np.empty(self._size, dtype=np.int32)
+        self._grid = np.empty(self._size, dtype=np.float32)
 
         for idx in np.ndindex(*self._size):
-            self._grid[idx] = rgrid[idx[0] * self._size[1] + idx[1]]
-
-        self._grid_lock.release()
+            v = rgrid[idx[0] * self._size[1] + idx[1]]
+            self._grid[idx] = min(1, max(0, 1 - v / 255))
 
     def _get_grid(self):
-        self._grid_lock.acquire()
         grid = self._grid
-        self._grid_lock.release()
-        return (grid, (0, 100))
+        return (grid, (0, 1))
 
     def _set_agent_pos(self, odom_msg):
-        self._agent_lock.acquire()
         self.agent = odom_msg
-        self._agent_lock.release()
 
     def _get_agent_pos(self):
-        self._agent_lock.acquire()
         ret = self.agent
-        self._agent_lock.release()
         return ret
 
     def _update_requested(self):

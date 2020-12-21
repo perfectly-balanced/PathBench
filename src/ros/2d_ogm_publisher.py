@@ -3,14 +3,12 @@ import cv2 as cv
 from nav_msgs.msg import OccupancyGrid
 from geometry_msgs.msg import Pose
 from std_msgs.msg import *
+import numpy as np
 
 def load_grid():
     img = cv.imread('2d_ogm.png', 0)
-    height, width = img.shape
-
-    data = [(img[i] / 255) * 100 for i in range(len(img))]
-    flatten = lambda t: [item for sublist in t for item in sublist]
-    data = [int(x) for x in flatten(data)]
+    width, height = img.shape
+    data = np.array([item for sublist in img for item in sublist]).astype(np.int8).tolist()
 
     grid = OccupancyGrid()
     grid.header.frame_id = 'map'
@@ -27,7 +25,7 @@ def load_grid():
 
 def main():
     rospy.init_node('map', anonymous=True)
-    pub = rospy.Publisher('/map', OccupancyGrid, latch=True,queue_size=1)
+    pub = rospy.Publisher('/map', OccupancyGrid, latch=True, queue_size=1)
 
     pub.publish(load_grid())
     rospy.spin()
