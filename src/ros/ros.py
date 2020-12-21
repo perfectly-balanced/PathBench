@@ -49,11 +49,12 @@ class Ros:
         self._resolution = minfo.resolution
         self._origin = Point(minfo.origin.position.x, minfo.origin.position.y)
         self._size = Size(minfo.width, minfo.height)
-        self._grid = np.empty(self._size, dtype=np.float32)
+        self._grid = np.empty(self._size[::-1], dtype=np.float32)
 
-        for idx in np.ndindex(*self._size):
-            v = rgrid[idx[0] * self._size[1] + idx[1]]
-            self._grid[idx] = min(1, max(0, 1 - v / 255))
+        for j in range(self._size.height):
+            for i in range(self._size.width):
+                v = rgrid[j * self._size.width + i]
+                self._grid[j, i] = min(1, max(0, 1 - v / 255))
 
     def _get_grid(self):
         grid = self._grid

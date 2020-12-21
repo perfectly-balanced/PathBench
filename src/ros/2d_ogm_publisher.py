@@ -7,7 +7,7 @@ import numpy as np
 
 def load_grid():
     img = cv.imread('2d_ogm.png', 0)
-    width, height = img.shape
+    height, width = img.shape
     data = np.array([item for sublist in img for item in sublist]).astype(np.int8).tolist()
 
     grid = OccupancyGrid()
