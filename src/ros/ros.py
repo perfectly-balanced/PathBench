@@ -74,7 +74,8 @@ class Ros:
 
         config.simulator_graphics = True
         config.simulator_write_debug_level = DebugLevel.LOW
-        config.simulator_key_frame_speed = 0.1
+        config.simulator_key_frame_speed = 0.16
+        config.simulator_key_frame_skip = 20
         config.simulator_algorithm_type = AStar
         config.simulator_algorithm_parameters = ([], {})
         config.simulator_testing_type = AStarTesting

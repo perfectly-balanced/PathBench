@@ -86,7 +86,12 @@ class MapView(View):
         self.__scratch = self.map.root.attach_new_node("scratch")
         self.renderer.push_root(self.__scratch)
 
+        self.__entities_map_display = None
+        self.__weight_grid_display = None
+        self.__extended_walls_display = None
+
         self.__persistent_displays = [EntitiesMapDisplay(self._services)]
+        self.__entities_map_display = self.__persistent_displays[-1]
 
         extended_walls = TrackedSet()
         for x, y, z in np.ndindex(map_data.shape):
@@ -96,6 +101,7 @@ class MapView(View):
         if extended_walls:
             dc = self._services.state.add_colour("extended wall", Colour(0.5).with_a(0.5))
             self.__persistent_displays.append(SolidColourMapDisplay(self._services, extended_walls, dc, z_index=0))
+            self.__extended_walls_display = self.__persistent_displays[-1]
 
         if hasattr(self._services.algorithm.map, "weight_grid"):
             mp = self._services.algorithm.map
@@ -107,6 +113,7 @@ class MapView(View):
             dc_max = self._services.state.add_colour("max occupancy", BLACK)
             display = GradientMapDisplay(self._services, pts=wl, min_colour=dc_min, max_colour=dc_max, value_bounds=mp.weight_bounds)
             self.__persistent_displays.append(display)
+            self.__weight_grid_display = self.__persistent_displays[-1]
 
         self.__deduced_traversables_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
         self.__deduced_traversables_wf_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
@@ -155,6 +162,9 @@ class MapView(View):
         self.__world.remove_node()
         self.__displays = []
         self.__persistent_displays = []
+        self.__entities_map_display = None
+        self.__weight_grid_display = None
+        self.__extended_walls_display = None
         self._services.ev_manager.unregister_listener(self)
         self._services.ev_manager.unregister_tick_listener(self)
         if self._root_view is not None:
@@ -272,10 +282,21 @@ class MapView(View):
 
                     # we don't want to track extended walls once rendered.
                     # Note, they will still be refreshed when traversable
-                    # (wireframe) colour changes.
-                    if self._services.algorithm.map.at(self.to_logical_point(point)) == Map.EXTENDED_WALL:
+                    # (bg & wireframe) colour changes.
+                    if self.__extended_walls_display is not None and \
+                       self._services.algorithm.map.at(self.to_logical_point(point)) == Map.EXTENDED_WALL:
                         self.__cube_modified[p] = False
                         self.__cubes_requiring_update.discard(point)
+
+                    # we don't want to track occupancy grid weights
+                    # Note, they will still be refreshed when traversable
+                    # (bg & wireframe) colour changes.
+                    if self.__weight_grid_display is not None:
+                        lp = self.to_logical_point(point)
+                        if self._services.algorithm.map.at(lp) == Map.CLEAR_ID and \
+                           blend_colours(self.__weight_grid_display.get_colour(self._services.algorithm.map.weight_grid[lp.values]), clr) == self.__cube_colour:
+                            self.__cube_modified[p] = False
+                            self.__cubes_requiring_update.discard(point)
 
         # update these cubes regardless of refresh
         # since it cubes that require update aren't
