@@ -39,8 +39,8 @@ def print_header():
     print(fmt_row(10, ["Epoch", "Train Loss", "Train Error", "Epoch Time"]))
 
 
-def exclude_from_dict(dict, keys):
-    return {key: t[key] for key in dict if key not in keys}
+def exclude_from_dict(d, keys):
+    return {key: d[key] for key in d if key not in keys}
 
 def flatten(l):
     for el in l:

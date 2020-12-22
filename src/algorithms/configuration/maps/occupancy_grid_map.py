@@ -16,7 +16,7 @@ from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.goal import Goal
 from algorithms.configuration.entities.obstacle import Obstacle
-from utility.utils import flatten, array_shape
+from utility.misc import flatten, array_shape
 from utility.compatibility import Final
 from structures import Point, Size
 
