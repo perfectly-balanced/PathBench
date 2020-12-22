@@ -9,7 +9,7 @@ from threading import Lock, Condition
 
 import os
 import sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from algorithms.classic.graph_based.a_star import AStar
 from algorithms.classic.testing.a_star_testing import AStarTesting

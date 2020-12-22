@@ -1,12 +1,16 @@
 import rospy
-import cv2 as cv
 from nav_msgs.msg import OccupancyGrid
 from geometry_msgs.msg import Pose
 from std_msgs.msg import *
+
+import cv2 as cv
 import numpy as np
 
+import os
+
 def load_grid():
-    img = cv.imread('2d_ogm.png', 0)
+    fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ogm.png')
+    img = cv.imread(fn, 0)
     height, width = img.shape
     data = np.array([item for sublist in img for item in sublist]).astype(np.int8).tolist()
 
