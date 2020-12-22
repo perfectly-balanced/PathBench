@@ -11,18 +11,10 @@ The following installation and run instructions have been used for running PathB
 
 ### Installing dependencies
 ```bash
-sudo pip3 install torch numpy nptyping pygame torchvision memory-profiler seaborn dataset datafreeze normality dill natsort panda3d pandas sklearn
+sudo pip3 install torch numpy nptyping pygame panda3d pandas sklearn matplotlib torchvision memory_profiler seaborn dill natsort
 ```
 
 Optional dependency is `ompl` with installation not covered here.
-
-**freeze error (dataset package is broken)**
-
-Find  `<path-to-dataset-package>/__init__.py` and remove `freeze` entry in `__all__` (line 13).
-
-To find `<path-to-dataset-package>` on Linux you can run the following,
-
-`sudo find / -path "*/dist-packages/dataset" -type d`
 
 ### Simulator Visualiser Usage
 ```bash
