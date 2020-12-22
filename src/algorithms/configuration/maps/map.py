@@ -94,7 +94,7 @@ class Map:
         :param services: The simulator services
         """
         self._services = services
-        self.size = size
+        self._size = size
         self.trace = []
         self.agent = None
         self.goal = None

@@ -75,7 +75,7 @@ class OccupancyGridMap(DenseMap):
 
         self.grid[self.agent.position.values] = self.AGENT_ID
         self.grid[self.goal.position.values] = self.GOAL_ID
-        # self.extend_walls()
+        self.extend_walls()
 
     def at(self, p: Point) -> int:
         return self.grid[p.values]
