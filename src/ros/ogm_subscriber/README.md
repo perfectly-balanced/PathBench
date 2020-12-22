@@ -3,7 +3,7 @@
 ### Installing dependencies
 
 ```bash
-sudo apt-get install python3-roslaunch python3-rospy python3-rosdep2 python3-nav-msgs python3-geometry-msgs
+sudo apt-get install python3-roslaunch python3-rospy python3-nav-msgs python3-geometry-msgs
 pip3 install opencv-python
 ```
 
