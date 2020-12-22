@@ -1,5 +1,4 @@
 import numpy as np
-import torch
 
 from collections.abc import Iterable
 from typing import Tuple
