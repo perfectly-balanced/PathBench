@@ -24,11 +24,11 @@ class DenseMap(Map):
     """
     grid: np.array
 
-    #The transpose flag is set to true as a default for the initialization, as that is 
-    #how we are storing internally, but it will be set to false when we are simply translating from sparsemap
-    #When we create more map views, we should set it to false
+    # The transpose flag is set to true as a default for the initialization, as that is
+    # how we are storing internally, but it will be set to false when we are simply translating from sparsemap
+    # When we create more map views, we should set it to false
     def __init__(self, grid: Optional[List], services: Services = None, transpose: bool = True) -> None:
-        self.grid = None 
+        self.grid = None
 
         arr_grid = None
         if grid is not None:
@@ -42,9 +42,8 @@ class DenseMap(Map):
         self.set_grid(arr_grid, transpose)
 
     def set_grid(self, grid: np.array, transpose) -> None:
-
-        #We transpose here to not worry about flipping coordinates later on
-        #Please take care I'm not sure why everythng works but it does atm
+        # We transpose here to not worry about flipping coordinates later on
+        # Please take care I'm not sure why everythng works but it does atm
         self.grid = np.transpose(grid) if transpose else grid
 
         self.size = Size(*self.grid.shape)
@@ -74,7 +73,6 @@ class DenseMap(Map):
                             self.grid[tuple(p)] = DenseMap.EXTENDED_WALL_ID
                             self.obstacles.append(ExtendedWall(Point(*p)))
                             visited.add(Point(*p))
-                
 
         visited: Set[Point] = set()
 
@@ -115,7 +113,7 @@ class DenseMap(Map):
 
         self.grid[prev_pos.values] = self.CLEAR_ID
         self.grid[self.goal.position.values] = self.GOAL_ID
-        self.grid[self.agent.position.values] = self.AGENT_ID        
+        self.grid[self.agent.position.values] = self.AGENT_ID
 
         for i in range(len(self.obstacles)):
             if self.obstacles[i].position == self.goal.position:
@@ -142,15 +140,15 @@ class DenseMap(Map):
         if not super().is_agent_valid_pos(pos):
             return False
 
-        return self.at(pos) != self.WALL_ID and self.at(pos) != self.EXTENDED_WALL_ID
+        return self.at(pos) in (self.CLEAR_ID, self.AGENT_ID, self.GOAL_ID)
 
     def __repr__(self) -> str:
         debug_level: DebugLevel = DebugLevel.BASIC
         if self._services is not None:
             debug_level = self._services.settings.simulator_write_debug_level
-        #flipping it back for the str repr
+        # flipping it back for the str repr
         new_grid = np.transpose(self.grid)
-        
+
         res: str = "DenseMap: {\n\t\tsize: " + str(self.size) + \
                    ", \n\t\tagent: " + str(self.agent) + \
                    ", \n\t\tgoal: " + str(self.goal) + \
