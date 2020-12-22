@@ -12,16 +12,13 @@ from geometry_msgs.msg import PoseWithCovarianceStamped, Twist, PoseStamped
 # Add PathBench/src to system path for module imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from algorithms.classic.testing.way_point_navigation_testing import WayPointNavigationTesting  # noqa: E402
+from algorithms.classic.graph_based.a_star import AStar  # noqa: E402
 from algorithms.classic.testing.a_star_testing import AStarTesting  # noqa: E402
 from algorithms.configuration.configuration import Configuration  # noqa: E402
 from algorithms.configuration.entities.agent import Agent  # noqa: E402
 from algorithms.configuration.entities.goal import Goal  # noqa: E402
 from algorithms.configuration.maps.dense_map import DenseMap  # noqa: E402
 from algorithms.configuration.maps.ros_map import RosMap  # noqa: E402
-from algorithms.lstm.a_star_waypoint import WayPointNavigation  # noqa: E402
-from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM  # noqa: E402
-from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM  # noqa: E402
 
 from maps import Maps  # noqa: E402
 from simulator.services.debug import DebugLevel  # noqa: E402
@@ -49,7 +46,7 @@ class Ros:
         self._cur_wp = None
         self.goal = Point(70, 70)
 
-        rospy.init_node("lstm1", log_level=rospy.INFO)
+        rospy.init_node("pb3d", log_level=rospy.INFO)
         rospy.Subscriber("/map", OccupancyGrid, self._set_slam)
         rospy.Subscriber('/odom', Odometry, self.__odometryCb)
         # rospy.Subscriber("/odom",Odometry, self._set_agent_pos)
@@ -73,28 +70,6 @@ class Ros:
             self.ORIGIN = [map_info.origin.position.x, map_info.origin.position.y]
 
         self.SLAM_MAP = Size(map_info.width, map_info.height)  # 4000x4000
-
-        #self.MAP_SIZE = Size(map_info.width, map_info.height)
-        #self.REZ = map_info.resolution
-        #self.ORIGIN = map_info.origin
-
-        # rospy.loginfo("w: {}, h: {}, res: {}".format(self.MAP_SIZE.width,
-        #                                        self.MAP_SIZE.height, self.REZ))
-        #rospy.loginfo("Origin: {}".format(self.ORIGIN))
-
-        """
-        cnt = 0
-        for x in grid:
-            if x != -1:
-                x += 1
-        rospy.loginfo("cnt: {}".format(cnt))
-        """
-        # raw_grid = list(map(lambda el: 1 if el == -1 or el > 50 else 0, raw_grid))
-
-        """
-        raw_grid = np.array(raw_grid).reshape(map_info.height, map_info.width)
-        self._grid = raw_grid[:self.MAP_SIZE.height, :self.MAP_SIZE.width].tolist()
-        """
 
         grid = [[0 for _ in range(map_info.width)] for _ in range(map_info.height)]
 
@@ -133,7 +108,6 @@ class Ros:
             for j in range(len(grid[i])):
                 grid[i][j] = 1 if grid[i][j] == -1 or grid[i][j] > 50 else 0
 
-        # print('Grid$$$$$$$$$$$$$$$$$$$', grid)
         self._grid = grid
         self._grid_lock.release()
 
@@ -141,14 +115,13 @@ class Ros:
         self._grid_lock.acquire()
         grid = self._grid
         self._grid_lock.release()
-        return grid
+        return (grid,)
 
     def __odometryCb(self, msg):
         # print('******************************************', msg.pose.pose)
         self.agent = msg.pose
 
     def _set_agent_pos(self, odom_msg):  # The functions here don't get evaluated.
-        # print('agent', self.agent)
         self._agent_lock.acquire()
         self.agent = odom_msg
         self._agent_lock.release()
@@ -244,7 +217,7 @@ class Ros:
 
     def _send_vel_msg(self, vel=None, rot=None):
         '''
-        send veloicty 
+        send velocity 
         '''
         if not vel:
             vel = 0
@@ -271,20 +244,11 @@ class Ros:
 
         config.simulator_graphics = True
         config.simulator_write_debug_level = DebugLevel.LOW
-        config.simulator_key_frame_speed = 0.1
-        config.simulator_algorithm_type = WayPointNavigation  # AStarTesting # WayPointNavigation
-        # config.simulator_algorithm_parameters = ([],
-        #          {"global_kernel": (CombinedOnlineLSTM, ([], {})),
-        #           "global_kernel_max_it": 30})
-        config.simulator_algorithm_parameters = ([], {"global_kernel_max_it": 20, "global_kernel": (
-            OnlineLSTM, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"}))})
-
-        # config.simulator_algorithm_parameters = ([],
-        #         {"global_kernel_max_it": 20,
-        #         "global_kernel": (OnlineLSTM, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}))})
-
-        config.simulator_testing_type = WayPointNavigationTesting  # AStar # WayPointNavigationTesting  # BasicTesting
-        # print('gets to 289 before attempting to make ros map')
+        config.simulator_key_frame_speed = 0.16
+        config.simulator_key_frame_skip = 20
+        config.simulator_algorithm_type = AStar
+        config.simulator_algorithm_parameters = ([], {})
+        config.simulator_testing_type = AStarTesting
         config.simulator_initial_map = RosMap(self.MAP_SIZE,
                                               Agent(agent_pos, radius=self.INFLATE),
                                               Goal(self.goal),
@@ -293,7 +257,6 @@ class Ros:
                                               self._update_requested)
 
         s = Services(config)
-        # print(s.algorithm.map)
         s.algorithm.map.request_update()
         sim = Simulator(s)
         return sim

@@ -85,6 +85,7 @@ class Ros:
                                               Agent(Point(0, 0)),
                                               Goal(Point(0, 1)),
                                               self._get_grid,
+                                              None,
                                               self._update_requested)
         s = Services(config)
         s.algorithm.map.request_update()
