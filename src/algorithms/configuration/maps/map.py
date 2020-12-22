@@ -48,8 +48,10 @@ class Map:
     
     @size.setter
     def size(self, value) -> None:
+        dim_change = self._size.n_dim != value.n_dim
         self._size = value
-        self.init_direction_vectors()
+        if dim_change:
+            self.init_direction_vectors()
 
     def at(self, p: Point) -> int:
         raise NotImplementedError("Have not implemented this for the given map yet.")
