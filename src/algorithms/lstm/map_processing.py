@@ -274,7 +274,7 @@ class MapProcessing:
 
         for i in range(len(grid)):
             for j in range(len(grid[i])):
-                if grid[i][j] == DenseMap.EXTENDED_WALL:
+                if grid[i][j] == DenseMap.EXTENDED_WALL_ID:
                     grid[i][j] = DenseMap.WALL_ID
 
                 # this condition is used if only obstacles are taken into consideration

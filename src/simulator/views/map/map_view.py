@@ -96,7 +96,7 @@ class MapView(View):
         extended_walls = TrackedSet()
         for x, y, z in np.ndindex(map_data.shape):
             p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
-            if self._services.algorithm.map.at(p) == Map.EXTENDED_WALL:
+            if self._services.algorithm.map.at(p) == Map.EXTENDED_WALL_ID:
                 extended_walls.add(Point(x, y, z))  # using 3D points is more efficient
         if extended_walls:
             dc = self._services.state.add_colour("extended wall", Colour(0.5).with_a(0.5))
@@ -284,7 +284,7 @@ class MapView(View):
                     # Note, they will still be refreshed when traversable
                     # (bg & wireframe) colour changes.
                     if self.__extended_walls_display is not None and \
-                       self._services.algorithm.map.at(self.to_logical_point(point)) == Map.EXTENDED_WALL:
+                       self._services.algorithm.map.at(self.to_logical_point(point)) == Map.EXTENDED_WALL_ID:
                         self.__cube_modified[p] = False
                         self.__cubes_requiring_update.discard(point)
 

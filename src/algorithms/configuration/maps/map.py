@@ -27,7 +27,8 @@ class Map:
     WALL_ID: int = 1
     AGENT_ID: int = 2
     GOAL_ID: int = 3
-    EXTENDED_WALL: int = 4
+    EXTENDED_WALL_ID: int = 4
+    UNMAPPED_ID: int = 5
 
     agent: Agent
     goal: Goal

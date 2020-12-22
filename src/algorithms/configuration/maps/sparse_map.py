@@ -73,7 +73,7 @@ class SparseMap(Map):
                 if not self.is_out_of_bounds_pos(Point(*p)):
                     dist: Union[float, np.ndarray] = np.linalg.norm(np.array(p) - np.array(obstacle.position))
                     if (not should_optimize) and (dist <= obstacle.radius + self.agent.radius) and (grid[tuple(p)] == DenseMap.CLEAR_ID):
-                        grid[tuple(p)] = DenseMap.EXTENDED_WALL
+                        grid[tuple(p)] = DenseMap.EXTENDED_WALL_ID
                     if dist <= obstacle.radius:
                         grid[tuple(p)] = DenseMap.WALL_ID
         grid[self.agent.position.values] = DenseMap.AGENT_ID

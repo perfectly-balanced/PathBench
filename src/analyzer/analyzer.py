@@ -950,7 +950,7 @@ class Analyzer:
                 if grid[i][j] == DenseMap.WALL_ID:
                     grid_rep[i + 1][j + 1] = WALL_CHAR
 
-                if grid[i][j] == DenseMap.EXTENDED_WALL:
+                if grid[i][j] == DenseMap.EXTENDED_WALL_ID:
                     grid_rep[i + 1][j + 1] = EXTENDED_WALL_CHAR
 
                 if grid[i][j] == DenseMap.AGENT_ID:

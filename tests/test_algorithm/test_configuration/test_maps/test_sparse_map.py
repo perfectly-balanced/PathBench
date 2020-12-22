@@ -191,7 +191,7 @@ class TestSparseMap(unittest.TestCase):
 
     def test_is_valid_position_normal(self) -> None:
         map1: SparseMap = DenseMap([
-            [DenseMap.EXTENDED_WALL, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
+            [DenseMap.EXTENDED_WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
             [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ]).convert_to_sparse_map()
@@ -202,7 +202,7 @@ class TestSparseMap(unittest.TestCase):
 
     def test_is_valid_position_invalid(self) -> None:
         map1: SparseMap = DenseMap([
-            [DenseMap.EXTENDED_WALL, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
+            [DenseMap.EXTENDED_WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
             [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ]).convert_to_sparse_map()
@@ -211,7 +211,7 @@ class TestSparseMap(unittest.TestCase):
 
     def test_str(self) -> None:
         map1: SparseMap = DenseMap([
-            [DenseMap.EXTENDED_WALL, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
+            [DenseMap.EXTENDED_WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
             [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ]).convert_to_sparse_map()

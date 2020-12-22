@@ -29,12 +29,12 @@ class TestDenseMap(unittest.TestCase):
     def test_eq(self) -> None:
         map1: DenseMap = DenseMap([
             [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         map2: DenseMap = DenseMap([
             [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         self.assertEqual(map1, map2)
@@ -42,24 +42,24 @@ class TestDenseMap(unittest.TestCase):
     def test_ne_size(self) -> None:
         map1: DenseMap = DenseMap([
             [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         map2: DenseMap = DenseMap([
             [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL_ID],
         ])
         self.assertNotEqual(map1, map2)
 
     def test_ne_clear(self) -> None:
         map1: DenseMap = DenseMap([
             [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         map2: DenseMap = DenseMap([
             [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         self.assertNotEqual(map1, map2)
@@ -67,12 +67,12 @@ class TestDenseMap(unittest.TestCase):
     def test_ne_agent(self) -> None:
         map1: DenseMap = DenseMap([
             [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         map2: DenseMap = DenseMap([
             [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL_ID],
             [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         self.assertNotEqual(map1, map2)
@@ -80,25 +80,25 @@ class TestDenseMap(unittest.TestCase):
     def test_ne_goal(self) -> None:
         map1: DenseMap = DenseMap([
             [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         map2: DenseMap = DenseMap([
             [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
             [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.GOAL_ID],
-            [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL_ID],
         ])
         self.assertNotEqual(map1, map2)
 
     def test_ne_wall(self) -> None:
         map1: DenseMap = DenseMap([
             [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         map2: DenseMap = DenseMap([
             [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         self.assertNotEqual(map1, map2)
@@ -106,33 +106,33 @@ class TestDenseMap(unittest.TestCase):
     def test_ne_all(self) -> None:
         map1: DenseMap = DenseMap([
             [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         map2: DenseMap = DenseMap([
             [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID, DenseMap.CLEAR_ID],
-            [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL_ID],
         ])
         self.assertNotEqual(map1, map2)
 
     def test_ne_sparse(self) -> None:
         map1: DenseMap = DenseMap([
             [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         map2: DenseMap = DenseMap([
             [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID, DenseMap.CLEAR_ID],
-            [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL_ID],
         ]).convert_to_sparse_map()
         self.assertNotEqual(map1, map2)
 
     def test_ne_instance(self) -> None:
         map1: DenseMap = DenseMap([
             [DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
-            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL],
+            [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.EXTENDED_WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
         map2: int = 3
@@ -225,7 +225,7 @@ class TestDenseMap(unittest.TestCase):
 
     def test_is_valid_position_invalid(self) -> None:
         map1: DenseMap = DenseMap([
-            [DenseMap.EXTENDED_WALL, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
+            [DenseMap.EXTENDED_WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
             [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])
@@ -235,7 +235,7 @@ class TestDenseMap(unittest.TestCase):
 
     def test_str(self) -> None:
         map1: DenseMap = DenseMap([
-            [DenseMap.EXTENDED_WALL, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
+            [DenseMap.EXTENDED_WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
             [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ])

@@ -56,7 +56,7 @@ class DenseMap(Map):
                 self.goal = Goal(Point(*index))
             elif val == self.WALL_ID:
                 self.obstacles.append(Obstacle(Point(*index)))
-            elif val == self.EXTENDED_WALL:
+            elif val == self.EXTENDED_WALL_ID:
                 self.obstacles.append(ExtendedWall(Point(*index)))
 
     def extend_walls(self) -> None:
@@ -71,7 +71,7 @@ class DenseMap(Map):
                     if not self.is_out_of_bounds_pos(Point(*p)):
                         dist: Union[float, np.ndarray] = np.linalg.norm(np.array(p) - np.array(b))
                         if dist <= self.agent.radius and self.at(Point(*p)) == DenseMap.CLEAR_ID:
-                            self.grid[tuple(p)] = DenseMap.EXTENDED_WALL
+                            self.grid[tuple(p)] = DenseMap.EXTENDED_WALL_ID
                             self.obstacles.append(ExtendedWall(Point(*p)))
                             visited.add(Point(*p))
                 
@@ -142,7 +142,7 @@ class DenseMap(Map):
         if not super().is_agent_valid_pos(pos):
             return False
 
-        return self.at(pos) != self.WALL_ID and self.at(pos) != self.EXTENDED_WALL
+        return self.at(pos) != self.WALL_ID and self.at(pos) != self.EXTENDED_WALL_ID
 
     def __repr__(self) -> str:
         debug_level: DebugLevel = DebugLevel.BASIC
