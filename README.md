@@ -1,9 +1,7 @@
-# PathBench: A Benchmarking Platform for Classic and Learned Path Planning Algorithms
-[![coverage report](https://codecov.io/gh/judicaelclair/PathBench/coverage.svg?branch=master)](https://codecov.io/gh/judicaelclair/PathBench/?branch=master)
+# PathBench: Benchmarking Platform for Classic and Learned Path Planning Algorithms
+[![coverage report](https://codecov.io/gh/perfectly-balanced/PathBench/coverage.svg?branch=master)](https://codecov.io/gh/perfectly-balanced/PathBench/?branch=master)
 
-PathBench is a motion planning platform used to develop, assess, compare and visualise the performance
-and behaviour of path planners. The platform is split into four main components:
-Simulator, Generator, Trainer and Analyzer.
+PathBench is a motion planning platform used to develop, assess, compare and visualise the performance and behaviour of both classic and machine learning-based robot path planners in a two (2D) or three-dimensional (3D) space.
 
 ## Quick Start
 
