@@ -224,8 +224,8 @@ class FlatMap(MapData):
         c = self.obstacles_dc()
         wfc = self.obstacles_wf_dc()
 
-        for p in np.ndindex(self.obstacles_data.shape):
-            if self.obstacles_data[p]:
+        for p in np.ndindex(self.data.shape):
+            if self.data[p]:
                 self.render_square(p, c, wfc)
 
     def center(self) -> None:

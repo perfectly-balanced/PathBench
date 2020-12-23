@@ -27,7 +27,8 @@ class CubeMesh():
     name: str
     mesh: Geom
 
-    __structure: NDArray[(Any, Any, Any), bool]
+    __structure: NDArray[(Any, Any, Any), np.uint8]
+    __mask: np.uint8
     __artificial_lighting: bool
     __default_colour: Colour
     __face_count: int
@@ -56,9 +57,10 @@ class CubeMesh():
     __texcoord: GeomVertexWriter
     __colour: GeomVertexRewriter
 
-    def __init__(self, structure: NDArray[(Any, Any, Any), bool], name: str = 'CubeMesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, hidden_faces: bool = False) -> None:
+    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, name: str = 'CubeMesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, hidden_faces: bool = False) -> None:
         self.name = name
         self.__structure = structure
+        self.__mask = mask
         self.__artificial_lighting = artificial_lighting
         self.__default_colour = default_colour
 
@@ -87,7 +89,7 @@ class CubeMesh():
             pos = (x, y, z)
 
             # skip if cube doesn't exist
-            if not self.structure[pos]:
+            if not bool(self.structure[pos] & self.mask):
                 self.__cube_face_map[pos] = (None, None, None, None, None, None)
                 continue
 
@@ -101,12 +103,12 @@ class CubeMesh():
 
             # add face if there is not adjacent face
             xdim, ydim, zdim = self.structure.shape
-            add_face(Face.LEFT, (x-1) < 0 or not self.structure[x-1, y, z])
-            add_face(Face.RIGHT, (x+1) >= xdim or not self.structure[x+1, y, z])
-            add_face(Face.BACK, (y-1) < 0 or not self.structure[x, y-1, z])
-            add_face(Face.FRONT, (y+1) >= ydim or not self.structure[x, y+1, z])
-            add_face(Face.BOTTOM, (z-1) < 0 or not self.structure[x, y, z-1])
-            add_face(Face.TOP, (z+1) >= zdim or not self.structure[x, y, z+1])
+            add_face(Face.LEFT, (x-1) < 0 or not bool(self.structure[x-1, y, z] & self.mask))
+            add_face(Face.RIGHT, (x+1) >= xdim or not bool(self.structure[x+1, y, z] & self.mask))
+            add_face(Face.BACK, (y-1) < 0 or not bool(self.structure[x, y-1, z] & self.mask))
+            add_face(Face.FRONT, (y+1) >= ydim or not bool(self.structure[x, y+1, z] & self.mask))
+            add_face(Face.BOTTOM, (z-1) < 0 or not bool(self.structure[x, y, z-1] & self.mask))
+            add_face(Face.TOP, (z+1) >= zdim or not bool(self.structure[x, y, z+1] & self.mask))
 
             self.__cube_face_map[pos] = tuple(faces)
 
@@ -146,7 +148,7 @@ class CubeMesh():
 
     def reset_all_cubes(self) -> None:
         for p in np.ndindex(self.structure.shape):
-            if self.structure[p] and not self.__cube_default_coloured[p]:
+            if bool(self.structure[p] & self.mask) and not self.__cube_default_coloured[p]:
                 self.reset_cube(p)
 
     @staticmethod
@@ -261,16 +263,16 @@ class CubeMesh():
 
         # update colour of cubes that have old clear colour
         for p in np.ndindex(self.structure.shape):
-            if self.structure[p] and self.__cube_default_coloured[p]:
+            if bool(self.structure[p] & self.mask) and self.__cube_default_coloured[p]:
                 self.reset_cube(Point(*p))
 
     @property
-    def structure(self) -> str:
-        return 'structure'
-
-    @structure.getter
-    def structure(self) -> NDArray[(Any, Any, Any), bool]:
+    def structure(self) -> NDArray[(Any, Any, Any), np.uint8]:
         return self.__structure
+
+    @property
+    def mask(self) -> np.uint8:
+        return self.__mask
 
     def cube_visible(self, p: Point) -> bool:
         for f in self.__cube_face_map[p.values]:
@@ -287,7 +289,7 @@ class CubeMesh():
         ls = LineSegs()
         ls.set_thickness(thickness)
         for i, j, k in np.ndindex(self.structure.shape):
-            if self.structure[i, j, k]:
+            if bool(self.structure[i, j, k] & self.mask):
                 self.arr_x = [0, 0, 0, 0, 1, 1, 1, 1]
                 self.arr_y = [0, 0, 1, 1, 1, 1, 0, 0]
                 self.arr_z = [0, -1, -1, 0, 0, -1, -1, 0]

@@ -26,11 +26,11 @@ class VoxelMap(MapData):
     def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "voxel_map", artificial_lighting: bool = False):
         super().__init__(services, data, parent, name)
 
-        self.traversables_mesh = CubeMesh(self.traversables_data, self.name + '_traversables', artificial_lighting, hidden_faces=True)
+        self.traversables_mesh = CubeMesh(self.data, MapData.TRAVERSABLE_MASK, self.name + '_traversables', artificial_lighting, hidden_faces=True)
         self.traversables = self.root.attach_new_node(self.traversables_mesh.geom_node)
         self.traversables_wf = self.root.attach_new_node(self.traversables_mesh.gen_wireframe())
 
-        self.obstacles_mesh = CubeMesh(self.obstacles_data, self.name + '_obstacles', artificial_lighting, hidden_faces=True)
+        self.obstacles_mesh = CubeMesh(self.data, MapData.OBSTACLE_MASK, self.name + '_obstacles', artificial_lighting, hidden_faces=True)
         self.obstacles = self.root.attach_new_node(self.obstacles_mesh.geom_node)
         self.obstacles_wf = self.root.attach_new_node(self.obstacles_mesh.gen_wireframe())
 

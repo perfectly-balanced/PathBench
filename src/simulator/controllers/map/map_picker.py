@@ -5,6 +5,7 @@ from simulator.views.map.data.map_data import MapData
 import math
 from nptyping import NDArray
 from typing import Any, List, Optional
+import numpy as np
 
 from panda3d.core import CollisionTraverser, CollisionHandlerQueue, CollisionNode, NodePath, BitMask32, CollisionBox, CollisionRay, Point3
 from direct.showbase.ShowBase import ShowBase
@@ -32,7 +33,7 @@ class MapPicker():
         self.__base = base
         self.__name = name if name is not None else (map_data.name + "_picker")
         self.__map = map_data
-        self.__data = map_data.traversables_data
+        self.__data = map_data.data
 
         # collision traverser & queue
         self.__ctrav = CollisionTraverser(self.name + '_ctrav')
@@ -45,11 +46,10 @@ class MapPicker():
         self.__ctrav.add_collider(self.__cnp, self.__cqueue)
 
         z_offset = 1 if self.__map.dim == 3 else self.__map.depth
-        for x in range(len(self.__data)):
-            for y in range(len(self.__data[x])):
-                for z in range(len(self.__data[x][y])):
-                    if self.__data[x][y][z]:
-                        self.__cn.add_solid(CollisionBox(Point3(x, y, z), Point3(x+1, y+1, z-z_offset)))
+        for p in np.ndindex(self.__data.shape):
+            if bool(self.__data[p] & MapData.TRAVERSABLE_MASK):
+                x, y, z = p
+                self.__cn.add_solid(CollisionBox(Point3(x, y, z), Point3(x+1, y+1, z-z_offset)))
 
         # mouse picker
         self.__pn = CollisionNode(self.name + '_pray')

@@ -68,13 +68,19 @@ class MapView(View):
 
         # MAP #
         map_size = self._services.algorithm.map.size
-        map_data = np.empty((*map_size, 1) if map_size.n_dim == 2 else map_size, dtype=bool)
+        map_data = np.empty((*map_size, 1) if map_size.n_dim == 2 else map_size, dtype=np.uint8)
         self.__cube_modified = np.empty(map_data.shape, dtype=bool)
         for x, y, z in np.ndindex(map_data.shape):
             p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
-            is_wall = self._services.algorithm.map.at(p) == Map.WALL_ID
-            self.__cube_modified[x, y, z] = not is_wall
-            map_data[x, y, z] = is_wall
+            i = self._services.algorithm.map.at(p)
+            self.__cube_modified[x, y, z] = (i != Map.WALL_ID)
+            if i == Map.WALL_ID:
+                map_data[x, y, z] = MapData.OBSTACLE_MASK
+            elif i == Map.UNMAPPED_ID:
+                map_data[x, y, z] = MapData.UNMAPPED_MASK
+            else:
+                map_data[x, y, z] = MapData.TRAVERSABLE_MASK
+            
 
         if map_size.n_dim == 2:
             self.__map = FlatMap(self._services, map_data, self.world)
@@ -246,8 +252,8 @@ class MapView(View):
         def eager_refresh():
             nonlocal refresh
             refresh = True
-            for p in np.ndindex(self.map.traversables_data.shape):
-                self.__cube_modified[p] = self.map.traversables_data[p]
+            for p in np.ndindex(self.map.data.shape):
+                self.__cube_modified[p] = bool(self.map.data[p] & MapData.TRAVERSABLE_MASK)
 
         clr = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
         if clr != self.__deduced_traversables_colour:
@@ -335,7 +341,7 @@ class MapView(View):
             lambda fn: self._services.graphics.window.win.save_screenshot(fn))
 
     def take_hd_screenshot(self):
-        mx, my, mz = self.__map.traversables_data.shape
+        mx, my, mz = self.__map.data.shape
 
         # find the optimal zoom fit
         max_width = max(mx, my)
