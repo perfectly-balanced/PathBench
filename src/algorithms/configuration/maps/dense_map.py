@@ -35,7 +35,7 @@ class DenseMap(Map):
             arr_grid = np.atleast_2d(np.array(grid))
             super().__init__(Size(*([0]*arr_grid.ndim)), services)
         else:
-            super().__init__(Size(0, 0), services)
+            super().__init__(services=services)
             return
 
         # Doesn't work with non-uniform grids

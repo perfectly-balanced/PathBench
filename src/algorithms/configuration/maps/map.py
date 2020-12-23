@@ -48,9 +48,9 @@ class Map:
     
     @size.setter
     def size(self, value) -> None:
-        dim_change = self._size.n_dim != value.n_dim
+        dim_change = ((self._size is None) or (self._size.n_dim != value.n_dim))
         self._size = value
-        if dim_change:
+        if dim_change and self._size is not None:
             self.init_direction_vectors()
 
     def at(self, p: Point) -> int:
@@ -88,18 +88,18 @@ class Map:
         self.DIRECT_POINTS_MOVE_VECTOR: List[Point] = \
             list(map(lambda x : Point(*x), ALL_DIRECT_POINTS_DIMENSIONS))
 
-    def __init__(self, size: Size, services: Services = None) -> None:
+    def __init__(self, size: Size = None, services: Services = None) -> None:
         """
         :param size: The map size
         :param services: The simulator services
         """
         self._services = services
-        self._size = size
         self.trace = []
         self.agent = None
         self.goal = None
         self.obstacles = []
-        self.init_direction_vectors()
+        self._size = None
+        self.size = size
 
     def get_obstacle_bound(self, obstacle_start_point: Point, visited: Optional[Set[Point]] = None) -> Set[Point]:
         """
