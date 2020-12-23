@@ -30,12 +30,10 @@ import utility.math as m  # noqa: E402
 
 
 class Ros:
-    MAP_SIZE = None
     REZ = None
     ORIGIN = None
     INFLATE = 3
-    SIZE = 128
-    SLAM_MAP = None
+    SIZE = None
 
     def __init__(self):
         self._grid = None
@@ -48,7 +46,7 @@ class Ros:
 
         rospy.init_node("pb3d", log_level=rospy.INFO)
         rospy.Subscriber("/map", OccupancyGrid, self._set_slam)
-        rospy.Subscriber('/odom', Odometry, self.__odometryCb)
+        rospy.Subscriber('/odom', Odometry, self._set_agent_pos)
         self.pubs = {
             "vel": rospy.Publisher("/cmd_vel", Twist, queue_size=10),  # velocity
         }
@@ -62,28 +60,26 @@ class Ros:
         map_info = msg.info
         raw_grid = msg.data
 
-        if not self.MAP_SIZE:
-            self.MAP_SIZE = Size(self.SIZE, self.SIZE)  # 128x128
+        if self.SIZE is None:
+            self.SIZE = Size(map_info.width, map_info.height)  # 128x128
             self.REZ = map_info.resolution
             self.ORIGIN = [map_info.origin.position.x, map_info.origin.position.y]
 
-        self.SLAM_MAP = Size(map_info.width, map_info.height)  # 4000x4000
-
-        grid = [[0 for _ in range(map_info.width)] for _ in range(map_info.height)]
+        grid = [[0 for _ in range(self.SIZE.width)] for _ in range(self.SIZE.height)]
 
         for i in range(len(raw_grid)):
-            col = i % map_info.width
-            row = int((i - col) / map_info.width)
-            grid[map_info.height - row - 1][col] = raw_grid[i]
+            col = i % self.SIZE.width
+            row = int((i - col) / self.SIZE.width)
+            grid[self.SIZE.height - row - 1][col] = raw_grid[i]
 
-        start = self._world_to_grid(self.ORIGIN, Size(map_info.width, map_info.height), [map_info.origin.position.x, map_info.origin.position.y])
-        start = Point(start.x, map_info.height - start.y - 1)
+        start = self._world_to_grid(self.ORIGIN)
+        start = Point(start.x, self.SIZE.height - start.y - 1)
 
-        grid2 = [[100 for _ in range(self.MAP_SIZE.width)] for _ in range(self.MAP_SIZE.height)]
+        grid2 = [[100 for _ in range(self.SIZE.width)] for _ in range(self.SIZE.height)]
 
-        for i in range(start[1], start[1] + self.MAP_SIZE.height):
-            for j in range(start[0], start[0] + self.MAP_SIZE.width):
-                if i >= 0 and j >= 0 and j < map_info.width and i < map_info.height:
+        for i in range(start[1], start[1] + self.SIZE.height):
+            for j in range(start[0], start[0] + self.SIZE.width):
+                if i >= 0 and j >= 0 and j < self.SIZE.width and i < self.SIZE.height:
                     grid2[i - start[1]][j - start[0]] = grid[i][j]
         grid = grid2
 
@@ -110,18 +106,16 @@ class Ros:
         self._grid_lock.release()
 
     def _get_grid(self):
+        print("getting grid")
         self._grid_lock.acquire()
         grid = self._grid
         self._grid_lock.release()
+        print("got grid")
         return (grid,)
 
-    def __odometryCb(self, msg):
-        # print('******************************************', msg.pose.pose)
-        self.agent = msg.pose
-
-    def _set_agent_pos(self, odom_msg):  # The functions here don't get evaluated.
+    def _set_agent_pos(self, odom_msg):
         self._agent_lock.acquire()
-        self.agent = odom_msg
+        self.agent = odom_msg.pose
         self._agent_lock.release()
 
     def _get_agent_pos(self):
@@ -233,10 +227,14 @@ class Ros:
     def _update_requested(self):
         pass  # request slam
 
-    def _setup_sim(self, agent_pos) -> Simulator:
-        agent_pos = self._world_to_grid(agent_pos)  # converts the slam map to a gridworld, i.e 40000 ->128
+    def _setup_sim(self) -> Simulator:
+        agent = self._get_agent_pos()
+        agent_pos = self._world_to_grid([agent.pose.position.x, agent.pose.position.y])
 
         print("Agent Position: {}".format(agent_pos))
+        print(self.ORIGIN, [agent.pose.position.x, agent.pose.position.y])
+        print(self.SIZE)
+        print(self.REZ)
 
         config = Configuration()
 
@@ -247,7 +245,7 @@ class Ros:
         config.simulator_algorithm_type = AStar
         config.simulator_algorithm_parameters = ([], {})
         config.simulator_testing_type = AStarTesting
-        config.simulator_initial_map = RosMap(self.MAP_SIZE,
+        config.simulator_initial_map = RosMap(self.SIZE,
                                               Agent(agent_pos, radius=self.INFLATE),
                                               Goal(self.goal),
                                               self._get_grid,
@@ -255,41 +253,36 @@ class Ros:
                                               self._update_requested)
 
         s = Services(config)
+        print("Requesting")
         s.algorithm.map.request_update()
+        print("Requested")
         sim = Simulator(s)
+        print("Created Simulator")
         return sim
 
-    def _world_to_grid(self, pos, map_size=None, origin=None):
+    def _world_to_grid(self, pos, origin = None):
         '''
-        converts from meters coordinates to grid coordinates (4000x4000)
+        converts from meters coordinates to grid coordinates (SIZE)
         '''
-        if not map_size:
-            map_size = self.MAP_SIZE
 
-        if not origin:
+        if origin is None:
             origin = self.ORIGIN
-        #map_size = 128
-        #res = 0.05
-        # print("ascsascsasacsacascsa", pos, map_size, origin)
 
         grid_pos = [pos[0] - origin[0], pos[1] - origin[1]]
-        # print(grid_pos)
         grid_pos = [int(round(grid_pos[0] / self.REZ)),
                     int(round(grid_pos[1] / self.REZ))]
-        # print(grid_pos)
-        grid_pos[1] = self.SLAM_MAP.height - grid_pos[1] - 1
-        # print(grid_pos)
-        # print("FIN")
+        grid_pos[1] = self.SIZE.height - grid_pos[1] - 1
         return Point(*grid_pos)
 
-    def _grid_to_world(self, pos, map_size: Size = None, origin=None):
-        if not map_size:
-            map_size = self.MAP_SIZE
+    def _grid_to_world(self, pos, origin = None):
+        '''
+        converts grid coordinates (SIZE) to meters coordinates 
+        '''
 
-        if not origin:
+        if origin is None:
             origin = self.ORIGIN
 
-        world_pos = [pos.x, self.SLAM_MAP.height - pos.y - 1]
+        world_pos = [pos.x, self.SIZE.height - pos.y - 1]
         world_pos = [world_pos[0] * self.REZ + self.REZ * 0.5,
                      world_pos[1] * self.REZ + self.REZ * 0.5]
         world_pos = [world_pos[0] + origin[0],
@@ -299,14 +292,7 @@ class Ros:
     def _find_goal(self):
         rospy.loginfo("Starting Simulator")
         # self._send_way_point(goal)
-        # This issue might have somethign to do with the mpa not being set,
-        agent = self._get_agent_pos()
-        agent_pos = [agent.pose.position.x, agent.pose.position.y]  # works now might need to fix syntax since I changed to use odom function instead
-        print('agent pos', agent_pos)
-
-        # This is returning empty (above line) for some reason
-        sim = self._setup_sim(agent_pos)
-        # This should return a list of lists
+        sim = self._setup_sim()
 
         # signal waypoint
         # self._has_reached_way_point()

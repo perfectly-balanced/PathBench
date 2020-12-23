@@ -37,6 +37,7 @@ class RosMap(OccupancyGridMap):
 
     def request_update(self):
         self.set_grid(*self.__get_grid())
+        print("set grid")
 
         if self.__update_requested:
             self.__update_requested()

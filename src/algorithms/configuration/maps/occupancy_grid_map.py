@@ -62,6 +62,8 @@ class OccupancyGridMap(DenseMap):
             traversable_threshold = min(weight_bounds[0] + (weight_bounds[1] - weight_bounds[0]) * self.DEFAULT_TRAVERSABLE_THRESHOLD, weight_bounds[1])
         self.traversable_threshold = normalise(traversable_threshold)
 
+        print(weight_bounds, traversable_threshold)
+
         self.obstacles.clear()
         for idx in np.ndindex(*self.size):
             v = weight_grid[idx[0]]
