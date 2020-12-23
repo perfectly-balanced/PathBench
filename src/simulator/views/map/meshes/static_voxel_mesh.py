@@ -3,7 +3,6 @@ from panda3d.core import GeomVertexFormat, GeomVertexData
 from panda3d.core import Geom, GeomTriangles, GeomVertexWriter, GeomVertexRewriter, GeomVertexArrayData
 from panda3d.core import Vec3, Vec4
 
-from enum import IntEnum, unique, Enum
 from typing import List, Any, Tuple, Optional
 from numbers import Real
 import math
@@ -12,18 +11,10 @@ import numpy as np
 from nptyping import NDArray
 
 from structures import Point, Colour, WHITE
-from simulator.views.map.meshes.common import normalise
+from simulator.views.map.meshes.common import normalise, Face
 
-@unique
-class Face(IntEnum):
-    LEFT = 0
-    RIGHT = 1
-    BACK = 2
-    FRONT = 3
-    BOTTOM = 4
-    TOP = 5
 
-class DynamicCubeMesh():
+class StaticVoxelMesh():
     name: str
     mesh: Geom
 
@@ -57,7 +48,7 @@ class DynamicCubeMesh():
     __texcoord: GeomVertexWriter
     __colour: GeomVertexRewriter
 
-    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, name: str = 'DynamicCubeMesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, hidden_faces: bool = False) -> None:
+    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, name: str = 'StaticVoxelMesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, hidden_faces: bool = False) -> None:
         self.name = name
         self.__structure = structure
         self.__mask = mask

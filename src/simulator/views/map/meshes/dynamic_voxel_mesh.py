@@ -3,7 +3,6 @@ from panda3d.core import GeomVertexFormat, GeomVertexData
 from panda3d.core import Geom, GeomTriangles, GeomVertexWriter, GeomVertexRewriter, GeomVertexArrayData
 from panda3d.core import Vec3, Vec4
 
-from enum import IntEnum, unique, Enum
 from typing import List, Any, Tuple, Optional
 from numbers import Real
 import math
@@ -14,24 +13,13 @@ from nptyping import NDArray
 from structures import Point, Colour, WHITE
 from simulator.views.map.meshes.common import normalise
 
-@unique
-class Face(IntEnum):
-    LEFT = 0
-    RIGHT = 1
-    BACK = 2
-    FRONT = 3
-    BOTTOM = 4
-    TOP = 5
-
-class StaticCubeMesh():
+class DynamicVoxelMesh():
     name: str
-    mesh: Geom
 
     __structure: NDArray[(Any, Any, Any), np.uint8]
     __mask: np.uint8
     __artificial_lighting: bool
     __default_colour: Colour
-    __face_count: int
 
     # index: <face-index>
     # value: <cube-pos>
@@ -57,33 +45,42 @@ class StaticCubeMesh():
     __texcoord: GeomVertexWriter
     __colour: GeomVertexRewriter
 
-    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, name: str = 'StaticCubeMesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, hidden_faces: bool = False) -> None:
+    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, name: str = 'DynamicVoxelMesh', artificial_lighting: bool = False, default_colour: Colour = WHITE) -> None:
         self.name = name
         self.__structure = structure
         self.__mask = mask
         self.__artificial_lighting = artificial_lighting
         self.__default_colour = default_colour
 
-        self.__vertex_data_format = GeomVertexFormat.getV3n3c4t2()
-        self.__vertex_data = GeomVertexData(name, self.__vertex_data_format, Geom.UHDynamic)
+        self.__vertex_data_format = GeomVertexFormat.getV3n3()
+        self.__vertex_data = GeomVertexData(name, self.__vertex_data_format, Geom.UHStatic)
+        self.__vertex_data.set_num_rows(4)
 
-        self.mesh = Geom(self.__vertex_data)
-        self.__triangles = GeomTriangles(Geom.UHDynamic)
+        self.__cube_mesh = Geom(self.__vertex_data)
+        self.__triangles = GeomTriangles(Geom.UHStatic)
         self.__triangle_data = self.__triangles.modifyVertices()
 
         self.__vertex = GeomVertexWriter(self.__vertex_data, 'vertex')
         self.__normal = GeomVertexWriter(self.__vertex_data, 'normal')
-        self.__texcoord = GeomVertexWriter(self.__vertex_data, 'texcoord')
-        self.__colour = GeomVertexRewriter(self.__vertex_data, 'color')
 
         self.__face_count = 0
+
+        def add_face(face: Face) -> None:
+            self.__make_face(face, pos)
+            self.__face_cube_map.append(pos)
+            faces.append(self.__face_count-1)
+
+        add_face(Face.LEFT)
+        add_face(Face.RIGHT)
+        add_face(Face.BACK)
+        add_face(Face.FRONT)
+        add_face(Face.BOTTOM)
+        add_face(Face.TOP)
 
         self.__face_cube_map = []
         self.__cube_face_map = np.empty(self.structure.shape, dtype=object)
         self.__cube_default_coloured = np.full(self.structure.shape, True, dtype=bool)
 
-        # If 'hidden_faces' == False, we only make visible faces. That is, if there
-        # are two adjacent faces, they aren't added. Otherwise, all faces are added
         for x, y, z in np.ndindex(self.structure.shape):
             faces = []
             pos = (x, y, z)
@@ -93,86 +90,16 @@ class StaticCubeMesh():
                 self.__cube_face_map[pos] = (None, None, None, None, None, None)
                 continue
 
-            def add_face(face: Face, should_add: bool) -> None:
-                if hidden_faces or should_add:
-                    self.__make_face(face, pos)
-                    self.__face_cube_map.append(pos)
-                    faces.append(self.__face_count-1)
-                else:
-                    faces.append(None)
-
-            # add face if there is not adjacent face
-            xdim, ydim, zdim = self.structure.shape
-            add_face(Face.LEFT, (x-1) < 0 or not bool(self.structure[x-1, y, z] & self.mask))
-            add_face(Face.RIGHT, (x+1) >= xdim or not bool(self.structure[x+1, y, z] & self.mask))
-            add_face(Face.BACK, (y-1) < 0 or not bool(self.structure[x, y-1, z] & self.mask))
-            add_face(Face.FRONT, (y+1) >= ydim or not bool(self.structure[x, y+1, z] & self.mask))
-            add_face(Face.BOTTOM, (z-1) < 0 or not bool(self.structure[x, y, z-1] & self.mask))
-            add_face(Face.TOP, (z+1) >= zdim or not bool(self.structure[x, y, z+1] & self.mask))
+            
 
             self.__cube_face_map[pos] = tuple(faces)
 
         self.__triangles.close_primitive()
         self.mesh.add_primitive(self.__triangles)
+    
+    def __create_cube_mesh(self) -> None:
 
-    def get_cube_colour(self, p: Point) -> Colour:
-        faces = self.__cube_face_map[p.values]
-        for i in range(len(faces)):
-            if faces[i] != None:
-                self.__colour.setRow(faces[i] * 4)
-                r, g, b, a = self.__colour.getData4f()
-                if self.artificial_lighting:
-                    factor = self.__LIGHT_ATTENUATION_FACTOR(Face(i))
-                    return Colour(r / factor, g / factor, b / factor, a)
-                else:
-                    return Colour(r, g, b, a)
-
-        return self.default_colour
-
-    def set_cube_colour(self, p: Point, colour: Colour) -> None:
-        self.__cube_default_coloured[p.values] = False
-        faces = self.__cube_face_map[p.values]
-        for i in range(len(faces)):
-            if faces[i] != None:
-                c = self.__face_colour(colour, Face(i))
-
-                self.__colour.setRow(faces[i] * 4)
-                self.__colour.addData4f(*c)
-                self.__colour.addData4f(*c)
-                self.__colour.addData4f(*c)
-                self.__colour.addData4f(*c)
-
-    def reset_cube(self, p: Point) -> None:
-        self.set_cube_colour(p, self.default_colour)
-        self.__cube_default_coloured[p.values] = True
-
-    def reset_all_cubes(self) -> None:
-        for p in np.ndindex(self.structure.shape):
-            if bool(self.structure[p] & self.mask) and not self.__cube_default_coloured[p]:
-                self.reset_cube(p)
-
-    @staticmethod
-    def __attenuate_colour(colour: Colour, factor: Real) -> Colour:
-        r, g, b, a = colour
-        return Colour(r * factor, g * factor, b * factor, a)
-
-    @staticmethod
-    def __LIGHT_ATTENUATION_FACTOR(face: Face) -> Real:
-        switcher = {Face.LEFT: 0.9,
-                    Face.RIGHT: 1.0,
-                    Face.BACK: 0.85,
-                    Face.FRONT: 0.6,
-                    Face.BOTTOM: 0.7,
-                    Face.TOP: 1.0
-                    }
-        return switcher.get(face.value)
-
-    def __face_colour(self, colour: Colour, face: Face) -> Colour:
-        if self.artificial_lighting:
-            return self.__attenuate_colour(colour, self.__LIGHT_ATTENUATION_FACTOR(face))
-        else:
-            return colour
-
+    
     def __make_face(self, face: Face, pos: Point) -> None:
         colour = self.__face_colour(self.default_colour, face)
 
@@ -198,16 +125,6 @@ class StaticCubeMesh():
                 self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
                 self.__normal.addData3(normalise(2 * x1 - 1, 2 * y2 - 1, 2 * z2 - 1))
 
-            self.__colour.addData4f(*colour)
-            self.__colour.addData4f(*colour)
-            self.__colour.addData4f(*colour)
-            self.__colour.addData4f(*colour)
-
-            self.__texcoord.addData2f(0.0, 1.0)
-            self.__texcoord.addData2f(0.0, 0.0)
-            self.__texcoord.addData2f(1.0, 0.0)
-            self.__texcoord.addData2f(1.0, 1.0)
-
             vertex_id = self.__face_count * 4
 
             self.__triangles.addVertices(vertex_id, vertex_id + 1, vertex_id + 3)
@@ -230,6 +147,32 @@ class StaticCubeMesh():
             make(x, y + 1, z - 1, x + 1, y, z - 1)
         else:
             raise Exception("unknown face")
+        
+    def get_cube_colour(self, p: Point) -> Colour:
+        faces = self.__cube_face_map[p.values]
+        for i in range(len(faces)):
+            if faces[i] != None:
+                self.__colour.setRow(faces[i] * 4)
+                r, g, b, a = self.__colour.getData4f()
+                if self.artificial_lighting:
+                    factor = self.__LIGHT_ATTENUATION_FACTOR(Face(i))
+                    return Colour(r / factor, g / factor, b / factor, a)
+                else:
+                    return Colour(r, g, b, a)
+
+        return self.default_colour
+
+    def set_cube_colour(self, p: Point, colour: Colour) -> None:
+        pass
+
+    def reset_cube(self, p: Point) -> None:
+        self.set_cube_colour(p, self.default_colour)
+        self.__cube_default_coloured[p.values] = True
+
+    def reset_all_cubes(self) -> None:
+        for p in np.ndindex(self.structure.shape):
+            if bool(self.structure[p] & self.mask) and not self.__cube_default_coloured[p]:
+                self.reset_cube(p)
 
     @property
     def artificial_lighting(self) -> str:
