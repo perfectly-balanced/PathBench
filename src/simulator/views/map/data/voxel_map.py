@@ -2,7 +2,7 @@ from panda3d.core import NodePath, TransparencyAttrib, LVecBase4f, LineSegs
 
 from simulator.services.services import Services
 from simulator.views.map.data.map_data import MapData
-from simulator.views.map.meshes.static_cube_mesh import StaticCubeMesh
+from simulator.views.map.meshes.dynamic_cube_mesh import DynamicCubeMesh
 
 from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 
@@ -18,17 +18,17 @@ class VoxelMap(MapData):
     obstacles: NodePath
     obstacles_wf: NodePath
 
-    traversables_mesh: StaticCubeMesh
-    obstacles_mesh: StaticCubeMesh
+    traversables_mesh: DynamicCubeMesh
+    obstacles_mesh: DynamicCubeMesh
 
     def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "voxel_map", artificial_lighting: bool = False):
         super().__init__(services, data, parent, name)
 
-        self.traversables_mesh = StaticCubeMesh(self.data, MapData.TRAVERSABLE_MASK, self.name + '_traversables', artificial_lighting, hidden_faces=True)
+        self.traversables_mesh = DynamicCubeMesh(self.data, MapData.TRAVERSABLE_MASK, self.name + '_traversables', artificial_lighting, hidden_faces=True)
         self.traversables = self.root.attach_new_node(self.traversables_mesh.body_node)
         self.traversables_wf = self.root.attach_new_node(self.traversables_mesh.wireframe_node)
 
-        self.obstacles_mesh = StaticCubeMesh(self.data, MapData.OBSTACLE_MASK, self.name + '_obstacles', artificial_lighting, hidden_faces=True)
+        self.obstacles_mesh = DynamicCubeMesh(self.data, MapData.OBSTACLE_MASK, self.name + '_obstacles', artificial_lighting, hidden_faces=True)
         self.obstacles = self.root.attach_new_node(self.obstacles_mesh.body_node)
         self.obstacles_wf = self.root.attach_new_node(self.obstacles_mesh.wireframe_node)
 
