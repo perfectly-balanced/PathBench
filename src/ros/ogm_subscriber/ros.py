@@ -59,7 +59,7 @@ class Ros:
 
     def _get_grid(self):
         grid = self._grid
-        return (grid, (0, 1), 0.95)
+        return grid
 
     def _set_agent_pos(self, odom_msg):
         self.agent = odom_msg
@@ -85,8 +85,7 @@ class Ros:
                                               Agent(Point(0, 0)),
                                               Goal(Point(0, 1)),
                                               self._get_grid,
-                                              None,
-                                              self._update_requested)
+                                              update_requested=self._update_requested)
         s = Services(config)
         s.algorithm.map.request_update()
         sim = Simulator(s)

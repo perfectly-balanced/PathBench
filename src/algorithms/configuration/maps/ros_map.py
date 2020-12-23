@@ -15,11 +15,12 @@ import numpy as np
 
 class RosMap(OccupancyGridMap):
     __update_requested: Optional[Callable[[], None]]
-    __get_grid: Callable[[], Tuple[List[Any], Optional[Tuple[Real, Real]], Optional[Real]]]
+    __get_grid: Callable[[], List[Any]]
     __wp_publish: Optional[Callable[[Point], None]]
 
     def __init__(self, size: Size, agent: Agent, goal: Goal,
-                 get_grid: Callable[[], Tuple[List[Any], Optional[Tuple[Real, Real]], Optional[Real]]],
+                 get_grid: Callable[[], List[Any]],
+                 weight_bounds: Tuple[Real, Real] = (0, 100), traversable_threshold: Real = 80, unmapped_value: Real = -1,
                  wp_publish: Optional[Callable[[Point], None]] = None,
                  update_requested: Optional[Callable[[], None]] = None,
                  services: Services = None) -> None:
@@ -31,12 +32,15 @@ class RosMap(OccupancyGridMap):
         self.size = size
         self.agent = agent
         self.goal = goal
+        self.__weight_bounds = weight_bounds
+        self.__traversable_threshold = traversable_threshold
+        self.__unmapped_value = unmapped_value
 
         if self._services:
             self.request_update = self._services.debug.debug_func(DebugLevel.LOW)(self.request_update)
 
     def request_update(self):
-        self.set_grid(*self.__get_grid())
+        self.set_grid(self.__get_grid(), self.__weight_bounds, self.__traversable_threshold, self.__unmapped_value)
         print("set grid")
 
         if self.__update_requested:
@@ -50,7 +54,8 @@ class RosMap(OccupancyGridMap):
 
     def __deepcopy__(self, memo: Dict) -> 'RosMap':
         mp = RosMap(copy.deepcopy(self.size), copy.deepcopy(self.agent), copy.deepcopy(self.goal),
-                    self.__get_grid, self.__wp_publish, self.__update_requested,
+                    self.__get_grid, self.__weight_bounds, self.__traversable_threshold, self.__unmapped_value,
+                    self.__wp_publish, self.__update_requested,
                     services=self._services)
         mp.weight_grid = copy.deepcopy(self.weight_grid)
         mp.traversable_threshold = copy.deepcopy(self.traversable_threshold)

@@ -64,43 +64,17 @@ class Ros:
             self.SIZE = Size(map_info.width, map_info.height)  # 128x128
             self.REZ = map_info.resolution
             self.ORIGIN = [map_info.origin.position.x, map_info.origin.position.y]
+        else:
+            self._grid_lock.release()
+            return
 
-        grid = [[0 for _ in range(self.SIZE.width)] for _ in range(self.SIZE.height)]
+        grid = np.empty(self.SIZE[::-1], dtype=np.int32)
 
+        print("grid", set(raw_grid))
         for i in range(len(raw_grid)):
             col = i % self.SIZE.width
             row = int((i - col) / self.SIZE.width)
-            grid[self.SIZE.height - row - 1][col] = raw_grid[i]
-
-        start = self._world_to_grid(self.ORIGIN)
-        start = Point(start.x, self.SIZE.height - start.y - 1)
-
-        grid2 = [[100 for _ in range(self.SIZE.width)] for _ in range(self.SIZE.height)]
-
-        for i in range(start[1], start[1] + self.SIZE.height):
-            for j in range(start[0], start[0] + self.SIZE.width):
-                if i >= 0 and j >= 0 and j < self.SIZE.width and i < self.SIZE.height:
-                    grid2[i - start[1]][j - start[0]] = grid[i][j]
-        grid = grid2
-
-        available = []
-
-        for i in range(len(grid)):
-            for j in range(len(grid[i])):
-                if 0 <= grid[i][j] < 50:
-                    available.append((i, j))
-
-        for (i, j) in available:
-            for (r, c) in zip([1, 1, 0, -1, -1, -1, 0, 1], [0, -1, -1, -1, 0, 1, 1, 1]):
-                r = i + r
-                c = j + c
-                if r >= 0 and r < len(grid) and c >= 0 and c < len(grid[i]):
-                    if grid[r][c] == -1:
-                        grid[r][c] = 0
-
-        for i in range(len(grid)):
-            for j in range(len(grid[i])):
-                grid[i][j] = 1 if grid[i][j] == -1 or grid[i][j] > 50 else 0
+            grid[self.SIZE.height - row - 1, col] = raw_grid[i]
 
         self._grid = grid
         self._grid_lock.release()
@@ -111,7 +85,7 @@ class Ros:
         grid = self._grid
         self._grid_lock.release()
         print("got grid")
-        return (grid,)
+        return grid
 
     def _set_agent_pos(self, odom_msg):
         self._agent_lock.acquire()
@@ -249,8 +223,8 @@ class Ros:
                                               Agent(agent_pos, radius=self.INFLATE),
                                               Goal(self.goal),
                                               self._get_grid,
-                                              self._send_way_point,
-                                              self._update_requested)
+                                              wp_publish=self._send_way_point,
+                                              update_requested=self._update_requested)
 
         s = Services(config)
         print("Requesting")

@@ -31,6 +31,7 @@ class OccupancyGridMap(DenseMap):
                  goal: Optional[Goal] = None,
                  weight_bounds: Optional[Tuple[Real, Real]] = None,
                  traversable_threshold: Optional[Real] = None,
+                 unmapped_value: Optional[Real] = None,
                  services: Services = None) -> None:
         super().__init__(None, services)
         self.agent = agent
@@ -38,48 +39,58 @@ class OccupancyGridMap(DenseMap):
         self.weight_grid = None
         self.traversable_threshold = self.DEFAULT_TRAVERSABLE_THRESHOLD
         if weight_grid is not None:
-            self.set_grid(weight_grid, weight_bounds)
+            self.set_grid(weight_grid, weight_bounds, traversable_threshold, unmapped_value)
 
     @property
     def weight_bounds(self):
         return (0, 1)
 
-    def set_grid(self, weight_grid: List[Any], weight_bounds: Optional[Tuple[Real, Real]] = None, traversable_threshold: Optional[Real] = None) -> None:
-        self.size = Size(*array_shape(weight_grid))
-        self.grid = np.empty(self.size, dtype=np.uint8)
+    def set_grid(self, weight_grid: List[Any], weight_bounds: Optional[Tuple[Real, Real]] = None, traversable_threshold: Optional[Real] = None, unmapped_value: Optional[Real] = None) -> None:
+        if not isinstance(weight_grid, np.ndarray):
+            self.set_grid(np.array(weight_grid), weight_bounds, traversable_threshold, unmapped_value)
+            return
+        
+        self.size = Size(*weight_grid.shape)
+        self.grid = np.full(self.size, self.CLEAR_ID, dtype=np.uint8)
         self.weight_grid = np.empty(self.size, dtype=np.float32)
+
+        # unmapped value
+        if unmapped_value is not None:
+            for idx in np.ndindex(*self.size):
+                if weight_grid[idx] == unmapped_value:
+                    self.grid[idx] = self.UNMAPPED_ID
 
         # bounds
         if weight_bounds is None:
-            weight_bounds = (min(flatten(weight_grid)), max(flatten(weight_grid)))
+            ignored = [] if unmapped_value is None else [unmapped_value]
+            weight_bounds = (min(flatten(weight_grid, ignored)), max(flatten(weight_grid, ignored)))
 
         def normalise(x):
             y = (weight_bounds[1] - weight_bounds[0])
-            return ((x - weight_bounds[0]) / y) if y else 0
+            return max(weight_bounds[0], min(weight_bounds[1], ((x - weight_bounds[0]) / y) if y else weight_bounds[0]))
 
         # threshold
         if traversable_threshold is None:
             traversable_threshold = min(weight_bounds[0] + (weight_bounds[1] - weight_bounds[0]) * self.DEFAULT_TRAVERSABLE_THRESHOLD, weight_bounds[1])
         self.traversable_threshold = normalise(traversable_threshold)
 
-        print(weight_bounds, traversable_threshold)
-
+        print(weight_bounds, unmapped_value)
+        print("start obstacles")
         self.obstacles.clear()
         for idx in np.ndindex(*self.size):
-            v = weight_grid[idx[0]]
-            for i in range(1, self.size.n_dim):
-                v = v[idx[i]]
-
+            v = weight_grid[idx]
             self.weight_grid[idx] = normalise(v)
-            if v >= traversable_threshold:
+            if v >= traversable_threshold and self.grid[idx] != self.UNMAPPED_ID:
                 self.grid[idx] = self.WALL_ID
                 self.obstacles.append(Obstacle(Point(*idx)))
-            else:
-                self.grid[idx] = self.CLEAR_ID
+        print("end obstacles")
 
         self.grid[self.agent.position.values] = self.AGENT_ID
         self.grid[self.goal.position.values] = self.GOAL_ID
-        self.extend_walls()
+
+        print("start extend walls")
+        # self.extend_walls()
+        print("end extend walls")
 
     def at(self, p: Point) -> int:
         return self.grid[p.values]
