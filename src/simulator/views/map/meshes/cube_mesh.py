@@ -10,8 +10,9 @@ import math
 import numpy as np
 from nptyping import NDArray
 
-import os, sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))))
+if __name__ == "__main__":
+    import os, sys
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))))
 
 from structures import Point, Colour, WHITE
 from simulator.views.map.meshes.common import normalise, Face
@@ -31,7 +32,7 @@ class CubeMesh():
     __vertex: GeomVertexWriter
     __normal: GeomVertexWriter
 
-    def __init__(self, name: str = 'CubeMesh') -> None:
+    def __init__(self, name: str = 'cube_mesh') -> None:
         self.name = name
         
         self.__vertex_data_format = GeomVertexFormat.getV3n3()
@@ -113,14 +114,28 @@ class CubeMesh():
     def artificial_lighting(self) -> bool:
         return self.__artificial_lighting
 
+    @property
+    def body_node(self) -> GeomNode:
+        node = GeomNode(self.name)
+        node.addGeom(self.geom)
+        return node
+
 
 if __name__ == "__main__":
     from direct.showbase.ShowBase import ShowBase
     app = ShowBase()
-    mesh = DynamicVoxelMesh()
-    node = GeomNode(mesh.name)
-    node.addGeom(mesh.geom)
-    np = render.attach_new_node(node)
+    mesh = CubeMesh()
+    n = mesh.body_node
+    cube = render.attach_new_node(n)
+    cube.detach_node()
+
+    np = render.attach_new_node('')
     np.set_color(1,1,1,1)
     np.set_pos(0, 20, 0)
+    cube.instance_to(np)
+
+    np = render.attach_new_node('')
+    np.set_color(0,1,1,1)
+    np.set_pos(-0.5, 20, 0)
+    cube.instance_to(np)
     app.run()

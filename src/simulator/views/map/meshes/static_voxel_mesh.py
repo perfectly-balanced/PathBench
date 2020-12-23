@@ -48,7 +48,7 @@ class StaticVoxelMesh():
     __texcoord: GeomVertexWriter
     __colour: GeomVertexRewriter
 
-    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, name: str = 'StaticVoxelMesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, hidden_faces: bool = False) -> None:
+    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, name: str = 'static_voxel_mesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, hidden_faces: bool = False) -> None:
         self.name = name
         self.__structure = structure
         self.__mask = mask

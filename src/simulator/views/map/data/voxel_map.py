@@ -2,7 +2,7 @@ from panda3d.core import NodePath, TransparencyAttrib, LVecBase4f, LineSegs
 
 from simulator.services.services import Services
 from simulator.views.map.data.map_data import MapData
-from simulator.views.map.meshes.dynamic_cube_mesh import DynamicCubeMesh
+from simulator.views.map.meshes.dynamic_voxel_mesh import DynamicVoxelMesh
 
 from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 
@@ -18,19 +18,19 @@ class VoxelMap(MapData):
     obstacles: NodePath
     obstacles_wf: NodePath
 
-    traversables_mesh: DynamicCubeMesh
-    obstacles_mesh: DynamicCubeMesh
+    traversables_mesh: DynamicVoxelMesh
+    obstacles_mesh: DynamicVoxelMesh
 
     def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "voxel_map", artificial_lighting: bool = False):
         super().__init__(services, data, parent, name)
 
-        self.traversables_mesh = DynamicCubeMesh(self.data, MapData.TRAVERSABLE_MASK, self.name + '_traversables', artificial_lighting, hidden_faces=True)
-        self.traversables = self.root.attach_new_node(self.traversables_mesh.body_node)
-        self.traversables_wf = self.root.attach_new_node(self.traversables_mesh.wireframe_node)
+        self.traversables_mesh = DynamicVoxelMesh(self.data, MapData.TRAVERSABLE_MASK, self.root, self.name + '_traversables')
+        self.traversables = self.traversables_mesh.body
+        self.traversables_wf = self.traversables_mesh.wireframe
 
-        self.obstacles_mesh = DynamicCubeMesh(self.data, MapData.OBSTACLE_MASK, self.name + '_obstacles', artificial_lighting, hidden_faces=True)
-        self.obstacles = self.root.attach_new_node(self.obstacles_mesh.body_node)
-        self.obstacles_wf = self.root.attach_new_node(self.obstacles_mesh.wireframe_node)
+        self.obstacles_mesh = DynamicVoxelMesh(self.data, MapData.OBSTACLE_MASK, self.root, self.name + '_obstacles')
+        self.obstacles = self.obstacles_mesh.body
+        self.obstacles_wf = self.obstacles_mesh.wireframe
 
         self._add_colour(MapData.TRAVERSABLES, callback=self.__traversables_colour_callback)
         self._add_colour(MapData.TRAVERSABLES_WF, callback=lambda dc: self.__mesh_colour_callback(dc, self.traversables_wf))
