@@ -34,7 +34,7 @@ class OccupancyGridMap(DenseMap):
                  traversable_threshold: Optional[Real] = None,
                  unmapped_value: Optional[Real] = None,
                  services: Services = None) -> None:
-        super().__init__(None, services)
+        super().__init__(services=services)
         self.agent = agent
         self.goal = goal
         self.weight_grid = None
@@ -122,6 +122,7 @@ class OccupancyGridMap(DenseMap):
         if updated_cells and self._services is not None:
             self._services.ev_manager.post(MapUpdateEvent(updated_cells))
 
+        print(self.weight_grid)
 
     def __new_grid(self, weight_grid: np.ndarray, weight_bounds: Optional[Tuple[Real, Real]] = None, traversable_threshold: Optional[Real] = None, unmapped_value: Optional[Real] = None) -> None:
         self.size = Size(*weight_grid.shape)

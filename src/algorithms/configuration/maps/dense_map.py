@@ -27,7 +27,7 @@ class DenseMap(Map):
     # The transpose flag is set to true as a default for the initialization, as that is
     # how we are storing internally, but it will be set to false when we are simply translating from sparsemap
     # When we create more map views, we should set it to false
-    def __init__(self, grid: Optional[List], services: Services = None, transpose: bool = True) -> None:
+    def __init__(self, grid: Optional[List] = None, services: Services = None, transpose: bool = True) -> None:
         self.grid = None
 
         arr_grid = None

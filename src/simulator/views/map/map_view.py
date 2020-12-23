@@ -244,7 +244,7 @@ class MapView(View):
         obs_c = self.map.obstacles_dc()
         obs_wfc = self.map.obstacles_wf_dc()
 
-        for p in points:
+        for p in updated_cells:
             i = self._services.algorithm.map.at(p)
             if i == Map.WALL_ID:
                 self.map.data[p.values] = MapData.OBSTACLE_MASK
@@ -319,8 +319,8 @@ class MapView(View):
                     # (bg & wireframe) colour changes.
                     if self.__extended_walls_display is not None and \
                        self._services.algorithm.map.at(lp) == Map.EXTENDED_WALL_ID:
-                        self.__cube_modified[p] = False
-                        self.__cubes_requiring_update.discard(point)
+                        self.__cube_modified[p.values] = False
+                        self.__cubes_requiring_update.discard(p)
 
                     # we don't want to track occupancy grid weights
                     # Note, they will still be refreshed when traversable
@@ -328,8 +328,8 @@ class MapView(View):
                     if self.__weight_grid_display is not None and \
                        self._services.algorithm.map.at(lp) == Map.CLEAR_ID and \
                        blend_colours(self.__weight_grid_display.get_colour(self._services.algorithm.map.weight_grid[lp.values]), self.__deduced_traversables_colour) == self.__cube_colour:
-                        self.__cube_modified[p] = False
-                        self.__cubes_requiring_update.discard(point)
+                        self.__cube_modified[p.values] = False
+                        self.__cubes_requiring_update.discard(p)
 
         # update these cubes regardless of refresh
         # since the cubes that require update aren't

@@ -85,6 +85,7 @@ class AlgorithmRunner(Service):
 
         if self.__map is not None:
             self.__map.services = self._services
+            print(self.__map.weight_grid)
 
     @property
     def testing_type(self) -> str:
