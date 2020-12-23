@@ -53,7 +53,9 @@ class OccupancyGridMap(DenseMap):
         if weight_bounds is None:
             weight_bounds = (min(flatten(weight_grid)), max(flatten(weight_grid)))
 
-        def normalise(x): return (x - weight_bounds[0]) / (weight_bounds[1] - weight_bounds[0])
+        def normalise(x):
+            y = (weight_bounds[1] - weight_bounds[0])
+            return ((x - weight_bounds[0]) / y) if y else 0
 
         # threshold
         if traversable_threshold is None:

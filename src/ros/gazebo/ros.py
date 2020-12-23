@@ -49,8 +49,6 @@ class Ros:
         rospy.init_node("pb3d", log_level=rospy.INFO)
         rospy.Subscriber("/map", OccupancyGrid, self._set_slam)
         rospy.Subscriber('/odom', Odometry, self.__odometryCb)
-        # rospy.Subscriber("/odom",Odometry, self._set_agent_pos)
-        # rospy.Subscriber("/robot_pose", PoseStamped, self._set_agent_pos) #this sets self.agent
         self.pubs = {
             "vel": rospy.Publisher("/cmd_vel", Twist, queue_size=10),  # velocity
         }
@@ -321,3 +319,8 @@ class Ros:
         self._find_goal()
 
         # rospy.spin()
+
+
+if __name__ == "__main__":
+    ros = Ros()
+    ros.start()
