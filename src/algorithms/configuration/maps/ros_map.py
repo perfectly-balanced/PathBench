@@ -36,8 +36,8 @@ class RosMap(OccupancyGridMap):
         self.__traversable_threshold = traversable_threshold
         self.__unmapped_value = unmapped_value
 
-        if self._services:
-            self.request_update = self._services.debug.debug_func(DebugLevel.LOW)(self.request_update)
+        if self.services:
+            self.request_update = self.services.debug.debug_func(DebugLevel.LOW)(self.request_update)
 
     def request_update(self):
         self.set_grid(self.__get_grid(), self.__weight_bounds, self.__traversable_threshold, self.__unmapped_value)
@@ -56,7 +56,7 @@ class RosMap(OccupancyGridMap):
         mp = RosMap(copy.deepcopy(self.size), copy.deepcopy(self.agent), copy.deepcopy(self.goal),
                     self.__get_grid, self.__weight_bounds, self.__traversable_threshold, self.__unmapped_value,
                     self.__wp_publish, self.__update_requested,
-                    services=self._services)
+                    services=self.services)
         mp.weight_grid = copy.deepcopy(self.weight_grid)
         mp.traversable_threshold = copy.deepcopy(self.traversable_threshold)
         mp.trace = copy.deepcopy(self.trace)

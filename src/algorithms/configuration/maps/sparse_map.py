@@ -78,7 +78,7 @@ class SparseMap(Map):
                         grid[tuple(p)] = DenseMap.WALL_ID
         grid[self.agent.position.values] = DenseMap.AGENT_ID
         grid[self.goal.position.values] = DenseMap.GOAL_ID
-        dense_map: DenseMap = DenseMap(grid, self._services, transpose=False)
+        dense_map: DenseMap = DenseMap(grid, self.services, transpose=False)
         dense_map.agent = copy.deepcopy(self.agent)
         dense_map.goal = copy.deepcopy(self.goal)
         dense_map.trace = copy.deepcopy(self.trace)
@@ -100,8 +100,8 @@ class SparseMap(Map):
 
     def __repr__(self) -> str:
         debug_level: DebugLevel = DebugLevel.BASIC
-        if self._services is not None:
-            debug_level = self._services.settings.simulator_write_debug_level
+        if self.services is not None:
+            debug_level = self.services.settings.simulator_write_debug_level
 
         obst_str: str = "{\n\t\t\tsize: " + str(len(self.obstacles))
         if debug_level == DebugLevel.HIGH or len(self.obstacles) <= 10:
@@ -119,7 +119,7 @@ class SparseMap(Map):
 
     def __deepcopy__(self, memo: Dict) -> 'SparseMap':
         dense_map = SparseMap(self.size, copy.deepcopy(self.agent),
-                              copy.deepcopy(self.obstacles), copy.deepcopy(self.goal), self._services)
+                              copy.deepcopy(self.obstacles), copy.deepcopy(self.goal), self.services)
         dense_map.trace = copy.deepcopy(self.trace)
         return dense_map
 

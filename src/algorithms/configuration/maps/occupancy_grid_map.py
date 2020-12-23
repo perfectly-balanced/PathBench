@@ -119,10 +119,9 @@ class OccupancyGridMap(DenseMap):
                     remove_obstacle(p)
                     updated_cells.append(p)
         
-        if updated_cells and self._services is not None:
-            self._services.ev_manager.post(MapUpdateEvent(updated_cells))
+        if updated_cells and self.services is not None:
+            self.services.ev_manager.post(MapUpdateEvent(updated_cells))
 
-        print(self.weight_grid)
 
     def __new_grid(self, weight_grid: np.ndarray, weight_bounds: Optional[Tuple[Real, Real]] = None, traversable_threshold: Optional[Real] = None, unmapped_value: Optional[Real] = None) -> None:
         self.size = Size(*weight_grid.shape)
@@ -175,7 +174,7 @@ class OccupancyGridMap(DenseMap):
         mp = self.__class__(copy.deepcopy(self.weight_grid),
                             copy.deepcopy(self.agent), copy.deepcopy(self.goal),
                             traversable_threshold=self.traversable_threshold,
-                            services=self._services)
+                            services=self.services)
         mp.trace = copy.deepcopy(self.trace)
         mp.obstacles = copy.deepcopy(self.obstacles)
         mp.grid = copy.deepcopy(self.grid)

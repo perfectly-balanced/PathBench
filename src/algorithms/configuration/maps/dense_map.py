@@ -131,7 +131,7 @@ class DenseMap(Map):
         from algorithms.configuration.maps.sparse_map import SparseMap
         obstacles: List[Obstacle] = list(filter(lambda o: not isinstance(o, ExtendedWall), self.obstacles))
         sparse_map: SparseMap = SparseMap(self.size, copy.deepcopy(self.agent),
-                                          obstacles, copy.deepcopy(self.goal), self._services)
+                                          obstacles, copy.deepcopy(self.goal), self.services)
         sparse_map.trace = copy.deepcopy(self.trace)
         return sparse_map
 
@@ -146,8 +146,8 @@ class DenseMap(Map):
 
     def __repr__(self) -> str:
         debug_level: DebugLevel = DebugLevel.BASIC
-        if self._services is not None:
-            debug_level = self._services.settings.simulator_write_debug_level
+        if self.services is not None:
+            debug_level = self.services.settings.simulator_write_debug_level
         # flipping it back for the str repr
         new_grid = np.transpose(self.grid)
 
@@ -181,7 +181,7 @@ class DenseMap(Map):
         return copy.deepcopy(self)
 
     def __deepcopy__(self, memo: Dict) -> 'DenseMap':
-        dense_map = self.__class__(copy.deepcopy(self.grid), transpose=False)
+        dense_map = self.__class__(copy.deepcopy(self.grid), services=self.services, transpose=False)
         dense_map.trace = copy.deepcopy(self.trace)
         dense_map.agent = copy.deepcopy(self.agent)
         dense_map.goal = copy.deepcopy(self.goal)

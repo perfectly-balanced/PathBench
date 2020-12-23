@@ -35,7 +35,7 @@ class Map:
     obstacles: List[Obstacle]
     trace: List[Trace]
     _size: Size
-    _services: Optional[Services]
+    __services: Optional[Services]
     __cached_move_costs: List[float] = []
 
     @property
@@ -93,7 +93,7 @@ class Map:
         :param size: The map size
         :param services: The simulator services
         """
-        self._services = services
+        self.__services = services
         self.trace = []
         self.agent = None
         self.goal = None
@@ -117,7 +117,7 @@ class Map:
             visited: Set[Point] = set()
                          
         if self.is_agent_valid_pos(obstacle_start_point):
-            self._services.debug.write_error("NextPos should be invalid")
+            self.services.debug.write_error("NextPos should be invalid")
         st: List[Point] = [obstacle_start_point]
         bounds: Set[Point] = set()
         while len(st) > 0:
@@ -390,9 +390,13 @@ class Map:
     def services(self) -> str:
         return 'services'
 
+    @services.getter
+    def services(self) -> Optional[Services]:
+        return self.__services
+
     @services.setter
-    def services(self, new_value: Services) -> None:
-        self._services = new_value
+    def services(self, new_value: Optional[Services]) -> None:
+        self.__services = new_value
 
     def __copy__(self) -> 'Map':
         return copy.deepcopy(self)

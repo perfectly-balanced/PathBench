@@ -47,7 +47,7 @@ class AlgorithmRunner(Service):
         if refresh_map:
             if self.map is not None:
                 self.map.reset()
-            self.__map = copy.deepcopy(self._services.settings.simulator_initial_map)
+            self.map = copy.deepcopy(self._services.settings.simulator_initial_map)
         elif self.map is None:
             return
         else:
@@ -85,7 +85,6 @@ class AlgorithmRunner(Service):
 
         if self.__map is not None:
             self.__map.services = self._services
-            print(self.__map.weight_grid)
 
     @property
     def testing_type(self) -> str:
