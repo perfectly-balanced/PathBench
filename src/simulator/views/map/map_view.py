@@ -73,13 +73,15 @@ class MapView(View):
         for x, y, z in np.ndindex(map_data.shape):
             p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
             i = self._services.algorithm.map.at(p)
-            self.__cube_modified[x, y, z] = (i != Map.WALL_ID)
             if i == Map.WALL_ID:
                 map_data[x, y, z] = MapData.OBSTACLE_MASK
+                self.__cube_modified[x, y, z] = False
             elif i == Map.UNMAPPED_ID:
                 map_data[x, y, z] = MapData.UNMAPPED_MASK
+                self.__cube_modified[x, y, z] = False
             else:
                 map_data[x, y, z] = MapData.TRAVERSABLE_MASK
+                self.__cube_modified[x, y, z] = True
             
 
         if map_size.n_dim == 2:
