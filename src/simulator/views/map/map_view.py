@@ -10,6 +10,7 @@ from simulator.services.event_manager.events.key_frame_event import KeyFrameEven
 from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
 from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
 from simulator.services.event_manager.events.take_screenshot_tex_event import TakeScreenshotTexEvent
+from simulator.services.event_manager.events.map_update_event import MapUpdateEvent
 from simulator.services.graphics.renderer import Renderer
 from simulator.views.map.display.gradient_map_display import GradientMapDisplay
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
@@ -189,7 +190,8 @@ class MapView(View):
             if event.refresh:
                 self.__refresh()
             self.update_view(event.refresh)
-
+        elif isinstance(event, MapUpdateEvent):
+            """ todo: update data structures and render """
         elif isinstance(event, ColourUpdateEvent):
             if event.view.is_effective():
                 self.update_view(False)
