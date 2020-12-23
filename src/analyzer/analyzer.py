@@ -594,11 +594,16 @@ class Analyzer:
         self.__analysis_stream = StringIO()
         maps: List[Map] = []
 
-        for i in range(45):
-            maps.append("testing_maps_pickles/block_map_1000/" + str(i))
-            # maps.append("uniform_random_fill_10000/" + str(i*4))
-            # maps.append("block_map_10000/" + str(i*4))
-            # maps.append("house_10000/" + str(i*4))
+        if self.__services.settings.num_dim == 2:
+            for i in range(45):
+                # maps.append("testing_maps_pickles/block_1000/" + str(i))
+                # maps.append("uniform_random_fill_10000/" + str(i*4))
+                # maps.append("block_map_10000/" + str(i*4))
+                maps.append("house_10000/" + str(i*4))
+            
+        elif self.__services.settings.num_dim == 3:
+            for i in range(45):
+                maps.append("testing_maps_3d/house_100_3d/" + str(i) + "_3d")
 
         # maps = self.__convert_maps(maps)
         # maps = [Maps.grid_map_small_one_obstacle2]#], Maps.grid_map_labyrinth2]
