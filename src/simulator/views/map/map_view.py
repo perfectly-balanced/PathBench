@@ -167,7 +167,7 @@ class MapView(View):
         change_line_thickness(self.map.logical_d)
         self.renderer.line_segs.set_thickness(self.__line_thickness)
 
-        self.update_view(True)
+        self.__update_view(True)
 
     def destroy(self) -> None:
         self.__map.destroy()
@@ -192,16 +192,16 @@ class MapView(View):
         if isinstance(event, KeyFrameEvent):
             if event.refresh:
                 self.__refresh()
-            self.update_view(event.refresh)
+            self.__update_view(event.refresh)
         elif isinstance(event, MapUpdateEvent):
             self.__map_update(event.updated_cells)
         elif isinstance(event, ColourUpdateEvent):
             if event.view.is_effective():
-                self.update_view(False)
+                self.__update_view(False)
         elif isinstance(event, TakeScreenshotEvent):
-            self.take_screenshot()
+            self.__take_screenshot()
         elif isinstance(event, TakeScreenshotTexEvent):
-            self.take_hd_screenshot()
+            self.__take_hd_screenshot()
 
     def to_logical_point(self, p: Point) -> Point:
         x, y, z = p
@@ -236,17 +236,30 @@ class MapView(View):
         self.__cube_modified[p.values] = self.__cube_colour != self.__deduced_traversables_colour
 
     def __map_update(self, updated_cells: List[Point]) -> None:
+        self.__get_displays()
+        while len(self.__displays) > 0:
+            display = heappop(self.__displays)
+            self.__cube_update_displays.append(display)
+
+        obs_c = self.map.obstacles_dc()
+        obs_wfc = self.map.obstacles_wf_dc()
+
         for p in points:
             i = self._services.algorithm.map.at(p)
             if i == Map.WALL_ID:
                 self.map.data[p.values] = MapData.OBSTACLE_MASK
                 self.__cube_modified[p.values] = False
+                self.__set_cube_colour(p, obs_c, obs_wfc)
             elif i == Map.UNMAPPED_ID:
                 self.map.data[p.values] = MapData.UNMAPPED_MASK
                 self.__cube_modified[p.values] = False
+                self.__set_cube_colour(p, TRANSPARENT, TRANSPARENT)
             else:
                 self.map.data[p.values] = MapData.TRAVERSABLE_MASK
                 self.__update_cube_colour(p)
+        
+        self.__displays.clear()
+        self.__cube_update_displays.clear()
 
     def __clear_scratch(self) -> None:
         assert self.renderer.root == self.__scratch
@@ -332,7 +345,7 @@ class MapView(View):
         self.__cube_update_displays.clear()
         self.__displays.clear()
 
-    def update_view(self, refresh: bool) -> None:
+    def __update_view(self, refresh: bool) -> None:
         self.__clear_scratch()
         self.__get_displays()
         self.__render_displays(refresh)
@@ -350,11 +363,11 @@ class MapView(View):
     def colour_cube(self, src: Colour) -> None:
         self.__cube_colour = blend_colours(src, self.__cube_colour)
 
-    def take_screenshot(self) -> None:
+    def __take_screenshot(self) -> None:
         self._services.resources.screenshots_dir.append(
             lambda fn: self._services.graphics.window.win.save_screenshot(fn))
 
-    def take_hd_screenshot(self):
+    def __take_hd_screenshot(self):
         mx, my, mz = self.__map.data.shape
 
         # find the optimal zoom fit
