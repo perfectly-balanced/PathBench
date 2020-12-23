@@ -32,7 +32,9 @@ class CubeMesh():
     __vertex: GeomVertexWriter
     __normal: GeomVertexWriter
 
-    def __init__(self, name: str = 'cube_mesh') -> None:
+    __wireframe_node: GeomNode
+
+    def __init__(self, name: str = 'cube_mesh', wireframe_thickness: float = 5) -> None:
         self.name = name
         
         self.__vertex_data_format = GeomVertexFormat.getV3n3()
@@ -59,6 +61,29 @@ class CubeMesh():
 
         self.__triangles.close_primitive()
         self.geom.add_primitive(self.__triangles)
+
+        def is_connected(x, y, z, x1, y1, z1):
+            return (abs(x - x1) == 1 and abs(y - y1) != 1 and abs(z - z1) != 1) or \
+                   (abs(x - x1) != 1 and abs(y - y1) == 1 and abs(z - z1) != 1) or \
+                   (abs(x - x1) != 1 and abs(y - y1) != 1 and abs(z - z1) == 1)
+
+        ls = LineSegs()
+        ls.set_thickness(wireframe_thickness)
+        arr_x = [0, 0, 0, 0, 1, 1, 1, 1]
+        arr_y = [0, 0, 1, 1, 1, 1, 0, 0]
+        arr_z = [0, -1, -1, 0, 0, -1, -1, 0]
+        for pos1 in range(len(arr_x) - 1):
+            for pos2 in range(pos1, len(arr_x)):
+                x = arr_x[pos1]
+                y = arr_y[pos1]
+                z = arr_z[pos1]
+                x1 = arr_x[pos2]
+                y1 = arr_y[pos2]
+                z1 = arr_z[pos2]
+                if (is_connected(x, y, z, x1, y1, z1)):
+                    ls.move_to(x, y, z)
+                    ls.draw_to(x1, y1, z1)
+        self.__wireframe_node = ls.create()
     
     def __make_face(self, face: Face, pos: Point = Point(0,0,0)) -> None:
         def make(x1, y1, z1, x2, y2, z2) -> None:
@@ -119,6 +144,10 @@ class CubeMesh():
         node = GeomNode(self.name)
         node.addGeom(self.geom)
         return node
+    
+    @property
+    def wireframe_node(self) -> GeomNode:
+        return self.__wireframe_node
 
 
 if __name__ == "__main__":
