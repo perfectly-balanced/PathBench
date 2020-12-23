@@ -119,7 +119,7 @@ class OccupancyGridMap(DenseMap):
                     remove_obstacle(p)
                     updated_cells.append(p)
         
-        if self._services is not None:
+        if updated_cells and self._services is not None:
             self._services.ev_manager.post(MapUpdateEvent(updated_cells))
 
 
