@@ -23,7 +23,7 @@ class Face(IntEnum):
     BOTTOM = 4
     TOP = 5
 
-class CubeMesh():
+class StaticCubeMesh():
     name: str
     mesh: Geom
 
@@ -57,7 +57,7 @@ class CubeMesh():
     __texcoord: GeomVertexWriter
     __colour: GeomVertexRewriter
 
-    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, name: str = 'CubeMesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, hidden_faces: bool = False) -> None:
+    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, name: str = 'StaticCubeMesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, hidden_faces: bool = False) -> None:
         self.name = name
         self.__structure = structure
         self.__mask = mask
@@ -232,16 +232,6 @@ class CubeMesh():
             raise Exception("unknown face")
 
     @property
-    def geom_node(self) -> str:
-        return 'geom_node'
-
-    @geom_node.getter
-    def geom_node(self) -> GeomNode:
-        node = GeomNode(self.name)
-        node.addGeom(self.mesh)
-        return node
-
-    @property
     def artificial_lighting(self) -> str:
         return 'artificial_lighting'
 
@@ -280,7 +270,16 @@ class CubeMesh():
                 return True
         return False
 
-    def gen_wireframe(self, thickness: float = 5) -> GeomNode:
+    @property
+    def body_node(self) -> GeomNode:
+        node = GeomNode(self.name)
+        node.addGeom(self.mesh)
+        return node
+
+    @property
+    def wireframe_node(self) -> GeomNode:
+        thickness: float = 5
+
         def is_connected(x, y, z, x1, y1, z1):
             return (abs(x - x1) == 1 and abs(y - y1) != 1 and abs(z - z1) != 1) or \
                    (abs(x - x1) != 1 and abs(y - y1) == 1 and abs(z - z1) != 1) or \
