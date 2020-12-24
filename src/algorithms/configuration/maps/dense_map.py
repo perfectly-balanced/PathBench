@@ -123,7 +123,7 @@ class DenseMap(Map):
                 break
         return True
 
-    def convert_to_sparse_map(self) -> 'SparseMap':
+    def convert_to_sparse_map(self) -> Optional['SparseMap']:
         """
         Method for converting current map into a :class:`SparseMap`
         :return: The converted map
