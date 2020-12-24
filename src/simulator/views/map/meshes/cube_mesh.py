@@ -88,25 +88,25 @@ class CubeMesh():
     def __make_face(self, face: Face, pos: Point = Point(0,0,0)) -> None:
         def make(x1, y1, z1, x2, y2, z2) -> None:
             if x1 == x2:
-                self.__vertex.addData3f(x1, y1, z1)
-                self.__vertex.addData3f(x2, y2, z1)
-                self.__vertex.addData3f(x2, y2, z2)
-                self.__vertex.addData3f(x1, y1, z2)
+                self.__vertex.add_data3f(x1, y1, z1)
+                self.__vertex.add_data3f(x2, y2, z1)
+                self.__vertex.add_data3f(x2, y2, z2)
+                self.__vertex.add_data3f(x1, y1, z2)
 
-                self.__normal.addData3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z1 - 1))
-                self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z1 - 1))
-                self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
-                self.__normal.addData3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z2 - 1))
+                self.__normal.add_data3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z1 - 1))
+                self.__normal.add_data3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z1 - 1))
+                self.__normal.add_data3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
+                self.__normal.add_data3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z2 - 1))
             else:
-                self.__vertex.addData3f(x1, y1, z1)
-                self.__vertex.addData3f(x2, y1, z1)
-                self.__vertex.addData3f(x2, y2, z2)
-                self.__vertex.addData3f(x1, y2, z2)
+                self.__vertex.add_data3f(x1, y1, z1)
+                self.__vertex.add_data3f(x2, y1, z1)
+                self.__vertex.add_data3f(x2, y2, z2)
+                self.__vertex.add_data3f(x1, y2, z2)
 
-                self.__normal.addData3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z1 - 1))
-                self.__normal.addData3(normalise(2 * x2 - 1, 2 * y1 - 1, 2 * z1 - 1))
-                self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
-                self.__normal.addData3(normalise(2 * x1 - 1, 2 * y2 - 1, 2 * z2 - 1))
+                self.__normal.add_data3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z1 - 1))
+                self.__normal.add_data3(normalise(2 * x2 - 1, 2 * y1 - 1, 2 * z1 - 1))
+                self.__normal.add_data3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
+                self.__normal.add_data3(normalise(2 * x1 - 1, 2 * y2 - 1, 2 * z2 - 1))
 
             vertex_id = self.__face_count * 4
 

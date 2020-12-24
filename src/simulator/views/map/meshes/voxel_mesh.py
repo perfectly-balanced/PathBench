@@ -103,31 +103,31 @@ class VoxelMesh():
 
         def make(x1, y1, z1, x2, y2, z2) -> None:
             if x1 == x2:
-                self.__vertex.addData3f(x1, y1, z1)
-                self.__vertex.addData3f(x2, y2, z1)
-                self.__vertex.addData3f(x2, y2, z2)
-                self.__vertex.addData3f(x1, y1, z2)
+                self.__vertex.add_data3f(x1, y1, z1)
+                self.__vertex.add_data3f(x2, y2, z1)
+                self.__vertex.add_data3f(x2, y2, z2)
+                self.__vertex.add_data3f(x1, y1, z2)
 
-                self.__normal.addData3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z1 - 1))
-                self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z1 - 1))
-                self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
-                self.__normal.addData3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z2 - 1))
+                self.__normal.add_data3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z1 - 1))
+                self.__normal.add_data3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z1 - 1))
+                self.__normal.add_data3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
+                self.__normal.add_data3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z2 - 1))
             else:
-                self.__vertex.addData3f(x1, y1, z1)
-                self.__vertex.addData3f(x2, y1, z1)
-                self.__vertex.addData3f(x2, y2, z2)
-                self.__vertex.addData3f(x1, y2, z2)
+                self.__vertex.add_data3f(x1, y1, z1)
+                self.__vertex.add_data3f(x2, y1, z1)
+                self.__vertex.add_data3f(x2, y2, z2)
+                self.__vertex.add_data3f(x1, y2, z2)
 
-                self.__normal.addData3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z1 - 1))
-                self.__normal.addData3(normalise(2 * x2 - 1, 2 * y1 - 1, 2 * z1 - 1))
-                self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
-                self.__normal.addData3(normalise(2 * x1 - 1, 2 * y2 - 1, 2 * z2 - 1))
+                self.__normal.add_data3(normalise(2 * x1 - 1, 2 * y1 - 1, 2 * z1 - 1))
+                self.__normal.add_data3(normalise(2 * x2 - 1, 2 * y1 - 1, 2 * z1 - 1))
+                self.__normal.add_data3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
+                self.__normal.add_data3(normalise(2 * x1 - 1, 2 * y2 - 1, 2 * z2 - 1))
 
-            self.__colour.setRow(self.__face_count * 4)
-            self.__colour.addData4f(*colour)
-            self.__colour.addData4f(*colour)
-            self.__colour.addData4f(*colour)
-            self.__colour.addData4f(*colour)
+            self.__colour.set_row(self.__face_count * 4)
+            self.__colour.add_data4f(*colour)
+            self.__colour.add_data4f(*colour)
+            self.__colour.add_data4f(*colour)
+            self.__colour.add_data4f(*colour)
 
             vertex_id = self.__face_count * 4
 
@@ -155,7 +155,7 @@ class VoxelMesh():
     def get_cube_colour(self, p: Point) -> Colour:
         faces = self.__cube_face_map[p.values]
         for i in range(len(faces)):
-            self.__colour.setRow(faces[i] * 4)
+            self.__colour.set_row(faces[i] * 4)
             r, g, b, a = self.__colour.getData4f()
             if self.artificial_lighting:
                 factor = self.__LIGHT_ATTENUATION_FACTOR(Face(i))
@@ -171,11 +171,11 @@ class VoxelMesh():
         for i in range(len(faces)):
             c = self._face_colour(colour, Face(i))
 
-            self.__colour.setRow(faces[i] * 4)
-            self.__colour.addData4f(*c)
-            self.__colour.addData4f(*c)
-            self.__colour.addData4f(*c)
-            self.__colour.addData4f(*c)
+            self.__colour.set_row(faces[i] * 4)
+            self.__colour.add_data4f(*c)
+            self.__colour.add_data4f(*c)
+            self.__colour.add_data4f(*c)
+            self.__colour.add_data4f(*c)
 
     def reset_cube(self, p: Point) -> None:
         self.set_cube_colour(p, self.default_colour)
