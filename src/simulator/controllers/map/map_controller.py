@@ -71,21 +71,25 @@ class MapController(Controller, DirectObject):
             if not isinstance(self._services.algorithm.map, OccupancyGridMap):
                 return
             if self._services.algorithm.map.size.n_dim == 2:
-                self.map_2d[0][1] = 1
+                self.map_2d[0][1] = 1 # test traversable -> obstacle
+                self.map_2d[0][6] = 0 # test obstacle -> traversable
+                self.map_2d[0][7] = -1 # test obstacle -> unmapped
+                self.map_2d[0][8] = -1 # test traversable -> unmapped
                 for i in range(len(self.map_2d)):
                     if self.map_2d[i][0] == -1:
                         self.map_2d[i] = self.map_2d[0]
                         self.map_2d[i+1] = self.map_2d[1]
-                        self._services.algorithm.map._services = self._services
                         self._services.algorithm.map.set_grid(self.map_2d, unmapped_value=-1)
                         return
             else:
-                self.map_3d[0][0][1] = 1
+                self.map_3d[0][0][1] = 1 # test evicting a traversable
+                self.map_3d[0][0][6] = 0 # test obstacle -> traversable
+                self.map_3d[0][0][7] = -1 # test obstacle -> unmapped
+                self.map_3d[0][0][8] = -1 # test traversable -> unmapped
                 for i in range(len(self.map_2d)):
                     if self.map_3d[i][0][0] == -1:
                         self.map_3d[i] = self.map_3d[0]
                         self.map_3d[i+1] = self.map_3d[1]
-                        self._services.algorithm.map._services = self._services
                         self._services.algorithm.map.set_grid(self.map_3d, unmapped_value=-1)
                         return
 
