@@ -1,5 +1,3 @@
-from panda3d.core import CollisionTraverser, CollisionHandlerQueue, CollisionNode, BitMask32, CollisionBox, CollisionRay, Point3
-from direct.showbase.ShowBase import ShowBase
 from direct.showbase.DirectObject import DirectObject
 
 from structures import Point
@@ -82,7 +80,7 @@ class MapController(Controller, DirectObject):
                         self._services.algorithm.map.set_grid(self.map_2d, unmapped_value=-1)
                         return
             else:
-                self.map_3d[0][0][1] = 1 # test evicting a traversable
+                self.map_3d[0][0][1] = 1 # test traversable -> obstacle
                 self.map_3d[0][0][6] = 0 # test obstacle -> traversable
                 self.map_3d[0][0][7] = -1 # test obstacle -> unmapped
                 self.map_3d[0][0][8] = -1 # test traversable -> unmapped
