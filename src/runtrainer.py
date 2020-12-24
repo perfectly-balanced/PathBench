@@ -122,7 +122,7 @@ algo = algorithms['A*'] #Choose which planner
 ani = animations['Fast'] #Choose animation speed
 debug = debug['High'] #Choose debug level 
 training_algo = BasicLSTMModule #Chooses the algorithm to train, either CAE, BasicLSTMModule,LSTMCAEModel
-nbr_ex = 10 #Number of maps generated
+nbr_ex = 120 #Number of maps generated
 show_sample_map = False #shows 5 samples
 gen_start = True
 train_start = True
@@ -157,7 +157,7 @@ if config.generator_house_expo:
 elif gen_start:
     gen_map = gen_maps[chosen_map]
     #config.generator_labelling_atlases = [gen_map + '_' + str(nbr_ex)]
-    config.generator_labelling_atlases = ['uniform_random_fill_100','block_map_100','house_100']
+    config.generator_labelling_atlases = ['uniform_random_fill_120','block_map_120','house_120']
     config.generator_nr_of_examples = nbr_ex
     config.generator_gen_type = gen_map
 
