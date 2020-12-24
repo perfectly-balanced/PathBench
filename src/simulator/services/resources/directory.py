@@ -66,7 +66,8 @@ class Directory(Service):
         if obj:
             self._services.debug.write("Loaded [{}]".format(self._full_path() + name), DebugLevel.LOW)
         else:
-            self._services.debug.write("File not found [{}]".format(self._full_path() + name), DebugLevel.LOW)
+            self._services.debug.write("File not found [{}]".format(self._full_path() + name) + "\n Consider deleting and re-generating",\
+                 DebugLevel.LOW)
         return obj
 
     def exists(self, name: str, extension: str) -> bool:

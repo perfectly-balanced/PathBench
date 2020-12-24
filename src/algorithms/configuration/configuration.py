@@ -81,8 +81,8 @@ class Configuration:
 
         # Generator
         self.generator = False
-        self.generator_labelling_atlases = ['house_100']
-        self.generator_nr_of_examples = 10
+        self.generator_labelling_atlases = ['uniform_random_fill_120', 'block_map_120', 'house_120']
+        self.generator_nr_of_examples = 120
         self.generator_gen_type = "house"
         self.generator_labelling_features = ["distance_to_goal_normalized",
                 "raycast_8_normalized",
@@ -98,7 +98,7 @@ class Configuration:
         self.generator_modify = None
         self.generator_show_gen_sample = False
         self.generator_house_expo = False
-        self.generator_size = 28
+        self.generator_size = 64
         
         self.num_dim = 2
         
