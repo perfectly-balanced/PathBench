@@ -1,6 +1,6 @@
 from panda3d.core import Texture, GeomNode, LineSegs
 from panda3d.core import GeomVertexFormat, GeomVertexData
-from panda3d.core import Geom, GeomTriangles, GeomVertexWriter, GeomVertexRewriter, GeomVertexArrayData
+from panda3d.core import Geom, GeomTriangles, GeomVertexWriter, GeomVertexArrayData
 from panda3d.core import Vec3, Vec4
 from panda3d.core import NodePath
 
@@ -46,7 +46,7 @@ class VoxelMesh():
 
     __vertex: GeomVertexWriter
     __normal: GeomVertexWriter
-    __colour: GeomVertexRewriter
+    __colour: GeomVertexWriter
 
     def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, parent: NodePath, name: str = 'voxel_mesh', artificial_lighting: bool = False, default_colour: Colour = WHITE) -> None:
         self.name = name
@@ -54,11 +54,11 @@ class VoxelMesh():
         self.__mask = mask
         self.__artificial_lighting = artificial_lighting
         self.__default_colour = default_colour
-        
+
         self.__body = parent.attach_new_node(self.name)
         self.__wireframe = parent.attach_new_node(self.name + "_wf")
 
-        self.__vertex_data_format = GeomVertexFormat.getV3n3c4t2()
+        self.__vertex_data_format = GeomVertexFormat.getV3n3c4()
         self.__vertex_data = GeomVertexData(name, self.__vertex_data_format, Geom.UHStatic)
 
         self.mesh = Geom(self.__vertex_data)
@@ -71,14 +71,14 @@ class VoxelMesh():
 
         self.__vertex = GeomVertexWriter(self.__vertex_data, 'vertex')
         self.__normal = GeomVertexWriter(self.__vertex_data, 'normal')
-        self.__colour = GeomVertexRewriter(self.__vertex_data, 'color')
+        self.__colour = GeomVertexWriter(self.__vertex_data, 'color')
 
         self.__face_count = 0
 
         self.__face_cube_map = []
         self.__cube_face_map = np.full(self.structure.shape, None, dtype=object)
         self.__cube_default_coloured = np.full(self.structure.shape, True, dtype=bool)
-    
+
     def _add_cube_faces(self, idx) -> None:
         faces = []
         x, y, z = idx
@@ -123,6 +123,7 @@ class VoxelMesh():
                 self.__normal.addData3(normalise(2 * x2 - 1, 2 * y2 - 1, 2 * z2 - 1))
                 self.__normal.addData3(normalise(2 * x1 - 1, 2 * y2 - 1, 2 * z2 - 1))
 
+            self.__colour.setRow(self.__face_count * 4)
             self.__colour.addData4f(*colour)
             self.__colour.addData4f(*colour)
             self.__colour.addData4f(*colour)
@@ -152,7 +153,7 @@ class VoxelMesh():
             raise Exception("unknown face")
 
     def get_cube_colour(self, p: Point) -> Colour:
-        faces = self.__cube_face_map[p.values]        
+        faces = self.__cube_face_map[p.values]
         for i in range(len(faces)):
             self.__colour.setRow(faces[i] * 4)
             r, g, b, a = self.__colour.getData4f()
@@ -241,10 +242,7 @@ class VoxelMesh():
         return self.__mask
 
     def cube_visible(self, p: Point) -> bool:
-        for f in self.__cube_face_map[p.values]:
-            if f is not None:
-                return True
-        return False
+        return self.__cube_face_map[p.values] is not None
 
     @property
     def body(self) -> NodePath:

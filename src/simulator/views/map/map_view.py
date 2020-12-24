@@ -244,7 +244,7 @@ class MapView(View):
         if self.map.dim == 2:
             obs_c = self.map.obstacles_dc()
             obs_wfc = self.map.obstacles_wf_dc()
-            
+
             for p in updated_cells:
                 i = self._services.algorithm.map.at(p)
                 if i == Map.WALL_ID:
@@ -258,7 +258,7 @@ class MapView(View):
                 else:
                     self.map.data[p.values] = MapData.TRAVERSABLE_MASK
                     self.__update_cube_colour(p)
-        else: # 3D
+        else:  # 3D
             for p in updated_cells:
                 i = self._services.algorithm.map.at(p)
                 if i == Map.WALL_ID:
@@ -269,10 +269,10 @@ class MapView(View):
                     self.__cube_modified[p.values] = False
                 else:
                     self.map.data[p.values] = MapData.TRAVERSABLE_MASK
-            self.map.traversables_mesh.structural_update(updated_cells)
             self.map.obstacles_mesh.structural_update(updated_cells)
+            self.map.traversables_mesh.structural_update(updated_cells)
             for p in updated_cells:
-                if self.map.data[p.values] & MapData.TRAVERSABLE_MASK:
+                if bool(self.map.data[p.values] & MapData.TRAVERSABLE_MASK):
                     self.__update_cube_colour(p)
 
         self.__displays.clear()

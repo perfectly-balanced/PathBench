@@ -38,8 +38,11 @@ class VoxelMap(MapData):
 
         self._add_colour(MapData.TRAVERSABLES, callback=self.__traversables_colour_callback)
         self._add_colour(MapData.TRAVERSABLES_WF, callback=lambda dc: self.__mesh_colour_callback(dc, self.traversables_wf))
-        self._add_colour(MapData.OBSTACLES, callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles))
         self._add_colour(MapData.OBSTACLES_WF, callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles_wf))
+        if self._services.algorithm.map.mutable:
+            self._add_colour(MapData.OBSTACLES, callback=self.__mutable_obstacles_colour_callback)
+        else:
+            self._add_colour(MapData.OBSTACLES, callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles))
 
         self._add_colour(MapData.AGENT)
         self._add_colour(MapData.TRACE)
@@ -51,6 +54,9 @@ class VoxelMap(MapData):
 
     def __traversables_colour_callback(self, dc: DynamicColour) -> None:
         self.traversables_mesh.default_colour = dc()
+
+    def __mutable_obstacles_colour_callback(self, dc: DynamicColour) -> None:
+        self.obstacles_mesh.default_colour = dc()
 
     def __mesh_colour_callback(self, dc: DynamicColour, np: NodePath) -> None:
         if dc.visible:

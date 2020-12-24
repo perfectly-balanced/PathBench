@@ -14,7 +14,7 @@ from utility.misc import exclude_from_dict
 class DynamicVoxelMesh(VoxelMesh):
     """
     DynamicVoxelMesh is used for maps that are mutable.
-    
+
     Wireframes are quite laggy when map gets large.
     Potential room for optimisation by aggregating them.
     For example, slice the grid structure into sectors,
@@ -37,13 +37,11 @@ class DynamicVoxelMesh(VoxelMesh):
         self.__wireframe_instance.detach_node()
         self.__wireframe_instance_name = self.name + '_wf_inst'
 
-        self.__wireframes = np.empty(self.structure.shape, dtype=NodePath)
+        self.__wireframes = np.full(self.structure.shape, None, dtype=NodePath)
 
         for idx in np.ndindex(self.structure.shape):
             if bool(self.structure[idx] & self.mask):
                 self.__add_cube(idx)
-            else:
-                self.__wireframes[idx] = None
 
         self._triangles.close_primitive()
         self.mesh.add_primitive(self._triangles)
@@ -51,23 +49,28 @@ class DynamicVoxelMesh(VoxelMesh):
     def __add_cube(self, idx) -> None:
         self._add_cube_faces(idx)
 
-        self.__wireframes[idx] = path = self.wireframe.attach_new_node(self.__wireframe_instance_name)
-        self.__wireframe_instance.instance_to(path)
-        path.set_pos(*idx)
+        p = self.wireframe.attach_new_node(self.__wireframe_instance_name)
+        self.__wireframe_instance.instance_to(p)
+        p.set_pos(*idx)
+        self.__wireframes[idx] = p
 
     def structural_update(self, cubes_updated: List[Point]) -> None:
-        for c in cubes_updated:
-            if bool(self.structure[c.values] & self.mask):
-                if self.__wireframes[c.values] is None:
-                    self.__add_cube(c.values)
+        added_cube = False
+        for p in cubes_updated:
+            if bool(self.structure[p.values] & self.mask):
+                if self.__wireframes[p.values] is None:
+                    added_cube = True
+                    self.__add_cube(p.values)
+                    self.reset_cube(p)
                 else:
-                    self.reset_cube(c)
-                    path = self.__wireframes[c.values]
+                    self.reset_cube(p)
+                    path = self.__wireframes[p.values]
                     self.wireframe.attach_node(path)
-                    path.set_pos(*c)
-            elif self.__wireframes[c.values] is not None:
-                self.set_cube_colour(c, TRANSPARENT)
-                self.__wireframes[c.values].detach_node()
+                    path.set_pos(*p)
+            elif self.__wireframes[p.values] is not None:
+                self.set_cube_colour(p, TRANSPARENT)
+                self.__wireframes[p.values].detach_node()
 
-        self._triangles.close_primitive()
-        self.mesh.add_primitive(self._triangles)
+        if added_cube:
+            self._triangles.close_primitive()
+            self.mesh.add_primitive(self._triangles)
