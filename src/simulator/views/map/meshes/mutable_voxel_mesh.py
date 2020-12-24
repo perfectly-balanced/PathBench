@@ -51,7 +51,7 @@ class MutableVoxelMesh():
     __texcoord: GeomVertexWriter
     __colour: GeomVertexRewriter
 
-    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, parent: NodePath, name: str = 'mutable_voxel_mesh', artificial_lighting: bool = False, default_colour: Colour = WHITE) -> None:
+    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, parent: NodePath, name: str = 'mutable_voxel_mesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, wireframe_thickness: float = 5) -> None:
         self.name = name
         self.__structure = structure
         self.__mask = mask
@@ -61,7 +61,7 @@ class MutableVoxelMesh():
         self.__body = parent.attach_new_node(self.name)
         self.__wireframe = parent.attach_new_node(self.name + "_wf")
 
-        self.__wireframe_instance = self.__wireframe.attach_new_node(CubeMesh().wireframe_node)
+        self.__wireframe_instance = self.__wireframe.attach_new_node(CubeMesh(wireframe_thickness=wireframe_thickness).wireframe_node)
         self.__wireframe_instance.detach_node()
         self.__wireframe_instance_name = name + '_wf_inst'
 

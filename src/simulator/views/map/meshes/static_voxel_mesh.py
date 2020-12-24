@@ -2,6 +2,7 @@ from panda3d.core import Texture, GeomNode, LineSegs
 from panda3d.core import GeomVertexFormat, GeomVertexData
 from panda3d.core import Geom, GeomTriangles, GeomVertexWriter, GeomVertexRewriter, GeomVertexArrayData
 from panda3d.core import Vec3, Vec4
+from panda3d.core import NodePath
 
 from typing import List, Any, Tuple, Optional
 from numbers import Real
@@ -48,7 +49,7 @@ class StaticVoxelMesh():
     __texcoord: GeomVertexWriter
     __colour: GeomVertexRewriter
 
-    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, name: str = 'static_voxel_mesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, hidden_faces: bool = False) -> None:
+    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, parent: NodePath, name: str = 'static_voxel_mesh', artificial_lighting: bool = False, default_colour: Colour = WHITE, wireframe_thickness: float = 5, hidden_faces: bool = False) -> None:
         self.name = name
         self.__structure = structure
         self.__mask = mask
@@ -57,8 +58,40 @@ class StaticVoxelMesh():
 
         self.__vertex_data_format = GeomVertexFormat.getV3n3c4t2()
         self.__vertex_data = GeomVertexData(name, self.__vertex_data_format, Geom.UHDynamic)
+        
+        self.__body = parent.attach_new_node(self.name)
+        self.__wireframe = parent.attach_new_node(self.name + "_wf")
+
+        def is_connected(x, y, z, x1, y1, z1):
+            return (abs(x - x1) == 1 and abs(y - y1) != 1 and abs(z - z1) != 1) or \
+                   (abs(x - x1) != 1 and abs(y - y1) == 1 and abs(z - z1) != 1) or \
+                   (abs(x - x1) != 1 and abs(y - y1) != 1 and abs(z - z1) == 1)
+
+        ls = LineSegs()
+        ls.set_thickness(wireframe_thickness)
+        for i, j, k in np.ndindex(self.structure.shape):
+            if bool(self.structure[i, j, k] & self.mask):
+                self.arr_x = [0, 0, 0, 0, 1, 1, 1, 1]
+                self.arr_y = [0, 0, 1, 1, 1, 1, 0, 0]
+                self.arr_z = [0, -1, -1, 0, 0, -1, -1, 0]
+                for pos1 in range(len(self.arr_x) - 1):
+                    for pos2 in range(pos1, len(self.arr_x)):
+                        x = self.arr_x[pos1] + i
+                        y = self.arr_y[pos1] + j
+                        z = self.arr_z[pos1] + k
+                        x1 = self.arr_x[pos2] + i
+                        y1 = self.arr_y[pos2] + j
+                        z1 = self.arr_z[pos2] + k
+                        if (is_connected(x, y, z, x1, y1, z1)):
+                            ls.move_to(x, y, z)
+                            ls.draw_to(x1, y1, z1)
+        self.__wireframe.attach_new_node(ls.create())
 
         self.mesh = Geom(self.__vertex_data)
+        node = GeomNode(self.name)
+        node.addGeom(self.mesh)
+        self.__body.attach_new_node(node)
+
         self.__triangles = GeomTriangles(Geom.UHDynamic)
         self.__triangle_data = self.__triangles.modifyVertices()
 
@@ -262,36 +295,9 @@ class StaticVoxelMesh():
         return False
 
     @property
-    def body_node(self) -> GeomNode:
-        node = GeomNode(self.name)
-        node.addGeom(self.mesh)
-        return node
+    def body(self) -> NodePath:
+        return self.__body
 
     @property
-    def wireframe_node(self) -> GeomNode:
-        thickness: float = 5
-
-        def is_connected(x, y, z, x1, y1, z1):
-            return (abs(x - x1) == 1 and abs(y - y1) != 1 and abs(z - z1) != 1) or \
-                   (abs(x - x1) != 1 and abs(y - y1) == 1 and abs(z - z1) != 1) or \
-                   (abs(x - x1) != 1 and abs(y - y1) != 1 and abs(z - z1) == 1)
-
-        ls = LineSegs()
-        ls.set_thickness(thickness)
-        for i, j, k in np.ndindex(self.structure.shape):
-            if bool(self.structure[i, j, k] & self.mask):
-                self.arr_x = [0, 0, 0, 0, 1, 1, 1, 1]
-                self.arr_y = [0, 0, 1, 1, 1, 1, 0, 0]
-                self.arr_z = [0, -1, -1, 0, 0, -1, -1, 0]
-                for pos1 in range(len(self.arr_x) - 1):
-                    for pos2 in range(pos1, len(self.arr_x)):
-                        x = self.arr_x[pos1] + i
-                        y = self.arr_y[pos1] + j
-                        z = self.arr_z[pos1] + k
-                        x1 = self.arr_x[pos2] + i
-                        y1 = self.arr_y[pos2] + j
-                        z1 = self.arr_z[pos2] + k
-                        if (is_connected(x, y, z, x1, y1, z1)):
-                            ls.move_to(x, y, z)
-                            ls.draw_to(x1, y1, z1)
-        return ls.create()
+    def wireframe(self) -> NodePath:
+        return self.__wireframe

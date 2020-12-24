@@ -26,23 +26,15 @@ class VoxelMap(MapData):
         super().__init__(services, data, parent, name)
 
         # StaticVoxelMesh is much faster for wireframe
-        if self._services.algorithm.map.mutable:
-            self.traversables_mesh = MutableVoxelMesh(self.data, MapData.TRAVERSABLE_MASK, self.root, self.name + '_traversables', artificial_lighting=artificial_lighting)
-            self.traversables = self.traversables_mesh.body
-            self.traversables_wf = self.traversables_mesh.wireframe
-        else:
-            self.traversables_mesh = StaticVoxelMesh(self.data, MapData.TRAVERSABLE_MASK, self.name + '_traversables', artificial_lighting=artificial_lighting)
-            self.traversables = self.root.attach_new_node(self.traversables_mesh.body_node)
-            self.traversables_wf = self.root.attach_new_node(self.traversables_mesh.wireframe_node)
+        Mesh = MutableVoxelMesh if self._services.algorithm.map.mutable else StaticVoxelMesh
 
-        if self._services.algorithm.map.mutable:
-            self.obstacles_mesh = MutableVoxelMesh(self.data, MapData.OBSTACLE_MASK, self.root, self.name + '_obstacles', artificial_lighting=artificial_lighting)
-            self.obstacles = self.obstacles_mesh.body
-            self.obstacles_wf = self.obstacles_mesh.wireframe
-        else:
-            self.obstacles_mesh = StaticVoxelMesh(self.data, MapData.OBSTACLE_MASK, self.name + '_obstacles', artificial_lighting=artificial_lighting)
-            self.obstacles = self.root.attach_new_node(self.obstacles_mesh.body_node)
-            self.obstacles_wf = self.root.attach_new_node(self.obstacles_mesh.wireframe_node)
+        self.traversables_mesh = Mesh(self.data, MapData.TRAVERSABLE_MASK, self.root, self.name + '_traversables', artificial_lighting=artificial_lighting)
+        self.traversables = self.traversables_mesh.body
+        self.traversables_wf = self.traversables_mesh.wireframe
+
+        self.obstacles_mesh = Mesh(self.data, MapData.OBSTACLE_MASK, self.root, self.name + '_obstacles', artificial_lighting=artificial_lighting)
+        self.obstacles = self.obstacles_mesh.body
+        self.obstacles_wf = self.obstacles_mesh.wireframe
 
         self._add_colour(MapData.TRAVERSABLES, callback=self.__traversables_colour_callback)
         self._add_colour(MapData.TRAVERSABLES_WF, callback=lambda dc: self.__mesh_colour_callback(dc, self.traversables_wf))
