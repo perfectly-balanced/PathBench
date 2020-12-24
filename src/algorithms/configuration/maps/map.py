@@ -27,15 +27,21 @@ class Map:
     WALL_ID: int = 1
     AGENT_ID: int = 2
     GOAL_ID: int = 3
-    EXTENDED_WALL: int = 4
+    EXTENDED_WALL_ID: int = 4
+    UNMAPPED_ID: int = 5
 
     agent: Agent
     goal: Goal
     obstacles: List[Obstacle]
     trace: List[Trace]
     _size: Size
-    _services: Optional[Services]
+    __services: Optional[Services]
     __cached_move_costs: List[float] = []
+    __mutable: bool
+
+    @property
+    def mutable(self) -> bool:
+        return self.__mutable
 
     @property
     def size(self) -> str:
@@ -44,11 +50,13 @@ class Map:
     @size.getter
     def size(self) -> Size:
         return self._size
-    
+
     @size.setter
     def size(self, value) -> None:
+        dim_change = ((self._size is None) or (self._size.n_dim != value.n_dim))
         self._size = value
-        self.init_direction_vectors()
+        if dim_change and self._size is not None:
+            self.init_direction_vectors()
 
     def at(self, p: Point) -> int:
         raise NotImplementedError("Have not implemented this for the given map yet.")
@@ -65,38 +73,39 @@ class Map:
         """
 
         self.ALL_POINTS_MOVE_VECTOR: List[Point] = \
-            list(map(lambda x : Point(*x),
-                product(*[(0, -1, 1) for i in range(self.size.n_dim)])
-            ))[1:]
-        
+            list(map(lambda x: Point(*x),
+                     product(*[(0, -1, 1) for i in range(self.size.n_dim)])
+                     ))[1:]
+
         """
         This does the same as the above without generating diagonal coordinates.
         First we generate the positive direct neighbouring coordinates.
         We concatenate this to the negative coordinates and convert to a list of Points.
         """
         POSITIVE_DIRECT_POINTS_DIMENSIONS: List[List[int]] = [
-            [1 if i == pos else 0 for i in range(self.size.n_dim)] 
-                for pos in range(self.size.n_dim) 
+            [1 if i == pos else 0 for i in range(self.size.n_dim)]
+            for pos in range(self.size.n_dim)
         ]
 
         ALL_DIRECT_POINTS_DIMENSIONS: List[List[int]] = POSITIVE_DIRECT_POINTS_DIMENSIONS + \
-            list(map(lambda x : [-i for i in x], POSITIVE_DIRECT_POINTS_DIMENSIONS))
+            list(map(lambda x: [-i for i in x], POSITIVE_DIRECT_POINTS_DIMENSIONS))
 
         self.DIRECT_POINTS_MOVE_VECTOR: List[Point] = \
-            list(map(lambda x : Point(*x), ALL_DIRECT_POINTS_DIMENSIONS))
+            list(map(lambda x: Point(*x), ALL_DIRECT_POINTS_DIMENSIONS))
 
-    def __init__(self, size: Size, services: Services = None) -> None:
+    def __init__(self, size: Size = None, services: Services = None, mutable: bool = False) -> None:
         """
         :param size: The map size
         :param services: The simulator services
         """
-        self._services = services
-        self.size = size
+        self.__services = services
         self.trace = []
         self.agent = None
         self.goal = None
         self.obstacles = []
-        self.init_direction_vectors()
+        self._size = None
+        self.size = size
+        self.__mutable = mutable
 
     def get_obstacle_bound(self, obstacle_start_point: Point, visited: Optional[Set[Point]] = None) -> Set[Point]:
         """
@@ -109,12 +118,12 @@ class Map:
         if visited is None:
             #visited = [False for _ in range(self.size.width)]
 
-            #for i in range(self.dim - 1):
+            # for i in range(self.dim - 1):
             #    visited = [visited for _ in range(self.size[i + 1])]
             visited: Set[Point] = set()
-                         
+
         if self.is_agent_valid_pos(obstacle_start_point):
-            self._services.debug.write_error("NextPos should be invalid")
+            self.services.debug.write_error("NextPos should be invalid")
         st: List[Point] = [obstacle_start_point]
         bounds: Set[Point] = set()
         while len(st) > 0:
@@ -192,19 +201,19 @@ class Map:
         #     for next_pos in line:
         #         if not self.move(self.agent, next_pos, no_trace):
         #             return False
-        #     return True        
-                    # for pt in EIGHT_POINTS_MOVE_VECTOR:
-                    #     inx = int(next_pos.x + point.x)
-                    #     iny = int(next_pos.y + point.y)
+        #     return True
+            # for pt in EIGHT_POINTS_MOVE_VECTOR:
+            #     inx = int(next_pos.x + point.x)
+            #     iny = int(next_pos.y + point.y)
         else:
             line: List[Point] = self.get_line_sequence(self.agent.position, to)
             print(line)
-            n=0
+            n = 0
             for next_pos in line:
                 if not self.move(self.agent, next_pos, no_trace):
-                    if n != 0: 
-                        return False         
-            return True        
+                    if n != 0:
+                        return False
+            return True
 
     def get_line_sequence(self, frm: Point, to: Point) -> List[Point]:
         '''
@@ -215,7 +224,7 @@ class Map:
         start = np.array([[to[i] for i in range(self.size.n_dim)]])
         end = np.array([frm[i] for i in range(self.size.n_dim)])
         coord_list = bresenhamline(start, end)
-        sequence = list(map(lambda x : Point(*list(x)), coord_list)) + [to]
+        sequence = list(map(lambda x: Point(*list(x)), coord_list)) + [to]
         return sequence
 
     def is_valid_line_sequence(self, line_sequence: List[Point]) -> bool:
@@ -346,7 +355,6 @@ class Map:
             ret.append(f(self))
 
         return ret[:-1]
-        
 
     @staticmethod
     def apply_move(move: Point, pos: Point) -> Point:
@@ -387,9 +395,13 @@ class Map:
     def services(self) -> str:
         return 'services'
 
+    @services.getter
+    def services(self) -> Optional[Services]:
+        return self.__services
+
     @services.setter
-    def services(self, new_value: Services) -> None:
-        self._services = new_value
+    def services(self, new_value: Optional[Services]) -> None:
+        self.__services = new_value
 
     def __copy__(self) -> 'Map':
         return copy.deepcopy(self)
@@ -402,10 +414,10 @@ class Map:
         if not isinstance(other, Map):
             return False
         return self.size == other.size and \
-               self.trace == other.trace and \
-               self.agent == other.agent and \
-               self.goal == other.goal and \
-               self.obstacles == other.obstacles
+            self.trace == other.trace and \
+            self.agent == other.agent and \
+            self.goal == other.goal and \
+            self.obstacles == other.obstacles
 
     def __ne__(self, other: object) -> bool:
         return not self.__eq__(other)

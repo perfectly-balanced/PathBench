@@ -19,8 +19,11 @@ class MapData(ABC):
     __root: Final[NodePath]
     __colour_callbacks: Dict[str, Callable[[DynamicColour], None]]
 
-    obstacles_data: Final[NDArray[(Any, Any, Any), bool]]
-    traversables_data: Final[NDArray[(Any, Any, Any), bool]]
+    TRAVERSABLE_MASK: Final = np.uint8(1 << 0)
+    OBSTACLE_MASK: Final = np.uint8(1 << 1)
+    UNMAPPED_MASK: Final = np.uint8(1 << 2)
+
+    data: Final[NDArray[(Any, Any, Any), np.uint8]]
 
     # REQUIRED COLOURS / COMPONENTS #
     BG: Final[str] = "background"
@@ -52,12 +55,11 @@ class MapData(ABC):
         self.__name = name
         self.__colour_callbacks = {}
 
-        self.obstacles_data = data
-        self.traversables_data = np.invert(self.obstacles_data)
+        self.data = data
 
-        self.logical_w = int(self.obstacles_data.shape[0])
-        self.logical_h = int(self.obstacles_data.shape[1])
-        self.logical_d = int(self.obstacles_data.shape[2])
+        self.logical_w = int(self.data.shape[0])
+        self.logical_h = int(self.data.shape[1])
+        self.logical_d = int(self.data.shape[2])
 
         self._services.ev_manager.register_listener(self)
 

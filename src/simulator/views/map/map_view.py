@@ -10,6 +10,7 @@ from simulator.services.event_manager.events.key_frame_event import KeyFrameEven
 from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
 from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
 from simulator.services.event_manager.events.take_screenshot_tex_event import TakeScreenshotTexEvent
+from simulator.services.event_manager.events.map_update_event import MapUpdateEvent
 from simulator.services.graphics.renderer import Renderer
 from simulator.views.map.display.gradient_map_display import GradientMapDisplay
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
@@ -31,7 +32,7 @@ from panda3d.core import Camera, Texture, NodePath, GeomNode, Geom, LineSegs, Te
 
 import numpy as np
 from nptyping import NDArray
-from typing import List, Any, Tuple, Optional, Union, Set
+from typing import List, Any, Tuple, Optional, Union, Set, Callable
 from heapq import heappush, heappop
 import os
 
@@ -53,6 +54,8 @@ class MapView(View):
     __scratch: NodePath
     __overlay: NodePath
 
+    __set_cube_colour: Callable[[Point, Colour, Colour], None]
+
     def __init__(self, services: Services, model: Model, root_view: Optional[View]) -> None:
         super().__init__(services, model, root_view)
         self.__displays = []
@@ -68,18 +71,27 @@ class MapView(View):
 
         # MAP #
         map_size = self._services.algorithm.map.size
-        map_data = np.empty((*map_size, 1) if map_size.n_dim == 2 else map_size, dtype=bool)
+        map_data = np.empty((*map_size, 1) if map_size.n_dim == 2 else map_size, dtype=np.uint8)
         self.__cube_modified = np.empty(map_data.shape, dtype=bool)
         for x, y, z in np.ndindex(map_data.shape):
             p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
-            is_wall = self._services.algorithm.map.at(p) == Map.WALL_ID
-            self.__cube_modified[x, y, z] = not is_wall
-            map_data[x, y, z] = is_wall
+            i = self._services.algorithm.map.at(p)
+            if i == Map.WALL_ID:
+                map_data[x, y, z] = MapData.OBSTACLE_MASK
+                self.__cube_modified[x, y, z] = False
+            elif i == Map.UNMAPPED_ID:
+                map_data[x, y, z] = MapData.UNMAPPED_MASK
+                self.__cube_modified[x, y, z] = False
+            else:
+                map_data[x, y, z] = MapData.TRAVERSABLE_MASK
+                self.__cube_modified[x, y, z] = True
 
         if map_size.n_dim == 2:
             self.__map = FlatMap(self._services, map_data, self.world)
+            self.__set_cube_colour = lambda p, c, wfc: self.map.render_square(p, c, wfc)
         else:
-            self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
+            self.__map = VoxelMap(self._services, map_data, self.world)
+            self.__set_cube_colour = lambda p, c, *discard: self.map.traversables_mesh.set_cube_colour(p, c)
         self.__map.center()
 
         self.__overlay = self.map.root.attach_new_node("overlay")
@@ -96,7 +108,7 @@ class MapView(View):
         extended_walls = TrackedSet()
         for x, y, z in np.ndindex(map_data.shape):
             p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
-            if self._services.algorithm.map.at(p) == Map.EXTENDED_WALL:
+            if self._services.algorithm.map.at(p) == Map.EXTENDED_WALL_ID:
                 extended_walls.add(Point(x, y, z))  # using 3D points is more efficient
         if extended_walls:
             dc = self._services.state.add_colour("extended wall", Colour(0.5).with_a(0.5))
@@ -155,7 +167,7 @@ class MapView(View):
         change_line_thickness(self.map.logical_d)
         self.renderer.line_segs.set_thickness(self.__line_thickness)
 
-        self.update_view(True)
+        self.__update_view(True)
 
     def destroy(self) -> None:
         self.__map.destroy()
@@ -178,17 +190,21 @@ class MapView(View):
     def notify(self, event: Event) -> None:
         super().notify(event)
         if isinstance(event, KeyFrameEvent):
+            # when converting to/from SparseMap/DenseMap, require remapping
+            self.__entities_map_display._map = self._services.algorithm.map
+
             if event.refresh:
                 self.__refresh()
-            self.update_view(event.refresh)
-
+            self.__update_view(event.refresh)
+        elif isinstance(event, MapUpdateEvent):
+            self.__map_update(event.updated_cells)
         elif isinstance(event, ColourUpdateEvent):
             if event.view.is_effective():
-                self.update_view(False)
+                self.__update_view(False)
         elif isinstance(event, TakeScreenshotEvent):
-            self.take_screenshot()
+            self.__take_screenshot()
         elif isinstance(event, TakeScreenshotTexEvent):
-            self.take_hd_screenshot()
+            self.__take_hd_screenshot()
 
     def to_logical_point(self, p: Point) -> Point:
         x, y, z = p
@@ -214,6 +230,56 @@ class MapView(View):
     @property
     def renderer(self) -> Renderer:
         return self._services.graphics.renderer
+
+    def __update_cube_colour(self, p):
+        self.__cube_colour = self.__deduced_traversables_colour
+        for d in self.__cube_update_displays:
+            d.update_cube(p)
+        self.__set_cube_colour(p, self.__cube_colour, self.__deduced_traversables_wf_colour)
+        self.__cube_modified[p.values] = self.__cube_colour != self.__deduced_traversables_colour
+
+    def __map_update(self, updated_cells: List[Point]) -> None:
+        self.__get_displays()
+        while len(self.__displays) > 0:
+            display = heappop(self.__displays)
+            self.__cube_update_displays.append(display)
+
+        if self.map.dim == 2:
+            obs_c = self.map.obstacles_dc()
+            obs_wfc = self.map.obstacles_wf_dc()
+
+            for p in updated_cells:
+                i = self._services.algorithm.map.at(p)
+                if i == Map.WALL_ID:
+                    self.map.data[p.values] = MapData.OBSTACLE_MASK
+                    self.__cube_modified[p.values] = False
+                    self.__set_cube_colour(p, obs_c, obs_wfc)
+                elif i == Map.UNMAPPED_ID:
+                    self.map.data[p.values] = MapData.UNMAPPED_MASK
+                    self.__cube_modified[p.values] = False
+                    self.__set_cube_colour(p, TRANSPARENT, TRANSPARENT)
+                else:
+                    self.map.data[p.values] = MapData.TRAVERSABLE_MASK
+                    self.__update_cube_colour(p)
+        else:  # 3D
+            for p in updated_cells:
+                i = self._services.algorithm.map.at(p)
+                if i == Map.WALL_ID:
+                    self.map.data[p.values] = MapData.OBSTACLE_MASK
+                    self.__cube_modified[p.values] = False
+                elif i == Map.UNMAPPED_ID:
+                    self.map.data[p.values] = MapData.UNMAPPED_MASK
+                    self.__cube_modified[p.values] = False
+                else:
+                    self.map.data[p.values] = MapData.TRAVERSABLE_MASK
+            self.map.obstacles_mesh.structural_update(updated_cells)
+            self.map.traversables_mesh.structural_update(updated_cells)
+            for p in updated_cells:
+                if bool(self.map.data[p.values] & MapData.TRAVERSABLE_MASK):
+                    self.__update_cube_colour(p)
+
+        self.__displays.clear()
+        self.__cube_update_displays.clear()
 
     def __clear_scratch(self) -> None:
         assert self.renderer.root == self.__scratch
@@ -243,66 +309,53 @@ class MapView(View):
                 self.__cube_update_displays.append(display)
 
     def __update_cubes(self, refresh: bool) -> None:
-        def eager_refresh():
+        def init_eager_refresh():
             nonlocal refresh
             refresh = True
-            for p in np.ndindex(self.map.traversables_data.shape):
-                self.__cube_modified[p] = self.map.traversables_data[p]
+            for p in np.ndindex(self.map.data.shape):
+                self.__cube_modified[p] = bool(self.map.data[p] & MapData.TRAVERSABLE_MASK)
 
-        clr = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
-        if clr != self.__deduced_traversables_colour:
-            eager_refresh()
-        self.__deduced_traversables_colour = clr
+        c = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
+        if c != self.__deduced_traversables_colour:
+            init_eager_refresh()
+        self.__deduced_traversables_colour = c
 
-        if self.map.dim == 3:
-            def set_colour(p, c):
-                return self.map.traversables_mesh.set_cube_colour(p, c)
-        else:  # 2D
+        if self.map.dim == 2:
             wfc = self.map.traversables_wf_dc()
             wfc = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
             if wfc != self.__deduced_traversables_wf_colour:
-                eager_refresh()
+                init_eager_refresh()
             self.__deduced_traversables_wf_colour = wfc
 
-            def set_colour(p, c):
-                return self.map.render_square(p, c, wfc)
-
-        def update_cube_colour(p):
-            self.__cube_colour = clr
-            for d in self.__cube_update_displays:
-                d.update_cube(p)
-            set_colour(p, self.__cube_colour)
-            self.__cube_modified[p.values] = self.__cube_colour != clr
-
         if refresh:
-            for p in np.ndindex(self.__cube_modified.shape):
-                if self.__cube_modified[p]:
-                    point = Point(*p)
-                    update_cube_colour(point)
+            for idx in np.ndindex(self.__cube_modified.shape):
+                if self.__cube_modified[idx]:
+                    p = Point(*idx)
+                    self.__update_cube_colour(p)
+                    lp = self.to_logical_point(p)
 
                     # we don't want to track extended walls once rendered.
                     # Note, they will still be refreshed when traversable
                     # (bg & wireframe) colour changes.
                     if self.__extended_walls_display is not None and \
-                       self._services.algorithm.map.at(self.to_logical_point(point)) == Map.EXTENDED_WALL:
-                        self.__cube_modified[p] = False
-                        self.__cubes_requiring_update.discard(point)
+                       self._services.algorithm.map.at(lp) == Map.EXTENDED_WALL_ID:
+                        self.__cube_modified[p.values] = False
+                        self.__cubes_requiring_update.discard(p)
 
                     # we don't want to track occupancy grid weights
                     # Note, they will still be refreshed when traversable
                     # (bg & wireframe) colour changes.
-                    if self.__weight_grid_display is not None:
-                        lp = self.to_logical_point(point)
-                        if self._services.algorithm.map.at(lp) == Map.CLEAR_ID and \
-                           blend_colours(self.__weight_grid_display.get_colour(self._services.algorithm.map.weight_grid[lp.values]), clr) == self.__cube_colour:
-                            self.__cube_modified[p] = False
-                            self.__cubes_requiring_update.discard(point)
+                    if self.__weight_grid_display is not None and \
+                       self._services.algorithm.map.at(lp) == Map.CLEAR_ID and \
+                       blend_colours(self.__weight_grid_display.get_colour(self._services.algorithm.map.weight_grid[lp.values]), self.__deduced_traversables_colour) == self.__cube_colour:
+                        self.__cube_modified[p.values] = False
+                        self.__cubes_requiring_update.discard(p)
 
         # update these cubes regardless of refresh
         # since the cubes that require update aren't
         # necessarily modified.
         for p in self.__cubes_requiring_update:
-            update_cube_colour(p)
+            self.__update_cube_colour(p)
 
         for td in self.__tracked_data:
             td.clear_tracking_data()
@@ -312,7 +365,7 @@ class MapView(View):
         self.__cube_update_displays.clear()
         self.__displays.clear()
 
-    def update_view(self, refresh: bool) -> None:
+    def __update_view(self, refresh: bool) -> None:
         self.__clear_scratch()
         self.__get_displays()
         self.__render_displays(refresh)
@@ -330,12 +383,12 @@ class MapView(View):
     def colour_cube(self, src: Colour) -> None:
         self.__cube_colour = blend_colours(src, self.__cube_colour)
 
-    def take_screenshot(self) -> None:
+    def __take_screenshot(self) -> None:
         self._services.resources.screenshots_dir.append(
             lambda fn: self._services.graphics.window.win.save_screenshot(fn))
 
-    def take_hd_screenshot(self):
-        mx, my, mz = self.__map.traversables_data.shape
+    def __take_hd_screenshot(self):
+        mx, my, mz = self.__map.data.shape
 
         # find the optimal zoom fit
         max_width = max(mx, my)

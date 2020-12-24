@@ -5,7 +5,7 @@ from direct.showbase.ShowBase import ShowBase
 from panda3d.core import NodePath
 from panda3d.core import Camera
 from math import pi, sin, cos
-from utility.utils import exclude_from_dict
+from utility.misc import exclude_from_dict
 from simulator.controllers.controller import Controller
 
 

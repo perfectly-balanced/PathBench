@@ -2,12 +2,13 @@ from panda3d.core import NodePath, TransparencyAttrib, LVecBase4f, LineSegs
 
 from simulator.services.services import Services
 from simulator.views.map.data.map_data import MapData
-from simulator.views.map.meshes.cube_mesh import CubeMesh
+from simulator.views.map.meshes.dynamic_voxel_mesh import DynamicVoxelMesh
+from simulator.views.map.meshes.static_voxel_mesh import StaticVoxelMesh
 
 from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 
 import random
-from typing import Any
+from typing import Any, Union
 
 import numpy as np
 from nptyping import NDArray
@@ -18,26 +19,30 @@ class VoxelMap(MapData):
     obstacles: NodePath
     obstacles_wf: NodePath
 
-    traversables_mesh: CubeMesh
-    traversables_wf_mesh: CubeMesh
-    obstacles_mesh: CubeMesh
-    obstacles_wf_mesh: CubeMesh
+    traversables_mesh: Union[DynamicVoxelMesh, StaticVoxelMesh]
+    obstacles_mesh: Union[DynamicVoxelMesh, StaticVoxelMesh]
 
     def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "voxel_map", artificial_lighting: bool = False):
         super().__init__(services, data, parent, name)
 
-        self.traversables_mesh = CubeMesh(self.traversables_data, self.name + '_traversables', artificial_lighting, hidden_faces=True)
-        self.traversables = self.root.attach_new_node(self.traversables_mesh.geom_node)
-        self.traversables_wf = self.root.attach_new_node(self.traversables_mesh.gen_wireframe())
+        # Uses the fastest mesh possible
+        Mesh = DynamicVoxelMesh if self._services.algorithm.map.mutable else StaticVoxelMesh
 
-        self.obstacles_mesh = CubeMesh(self.obstacles_data, self.name + '_obstacles', artificial_lighting, hidden_faces=True)
-        self.obstacles = self.root.attach_new_node(self.obstacles_mesh.geom_node)
-        self.obstacles_wf = self.root.attach_new_node(self.obstacles_mesh.gen_wireframe())
+        self.traversables_mesh = Mesh(self.data, MapData.TRAVERSABLE_MASK, self.root, self.name + '_traversables', artificial_lighting=artificial_lighting)
+        self.traversables = self.traversables_mesh.body
+        self.traversables_wf = self.traversables_mesh.wireframe
+
+        self.obstacles_mesh = Mesh(self.data, MapData.OBSTACLE_MASK, self.root, self.name + '_obstacles', artificial_lighting=artificial_lighting)
+        self.obstacles = self.obstacles_mesh.body
+        self.obstacles_wf = self.obstacles_mesh.wireframe
 
         self._add_colour(MapData.TRAVERSABLES, callback=self.__traversables_colour_callback)
         self._add_colour(MapData.TRAVERSABLES_WF, callback=lambda dc: self.__mesh_colour_callback(dc, self.traversables_wf))
-        self._add_colour(MapData.OBSTACLES, callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles))
         self._add_colour(MapData.OBSTACLES_WF, callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles_wf))
+        if self._services.algorithm.map.mutable:
+            self._add_colour(MapData.OBSTACLES, callback=self.__mutable_obstacles_colour_callback)
+        else:
+            self._add_colour(MapData.OBSTACLES, callback=lambda dc: self.__mesh_colour_callback(dc, self.obstacles))
 
         self._add_colour(MapData.AGENT)
         self._add_colour(MapData.TRACE)
@@ -49,6 +54,9 @@ class VoxelMap(MapData):
 
     def __traversables_colour_callback(self, dc: DynamicColour) -> None:
         self.traversables_mesh.default_colour = dc()
+
+    def __mutable_obstacles_colour_callback(self, dc: DynamicColour) -> None:
+        self.obstacles_mesh.default_colour = dc()
 
     def __mesh_colour_callback(self, dc: DynamicColour, np: NodePath) -> None:
         if dc.visible:

@@ -5,7 +5,7 @@ from simulator.services.services import Services
 from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
 from simulator.services.event_manager.events.new_colour_event import NewColourEvent
 from simulator.services.debug import DebugLevel
-from utility.utils import exclude_from_dict
+from utility.misc import exclude_from_dict
 from utility.compatibility import Final
 
 from typing import Dict, Any, List, Optional

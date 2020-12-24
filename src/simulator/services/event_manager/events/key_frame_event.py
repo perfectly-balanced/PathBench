@@ -12,3 +12,6 @@ class KeyFrameEvent(Event):
     @property
     def refresh(self) -> bool:
         return self.__refresh
+
+    def _absorb(self, other: 'Event') -> None:
+        self.__refresh = self.refresh or other.refresh

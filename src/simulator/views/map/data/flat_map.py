@@ -5,6 +5,7 @@ from simulator.views.map.data.map_data import MapData
 from simulator.views.map.meshes.square_mesh import SquareMesh
 from simulator.views.util import blend_colours
 from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
+from algorithms.configuration.entities.obstacle import Obstacle
 from utility.compatibility import Final
 
 import array
@@ -224,9 +225,9 @@ class FlatMap(MapData):
         c = self.obstacles_dc()
         wfc = self.obstacles_wf_dc()
 
-        for p in np.ndindex(self.obstacles_data.shape):
-            if self.obstacles_data[p]:
-                self.render_square(p, c, wfc)
+        for o in self._services.algorithm.map.obstacles:
+            if type(o) is Obstacle:
+                self.render_square(o.position, c, wfc)
 
     def center(self) -> None:
         world = self.root.get_parent()

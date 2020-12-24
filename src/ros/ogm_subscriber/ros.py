@@ -1,28 +1,29 @@
-import rospy
-import numpy as np
-
-from nav_msgs.msg import OccupancyGrid
-from geometry_msgs.msg import PoseWithCovarianceStamped, Twist, PoseStamped
-
+import os
+import sys
 import threading
 from threading import Lock, Condition
 
-import os
-import sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import numpy as np
 
-from algorithms.classic.graph_based.a_star import AStar
-from algorithms.classic.testing.a_star_testing import AStarTesting
-from algorithms.configuration.configuration import Configuration
-from algorithms.configuration.entities.agent import Agent
-from algorithms.configuration.entities.goal import Goal
-from algorithms.configuration.maps.dense_map import DenseMap
-from algorithms.configuration.maps.ros_map import RosMap
-from simulator.services.debug import DebugLevel
-from simulator.services.services import Services
-from simulator.simulator import Simulator
-from structures import Size, Point
-from maps import Maps
+import rospy
+from nav_msgs.msg import OccupancyGrid
+from geometry_msgs.msg import PoseWithCovarianceStamped, Twist, PoseStamped
+
+# Add PathBench/src to system path for module imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from algorithms.classic.graph_based.a_star import AStar  # noqa: E402
+from algorithms.classic.testing.a_star_testing import AStarTesting  # noqa: E402
+from algorithms.configuration.configuration import Configuration  # noqa: E402
+from algorithms.configuration.entities.agent import Agent  # noqa: E402
+from algorithms.configuration.entities.goal import Goal  # noqa: E402
+from algorithms.configuration.maps.dense_map import DenseMap  # noqa: E402
+from algorithms.configuration.maps.ros_map import RosMap  # noqa: E402
+from simulator.services.debug import DebugLevel  # noqa: E402
+from simulator.services.services import Services  # noqa: E402
+from simulator.simulator import Simulator  # noqa: E402
+from structures import Size, Point  # noqa: E402
+from maps import Maps  # noqa: E402
 
 class Ros:
     _resolution: float
@@ -58,7 +59,7 @@ class Ros:
 
     def _get_grid(self):
         grid = self._grid
-        return (grid, (0, 1), 0.95)
+        return grid
 
     def _set_agent_pos(self, odom_msg):
         self.agent = odom_msg
@@ -84,7 +85,7 @@ class Ros:
                                               Agent(Point(0, 0)),
                                               Goal(Point(0, 1)),
                                               self._get_grid,
-                                              self._update_requested)
+                                              update_requested=self._update_requested)
         s = Services(config)
         s.algorithm.map.request_update()
         sim = Simulator(s)

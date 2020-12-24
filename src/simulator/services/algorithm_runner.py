@@ -47,7 +47,7 @@ class AlgorithmRunner(Service):
         if refresh_map:
             if self.map is not None:
                 self.map.reset()
-            self.__map = copy.deepcopy(self._services.settings.simulator_initial_map)
+            self.map = copy.deepcopy(self._services.settings.simulator_initial_map)
         elif self.map is None:
             return
         else:

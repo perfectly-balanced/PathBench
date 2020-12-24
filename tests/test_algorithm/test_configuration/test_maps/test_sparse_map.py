@@ -191,7 +191,7 @@ class TestSparseMap(unittest.TestCase):
 
     def test_is_valid_position_normal(self) -> None:
         map1: SparseMap = DenseMap([
-            [DenseMap.EXTENDED_WALL, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
+            [DenseMap.EXTENDED_WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
             [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ]).convert_to_sparse_map()
@@ -202,7 +202,7 @@ class TestSparseMap(unittest.TestCase):
 
     def test_is_valid_position_invalid(self) -> None:
         map1: SparseMap = DenseMap([
-            [DenseMap.EXTENDED_WALL, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
+            [DenseMap.EXTENDED_WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
             [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ]).convert_to_sparse_map()
@@ -211,7 +211,7 @@ class TestSparseMap(unittest.TestCase):
 
     def test_str(self) -> None:
         map1: SparseMap = DenseMap([
-            [DenseMap.EXTENDED_WALL, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
+            [DenseMap.EXTENDED_WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID],
             [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID],
             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
         ]).convert_to_sparse_map()
@@ -231,15 +231,14 @@ class TestSparseMap(unittest.TestCase):
 	}""", str(map1))
 
     def test_str_debug_level_3(self) -> None:
-        service: Services = Mock()
-        service.settings.simulator_write_debug_level = DebugLevel.HIGH
+        services: Services = Mock()
+        services.settings.simulator_write_debug_level = DebugLevel.HIGH
 
         map1: SparseMap = DenseMap([
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [2, 3, 0, 0, 0, 0, 0, 0, 0, 0]
-        ]).convert_to_sparse_map()
-        map1._services = service
+        ], services=services).convert_to_sparse_map()
 
         self.assertEqual("""SparseMap: {
 		size: Size(10, 3), 

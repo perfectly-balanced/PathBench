@@ -35,22 +35,18 @@ class MapModel(Model):
         self._services.algorithm.set_root()
 
     def move_up(self) -> None:
-        self.reset()
         self.move(Point(self._services.algorithm.map.agent.position.x,
                         self._services.algorithm.map.agent.position.y - self.speed))
 
     def move_down(self) -> None:
-        self.reset()
         self.move(Point(self._services.algorithm.map.agent.position.x,
                         self._services.algorithm.map.agent.position.y + self.speed))
 
     def move_left(self):
-        self.reset()
         self.move(Point(self._services.algorithm.map.agent.position.x - self.speed,
                         self._services.algorithm.map.agent.position.y))
 
     def move_right(self) -> None:
-        self.reset()
         self.move(Point(self._services.algorithm.map.agent.position.x + self.speed,
                         self._services.algorithm.map.agent.position.y))
 

@@ -1,5 +1,4 @@
 import numpy as np
-import torch
 
 from collections.abc import Iterable
 from typing import Tuple
@@ -39,14 +38,16 @@ def print_header():
     print(fmt_row(10, ["Epoch", "Train Loss", "Train Error", "Epoch Time"]))
 
 
-def exclude_from_dict(dict, keys):
-    return {key: t[key] for key in dict if key not in keys}
+def exclude_from_dict(d, keys):
+    return {key: d[key] for key in d if key not in keys}
 
-def flatten(l):
+def flatten(l, ignored_values = []):
     for el in l:
         if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
-            yield from flatten(el)
-        else:
+            for el2 in flatten(el):
+                if el2 not in ignored_values:
+                    yield el2
+        elif el not in ignored_values:
             yield el
 
 def array_shape(a) -> Tuple[int, ...]:

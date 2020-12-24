@@ -24,27 +24,26 @@ class DenseMap(Map):
     """
     grid: np.array
 
-    #The transpose flag is set to true as a default for the initialization, as that is 
-    #how we are storing internally, but it will be set to false when we are simply translating from sparsemap
-    #When we create more map views, we should set it to false
-    def __init__(self, grid: Optional[List], services: Services = None, transpose: bool = True) -> None:
-        self.grid = None 
+    # The transpose flag is set to true as a default for the initialization, as that is
+    # how we are storing internally, but it will be set to false when we are simply translating from sparsemap
+    # When we create more map views, we should set it to false
+    def __init__(self, grid: Optional[List] = None, services: Services = None, transpose: bool = True, mutable: bool = False) -> None:
+        self.grid = None
 
         arr_grid = None
         if grid is not None:
             arr_grid = np.atleast_2d(np.array(grid))
-            super().__init__(Size(*([0]*arr_grid.ndim)), services)
+            super().__init__(Size(*([0]*arr_grid.ndim)), services, mutable)
         else:
-            super().__init__(Size(0, 0), services)
+            super().__init__(services=services, mutable=mutable)
             return
 
         # Doesn't work with non-uniform grids
         self.set_grid(arr_grid, transpose)
 
     def set_grid(self, grid: np.array, transpose) -> None:
-
-        #We transpose here to not worry about flipping coordinates later on
-        #Please take care I'm not sure why everythng works but it does atm
+        # We transpose here to not worry about flipping coordinates later on
+        # Please take care I'm not sure why everythng works but it does atm
         self.grid = np.transpose(grid) if transpose else grid
 
         self.size = Size(*self.grid.shape)
@@ -56,7 +55,7 @@ class DenseMap(Map):
                 self.goal = Goal(Point(*index))
             elif val == self.WALL_ID:
                 self.obstacles.append(Obstacle(Point(*index)))
-            elif val == self.EXTENDED_WALL:
+            elif val == self.EXTENDED_WALL_ID:
                 self.obstacles.append(ExtendedWall(Point(*index)))
 
     def extend_walls(self) -> None:
@@ -68,19 +67,20 @@ class DenseMap(Map):
             for b in bounds:
                 for index in np.ndindex(*(len(self.size) * [self.agent.radius*2 + 1])):
                     p = [elem + b[i] - self.agent.radius for i, elem in enumerate(index)]
-                    if not self.is_out_of_bounds_pos(Point(*p)):
+                    pt = Point(*p)
+                    if not self.is_out_of_bounds_pos(pt):
                         dist: Union[float, np.ndarray] = np.linalg.norm(np.array(p) - np.array(b))
-                        if dist <= self.agent.radius and self.at(Point(*p)) == DenseMap.CLEAR_ID:
-                            self.grid[tuple(p)] = DenseMap.EXTENDED_WALL
-                            self.obstacles.append(ExtendedWall(Point(*p)))
-                            visited.add(Point(*p))
-                
+                        if dist <= self.agent.radius and self.at(pt) == DenseMap.CLEAR_ID:
+                            self.grid[pt.values] = DenseMap.EXTENDED_WALL_ID
+                            self.obstacles.append(ExtendedWall(pt))
+                            visited.add(pt)
 
         visited: Set[Point] = set()
 
         for index in np.ndindex(*self.size):
-            if (Point(*index) not in visited) and (self.grid[index] == self.WALL_ID):
-                bounds: Set[Point] = self.get_obstacle_bound(Point(*index), visited)
+            pt = Point(*index)
+            if (pt not in visited) and (self.grid[index] == self.WALL_ID):
+                bounds: Set[Point] = self.get_obstacle_bound(pt, visited)
                 extend_obstacle_bound()
 
     def at(self, p: Point) -> int:
@@ -115,7 +115,7 @@ class DenseMap(Map):
 
         self.grid[prev_pos.values] = self.CLEAR_ID
         self.grid[self.goal.position.values] = self.GOAL_ID
-        self.grid[self.agent.position.values] = self.AGENT_ID        
+        self.grid[self.agent.position.values] = self.AGENT_ID
 
         for i in range(len(self.obstacles)):
             if self.obstacles[i].position == self.goal.position:
@@ -131,7 +131,7 @@ class DenseMap(Map):
         from algorithms.configuration.maps.sparse_map import SparseMap
         obstacles: List[Obstacle] = list(filter(lambda o: not isinstance(o, ExtendedWall), self.obstacles))
         sparse_map: SparseMap = SparseMap(self.size, copy.deepcopy(self.agent),
-                                          obstacles, copy.deepcopy(self.goal), self._services)
+                                          obstacles, copy.deepcopy(self.goal), self.services)
         sparse_map.trace = copy.deepcopy(self.trace)
         return sparse_map
 
@@ -142,15 +142,15 @@ class DenseMap(Map):
         if not super().is_agent_valid_pos(pos):
             return False
 
-        return self.at(pos) != self.WALL_ID and self.at(pos) != self.EXTENDED_WALL
+        return self.at(pos) in (self.CLEAR_ID, self.AGENT_ID, self.GOAL_ID)
 
     def __repr__(self) -> str:
         debug_level: DebugLevel = DebugLevel.BASIC
-        if self._services is not None:
-            debug_level = self._services.settings.simulator_write_debug_level
-        #flipping it back for the str repr
+        if self.services is not None:
+            debug_level = self.services.settings.simulator_write_debug_level
+        # flipping it back for the str repr
         new_grid = np.transpose(self.grid)
-        
+
         res: str = "DenseMap: {\n\t\tsize: " + str(self.size) + \
                    ", \n\t\tagent: " + str(self.agent) + \
                    ", \n\t\tgoal: " + str(self.goal) + \
@@ -181,7 +181,7 @@ class DenseMap(Map):
         return copy.deepcopy(self)
 
     def __deepcopy__(self, memo: Dict) -> 'DenseMap':
-        dense_map = self.__class__(copy.deepcopy(self.grid), transpose=False)
+        dense_map = self.__class__(copy.deepcopy(self.grid), services=self.services, transpose=False)
         dense_map.trace = copy.deepcopy(self.trace)
         dense_map.agent = copy.deepcopy(self.agent)
         dense_map.goal = copy.deepcopy(self.goal)
