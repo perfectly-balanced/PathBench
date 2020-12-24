@@ -27,15 +27,15 @@ class DenseMap(Map):
     # The transpose flag is set to true as a default for the initialization, as that is
     # how we are storing internally, but it will be set to false when we are simply translating from sparsemap
     # When we create more map views, we should set it to false
-    def __init__(self, grid: Optional[List] = None, services: Services = None, transpose: bool = True) -> None:
+    def __init__(self, grid: Optional[List] = None, services: Services = None, transpose: bool = True, mutable: bool = False) -> None:
         self.grid = None
 
         arr_grid = None
         if grid is not None:
             arr_grid = np.atleast_2d(np.array(grid))
-            super().__init__(Size(*([0]*arr_grid.ndim)), services)
+            super().__init__(Size(*([0]*arr_grid.ndim)), services, mutable)
         else:
-            super().__init__(services=services)
+            super().__init__(services=services, mutable=mutable)
             return
 
         # Doesn't work with non-uniform grids

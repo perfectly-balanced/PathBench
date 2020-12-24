@@ -23,8 +23,9 @@ class RosMap(OccupancyGridMap):
                  weight_bounds: Tuple[Real, Real] = (0, 100), traversable_threshold: Real = 80, unmapped_value: Real = -1,
                  wp_publish: Optional[Callable[[Point], None]] = None,
                  update_requested: Optional[Callable[[], None]] = None,
-                 services: Services = None) -> None:
-        super().__init__(services=services)
+                 services: Services = None,
+                 mutable: bool = True) -> None:
+        super().__init__(services=services, mutable=mutable)
 
         self.__get_grid = get_grid
         self.__wp_publish = wp_publish

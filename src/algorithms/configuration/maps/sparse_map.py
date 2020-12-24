@@ -22,9 +22,9 @@ class SparseMap(Map):
 
     DIST_TOLERANCE = 0.0001
 
-    def __init__(self, size: Size, agent: Agent, obstacles: List[Obstacle], goal: Goal, services: Services = None) \
+    def __init__(self, size: Size, agent: Agent, obstacles: List[Obstacle], goal: Goal, services: Services = None, mutable: bool = False) \
             -> None:
-        super().__init__(size, services)
+        super().__init__(size, services, mutable)
         self.agent = agent
         self.obstacles = obstacles
         self.goal = goal

@@ -33,8 +33,9 @@ class OccupancyGridMap(DenseMap):
                  weight_bounds: Optional[Tuple[Real, Real]] = None,
                  traversable_threshold: Optional[Real] = None,
                  unmapped_value: Optional[Real] = None,
-                 services: Services = None) -> None:
-        super().__init__(services=services)
+                 services: Services = None,
+                 mutable: bool = True) -> None:
+        super().__init__(services=services, mutable=mutable)
         self.agent = agent
         self.goal = goal
         self.weight_grid = None
@@ -61,6 +62,7 @@ class OccupancyGridMap(DenseMap):
 
     def __update_grid(self, weight_grid: np.ndarray, weight_bounds: Optional[Tuple[Real, Real]] = None, traversable_threshold: Optional[Real] = None, unmapped_value: Optional[Real] = None) -> None:
         assert weight_grid.shape == self.weight_grid.shape, "Dimension mismatch in grid update."
+        assert self.mutable
 
         def remove_obstacle(p: Point):
             for i in range(len(self.obstacles)):
