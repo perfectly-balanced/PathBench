@@ -260,15 +260,15 @@ class TestDenseMap3D(unittest.TestCase):
 	}""", str(map1))
 
     def test_str_debug_level_3(self) -> None:
-        service: Services = Mock()
-        service.settings.simulator_write_debug_level = DebugLevel.HIGH
+        services: Services = Mock()
+        services.settings.simulator_write_debug_level = DebugLevel.HIGH
         map1: SparseMap = SparseMap(
             Size(30, 30),
             Agent(Point(1, 2), 1),
             [Obstacle(Point(5, 5), 100)],
-            Goal(Point(4, 3), 1)
+            Goal(Point(4, 3), 1),
+            services
         ).convert_to_dense_map()
-        map1._services = service
         self.assertEqual("""DenseMap: {
 		size: Size(30, 30), 
 		agent: Agent: {position: Point(1, 2), radius: 1}, 
