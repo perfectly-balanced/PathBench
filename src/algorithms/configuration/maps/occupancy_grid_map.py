@@ -6,6 +6,7 @@ import copy
 
 from simulator.services.services import Services
 from algorithms.configuration.maps.map import Map
+from algorithms.configuration.maps.sparse_map import SparseMap
 from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.goal import Goal
@@ -77,8 +78,8 @@ class OccupancyGridMap(DenseMap):
     def __repr__(self) -> str:
         return "Occupancy Grid: " + super().__repr__()
 
-    def convert_to_sparse_map(self) -> None:
-        raise NotImplementedError()
+    def convert_to_sparse_map(self) -> Optional[SparseMap]:
+        return None
 
     def __deepcopy__(self, memo: Dict) -> 'OccupancyGridMap':
         mp = self.__class__(copy.deepcopy(self.weight_grid),

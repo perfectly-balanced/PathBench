@@ -1,5 +1,5 @@
 import copy
-from typing import List, Union, Dict
+from typing import List, Union, Dict, Optional
 
 import numpy as np
 
@@ -56,7 +56,7 @@ class SparseMap(Map):
 
         return True
 
-    def convert_to_dense_map(self) -> DenseMap:
+    def convert_to_dense_map(self) -> Optional[DenseMap]:
         """
         Converts current map into a :class:`DenseMap`
         :return: The converted map

@@ -1,6 +1,7 @@
 from threading import Thread, Condition
 import time
 
+from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.maps.sparse_map import SparseMap
 from simulator.models.model import Model
 from simulator.services.debug import DebugLevel
@@ -144,15 +145,23 @@ class MapModel(Model):
         self.last_thread.start()
 
     def toggle_convert_map(self) -> None:
-        self.reset()
-        from algorithms.configuration.maps.dense_map import DenseMap
-        timer: Timer = Timer()
         if isinstance(self._services.algorithm.map, DenseMap):
             self._services.debug.write("Converting map to SparseMap", DebugLevel.BASIC)
-            self._services.algorithm.map = self._services.algorithm.map.convert_to_sparse_map()
+            mp = self._services.algorithm.map.convert_to_sparse_map()
         elif isinstance(self._services.algorithm.map, SparseMap):
             self._services.debug.write("Converting map to DenseMap", DebugLevel.BASIC)
-            self._services.algorithm.map = self._services.algorithm.map.convert_to_dense_map()
+            mp = self._services.algorithm.map.convert_to_dense_map()
+        else:
+            self._services.debug.write("Map conversion not applicable", DebugLevel.BASIC)
+            return
+        
+        if mp is None:
+            self._services.debug.write("Map conversion not applicable", DebugLevel.BASIC)
+            return
+        
+        self.reset()
+        timer: Timer = Timer()
+        self._services.algorithm.map = mp
         self._services.debug.write("Done converting. Total time: " + str(timer.stop()), DebugLevel.BASIC)
         self._services.debug.write(self._services.algorithm.map, DebugLevel.MEDIUM)
         self._services.ev_manager.post(KeyFrameEvent())
