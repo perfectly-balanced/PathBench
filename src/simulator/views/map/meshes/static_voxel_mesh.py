@@ -6,6 +6,13 @@ from simulator.views.map.meshes.voxel_mesh import VoxelMesh
 from utility.misc import exclude_from_dict
 
 class StaticVoxelMesh(VoxelMesh):
+    """
+    StaticVoxelMesh is used for maps that are immutable. This
+    implementation (specifically the wireframe) is much more
+    efficient than using DynamicVoxelMap - difference becomes
+    apparent on large maps.
+    """
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **exclude_from_dict(kwargs, ["wireframe_thickness"]))
         wireframe_thickness: float = kwargs["wireframe_thickness"] if "wireframe_thickness" in kwargs else 5

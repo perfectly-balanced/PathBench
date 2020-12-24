@@ -11,8 +11,19 @@ from simulator.views.map.meshes.voxel_mesh import VoxelMesh
 from utility.misc import exclude_from_dict
 
 
-class MutableVoxelMesh(VoxelMesh):
-    """ Wireframes are quite laggy, potential room for optimisation by aggregating them. """
+class DynamicVoxelMesh(VoxelMesh):
+    """
+    DynamicVoxelMesh is used for maps that are mutable.
+    
+    Wireframes are quite laggy when map gets large.
+    Potential room for optimisation by aggregating them.
+    For example, slice the grid structure into sectors,
+    with each sector having a single wireframe node. The 
+    wireframe needs to be fully reconstructed every time
+    a single cube in the sector changes. A good heuristic
+    for sector size is required to see good performance
+    since this is used for dynamic environments.
+    """
 
     __wireframe_instance: NodePath
     __wireframe_instance_name: str

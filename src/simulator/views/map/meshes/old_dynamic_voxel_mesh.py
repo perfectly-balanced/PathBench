@@ -14,10 +14,12 @@ from nptyping import NDArray
 from structures import Point, Colour, WHITE
 from simulator.views.map.meshes.cube_mesh import CubeMesh
 
-class OldMutableVoxelMesh():
-    """ This works but it doesn't scale. Could easily add full dynamicness
+class OldDynamicVoxelMesh():
+    """
+    This works but it doesn't scale. Could easily add full dynamicness
     to this but due to performance issues this route was abandoned. Remains
-    here as an illustration of what not to do. """
+    here as an illustration of what not to do.
+    """
 
     name: str
 
@@ -36,7 +38,7 @@ class OldMutableVoxelMesh():
     __wireframe_instance: NodePath
     __wireframe_instance_name: str
 
-    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, parent: NodePath, name: str = 'old_mutable_voxel_mesh', default_colour: Colour = WHITE) -> None:
+    def __init__(self, structure: NDArray[(Any, Any, Any), np.uint8], mask: np.uint8, parent: NodePath, name: str = 'old_dynamic_voxel_mesh', default_colour: Colour = WHITE) -> None:
         self.name = name
         self.__structure = structure
         self.__mask = mask

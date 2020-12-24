@@ -2,7 +2,7 @@ from panda3d.core import NodePath, TransparencyAttrib, LVecBase4f, LineSegs
 
 from simulator.services.services import Services
 from simulator.views.map.data.map_data import MapData
-from simulator.views.map.meshes.mutable_voxel_mesh import MutableVoxelMesh
+from simulator.views.map.meshes.dynamic_voxel_mesh import DynamicVoxelMesh
 from simulator.views.map.meshes.static_voxel_mesh import StaticVoxelMesh
 
 from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
@@ -19,14 +19,14 @@ class VoxelMap(MapData):
     obstacles: NodePath
     obstacles_wf: NodePath
 
-    traversables_mesh: Union[MutableVoxelMesh, StaticVoxelMesh]
-    obstacles_mesh: Union[MutableVoxelMesh, StaticVoxelMesh]
+    traversables_mesh: Union[DynamicVoxelMesh, StaticVoxelMesh]
+    obstacles_mesh: Union[DynamicVoxelMesh, StaticVoxelMesh]
 
-    def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "voxel_map", artificial_lighting: bool = True):
+    def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "voxel_map", artificial_lighting: bool = False):
         super().__init__(services, data, parent, name)
 
-        # StaticVoxelMesh is much faster for wireframe
-        Mesh = MutableVoxelMesh if self._services.algorithm.map.mutable else StaticVoxelMesh
+        # Uses the fastest mesh possible
+        Mesh = DynamicVoxelMesh if self._services.algorithm.map.mutable else StaticVoxelMesh
 
         self.traversables_mesh = Mesh(self.data, MapData.TRAVERSABLE_MASK, self.root, self.name + '_traversables', artificial_lighting=artificial_lighting)
         self.traversables = self.traversables_mesh.body

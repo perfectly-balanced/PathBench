@@ -90,7 +90,7 @@ class MapView(View):
             self.__map = FlatMap(self._services, map_data, self.world)
             self.__set_cube_colour = lambda p, c, wfc: self.map.render_square(p, c, wfc)
         else:
-            self.__map = VoxelMap(self._services, map_data, self.world, artificial_lighting=True)
+            self.__map = VoxelMap(self._services, map_data, self.world)
             self.__set_cube_colour = lambda p, c, *discard: self.map.traversables_mesh.set_cube_colour(p, c)
         self.__map.center()
 
