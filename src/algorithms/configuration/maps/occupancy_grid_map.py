@@ -57,8 +57,10 @@ class OccupancyGridMap(DenseMap):
             self.set_grid(np.array(weight_grid), weight_bounds, traversable_threshold, unmapped_value)
             return
 
-        (self.__new_grid if self.size is None else self.__update_grid)(weight_grid, weight_bounds, traversable_threshold, unmapped_value)
-
+        if self.size is None:
+            self.__new_grid(weight_grid, weight_bounds, traversable_threshold, unmapped_value)
+        else:
+            self.__update_grid(weight_grid, weight_bounds, traversable_threshold, unmapped_value)
 
     def __update_grid(self, weight_grid: np.ndarray, weight_bounds: Optional[Tuple[Real, Real]] = None, traversable_threshold: Optional[Real] = None, unmapped_value: Optional[Real] = None) -> None:
         assert weight_grid.shape == self.weight_grid.shape, "Dimension mismatch in grid update."
@@ -74,7 +76,7 @@ class OccupancyGridMap(DenseMap):
         if weight_bounds is None:
             ignored = [] if unmapped_value is None else [unmapped_value]
             weight_bounds = (min(flatten(weight_grid, ignored)), max(flatten(weight_grid, ignored)))
-        
+
         # threshold
         if traversable_threshold is None:
             traversable_threshold = min(weight_bounds[0] + (weight_bounds[1] - weight_bounds[0]) * self.DEFAULT_TRAVERSABLE_THRESHOLD, weight_bounds[1])
@@ -93,7 +95,7 @@ class OccupancyGridMap(DenseMap):
                         remove_obstacle(p)
                     self.grid[idx] = Map.UNMAPPED_ID
                     updated_cells.append(p)
-        
+
         # mapped values
         for idx in np.ndindex(*self.size):
             v = weight_grid[idx]
@@ -120,10 +122,9 @@ class OccupancyGridMap(DenseMap):
                     self.grid[idx] = self.CLEAR_ID
                     remove_obstacle(p)
                     updated_cells.append(p)
-        
+
         if updated_cells and self.services is not None:
             self.services.ev_manager.post(MapUpdateEvent(updated_cells))
-
 
     def __new_grid(self, weight_grid: np.ndarray, weight_bounds: Optional[Tuple[Real, Real]] = None, traversable_threshold: Optional[Real] = None, unmapped_value: Optional[Real] = None) -> None:
         self.size = Size(*weight_grid.shape)
@@ -145,7 +146,7 @@ class OccupancyGridMap(DenseMap):
             for idx in np.ndindex(*self.size):
                 if weight_grid[idx] == unmapped_value:
                     self.grid[idx] = self.UNMAPPED_ID
-        
+
         # obstacles
         self.obstacles.clear()
         for idx in np.ndindex(*self.size):
@@ -159,7 +160,7 @@ class OccupancyGridMap(DenseMap):
         self.grid[self.agent.position.values] = self.AGENT_ID
         self.grid[self.goal.position.values] = self.GOAL_ID
 
-        # todo: the following works but very slow. Furthermore, should 
+        # todo: the following works but very slow. Furthermore, should
         # implement for mutable maps. Disabled here when mutable because
         # self.__update_grid() doesn't handle extended walls.
         if not self.mutable:
