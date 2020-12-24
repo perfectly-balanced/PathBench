@@ -18,7 +18,7 @@ class DynamicVoxelMesh():
     """ This works but it doesn't scale. Could easily add full dynamicness
     to this but due to performance issues this route was abandoned. Remains
     here as an illustration of what not to do. """
-    
+
     name: str
 
     __structure: NDArray[(Any, Any, Any), np.uint8]
@@ -64,7 +64,7 @@ class DynamicVoxelMesh():
                 path.set_color(*self.__default_colour)
                 path.set_pos(*idx)
 
-                self.__wireframes[idx] = path = self.__wireframe.attach_new_node(self.__cube_instance_name)
+                self.__wireframes[idx] = path = self.__wireframe.attach_new_node(self.__wireframe_instance_name)
                 self.__wireframe_instance.instance_to(path)
                 path.set_pos(*idx)
 

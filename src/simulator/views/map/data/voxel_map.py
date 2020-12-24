@@ -2,7 +2,7 @@ from panda3d.core import NodePath, TransparencyAttrib, LVecBase4f, LineSegs
 
 from simulator.services.services import Services
 from simulator.views.map.data.map_data import MapData
-from simulator.views.map.meshes.dynamic_voxel_mesh import DynamicVoxelMesh
+from simulator.views.map.meshes.mutable_voxel_mesh import MutableVoxelMesh
 
 from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 
@@ -18,17 +18,17 @@ class VoxelMap(MapData):
     obstacles: NodePath
     obstacles_wf: NodePath
 
-    traversables_mesh: DynamicVoxelMesh
-    obstacles_mesh: DynamicVoxelMesh
+    traversables_mesh: MutableVoxelMesh
+    obstacles_mesh: MutableVoxelMesh
 
-    def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "voxel_map", artificial_lighting: bool = False):
+    def __init__(self, services: Services, data: NDArray[(Any, Any, Any), bool], parent: NodePath, name: str = "voxel_map", artificial_lighting: bool = True):
         super().__init__(services, data, parent, name)
 
-        self.traversables_mesh = DynamicVoxelMesh(self.data, MapData.TRAVERSABLE_MASK, self.root, self.name + '_traversables')
+        self.traversables_mesh = MutableVoxelMesh(self.data, MapData.TRAVERSABLE_MASK, self.root, self.name + '_traversables', artificial_lighting=artificial_lighting)
         self.traversables = self.traversables_mesh.body
         self.traversables_wf = self.traversables_mesh.wireframe
 
-        self.obstacles_mesh = DynamicVoxelMesh(self.data, MapData.OBSTACLE_MASK, self.root, self.name + '_obstacles')
+        self.obstacles_mesh = MutableVoxelMesh(self.data, MapData.OBSTACLE_MASK, self.root, self.name + '_obstacles', artificial_lighting=artificial_lighting)
         self.obstacles = self.obstacles_mesh.body
         self.obstacles_wf = self.obstacles_mesh.wireframe
 

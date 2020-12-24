@@ -241,23 +241,40 @@ class MapView(View):
             display = heappop(self.__displays)
             self.__cube_update_displays.append(display)
 
-        obs_c = self.map.obstacles_dc()
-        obs_wfc = self.map.obstacles_wf_dc()
+        if self.map.dim == 2:
+            obs_c = self.map.obstacles_dc()
+            obs_wfc = self.map.obstacles_wf_dc()
+            
+            for p in updated_cells:
+                i = self._services.algorithm.map.at(p)
+                if i == Map.WALL_ID:
+                    self.map.data[p.values] = MapData.OBSTACLE_MASK
+                    self.__cube_modified[p.values] = False
+                    self.__set_cube_colour(p, obs_c, obs_wfc)
+                elif i == Map.UNMAPPED_ID:
+                    self.map.data[p.values] = MapData.UNMAPPED_MASK
+                    self.__cube_modified[p.values] = False
+                    self.__set_cube_colour(p, TRANSPARENT, TRANSPARENT)
+                else:
+                    self.map.data[p.values] = MapData.TRAVERSABLE_MASK
+                    self.__update_cube_colour(p)
+        else: # 3D
+            for p in updated_cells:
+                i = self._services.algorithm.map.at(p)
+                if i == Map.WALL_ID:
+                    self.map.data[p.values] = MapData.OBSTACLE_MASK
+                    self.__cube_modified[p.values] = False
+                elif i == Map.UNMAPPED_ID:
+                    self.map.data[p.values] = MapData.UNMAPPED_MASK
+                    self.__cube_modified[p.values] = False
+                else:
+                    self.map.data[p.values] = MapData.TRAVERSABLE_MASK
+            self.map.traversables_mesh.structural_update(updated_cells)
+            self.map.obstacles_mesh.structural_update(updated_cells)
+            for p in updated_cells:
+                if self.map.data[p.values] & MapData.TRAVERSABLE_MASK:
+                    self.__update_cube_colour(p)
 
-        for p in updated_cells:
-            i = self._services.algorithm.map.at(p)
-            if i == Map.WALL_ID:
-                self.map.data[p.values] = MapData.OBSTACLE_MASK
-                self.__cube_modified[p.values] = False
-                self.__set_cube_colour(p, obs_c, obs_wfc)
-            elif i == Map.UNMAPPED_ID:
-                self.map.data[p.values] = MapData.UNMAPPED_MASK
-                self.__cube_modified[p.values] = False
-                self.__set_cube_colour(p, TRANSPARENT, TRANSPARENT)
-            else:
-                self.map.data[p.values] = MapData.TRAVERSABLE_MASK
-                self.__update_cube_colour(p)
-        
         self.__displays.clear()
         self.__cube_update_displays.clear()
 
