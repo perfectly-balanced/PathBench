@@ -190,6 +190,9 @@ class MapView(View):
     def notify(self, event: Event) -> None:
         super().notify(event)
         if isinstance(event, KeyFrameEvent):
+            # when converting to/from SparseMap/DenseMap, require remapping
+            self.__entities_map_display._map = self._services.algorithm.map
+
             if event.refresh:
                 self.__refresh()
             self.__update_view(event.refresh)
