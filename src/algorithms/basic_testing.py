@@ -8,6 +8,7 @@ from structures.heap import Heap
 
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.trace import Trace
+from algorithms.configuration.entities.obstacle import Obstacle
 from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.maps.map import Map
 from algorithms.configuration.maps.sparse_map import SparseMap
@@ -237,7 +238,8 @@ class BasicTesting:
         else:
             obstacles = np.full(grid.size, grid.CLEAR_ID, dtype=np.uint8)
             for o in grid.obstacles:
-                obstacles[o.position.values] = grid.WALL_ID
+                if type(o) is Obstacle: # we don't want extended wall
+                    obstacles[o.position.values] = grid.WALL_ID
             obstacles = np.transpose(np.where(obstacles == grid.WALL_ID))
 
         obstacle_dists = []
