@@ -42,7 +42,6 @@ class RosMap(OccupancyGridMap):
 
     def request_update(self):
         self.set_grid(self.__get_grid(), self.__weight_bounds, self.__traversable_threshold, self.__unmapped_value)
-        print("set grid")
 
         if self.__update_requested:
             self.__update_requested()

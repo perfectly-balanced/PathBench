@@ -159,9 +159,11 @@ class OccupancyGridMap(DenseMap):
         self.grid[self.agent.position.values] = self.AGENT_ID
         self.grid[self.goal.position.values] = self.GOAL_ID
 
-        # todo: the following works but very slow.
-        # Additionally, self.__update_grid() doesn't handle extended wall updates.
-        # self.extend_walls()
+        # todo: the following works but very slow. Furthermore, should 
+        # implement for mutable maps. Disabled here when mutable because
+        # self.__update_grid() doesn't handle extended walls.
+        if not self.mutable:
+            self.extend_walls()
 
     def at(self, p: Point) -> int:
         return self.grid[p.values]
