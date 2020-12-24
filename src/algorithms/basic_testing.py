@@ -84,7 +84,7 @@ class BasicTesting:
 
         if root_key_frame:
             root_key_frame.instance.testing.key_frame(ignore_key_frame_skip=ignore_key_frame_skip, only_render=only_render)
-        
+
         if ignore_key_frame_skip or self.key_frame_skip_count >= self._services.settings.simulator_key_frame_skip:
             self.display_info = self._services.algorithm.instance.set_display_info()
 
@@ -99,11 +99,11 @@ class BasicTesting:
             self.key_frame_skip_count = 0
         else:
             self.key_frame_skip_count += 1
-        
+
         if self.is_terminated():
             from simulator.models.map_model import AlgorithmTerminated
             raise AlgorithmTerminated()
-        
+
         self.timer.resume()
 
     def algorithm_done(self) -> None:
@@ -173,7 +173,7 @@ class BasicTesting:
         :return: The percentage
         """
         tokens: int = np.sum(grid == token)
-        
+
         return BasicTesting.get_occupancy_percentage_size(Size(*grid.shape), tokens)
 
     @staticmethod
@@ -211,12 +211,12 @@ class BasicTesting:
         trace.append(Trace(agent.position))
         angle = 0
         prev_angle = None
-        
-        #print(trace)
+
+        # print(trace)
         for i in range(1, len(trace)):
 
             if(not trace[i - 1].position == trace[i].position):
-                
+
                 unit_vector1 = np.array(trace[i - 1].position - trace[i].position) / np.linalg.norm(np.array(trace[i - 1].position - trace[i].position))
                 t = [0] * (len(agent.position) - 1)
                 t = tuple([1] + t)
@@ -224,38 +224,22 @@ class BasicTesting:
                 if prev_angle is None:
                     prev_angle = np.arccos(dot_product)
                     continue
-                
-               
+
                 angle += abs(prev_angle - np.arccos(dot_product))
                 prev_angle = np.arccos(dot_product)
-            
+
         return (angle / len(trace))
 
     @staticmethod
     def get_average_clearance(trace: List[Trace], grid: Map) -> float:
-        """ # Super slow
-        distance_grid = np.full(tuple(grid.size), np.inf)
-        distance_queue = Heap()
-        visited = set()
-        for obstacle in np.transpose(np.where(grid.grid == grid.WALL_ID)):
-            obstacle = tuple(obstacle)
-            distance_queue.push((0, obstacle))
-            visited.add(obstacle)
+        if isinstance(grid, DenseMap):
+            obstacles = np.transpose(np.where(grid.grid == grid.WALL_ID))
+        else:
+            obstacles = np.full(grid.size, grid.CLEAR_ID, dtype=np.uint8)
+            for o in grid.obstacles:
+                obstacles[o.position.values] = grid.WALL_ID
+            obstacles = np.transpose(np.where(obstacles == grid.WALL_ID))
 
-        while len(distance_queue) > 0:
-            dist, pos = distance_queue.pop()
-            distance_grid[pos] = dist
-            for next_pos in grid.get_next_positions(Point(*pos)):
-                if next_pos.values in visited: continue
-                if distance_grid[next_pos.values] == np.inf:
-                    distance_queue.push((dist+1, next_pos.values))
-                    visited.add(next_pos.values)
-        
-        # Sum along path
-        path_points = map(lambda t: t.position.values, trace)
-        obstacle_dist = list(map(lambda pos: distance_grid[pos], path_points))
-        return sum(obstacle_dist) / len(obstacle_dist)"""
-        obstacles = np.transpose(np.where(grid.grid == grid.WALL_ID))
         obstacle_dists = []
         for t in trace:
             pos = np.array(t.position.values)

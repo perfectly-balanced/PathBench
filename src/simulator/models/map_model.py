@@ -144,7 +144,6 @@ class MapModel(Model):
         self.last_thread.start()
 
     def toggle_convert_map(self) -> None:
-        # TODO: may not to do correct behaviour anymore
         self.reset()
         from algorithms.configuration.maps.dense_map import DenseMap
         timer: Timer = Timer()
