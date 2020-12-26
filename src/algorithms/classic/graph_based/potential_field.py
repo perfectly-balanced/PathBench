@@ -129,7 +129,7 @@ class PotentialField(Algorithm):
         for idx in np.ndindex(*grid.size):
             if not grid.is_agent_valid_pos(Point(*idx)):
                 visited.append(idx)
-        
+
         while d >= self.grid_size:
             minp = float("inf")
             minIxs = [-1] * grid.agent.position.n_dim

@@ -110,7 +110,7 @@ class ImagesDir(Atlas):
     def _image_default_load(dir: Directory, name: str) -> np.ndarray:
         name = dir._add_extension(name, "png")
         image = cv.imread(dir._full_path() + name, cv.IMREAD_UNCHANGED)
-        if image.ndim == 3: # If RGB, add alpha channel
+        if image.ndim == 3:  # If RGB, add alpha channel
             image = cv.cvtColor(image, cv.COLOR_RGB2RGBA)
         return image
 
@@ -145,7 +145,7 @@ class HouseExpoDir(Directory):
     def _image_default_load(dir: Directory, name: str) -> np.ndarray:
         name = dir._add_extension(name, "png")
         image = cv.imread(dir._full_path() + name, cv.IMREAD_UNCHANGED)
-        if image.ndim == 3: # If RGB, add alpha channel
+        if image.ndim == 3:  # If RGB, add alpha channel
             image = cv.cvtColor(image, cv.COLOR_RGB2RGBA)
         return image
 

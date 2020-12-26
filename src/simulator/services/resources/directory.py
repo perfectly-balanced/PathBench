@@ -48,7 +48,7 @@ class Directory(Service):
     @staticmethod
     def _default_load(dir: 'Directory', name: str) -> Any:
         fi = Directory._unpickle(name, dir._full_path())
-        #Assuming this is a .json
+        # Assuming this is a .json
         if fi is None:
             return Directory._unjson(name, dir._full_path())
         return fi

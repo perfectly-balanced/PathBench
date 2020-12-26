@@ -765,7 +765,7 @@ class Generator:
         return np.linalg.norm(np.array(actual_color, dtype=float) - np.array(search_color, dtype=float)) < eps
 
     @staticmethod
-    def main(m: 'MainRunner') -> None:        
+    def main(m: 'MainRunner') -> None:
         generator: Generator = Generator(m.main_services)
 
         if m.main_services.settings.generator_modify:
