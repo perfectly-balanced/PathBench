@@ -8,7 +8,7 @@ from simulator.services.services import Services
 from structures import Point
 
 from algorithms.classic.sample_based.core.vertex import Vertex
-from algorithms.classic.sample_based.core.graph import CyclicGraph
+from algorithms.classic.sample_based.core.graph import gen_cyclic_graph, CyclicGraph
 
 
 class SPRM(SampleBasedAlgorithm):
@@ -24,8 +24,12 @@ class SPRM(SampleBasedAlgorithm):
         for i in range(self._V_size):
             q_rand: Point = self._get_random_sample()
             V.append(Vertex(q_rand, store_connectivity=True))
-        self._graph = CyclicGraph(Vertex(self._get_grid().agent.position, store_connectivity=True),
-                                    Vertex(self._get_grid().goal.position, store_connectivity=True), V)
+        self._graph = gen_cyclic_graph(self._services,
+                                       Vertex(self._get_grid().agent.position, store_connectivity=True),
+                                       Vertex(self._get_grid().goal.position, store_connectivity=True),
+                                       V)
+        self._graph.edges_removable = False
+        self._init_displays()
 
     # Helper Functions #
     # -----------------#
@@ -35,8 +39,7 @@ class SPRM(SampleBasedAlgorithm):
 
     def _get_random_sample(self) -> Point:
         while True:
-            sample: Point = Point(torch.randint(0, self._get_grid().size.width, (1,)).item(),
-                                  torch.randint(0, self._get_grid().size.height, (1,)).item())
+            sample = Point(*[torch.randint(0, self._get_grid().size[i], (1,)).item() for i in range(self._get_grid().size.n_dim)])
             if self._get_grid().is_agent_valid_pos(sample):
                 return sample
 
