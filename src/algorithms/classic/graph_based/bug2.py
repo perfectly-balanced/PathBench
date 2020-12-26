@@ -38,8 +38,7 @@ class Bug2(Algorithm):
 
             direction: np.array = np.array(self._get_grid().goal.position) - np.array(self._get_grid().agent.position)
             next_move: Point = self._get_grid().get_move_along_dir(direction)
-            next_pos: Point = Point(self._get_grid().agent.position.x + next_move.x,
-                                    self._get_grid().agent.position.y + next_move.y)
+            next_pos: Point = self._get_grid().agent.position + next_move
             if self._get_grid().is_agent_valid_pos(next_pos):
                 self.move_agent(next_pos)
             else:
