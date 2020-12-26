@@ -12,7 +12,7 @@ import numpy as np
 from nptyping import NDArray
 
 from structures import Point, Colour, WHITE
-from simulator.views.map.meshes.cube_mesh import CubeMesh
+from simulator.views.map.geometry.meshes.cube_mesh import CubeMesh
 
 class OldDynamicVoxelMesh():
     """
