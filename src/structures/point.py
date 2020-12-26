@@ -67,6 +67,7 @@ class Point(torch.Tensor):
         return Point(*[int(torch.round(inp[i])) for i in range(list(inp.size())[0])])
 
     def __apply_arithmetic_op(self, other: 'Point', op: Callable[[Union[float, int], Union[float, int]], Union[float, int]]) -> 'Point':
+        assert type(other) is Point
         return Point(*(op(i, j) for i, j in zip(self.values, other.values)))
 
     def __add__(self, other: 'Point') -> 'Point':
