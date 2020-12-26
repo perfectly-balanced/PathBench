@@ -49,10 +49,10 @@ class Colour:
                 assert len(colours) == 4, "invalid number of args"
                 self.__data = colours
 
-        assert self.__data[0] >= 0 and self.__data[0] <= 1
-        assert self.__data[1] >= 0 and self.__data[1] <= 1
-        assert self.__data[2] >= 0 and self.__data[2] <= 1
-        assert self.__data[3] >= 0 and self.__data[3] <= 1
+        assert self.__data[0] >= 0 and self.__data[0] <= 1, self.__data
+        assert self.__data[1] >= 0 and self.__data[1] <= 1, self.__data
+        assert self.__data[2] >= 0 and self.__data[2] <= 1, self.__data
+        assert self.__data[3] >= 0 and self.__data[3] <= 1, self.__data
 
     @property
     def colours(self):
