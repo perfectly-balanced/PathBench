@@ -55,7 +55,7 @@ class GradientMapDisplay(MapDisplay):
     @staticmethod
     def __transform_to_points(grid: Any) -> List[Tuple[Union[int, float], Point]]:
         if not isinstance(grid, np.ndarray):
-            return self.__transform_to_points(np.array(grid))
+            return GradientMapDisplay.__transform_to_points(np.array(grid))
 
         ret: List[Tuple[Union[int, float], Point]] = []
 
