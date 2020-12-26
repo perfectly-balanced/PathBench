@@ -3,7 +3,6 @@ from typing import Tuple, List, TYPE_CHECKING, Dict, Callable, Type, Set, Any, O
 
 import numpy as np
 from itertools import product
-from pygame.surface import Surface
 import math
 import os
 import json
@@ -58,12 +57,16 @@ class Generator:
         self.__services.debug.write("Started map generation from image: " + str(image_name) + " With House_expo = " + str(house_expo_flag),
                                     DebugLevel.BASIC)
         timer: Timer = Timer()
+
+        # loading image
         if house_expo_flag:
-            surface: Surface = self.__services.resources.house_expo_dir.load(image_name)  # loading directory
+            surface: np.ndarray = self.__services.resources.house_expo_dir.load(image_name)
         else:
-            surface: Surface = self.__services.resources.images_dir.load(image_name)  # loading directory
-        self.__services.debug.write("Image loaded with Resolution:" + str(surface.get_width()) + " x " + str(surface.get_height()), DebugLevel.HIGH)
-        grid: List[List[int]] = [[0 for _ in range(surface.get_width())] for _ in range(surface.get_height())]
+            surface: np.ndarray = self.__services.resources.images_dir.load(image_name)
+        height, width, _ = surface.shape
+        self.__services.debug.write("Image loaded with Resolution:" + str(width) + " x " + str(height), DebugLevel.HIGH)
+
+        grid = np.full(surface.shape[:-1], Map.CLEAR_ID, dtype=np.uint8)
         agent_avg_location: np.ndarray = np.array([.0, .0])
         agent_avg_count: int = 1
         goal_avg_location: np.ndarray = np.array([.0, .0])
@@ -74,32 +77,30 @@ class Generator:
             instead, we can only identify obstacles
             '''
             self.__services.debug.write("Begin iteration through map", DebugLevel.HIGH)
-            for x in range(surface.get_width()):
-                for y in range(surface.get_height()):
-                    if Generator.is_in_color_range(surface.get_at((x, y)), Generator.WALL_COLOR):
-                        grid[y][x] = DenseMap.WALL_ID
+            for idx in np.ndindex(surface.shape[:-1]):
+                if Generator.is_in_color_range(surface[idx], Generator.WALL_COLOR):
+                    grid[idx] = DenseMap.WALL_ID
         else:
-            for x in range(surface.get_width()):
-                for y in range(surface.get_height()):
-                    if Generator.is_in_color_range(surface.get_at((x, y)), Generator.AGENT_COLOR, 5):
-                        agent_avg_location, agent_avg_count = \
-                            Generator.increment_moving_average(agent_avg_location, agent_avg_count, np.array([x, y]))
-                    elif Generator.is_in_color_range(surface.get_at((x, y)), Generator.GOAL_COLOR, 5):
-                        goal_avg_location, goal_avg_count = \
-                            Generator.increment_moving_average(goal_avg_location, goal_avg_count, np.array([x, y]))
-                    if Generator.is_in_color_range(surface.get_at((x, y)), Generator.WALL_COLOR):
-                        grid[y][x] = DenseMap.WALL_ID
+            for idx in np.ndindex(surface.shape[:-1]):
+                if Generator.is_in_color_range(surface[idx], Generator.AGENT_COLOR, 5):
+                    agent_avg_location, agent_avg_count = \
+                        Generator.increment_moving_average(agent_avg_location, agent_avg_count, np.array(idx[::-1]))
+                elif Generator.is_in_color_range(surface[idx], Generator.GOAL_COLOR, 5):
+                    goal_avg_location, goal_avg_count = \
+                        Generator.increment_moving_average(goal_avg_location, goal_avg_count, np.array(idx[::-1]))
+                if Generator.is_in_color_range(surface[idx], Generator.WALL_COLOR):
+                    grid[idx] = DenseMap.WALL_ID
 
         agent_avg_location = np.array(agent_avg_location, dtype=int)
         goal_avg_location = np.array(goal_avg_location, dtype=int)
         agent_radius: float = 0
 
         if rand_entities:
-            self.__place_random_agent_and_goal(grid, Size(surface.get_width(), surface.get_height()))
+            self.__place_random_agent_and_goal(grid, Size(height, width))
             self.__services.debug.write("Placed random agent and goal ", DebugLevel.HIGH)
         else:
-            grid[agent_avg_location[1]][agent_avg_location[0]] = DenseMap.AGENT_ID
-            grid[goal_avg_location[1]][goal_avg_location[0]] = DenseMap.GOAL_ID
+            grid[tuple(agent_avg_location[::-1])] = DenseMap.AGENT_ID
+            grid[tuple(goal_avg_location[::-1])] = DenseMap.GOAL_ID
 
         if not house_expo_flag:
             '''
@@ -108,17 +109,18 @@ class Generator:
             '''
             self.__services.debug.write("Skipped agent_radius change checking ", DebugLevel.HIGH)
 
-            for x in range(surface.get_width()):
-                for y in range(surface.get_height()):
-                    if Generator.is_in_color_range(surface.get_at((x, y)), Generator.AGENT_COLOR, 5):
-                        '''
-                        If color at x y is red (agent) then change the radius of the agent to the max 
-                        Change the agent radius to the max between the old radius (from previous iteration )
+            for idx in np.ndindex(surface.shape[:-1]):
+                if Generator.is_in_color_range(surface[idx], Generator.AGENT_COLOR, 5):
+                    '''
+                    If color at x y is red (agent) then change the radius of the agent to the max 
+                    Change the agent radius to the max between the old radius (from previous iteration )
+                    and the magnitude of the agent location - the point 
                         and the magnitude of the agent location - the point 
-                        This basically defines the agent radius as the largest red size. But we don't need to do
-                        this as we are supplying our own radius
-                        '''
-                        agent_radius = max(agent_radius, np.linalg.norm(agent_avg_location - np.array([x, y])))
+                    and the magnitude of the agent location - the point 
+                    This basically defines the agent radius as the largest red size. But we don't need to do
+                    this as we are supplying our own radius
+                    '''
+                    agent_radius = max(agent_radius, np.linalg.norm(agent_avg_location - np.array(idx[::-1])))
 
         agent_radius = int(agent_radius)
 
@@ -148,8 +150,7 @@ class Generator:
         return 0 <= pt.x < dimensions.width and 0 <= pt.y < dimensions.height and z
 
     def __get_rand_position(self, dimensions: Size, start: Optional[Point] = None) -> Point:
-
-        if(start is None):
+        if start is None:
             start = Point(*([0] * dimensions.n_dim))
 
         return Point(*np.random.randint([*start], [*dimensions]))
@@ -170,21 +171,27 @@ class Generator:
 
         return DenseMap(grid)
 
-    # TODO: this is a terrible algorithm for random generation, can theoretically run forever....
     def __place_random_agent_and_goal(self, grid: np.array, dimensions: Size):
-        while True:
-            agent_pos: Point = self.__get_rand_position(dimensions)
+        def randomly_place(cell_id):
+            nonlocal grid
 
-            if grid[agent_pos.values] == DenseMap.CLEAR_ID:
-                grid[agent_pos.values] = DenseMap.AGENT_ID  # Changes the value of pos on grid to 2 for agent id
-                break
+            MAX_ITERATIONS: Final[int] = 10000
+            for _ in range(MAX_ITERATIONS):
+                p: Point = self.__get_rand_position(dimensions)
 
-        while True:
-            goal_pos: Point = self.__get_rand_position(dimensions)
+                if grid[p.values] == Map.CLEAR_ID:
+                    grid[p.values] = cell_id
+                    return
 
-            if grid[goal_pos.values] == DenseMap.CLEAR_ID:
-                grid[goal_pos.values] = DenseMap.GOAL_ID  # Changes the value of pos on grid to 3 for goal id
-                break
+            for idx in np.ndindex(grid.shape):
+                if grid[p.values] == Map.CLEAR_ID:
+                    grid[p.values] = cell_id
+                    return
+
+            raise Exception("Map doesn't contain any traversable cells")
+
+        randomly_place(Map.AGENT_ID)
+        randomly_place(Map.GOAL_ID)
 
     def __place_entity_near_corner(self, entity: Type[Entity], corner: int, grid: List[List[int]], dimensions: Size) -> \
             List[List[int]]:
@@ -257,15 +264,6 @@ class Generator:
 
             total_fill -= next_obst_fill
 
-        """
-        # Corner logic
-        
-        agent_corner = torch.randint(4, (1,)).item()
-        grid = self.__place_entity_near_corner(Agent, agent_corner, grid, dimensions)
-        goal_corner = (4 + agent_corner - 2) % 4
-        grid = self.__place_entity_near_corner(Goal, goal_corner, grid, dimensions)
-        """
-
         self.__place_random_agent_and_goal(grid, dimensions)
         return DenseMap(grid)
 
@@ -285,7 +283,6 @@ class Generator:
 
     def __generate_random_house(self, dimensions: Size, min_room_size: Size = Size(10, 10),
                                 max_room_size: Size = Size(40, 40), door_size: int = 2) -> Map:
-
         grid: np.array = np.zeros(dimensions)
         rooms: List[Tuple[Point, Size]] = []
 
@@ -306,14 +303,9 @@ class Generator:
             rooms.append((top_left_corner, size))
 
         def __get_subdivision_number(dim, i: int) -> int:
-
             min_size = min_room_size[i]
 
             dim_size = dim[i]
-
-            # try hallway
-            # if int(torch.randint(0, 11, (1,)).item()) == 0:
-            #    return hallway_size + 1
 
             total_split = dim_size - 2 * min_size + 1
             rand_split = np.random.randint(0, total_split + 1)
@@ -442,8 +434,8 @@ class Generator:
                             edges.append(q)
                         q += 1
 
-                for index in product([room_top_left_point[0] + i for i in range(room_size[0])], 
-                                     [room_top_left_point[1] + i for i in range(room_size[1])], 
+                for index in product([room_top_left_point[0] + i for i in range(room_size[0])],
+                                     [room_top_left_point[1] + i for i in range(room_size[1])],
                                      [room_top_left_point[2], room_top_left_point[2] + room_size[2] - 1]):
                     if in_bounds(Point(*index)):
                         full_edge.append(Point(*index))
@@ -507,8 +499,7 @@ class Generator:
     def generate_maps(self, nr_of_samples: int, dimensions: Size, gen_type: str, fill_range: List[float],
                       nr_of_obstacle_range: List[int], min_map_range: List[int], max_map_range: List[int], num_dim: int = 2, json_save: bool = False) -> List[Map]:
         if gen_type not in Generator.AVAILABLE_GENERATION_METHODS:
-            raise Exception(
-                "Generation type {} does not exist in {}".format(gen_type, self.AVAILABLE_GENERATION_METHODS))
+            raise Exception("Generation type {} does not exist in {}".format(gen_type, self.AVAILABLE_GENERATION_METHODS))
 
         if nr_of_samples <= 0:
             return []
@@ -531,7 +522,6 @@ class Generator:
         maps: List[Map] = []
 
         for _ in range(nr_of_samples):
-
             fill_rate = fill_range[0] + np.random.rand() * (fill_range[1] - fill_range[0])
             if gen_type == "uniform_random_fill":  # random fill
                 mp: Map = self.__generate_random_map(dimensions, fill_rate)
@@ -551,8 +541,7 @@ class Generator:
                     min_room_size=Size(*([min_map_size] * dimensions.n_dim)),
                     max_room_size=Size(*([max_map_size] * dimensions.n_dim)),
                 )
-            #print('grid is \n', mp.grid)
- #           atlas.append(mp)
+
             maps.append(mp)
             progress_bar.step()
 
@@ -723,7 +712,6 @@ class Generator:
             if label_list:
                 seq_labels = MapProcessing.get_sequential_labels(testing.map, label_list)
                 for q in range(len(t[i]["labels"])):
-                    # print(q)
                     t[i]["labels"][q].update(seq_labels[q])
 
             if single_feature_list:
@@ -774,16 +762,10 @@ class Generator:
         if not eps:
             eps = Generator.COLOR_EPSILON
 
-        return np.linalg.norm(
-            np.array(actual_color, dtype=float) - np.array(search_color, dtype=float)) < eps
+        return np.linalg.norm(np.array(actual_color, dtype=float) - np.array(search_color, dtype=float)) < eps
 
     @staticmethod
-    def main(m: 'MainRunner') -> None:
-        """
-        generator: Generator = Generator(m.main_services)
-        generator.generate_map_from_image("map14", True, 2)
-        return # TODO Remove this
-        """
+    def main(m: 'MainRunner') -> None:        
         generator: Generator = Generator(m.main_services)
 
         if m.main_services.settings.generator_modify:
@@ -792,19 +774,19 @@ class Generator:
         if not m.main_services.settings.generator_house_expo:
             if m.main_services.settings.generator_size == 8:  # Fill rate and nr obstacle range (1,2) is for unifrom random fill (0.1,0.2)
                 maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([8] * m.main_services.settings.num_dim)),
-                                               m.main_services.settings.generator_gen_type, [0.1, 0.2], [1, 2], [3, 4], [5, 7], num_dim = m.main_services.settings.num_dim, json_save=True)
+                                               m.main_services.settings.generator_gen_type, [0.1, 0.2], [1, 2], [3, 4], [5, 7], num_dim=m.main_services.settings.num_dim, json_save=True)
 
             elif m.main_services.settings.generator_size == 16:
                 maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([16] * m.main_services.settings.num_dim)),
-                                               m.main_services.settings.generator_gen_type, [0.3, 0.5], [2, 4], [4, 6], [8, 11], num_dim = m.main_services.settings.num_dim, json_save=True)
+                                               m.main_services.settings.generator_gen_type, [0.3, 0.5], [2, 4], [4, 6], [8, 11], num_dim=m.main_services.settings.num_dim, json_save=True)
 
             elif m.main_services.settings.generator_size == 28:
                 maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([28] * m.main_services.settings.num_dim)),
-                                               m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 4], [6, 10], [14, 22], num_dim = m.main_services.settings.num_dim, json_save=True)
+                                               m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 4], [6, 10], [14, 22], num_dim=m.main_services.settings.num_dim, json_save=True)
 
             else:
                 maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([64] * m.main_services.settings.num_dim)),
-                                               m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 6], [8, 15], [35, 45], num_dim = m.main_services.settings.num_dim, json_save=False)
+                                               m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 6], [8, 15], [35, 45], num_dim=m.main_services.settings.num_dim, json_save=False)
 
         # This will display 5 of the maps generated
         if m.main_services.settings.generator_show_gen_sample and not m.main_services.settings.generator_house_expo:

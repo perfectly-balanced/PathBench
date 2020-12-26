@@ -1,10 +1,8 @@
 from typing import List, Tuple
-import pygame
 from typing import Set, List, Tuple, Optional, Dict
 from memory_profiler import profile
 import numpy as np
 
-#from algorithms.configuration.configuration import Configuration
 from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.entities.agent import Agent

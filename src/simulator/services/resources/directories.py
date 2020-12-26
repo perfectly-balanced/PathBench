@@ -2,7 +2,8 @@ import os
 import shutil
 from typing import TYPE_CHECKING, Any, Callable
 
-import pygame
+import numpy as np
+import cv2 as cv
 import torch
 import matplotlib.pyplot as plt
 
@@ -101,22 +102,24 @@ class CacheDir(Directory):
 
 class ImagesDir(Atlas):
     @staticmethod
-    def _image_default_save(dir: Directory, name: str, image: pygame.Surface) -> None:
+    def _image_default_save(dir: Directory, name: str, image: np.ndarray) -> None:
         name = dir._add_extension(name, "png")
-        pygame.image.save(image, dir._full_path() + name)
+        cv.imwrite(dir._full_path() + name, image)
 
     @staticmethod
-    def _image_default_load(dir: Directory, name: str) -> pygame.Surface:
+    def _image_default_load(dir: Directory, name: str) -> np.ndarray:
         name = dir._add_extension(name, "png")
-        image = pygame.image.load(dir._full_path() + name)
+        image = cv.imread(dir._full_path() + name, cv.IMREAD_UNCHANGED)
+        if image.ndim == 3: # If RGB, add alpha channel
+            image = cv.cvtColor(image, cv.COLOR_RGB2RGBA)
         return image
 
-    def save(self, name: str, obj: pygame.Surface,
-             save_function: Callable[['Directory', str, pygame.Surface], None] = None) -> None:
+    def save(self, name: str, obj: np.ndarray,
+             save_function: Callable[['Directory', str, np.ndarray], None] = None) -> None:
         super().save(name, obj, ImagesDir._image_default_save)
 
     def load(self, name: str,
-             load_function: Callable[['Directory', str], pygame.Surface] = None) -> pygame.Surface:
+             load_function: Callable[['Directory', str], np.ndarray] = None) -> np.ndarray:
         return super().load(name, ImagesDir._image_default_load)
 
     def create_atlas(self, atlas_name: str) -> 'ImagesDir':
@@ -137,26 +140,20 @@ class HouseExpoDir(Directory):
     @staticmethod
     def _default_save(dir: 'Directory', name: str, obj: Any):
         Directory._pickle(obj, name, dir._full_path())
-    # @staticmethod
-    # def _image_default_save(dir: Directory, name: str, image: pygame.Surface) -> None:
-    #     name = dir._add_extension(name, "png")
-    #     pygame.image.save(image, dir._full_path() + name)
 
     @staticmethod
-    def _image_default_load(dir: Directory, name: str) -> pygame.Surface:
+    def _image_default_load(dir: Directory, name: str) -> np.ndarray:
         name = dir._add_extension(name, "png")
-        image = pygame.image.load(dir._full_path() + name)
+        image = cv.imread(dir._full_path() + name, cv.IMREAD_UNCHANGED)
+        if image.ndim == 3: # If RGB, add alpha channel
+            image = cv.cvtColor(image, cv.COLOR_RGB2RGBA)
         return image
 
     def save(self, name: str, obj: Any, path: str):
         Directory._pickle(obj, name, path)
 
-    # def save(self, name: str, obj: pygame.Surface,
-    #          save_function: Callable[['Directory', str, pygame.Surface], None] = None) -> None:
-    #     super().save(name, obj, HouseExpoDir._image_default_save)
-
     def load(self, name: str,
-             load_function: Callable[['Directory', str], pygame.Surface] = None) -> pygame.Surface:
+             load_function: Callable[['Directory', str], np.ndarray] = None) -> np.ndarray:
         return super().load(name, HouseExpoDir._image_default_load)
 
     def create_atlas(self, atlas_name: str) -> 'HouseExpoDir':

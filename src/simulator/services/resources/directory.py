@@ -63,7 +63,7 @@ class Directory(Service):
         if not load_function:
             load_function = Directory._default_load
         obj: Any = load_function(self, name)
-        if obj:
+        if obj is not None:
             self._services.debug.write("Loaded [{}]".format(self._full_path() + name), DebugLevel.LOW)
         else:
             self._services.debug.write("File not found [{}]".format(self._full_path() + name), DebugLevel.LOW)
