@@ -150,7 +150,7 @@ class Map:
         :return: The index corresponding to :ref:`ALL_POINTS_MOVE_VECTOR`
         """
         # because pygame has inverted y
-        rounded_point = self.get_move_along_dir(self, direction)
+        rounded_point = self.get_move_along_dir(direction)
         return self.ALL_POINTS_MOVE_VECTOR.index(rounded_point)
 
     def get_move_along_dir(self, direction: List[float]) -> Point:
