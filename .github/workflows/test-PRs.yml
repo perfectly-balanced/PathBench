@@ -41,5 +41,5 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Run tests with coverage and upload
       run: |
-        coverage run tests/run_tests.py --spawn-display --cov-report=xml
+        coverage run tests/run_tests.py --cov-report=xml --spawn-display
         bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }} -e PYTHON
