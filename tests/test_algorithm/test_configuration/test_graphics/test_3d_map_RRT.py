@@ -4,14 +4,11 @@ import os
 import sys
 
 if __name__ == "__main__":
-    from common import init, launch_visualiser
+    from common import init, TEST_DATA_PATH
 else:
-    from .common import init, launch_visualiser
+    from .common import init, TEST_DATA_PATH
 
 init()
-launch_visualiser()
-
-from constants import TEST_DATA_PATH  # noqa: E402
 
 
 # Pick 3d cube with RRT

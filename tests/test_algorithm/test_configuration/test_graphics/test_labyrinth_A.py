@@ -6,14 +6,11 @@ import cv2 as cv
 import pyautogui
 
 if __name__ == "__main__":
-    from common import init, launch_visualiser, mse, RESOURCES_PATH
+    from common import init, mse, RESOURCES_PATH, TEST_DATA_PATH
 else:
-    from .common import init, launch_visualiser, mse, RESOURCES_PATH
+    from .common import init, mse, RESOURCES_PATH, TEST_DATA_PATH
 
 init()
-launch_visualiser()
-
-from constants import TEST_DATA_PATH  # noqa: E402
 
 
 # Select map Labyrinth, A* algorithm, update
