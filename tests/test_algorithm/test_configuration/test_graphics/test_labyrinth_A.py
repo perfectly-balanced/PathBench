@@ -12,31 +12,37 @@ else:
 
 init()
 
-
 # Select map Labyrinth, A* algorithm, update
-x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'map.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'map.png'), confidence=0.6)
 pyautogui.click(x + 160, y + 5)
-x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'labyrinth.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'labyrinth.png'), confidence=0.3)
 pyautogui.click(x, y)
-x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'algorithm.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'algorithm.png'), confidence=0.4)
 pyautogui.click(x + 150, y)
-x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'a_star.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'a_star.png'), confidence=0.6)
 pyautogui.click(x, y)
-x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'update.png'), confidence=0.5)
+
+
+# start and end goals coordinate input
+pyautogui.doubleClick(441, 629)
+pyautogui.write('17')
+pyautogui.doubleClick(521, 626)
+pyautogui.write('9')
+pyautogui.doubleClick(441, 696)
+pyautogui.write('2')
+pyautogui.doubleClick(521, 696)
+pyautogui.write('4')
+
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'update.png'), confidence=0.6)
 pyautogui.click(x, y)
 pyautogui.press('w', presses=5500)
 
-# pick colours and other modifications of the map
-x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
-pyautogui.click(x - 78, y)
-x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'lightblue.png'), confidence=0.9)
-pyautogui.click(x, y)
 
-# start and end goals
-pyautogui.rightClick(900, 960)
-time.sleep(0.5)
-pyautogui.click(1511, 815)
-time.sleep(1)
+# pick colours and other modifications of the map
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.4)
+pyautogui.click(x - 78, y)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'lightblue.png'), confidence=0.8)
+pyautogui.click(x, y)
 
 pyautogui.press('t')
 time.sleep(0.5)
@@ -44,50 +50,38 @@ time.sleep(0.5)
 # take texture ss
 pyautogui.press('o')
 
-# make traversables transparent for the full scene ss
-x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
+# make traversables transparent
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.4)
 pyautogui.click(x - 120, y)
 
-# hide gui
-pyautogui.press('c')
-time.sleep(1)
-pyautogui.press('v')
-time.sleep(1)
-
-# get the latest taken screenshot (transparent one)
+# get the latest taken screenshot
 list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
-transparent = max(list_of_ss, key=os.path.getctime)
-print("transparent file is: " + transparent)
+transparent_1 = max(list_of_ss, key=os.path.getctime)
 
-# take the full screen ss
-pyautogui.press('p')
-time.sleep(0.5)
+# take the second texture ss
+pyautogui.press('o')
+time.sleep(2)
 
 # get latest screenshot
 list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
-full_screen = max(list_of_ss, key=os.path.getctime)
-
-print("full screen file is: " + full_screen)
+transparent_2 = max(list_of_ss, key=os.path.getctime)
 
 # revert changes
 pyautogui.press('c')
 time.sleep(0.5)
 pyautogui.press('v')
 time.sleep(0.5)
-x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.4)
 pyautogui.click(x - 120, y)
 
 # compare the 2 new screenshots with the expected ones
-expected_transparent = cv.imread(os.path.join(TEST_DATA_PATH, "expectedLATransparent.png"))
-expected_full = cv.imread(os.path.join(TEST_DATA_PATH, "expectedLAFull.png"))
-transparent = cv.imread(transparent)
-full_screen = cv.imread(full_screen)
+expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "labyrinth_A_1.png"))
+expected_transparent_2 = cv.imread(os.path.join(TEST_DATA_PATH, "labyrinth_A_2.png"))
+transparent_1 = cv.imread(transparent_1)
+transparent_2 = cv.imread(transparent_2)
+print(mse(expected_transparent_1, transparent_1))
 
 # Small error allowed for the top screen high res ss, usually very close to 0
-print(mse(expected_transparent, transparent))
-assert mse(expected_transparent, transparent) < 10
-
-# Bigger error allowed for full screen ss
-print(mse(expected_full, full_screen))
-assert mse(expected_full, full_screen) < 1600
-print(mse(expected_full, full_screen))
+assert mse(expected_transparent_1, transparent_1) < 1
+(mse(expected_transparent_2, transparent_2))
+assert mse(expected_transparent_2, transparent_2) < 1
