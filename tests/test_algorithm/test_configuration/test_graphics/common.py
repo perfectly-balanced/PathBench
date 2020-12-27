@@ -76,8 +76,8 @@ def setup(args) -> None:
                        on_kill=lambda _: pyautogui.press('esc'))
 
 
-    pyautogui.moveTo(1, 1)
-    wait_for('update.png')
+        pyautogui.moveTo(1, 1)
+        wait_for('update.png')
 
 
 def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool = False, no_rm_config_file: bool = False) -> None:
