@@ -42,7 +42,7 @@ def launch_visualiser(args: List[str] = ['-v'], rm_config_file: bool = True, ful
     global g_proc
 
     if rm_config_file:
-        try_delete_file(os.path.join(SRC_PATH, ".pathbench.json"))
+        try_delete_file("./.pathbench.json")
 
     cmd = []
     if full_screen:
