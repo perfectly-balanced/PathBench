@@ -28,12 +28,15 @@ def try_delete_file(fn) -> None:
     except OSError as e:
         print(e, file=sys.stderr)
 
-def init(update_sys_path: bool = True, virtual_display_support: bool = True) -> None:
+def init(update_sys_path: bool = True, virtual_display_support: bool = True, restore_resources_at_exit: bool = True) -> None:
     if virtual_display_support:
         pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ['DISPLAY'])
 
     if update_sys_path:
         sys.path.append(SRC_PATH)
+
+    if restore_resources_at_exit:
+        atexit.register(restore_resources)
 
 def launch_visualiser(args: List[str] = ['-v'], rm_config_file: bool = True, full_screen: bool = True) -> None:
     global g_proc
@@ -75,6 +78,13 @@ def destroy_visualiser() -> None:
 
     g_proc = None
     atexit.unregister(destroy_visualiser)
+
+def restore_resources() -> None:
+    cmd = ["git", "restore", "--source=HEAD", "--staged", "--worktree", "--", RESOURCES_PATH]
+    subprocess.check_call(cmd)
+
+    cmd = ["git", "clean", "-dxf", "--", RESOURCES_PATH]
+    subprocess.check_call(cmd)
 
 # Lower values better
 def mse(img_a, img_b) -> float:

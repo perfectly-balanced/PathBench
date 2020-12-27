@@ -81,8 +81,8 @@ x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables
 pyautogui.click(x - 120, y)
 
 # compare the 2 new screenshots with the expected ones
-expected_transparent = cv.imread(os.path.join(RESOURCES_PATH, "screenshots/expectedLATransparent.png"))
-expected_full = cv.imread(os.path.join(RESOURCES_PATH, "screenshots/expectedLAFull.png"))
+expected_transparent = cv.imread(os.path.join(TEST_DATA_PATH, "expectedLATransparent.png"))
+expected_full = cv.imread(os.path.join(TEST_DATA_PATH, "expectedLAFull.png"))
 transparent = cv.imread(transparent)
 full_screen = cv.imread(full_screen)
 
