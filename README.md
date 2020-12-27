@@ -15,7 +15,7 @@ The following installation and run instructions have been used for running PathB
 pip3 install -r requirements.txt
 ```
 
-Optional dependency is `ompl` with installation not covered here. There are some extra dependencies needed for testing, and are detailed [here](##testing).
+Optional dependency is `ompl` with installation not covered here. There are some extra dependencies needed for testing, and are detailed [here](#testing).
 
 ### Simulator Visualiser Usage
 ```bash
@@ -109,7 +109,7 @@ The simulator has a custom GUI that can be used to modify the master launch conf
     <img src="./readme_files/config.png" alt="PathBench Simulator Configuration" width="400" align="middle" />
 </p>
 
-To run and use the simulator see [Quick Start](##quick-start).
+To run and use the simulator see [Quick Start](#quick-start).
 
 <br />
 
