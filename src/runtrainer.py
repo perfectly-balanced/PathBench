@@ -42,6 +42,17 @@ from algorithms.classic.testing.dijkstra_testing import DijkstraTesting
 from algorithms.classic.testing.wavefront_testing import WavefrontTesting
 from algorithms.classic.testing.way_point_navigation_testing import WayPointNavigationTesting
 
+import argparse
+
+parser = argparse.ArgumentParser(prog="runtrainer.py",
+                                     description="PathBench trainer runner",
+                                     formatter_class=argparse.RawTextHelpFormatter)
+parser.add_argument('-n', '--num_maps', type=int, default=100, help="number of maps to generate for the trainer")
+parser.add_argument('-m', '--model', choices=['LSTM'], default='LSTM', help="model to train")
+parser.add_argument('-f', '--full_train', action='store_true', help='set this to train from scratch')
+
+args = parser.parse_args()
+print("args:{}".format(args))
 
 config = type(Configuration)
 
@@ -122,15 +133,14 @@ algo = algorithms['A*'] #Choose which planner
 ani = animations['Fast'] #Choose animation speed
 debug = debug['High'] #Choose debug level 
 training_algo = BasicLSTMModule #Chooses the algorithm to train, either CAE, BasicLSTMModule,LSTMCAEModel
-nbr_ex = 120 #Number of maps generated
+nbr_ex = args.num_maps #Number of maps generated
 show_sample_map = False #shows 5 samples
-gen_start = True
+gen_start = False
 train_start = True
 sim_start = False
 config.generator_house_expo = False
 analyzer_start = False
 config.generator_size = 64 # Change the size of the maps generated
-
 
 #Cache
 config.clear_cache = True
@@ -147,21 +157,6 @@ config.simulator_algorithm_type, config.simulator_testing_type, config.simulator
 config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani
 config.simulator_write_debug_level = debug
 
-#Generator
-config.generator = gen_start
-if config.generator_house_expo:
-    gen_map = '_house_expo'
-    config.generator_labelling_atlases = [gen_map]
-    config.generator_nr_of_examples = nbr_ex
-    
-elif gen_start:
-    gen_map = gen_maps[chosen_map]
-    #config.generator_labelling_atlases = [gen_map + '_' + str(nbr_ex)]
-    config.generator_labelling_atlases = ['uniform_random_fill_120','block_map_120','house_120']
-    config.generator_nr_of_examples = nbr_ex
-    config.generator_gen_type = gen_map
-
-
 #These are for training
 config.generator_labelling_features = labelling[training_algo][0]
 config.generator_labelling_labels =  labelling[training_algo][1]
@@ -174,6 +169,27 @@ config.generator_aug_single_labelling_features = []
 config.generator_aug_single_labelling_labels = []
 config.generator_modify = None
 config.generator_show_gen_sample = show_sample_map
+config.generator_nr_of_examples = nbr_ex
+
+if args.full_train:
+    config.generator = True
+    for m in gen_maps.values():
+        config.generator_gen_type = m
+        config.generator_labelling_atlases = [m + '_' + str(nbr_ex)]
+
+        MainRunner(config).run_multiple()
+
+config.generator_labelling_atlases = [m + '_' + str(nbr_ex) for m in gen_maps.values()]
+#Generator
+config.generator = gen_start
+if config.generator_house_expo:
+    gen_map = '_house_expo'
+    config.generator_labelling_atlases = [gen_map]
+    
+elif gen_start:
+    gen_map = gen_maps[chosen_map]
+    #config.generator_labelling_atlases = [gen_map + '_' + str(nbr_ex)]
+    config.generator_gen_type = gen_map
 
 #Trainer
 config.trainer = train_start
