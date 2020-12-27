@@ -85,7 +85,6 @@ def configure_and_run(args) -> bool:
                 use_display_resolution()
 
             load_prc_file_data('', data)
-
     elif args.visualiser_flags:
         raise ValueError("Visualiser isn't running, but flags were provided")
 
