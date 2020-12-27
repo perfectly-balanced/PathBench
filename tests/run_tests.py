@@ -29,11 +29,8 @@ def main() -> bool:
     parser.add_argument("--spawn-display", nargs='?', default=None, const=":99", help="spawn a virtual display for testing graphics and sets $DISPLAY")
     parser.add_argument("--view-display", nargs='?', default=None, const="auto", help="open an interactive view of a virtual display (defaults to view $DISPLAY)")
 
-    args = parser.parse_known_args()[0]
+    args, sys.argv = parser.parse_known_args()
     print("args:{}".format(args))
-
-    # remove all custom arguments for testing framework
-    remove_custom_flags("--spawn-display", "--view-display")
 
     setup(args)
     return run()

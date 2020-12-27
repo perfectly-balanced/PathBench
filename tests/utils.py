@@ -21,7 +21,7 @@ def try_delete_file(fn) -> None:
 def kill_processes() -> None:
     global g_procs
 
-    for p, on_kill in g_procs:
+    for p, on_kill in reversed(g_procs):
         if on_kill:
             on_kill(p)
         try:

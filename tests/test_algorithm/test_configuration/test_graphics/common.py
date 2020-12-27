@@ -62,11 +62,8 @@ def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool 
     if no_rm_config_file:
         sys.argv.append("--no-rm-config-file")
 
-    args = parser.parse_known_args()[0]
+    args, sys.argv = parser.parse_known_args()
     print("args:{}".format(args))
-
-    # remove all custom arguments for testing framework
-    remove_custom_flags("--spawn-display", "--view-display", "--no-restore-resources-at-exit", "--no-launch-visualiser", "--no-rm-config-file")
 
     setup(args)
 
