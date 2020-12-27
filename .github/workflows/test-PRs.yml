@@ -27,9 +27,11 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        sudo apt-get install xvfb
         python -m pip install --upgrade pip
         pip install flake8 coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f tests/requirements.txt ]; then pip install -r tests/requirements.txt; fi
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names

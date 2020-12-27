@@ -5,7 +5,11 @@ import glob
 import cv2 as cv
 import pyautogui
 
-from common import init, launch_visualiser, mse, RESOURCES_PATH
+if __name__ == "__main__":
+    from common import init, launch_visualiser, mse, RESOURCES_PATH
+else:
+    from .common import init, launch_visualiser, mse, RESOURCES_PATH
+
 init()
 launch_visualiser()
 

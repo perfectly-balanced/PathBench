@@ -3,7 +3,11 @@ import pyautogui
 import os
 import sys
 
-from common import init, launch_visualiser
+if __name__ == "__main__":
+    from common import init, launch_visualiser
+else:
+    from .common import init, launch_visualiser
+
 init()
 launch_visualiser()
 
