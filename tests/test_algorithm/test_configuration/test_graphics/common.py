@@ -50,15 +50,16 @@ def launch_process(cmd, on_kill: Callable[[subprocess.Popen], None] = None) -> N
     g_procs.append((subprocess.Popen(cmd), on_kill))
 
 def setup(args) -> None:
-    global g_procs
     atexit.register(kill_processes)
+    sys.path.append(SRC_PATH)
 
     if args.spawn_display:
         launch_process(["Xvfb", args.spawn_display, "-screen", "0", "2112x1376x24", "-fbdir", "/var/tmp"])
         os.environ['DISPLAY'] = args.spawn_display
 
     if args.view_display:
-        launch_process(["x11vnc", "-display", os.environ['DISPLAY'], "-localhost"])
+        display = os.environ['DISPLAY'] if args.view_display == "auto" else args.view_display
+        launch_process(["x11vnc", "-display", display, "-localhost"])
         launch_process(["vncviewer", "-display", ":0"])
 
     if not args.no_restore_resources_at_exit:
@@ -82,8 +83,8 @@ def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool 
     parser = argparse.ArgumentParser(prog="common.py",
                                      description="PathBench individual test initialiser",
                                      formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument("--spawn-display", nargs='?', default=False, const=":99", help="spawn a virtual display for testing graphics")
-    parser.add_argument("--view-display", action="store_true", help="open an interactive view of the spawned virtual display")
+    parser.add_argument("--spawn-display", nargs='?', default=None, const=":99", help="spawn a virtual display for testing graphics and sets $DISPLAY")
+    parser.add_argument("--view-display", nargs='?', default=None, const="auto", help="open an interactive view of a virtual display (defaults to view $DISPLAY)")
     parser.add_argument("--no-restore-resources-at-exit", action="store_true", help="do not restore and clean resources folder when test exits")
     parser.add_argument("--no-launch-visualiser", action="store_true", help="do not launch PathBench visualiser")
     parser.add_argument("--no-rm-config-file", action="store_true", help="do not delete PathBench configuration file")
@@ -113,7 +114,6 @@ def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool 
                 break
 
     setup(args)
-    sys.path.append(SRC_PATH)
 
 def restore_resources() -> None:
     cmd = ["git", "restore", "--source=HEAD", "--staged", "--worktree", "--", RESOURCES_PATH]
