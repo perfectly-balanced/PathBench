@@ -192,7 +192,7 @@ config.trainer_bypass_and_replace_pre_processed_cache = False
 #Analyzer
 config.analyzer = analyzer_start
 
-MainRunner(config).run_multiple()
+MainRunner(config).run()
 
 #To brute force generate map from image
 # map_gen_from_img = False

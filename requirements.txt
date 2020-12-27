@@ -10,3 +10,5 @@ memory_profiler
 seaborn
 dill
 natsort
+screeninfo
+opencv-python

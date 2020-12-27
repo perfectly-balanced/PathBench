@@ -26,7 +26,6 @@ print(" ".join(cmd))
 g_disp_proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
 atexit.register(kill_virtual_display)
 
-os.environ["PATH_BENCH_FULLSCREEN"] = "PATH_BENCH_FULLSCREEN"
 os.environ["DISPLAY"] = ":99"
 
 if __name__ == '__main__':

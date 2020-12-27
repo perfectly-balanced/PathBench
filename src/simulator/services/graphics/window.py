@@ -14,9 +14,6 @@ class Window(ShowBase):
         props.set_title(title)
         self.win.request_properties(props)
 
-        if "PATH_BENCH_FULLSCREEN" in os.environ:
-            self.fullscreen = True
-
     def quit(self) -> None:
         self.destroy()
 

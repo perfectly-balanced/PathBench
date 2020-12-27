@@ -7,7 +7,7 @@ import subprocess
 import sys
 import os
 import time
-from typing import List
+from typing import List, Optional
 
 SRC_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))), "src")
 DATA_PATH = os.path.join(os.path.dirname(SRC_PATH), os.path.join("data"))
@@ -38,15 +38,17 @@ def init(update_sys_path: bool = True, virtual_display_support: bool = True, res
     if restore_resources_at_exit:
         atexit.register(restore_resources)
 
-def launch_visualiser(args: List[str] = ['-v'], rm_config_file: bool = True, full_screen: bool = True) -> None:
+def launch_visualiser(args: Optional[List[str]] = None, rm_config_file: bool = True) -> None:
     global g_proc
 
     if rm_config_file:
         try_delete_file("./.pathbench.json")
 
+    if args is None:
+        args = ['-v']
+        args.append('-VWINDOWED-FULLSCREEN')
+
     cmd = []
-    if full_screen:
-        cmd.extend(["env", "PATH_BENCH_FULLSCREEN=1"])
     cmd.extend([sys.executable, os.path.join(SRC_PATH, 'main.py')])
     cmd.extend(args)
 

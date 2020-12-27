@@ -10,11 +10,12 @@ PathBench is a motion planning platform used to develop, assess, compare and vis
 The following installation and run instructions have been used for running PathBench on **Ubuntu 18 and 20**.
 
 ### Installing dependencies
+
 ```bash
-sudo pip3 install torch numpy nptyping opencv-python panda3d pandas sklearn matplotlib torchvision memory_profiler seaborn dill natsort
+pip3 install -r requirements.txt
 ```
 
-Optional dependency is `ompl` with installation not covered here.
+Optional dependency is `ompl` with installation not covered here. There are some extra dependencies needed for testing, and are detailed [here](##-testing).
 
 ### Simulator Visualiser Usage
 ```bash
@@ -44,7 +45,8 @@ Note, screenshots are placed in resources directory.
 Dependencies:
 
 ```bash
-pip3 install pyautogui opencv-python
+pip3 install -r tests/requirements.txt
+sudo apt-get install scrot
 ```
 
 ### Headless Testing
@@ -53,15 +55,13 @@ Dependencies:
 
 ```bash
 sudo apt-get install x11vnc xvfb xtightvncviewer
-pip3 install xlib
 ```
 
 Execute the following in the same order as they appear and each one in different terminals (keep everything running):
 
 ```bash
 Xvfb :99 -screen 0 2112x1376x24 -fbdir /var/tmp
-env "DISPLAY=:99" "PATH_BENCH_FULLSCREEN=1" python3 main.py -v
-env "DISPLAY=:99" python3 ../tests/test_algorithm/test_configuration/test_graphics/test_labyrinth_A.py
+env "DISPLAY=:99" python3 tests/test_algorithm/test_configuration/test_graphics/test_labyrinth_A.py
 ```
 
 To have a live view of the screen, execute the following in the same order as they appear and each one in different terminals (keep everything running):
@@ -109,7 +109,7 @@ The simulator has a custom GUI that can be used to modify the master launch conf
     <img src="./readme_files/config.png" alt="PathBench Simulator Configuration" width="400" align="middle" />
 </p>
 
-To run and use the simulator see [Quick Start](quick-start).
+To run and use the simulator see [Quick Start](##-quick-start).
 
 <br />
 

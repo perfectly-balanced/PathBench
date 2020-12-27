@@ -4,28 +4,8 @@ from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.maps.map import Map
 from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule
-from algorithms.lstm.LSTM_CAE_tile_by_tile import LSTMCAEModel
 from algorithms.lstm.ML_model import MLModel
 from simulator.services.debug import DebugLevel
-from structures import Size
-from maps import Maps 
-
-#planner implementations
-from algorithms.classic.graph_based.a_star import AStar
-from algorithms.classic.graph_based.bug1 import Bug1
-from algorithms.classic.graph_based.bug2 import Bug2
-from algorithms.classic.graph_based.dijkstra import Dijkstra
-from algorithms.classic.graph_based.potential_field import PotentialField
-from algorithms.classic.sample_based.sprm import SPRM
-from algorithms.classic.sample_based.rt import RT
-from algorithms.classic.sample_based.rrt import RRT
-from algorithms.classic.sample_based.rrt_star import RRT_Star
-from algorithms.classic.sample_based.rrt_connect import RRT_Connect
-#from algorithms.classic.sample_based.OMPLtesting import OMPL_RRT_Test
-from algorithms.classic.graph_based.wavefront import Wavefront
-from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
-#from algorithms.lstm.a_star_waypoint import WayPointNavigation
-#from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
 
 class Configuration:
     simulator_grid_display: bool
@@ -37,13 +17,15 @@ class Configuration:
     simulator_key_frame_speed: int
     simulator_key_frame_skip: int
     simulator_write_debug_level: DebugLevel
-    #VIN
+
+    # VIN
     simulator_vin_plot: bool
     simulator_vin_weights: int
     simulator_vin_imsize: int
     simulator_vin_l_h: int
     simulator_vin_l_q: int
 
+    # Generator
     generator: bool
     generator_labelling_atlases: List[Any]
     generator_gen_type: str
@@ -56,35 +38,35 @@ class Configuration:
     generator_show_gen_sample: bool
     generator_house_expo: bool
     generator_size: int
+
+    # Trainer
     trainer: bool
     trainer_model: Type[MLModel]
     trainer_custom_config: Optional[Dict[str, Any]]
     trainer_pre_process_data_only: bool
+
+    # Misc
     analyzer: bool
     load_simulator: bool
     clear_cache: bool
-
     num_dim: int
 
     def __init__(self) -> None:
         # Simulator settings
         self.simulator_grid_display = False
-        self.simulator_initial_map = None #Maps.grid_map_one_obstacle1
+        self.simulator_initial_map = None
         self.simulator_testing_type = None
-        self.simulator_algorithm_type = None #AStar
+        self.simulator_algorithm_type = None
         self.simulator_algorithm_parameters = ([], {})
         self.simulator_graphics = False
         self.simulator_key_frame_speed = 0
         self.simulator_key_frame_skip = 0
         self.simulator_write_debug_level = DebugLevel.NONE
 
-
         # Generator
         self.generator = False
         self.generator_labelling_atlases = []
         self.generator_nr_of_examples = 10
-        #self.generator_gen_type = "block_map"
-        #self.generator_gen_type = "uniform_random_fill"
         self.generator_gen_type = "house"
         self.generator_labelling_features = []
         self.generator_labelling_labels = []
@@ -98,9 +80,9 @@ class Configuration:
         self.generator_show_gen_sample = False
         self.generator_house_expo = False
         self.generator_size = 28
-        
+
         self.num_dim = 3
-        
+
         # Trainer
         self.trainer = False
         self.trainer_model = BasicLSTMModule

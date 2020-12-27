@@ -1,12 +1,9 @@
-"""
-
-The MVC pattern was cloned from https://github.com/wesleywerner/mvc-game-design
-
-"""
-
-import copy
 import sys
 import argparse
+import re
+
+from panda3d.core import load_prc_file_data
+from screeninfo import get_monitors
 
 from algorithms.configuration.configuration import Configuration
 from algorithms.lstm.trainer import Trainer
@@ -26,80 +23,17 @@ class MainRunner:
     def run(self):
         if self.main_services.settings.generator:
             Generator.main(self)
-        elif self.main_services.settings.trainer:
+        if self.main_services.settings.trainer:
             Trainer.main(self)
-        elif self.main_services.settings.analyzer:
+        if self.main_services.settings.analyzer:
             Analyzer.main(self)
-        elif self.main_services.settings.load_simulator:
+        if self.main_services.settings.load_simulator:
             simulator: Simulator = Simulator(self.main_services)
             simulator.start()
 
         if self.main_services.settings.clear_cache:
             self.main_services.resources.cache_dir.clear()
 
-
-#Work in progress
-
-    def run_multiple(self):
-        # Two options, generator
-        if self.main_services.settings.generator and self.main_services.settings.trainer:
-            Generator.main(self)
-            Trainer.main(self)
-        elif self.main_services.settings.generator and self.main_services.settings.analyzer:
-            Generator.main(self)
-            Analyzer.main(self)
-        elif self.main_services.settings.generator and self.main_services.settings.load_simulator:
-            Generator.main(self)
-            simulator: Simulator = Simulator(self.main_services)
-            simulator.start()
-        # Three options, generator
-        elif self.main_services.settings.generator and self.main_services.settings.trainer and self.main_services.settings.analyzer:
-            Generator.main(self)
-            Trainer.main(self)
-            Analyzer.main(self)
-        elif self.main_services.settings.generator and self.main_services.settings.trainer and self.main_services.settings.load_simulator:
-            simulator: Simulator = Simulator(self.main_services)
-            simulator.start()
-            Generator.main(self)
-            Trainer.main(self)
-        # Four options
-        elif self.main_services.settings.generator and self.main_services.settings.trainer and self.main_services.settings.analyzer and self.main_services.settings.load_simulator:
-            simulator: Simulator = Simulator(self.main_services)
-            simulator.start()
-            Generator.main(self)
-            Trainer.main(self)
-            Analyzer.main(self)
-        # Trainer
-        elif self.main_services.settings.trainer and self.main_services.settings.analyzer:
-            Trainer.main(self)
-            Analyzer.main(self)
-        elif self.main_services.settings.trainer and self.main_services.settings.load_simulator:
-            simulator: Simulator = Simulator(self.main_services)
-            simulator.start()
-            Trainer.main(self)
-        elif self.main_services.settings.trainer and self.main_services.settings.analyzer and self.main_services.settings.load_simulator:
-            simulator: Simulator = Simulator(self.main_services)
-            simulator.start()
-            Trainer.main(self)
-            Analyzer.main(self)
-        # Analyzer
-        elif self.main_services.settings.analyzer and self.main_services.settings.load_simulator:
-            simulator: Simulator = Simulator(self.main_services)
-            simulator.start()
-            Analyzer.main(self)
-        # Singles
-        elif self.main_services.settings.generator:
-            Generator.main(self)
-        elif self.main_services.settings.trainer:
-            Trainer.main(self)
-        elif self.main_services.settings.analyzer:
-            Analyzer.main(self)
-        elif self.main_services.settings.load_simulator:
-            simulator: Simulator = Simulator(self.main_services)
-            simulator.start()
-
-        if self.main_services.settings.clear_cache:
-            self.main_services.resources.cache_dir.clear()
 
 def configure_and_run(args) -> bool:
     config = Configuration()
@@ -108,11 +42,58 @@ def configure_and_run(args) -> bool:
         config.load_simulator = True
         config.simulator_graphics = True
 
+        if args.visualiser_flags is not None:
+            integral_pair_re = re.compile("\s*\(\s*[0-9]+\s*,\s*[0-9]+\s*\)\s*")
+            naked_integral_pair_re = re.compile("\s*[0-9]+\s*[0-9]+\s*")
+
+            data = ""
+
+            def use_display_resolution():
+                nonlocal data
+
+                for m in get_monitors():
+                    data += "win-size {} {}\n".format(m.width, m.height)
+                    break
+
+            for f in args.visualiser_flags:
+                if f.strip().lower() == "windowed-fullscreen":
+                    use_display_resolution()
+                    data += "win-origin 0 0"
+                    data += "undecorated true"
+                    continue
+
+                n, v = f.split("=")
+                n = n.strip().lower()
+                v = v.strip().lower()
+                if v in ("true", "1", "yes"):
+                    data += "{} true\n".format(n)
+                elif v in ("false", "0", "no"):
+                    data += "{} false\n".format(n)
+                elif integral_pair_re.match(v) is not None:
+                    v = re.sub('{\s+}|\(|\)', '', v)
+                    v1, v2 = v.split(',')
+                    data += "{} {} {}\n".format(n, v1, v2)
+                elif naked_integral_pair_re.match(v) is not None:
+                    v = v.strip()
+                    v = re.sub('\s+', ',', v)
+                    v1, v2 = v.split(',')
+                    data += "{} {} {}\n".format(n, v1, v2)
+                else:
+                    data += "{} {}".format(n, v)
+
+            if "fullscreen true" in data and "win-size" not in data:
+                use_display_resolution()
+
+            load_prc_file_data('', data)
+
+    elif args.visualiser_flags:
+        raise ValueError("Visualiser isn't running, but flags were provided")
+
     if args.generator:
         config.generator = True
-    
+
     mr = MainRunner(config)
-    mr.run_multiple()
+    mr.run()
     return True
 
 def main() -> bool:
@@ -121,10 +102,12 @@ def main() -> bool:
                                      formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("-v", "--visualiser", action='store_true', help="run simulator with graphics")
     parser.add_argument("-g", "--generator", action='store_true', help="run generator")
+    parser.add_argument("-V", dest="visualiser_flags", metavar="VISUALISER_FLAG", action='append', help="Visualiser options (overriding Panda3D's default Config.prc)")
 
     args = parser.parse_args()
     print("args:{}".format(args))
     return configure_and_run(args)
+
 
 if __name__ == "__main__":
     ret = main()
