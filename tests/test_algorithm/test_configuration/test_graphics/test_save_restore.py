@@ -1,14 +1,15 @@
-from common import init
-init()
-
-from constants import DATA_PATH
-
 import time
 import pyautogui
 import os
 import sys
 
-pyautogui.click(1003, 218)
+from common import init, launch_visualiser
+init()
+launch_visualiser()
+
+from constants import DATA_PATH  # noqa: E402
+
+
 x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Map.png'), confidence=0.5)
 pyautogui.click(x + 160, y + 5)
 x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Labyrinth.png'), confidence=0.5)
@@ -92,10 +93,3 @@ x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'five.png'), confi
 pyautogui.click(x, y)
 x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'six.png'), confidence=0.9)
 pyautogui.click(x, y)
-
-
-
-
-
-
-

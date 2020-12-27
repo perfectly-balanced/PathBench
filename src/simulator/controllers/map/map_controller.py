@@ -6,8 +6,7 @@ from simulator.views.map.map_view import MapView
 from simulator.controllers.controller import Controller
 from simulator.controllers.map.map_picker import MapPicker
 from simulator.controllers.map.camera_controller import CameraController
-from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
-from simulator.services.event_manager.events.take_screenshot_tex_event import TakeScreenshotTexEvent
+from simulator.services.event_manager.events.take_map_screenshot_event import TakeMapScreenshotEvent
 
 import math
 from typing import Optional
@@ -48,8 +47,7 @@ class MapController(Controller, DirectObject):
         self.accept("t", lambda: self._model.compute_trace())
         self.accept("m", lambda: self._model.toggle_convert_map())
         self.accept("x", lambda: self._model.toggle_pause_algorithm())
-        self.accept("p", lambda: self._services.ev_manager.post(TakeScreenshotEvent()))
-        self.accept("o", lambda: self._services.ev_manager.post(TakeScreenshotTexEvent()))
+        self.accept("o", lambda: self._services.ev_manager.post(TakeMapScreenshotEvent()))
 
         for i in range(6):
             self.accept(str(i+1), partial(set_view, i))

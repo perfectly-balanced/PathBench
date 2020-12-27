@@ -9,6 +9,7 @@ class MainController(Controller, DirectObject):
         super().__init__(*args, **kwargs)
 
         self.accept("escape", lambda: self._services.ev_manager.post(QuitEvent()))
+        self.accept("p", lambda: self._services.resources.screenshots_dir.append(lambda fn: self._services.graphics.window.win.save_screenshot(fn)))
 
     def destroy(self) -> None:
         self.ignore_all()

@@ -1,34 +1,33 @@
-from common import init
-init()
-
-from constants import DATA_PATH
-
 import time
 import pyautogui
 import os
 import sys
 
-pyautogui.click(1003, 218)
+from common import init, launch_visualiser
+init()
+launch_visualiser()
+
+from constants import DATA_PATH  # noqa: E402
 
 
 # Select map Labyrinth, RRT algorithm
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Map.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Map.png'), confidence=0.5)
 pyautogui.click(x+160, y+5)
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Labyrinth.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Labyrinth.png'), confidence=0.5)
 pyautogui.click(x, y)
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Algorithm.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Algorithm.png'), confidence=0.5)
 pyautogui.click(x+150, y)
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'rrt2.png'), confidence=0.9)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'rrt2.png'), confidence=0.9)
 pyautogui.click(x, y)
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'update.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'update.png'), confidence=0.5)
 pyautogui.click(x, y)
 pyautogui.press('w', presses=5500)
 
 # pick colours and other modifications of the map
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'traversables.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'traversables.png'), confidence=0.5)
 pyautogui.click(x-78, y)
 time.sleep(0.5)
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH,'lightblue.png'), confidence=0.9)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'lightblue.png'), confidence=0.9)
 pyautogui.click(x, y)
 
 
@@ -44,8 +43,8 @@ time.sleep(1)
 # take texture ss
 pyautogui.press('o')
 
-#make traversibles transparent for the other ss
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH,'traversables.png'), confidence=0.5)
+# make traversibles transparent for the other ss
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'traversables.png'), confidence=0.5)
 pyautogui.click(x-120, y)
 
 # hide gui
@@ -54,7 +53,7 @@ time.sleep(0.5)
 pyautogui.press('v')
 time.sleep(1)
 
-#take scene ss
+# take scene ss
 pyautogui.press('p')
 time.sleep(1)
 
@@ -63,7 +62,5 @@ pyautogui.press('v')
 time.sleep(0.5)
 pyautogui.press('c')
 time.sleep(0.5)
-x, y= pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH,'traversables.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'traversables.png'), confidence=0.5)
 pyautogui.click(x-120, y)
-
-

@@ -39,7 +39,15 @@ You **must** run the main script from the `src` directory as some files are stil
 
 Note, screenshots are placed in resources directory.
 
-## Headless Testing
+## Testing
+
+Dependencies:
+
+```bash
+pip3 install pyautogui opencv-python
+```
+
+### Headless Testing
 
 Dependencies:
 
@@ -53,7 +61,7 @@ Execute the following in the same order as they appear and each one in different
 ```bash
 Xvfb :99 -screen 0 2112x1376x24 -fbdir /var/tmp
 env "DISPLAY=:99" "PATH_BENCH_FULLSCREEN=1" python3 main.py -v
-env "DISPLAY=:99" python3 ../tests/test_algorithm/test_configuration/test_graphics/test_labyrinth_with_A.py
+env "DISPLAY=:99" python3 ../tests/test_algorithm/test_configuration/test_graphics/test_labyrinth_A.py
 ```
 
 To have a live view of the screen, execute the following in the same order as they appear and each one in different terminals (keep everything running):

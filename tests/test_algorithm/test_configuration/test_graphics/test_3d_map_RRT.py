@@ -1,14 +1,14 @@
-from common import init
-init()
-
-from constants import DATA_PATH
-
 import time
 import pyautogui
 import os
 import sys
 
-pyautogui.click(1003, 218)
+from common import init, launch_visualiser
+init()
+launch_visualiser()
+
+from constants import DATA_PATH  # noqa: E402
+
 
 # Pick 3d cube with RRT
 x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Map.png'), confidence=0.5)
