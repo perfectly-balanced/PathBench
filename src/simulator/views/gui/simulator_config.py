@@ -333,7 +333,9 @@ class SimulatorConfig(DirectObject):
                             numLines=1,
                             width=3,
                             suppressKeys=True,
-                            text_align=TextNode.ACenter)
+                            text_align=TextNode.ACenter,
+                            focusInCommand=self.clear_text,
+                            focusInExtraArgs=[i])
             self.__entries.append(e)
             e.bind(DGG.EXIT, self.__entry_exit_callback)
             e.bind(DGG.ENTER, self.__entry_enter_callback)
@@ -443,7 +445,7 @@ class SimulatorConfig(DirectObject):
         else:
             for e in self.__entries:
                 e['focus'] = False
-            
+
     def __update_simulator_callback(self) -> None:
         mp = self.__maps[self.__maps_option.get()]
         algo = self.__algorithms[self.__algorithms_option.get()]
@@ -536,3 +538,6 @@ class SimulatorConfig(DirectObject):
     def notify(self, event: Event) -> None:
         if isinstance(event, ToggleSimulatorConfigEvent):
             self.__window.toggle_visible()
+
+    def clear_text(self, i):
+        self.__entries[i].enterText('')
