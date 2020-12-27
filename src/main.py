@@ -58,8 +58,8 @@ def configure_and_run(args) -> bool:
             for f in args.visualiser_flags:
                 if f.strip().lower() == "windowed-fullscreen":
                     use_display_resolution()
-                    data += "win-origin 0 0"
-                    data += "undecorated true"
+                    data += "win-origin 0 0\n"
+                    data += "undecorated true\n"
                     continue
 
                 n, v = f.split("=")
