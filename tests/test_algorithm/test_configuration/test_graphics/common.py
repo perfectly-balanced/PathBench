@@ -53,8 +53,6 @@ def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool 
     parser.add_argument("--no-launch-visualiser", action="store_true", help="do not launch PathBench visualiser")
     parser.add_argument("--no-rm-config-file", action="store_true", help="do not delete PathBench configuration file")
 
-    parser.add_argument('test_args', metavar='TEST_ARG', nargs='*', help="arguments for test framework")
-
     if no_restore_resources_at_exit:
         sys.argv.append("--no-restore-resources-at-exit")
 
@@ -64,7 +62,7 @@ def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool 
     if no_rm_config_file:
         sys.argv.append("--no-rm-config-file")
 
-    args = parser.parse_args()
+    args = parser.parse_known_args()[0]
     print("args:{}".format(args))
 
     # remove all custom arguments for testing framework

@@ -28,9 +28,8 @@ def main() -> bool:
                                      formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("--spawn-display", nargs='?', default=None, const=":99", help="spawn a virtual display for testing graphics and sets $DISPLAY")
     parser.add_argument("--view-display", nargs='?', default=None, const="auto", help="open an interactive view of a virtual display (defaults to view $DISPLAY)")
-    parser.add_argument('test_args', metavar='TEST_ARG', nargs='*', help="arguments for test framework")
 
-    args = parser.parse_args()
+    args = parser.parse_known_args()[0]
     print("args:{}".format(args))
 
     # remove all custom arguments for testing framework
