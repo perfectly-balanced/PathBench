@@ -2,7 +2,7 @@ from panda3d.core import LineSegs
 
 import numpy as np
 
-from simulator.views.map.meshes.voxel_mesh import VoxelMesh
+from simulator.views.map.geometry.meshes.voxel_mesh import VoxelMesh
 from utility.misc import exclude_from_dict
 
 class StaticVoxelMesh(VoxelMesh):

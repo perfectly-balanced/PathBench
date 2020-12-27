@@ -12,7 +12,7 @@ import numpy as np
 from nptyping import NDArray
 
 from structures import Point, Colour, WHITE
-from simulator.views.map.meshes.common import normalise, Face
+from simulator.views.map.geometry.meshes.common import normalise, Face
 
 
 class VoxelMesh():

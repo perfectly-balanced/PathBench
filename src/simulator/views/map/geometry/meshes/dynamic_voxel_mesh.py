@@ -6,8 +6,8 @@ import numpy as np
 from nptyping import NDArray
 
 from structures import Point, Colour, TRANSPARENT
-from simulator.views.map.meshes.cube_mesh import CubeMesh
-from simulator.views.map.meshes.voxel_mesh import VoxelMesh
+from simulator.views.map.geometry.meshes.cube_mesh import CubeMesh
+from simulator.views.map.geometry.meshes.voxel_mesh import VoxelMesh
 from utility.misc import exclude_from_dict
 
 

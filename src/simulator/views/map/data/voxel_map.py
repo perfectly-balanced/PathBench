@@ -2,8 +2,8 @@ from panda3d.core import NodePath, TransparencyAttrib, LVecBase4f, LineSegs
 
 from simulator.services.services import Services
 from simulator.views.map.data.map_data import MapData
-from simulator.views.map.meshes.dynamic_voxel_mesh import DynamicVoxelMesh
-from simulator.views.map.meshes.static_voxel_mesh import StaticVoxelMesh
+from simulator.views.map.geometry.meshes.dynamic_voxel_mesh import DynamicVoxelMesh
+from simulator.views.map.geometry.meshes.static_voxel_mesh import StaticVoxelMesh
 
 from structures import Point, DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 

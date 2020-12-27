@@ -12,10 +12,10 @@ from nptyping import NDArray
 
 if __name__ == "__main__":
     import os, sys
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))))
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))))
 
 from structures import Point, Colour, WHITE
-from simulator.views.map.meshes.common import normalise, Face
+from simulator.views.map.geometry.meshes.common import normalise, Face
 
 class CubeMesh():
     name: str
