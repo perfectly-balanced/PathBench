@@ -13,7 +13,7 @@ from typing import List, Optional, Callable, Tuple
 # add 'PathBench/tests' to system path for module imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
-from utils import handle_display_args, launch_process, kill_processes, remove_custom_flags, try_delete_file  # noqa: E402
+from utils import handle_display_args, launch_process, kill_processes, try_delete_file  # noqa: E402
 
 SRC_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))), "src")
 DATA_PATH = os.path.join(os.path.dirname(SRC_PATH), os.path.join("data"))

@@ -38,16 +38,6 @@ def launch_process(cmd, on_kill: Callable[[subprocess.Popen], None] = None) -> N
     print(" ".join(cmd))
     g_procs.append((subprocess.Popen(cmd), on_kill))
 
-def remove_custom_flags(*custom_flags) -> None:
-    for a in custom_flags:
-        for i in range(1, len(sys.argv)):
-            s = sys.argv[i]
-            if s.startswith(a):
-                sys.argv.pop(i)
-                if len(s) == len(a) and len(sys.argv) > i and not sys.argv[i].startswith("-"):
-                    sys.argv.pop(i)  # pop value
-                break
-
 def handle_display_args(args) -> None:
     if args.spawn_display:
         launch_process(["Xvfb", args.spawn_display, "-screen", "0", "2112x1376x24", "-fbdir", "/var/tmp"])

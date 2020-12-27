@@ -5,7 +5,7 @@ import atexit
 import unittest
 from unittest import TestLoader, TestSuite, TextTestRunner, TestResult
 
-from utils import handle_display_args, kill_processes, remove_custom_flags
+from utils import handle_display_args, kill_processes
 
 def setup(args) -> None:
     atexit.register(kill_processes)
