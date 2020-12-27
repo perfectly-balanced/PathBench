@@ -102,7 +102,8 @@ def main() -> bool:
                                      formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("-v", "--visualiser", action='store_true', help="run simulator with graphics")
     parser.add_argument("-g", "--generator", action='store_true', help="run generator")
-    parser.add_argument("-V", dest="visualiser_flags", metavar="VISUALISER_FLAG", action='append', help="Visualiser options (overriding Panda3D's default Config.prc)")
+    parser.add_argument("-V", dest="visualiser_flags", metavar="VISUALISER_FLAG", action='append',
+                        help="Visualiser options (overriding Panda3D's default Config.prc - see https://docs.panda3d.org/1.10/python/programming/configuration/configuring-panda3d#configuring-panda3d for options [windowed-fullscreen is an additional custom option])")
 
     args = parser.parse_args()
     print("args:{}".format(args))
