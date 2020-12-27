@@ -7,7 +7,6 @@ from typing import Tuple, Union, List, Any, Dict, Callable
 import traceback
 
 from structures import Point, WHITE, TRANSPARENT
-from constants import DATA_PATH
 
 from simulator.services.services import Services
 from simulator.services.debug import DebugLevel

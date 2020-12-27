@@ -7,7 +7,7 @@ from typing import Tuple, Union, Callable, List
 import os
 
 from structures import Colour, WHITE, BLACK, TRANSPARENT
-from constants import DATA_PATH
+from constants import GUI_DATA_PATH
 
 from simulator.services.services import Services
 from simulator.services.persistent_state import PersistentState
@@ -40,7 +40,7 @@ class ColourPicker:
         self.enabled = True
 
         # PALETTE #
-        palette_filename = os.path.join(DATA_PATH, "colour_palette.png")
+        palette_filename = os.path.join(GUI_DATA_PATH, "colour_palette.png")
         self.__palette_img = PNMImage(Filename.fromOsSpecific(palette_filename))
         self.__palette_size = (self.__palette_img.getReadXSize(), self.__palette_img.getReadYSize())
         self.__palette_frame = DirectFrame(image=palette_filename, **kwargs)
@@ -152,7 +152,7 @@ class ColourView():
     __colour: Union[Colour, None]
 
     def __init__(self, parent: DirectFrame, colour: Union[Colour, None] = None):
-        bg_filename = os.path.join(DATA_PATH, "colour_bg.png")
+        bg_filename = os.path.join(GUI_DATA_PATH, "colour_bg.png")
 
         self.__frame = DirectFrame(parent=parent,
                                    relief=DGG.SUNKEN,
@@ -525,7 +525,7 @@ class ViewElement():
                                    pos=(-0.3, 0.0, -0.03),
                                    scale=(0.1, 1.0, 0.1))
 
-        visibility_filename = os.path.join(DATA_PATH, "visible.png")
+        visibility_filename = os.path.join(GUI_DATA_PATH, "visible.png")
         self.__visibility_btn = DirectButton(parent=self.__frame,
                                              image=visibility_filename,
                                              frameColor=TRANSPARENT,
@@ -746,7 +746,7 @@ class ViewEditor():
         # Creating view selectors
         self.__view_selectors = []
         for i in range(0, PersistentState.MAX_VIEWS):
-            num = os.path.join(DATA_PATH, str(i + 1) + ".png")
+            num = os.path.join(GUI_DATA_PATH, str(i + 1) + ".png")
 
             self.__view_selectors.append(DirectButton(image=num,
                                                       pos=(-0.7 + (i % 3) * 0.7, 0.4, -4.4 - 0.5 * (i // 3)),

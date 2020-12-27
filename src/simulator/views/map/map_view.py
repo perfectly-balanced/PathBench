@@ -1,4 +1,3 @@
-from constants import DATA_PATH
 from algorithms.configuration.entities.entity import Entity
 from algorithms.configuration.maps.map import Map
 from algorithms.configuration.maps.occupancy_grid_map import OccupancyGridMap

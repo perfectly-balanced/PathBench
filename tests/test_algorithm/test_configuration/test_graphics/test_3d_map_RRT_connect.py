@@ -7,19 +7,19 @@ from common import init, launch_visualiser
 init()
 launch_visualiser()
 
-from constants import DATA_PATH   # noqa: E402
+from constants import TEST_DATA_PATH   # noqa: E402
 
 
 # Pick 3d cube with RRT-connect
-x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Map.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'map.png'), confidence=0.5)
 pyautogui.click(x + 160, y + 5)
-x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, '3dCube.png'), confidence=0.9)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, '3d_cube.png'), confidence=0.9)
 pyautogui.click(x, y)
-x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'Algorithm.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'algorithm.png'), confidence=0.5)
 pyautogui.click(x + 150, y)
-x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'rrt_connect.png'), confidence=0.8)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'rrt_connect.png'), confidence=0.8)
 pyautogui.click(x, y)
-x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'update.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'update.png'), confidence=0.5)
 pyautogui.click(x, y)
 time.sleep(5)
 
@@ -29,7 +29,7 @@ time.sleep(0.5)
 pyautogui.rightClick(997, 532)
 
 # make traversables transparent for the RRT
-x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'traversables.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
 pyautogui.click(x - 120, y)
 
 # #run algo
@@ -41,10 +41,10 @@ pyautogui.press('o')
 time.sleep(1)
 
 # change trace color
-x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'trace.png'), confidence=0.7)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'trace.png'), confidence=0.7)
 pyautogui.click(x - 70, y)
 time.sleep(0.5)
-x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'color2.png'), confidence=0.8)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'colour_2.png'), confidence=0.8)
 pyautogui.click(x, y)
 time.sleep(1)
 
@@ -64,5 +64,5 @@ pyautogui.press('v')
 time.sleep(0.5)
 pyautogui.press('c')
 time.sleep(0.5)
-x, y = pyautogui.locateCenterOnScreen(os.path.join(DATA_PATH, 'traversables.png'), confidence=0.5)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
 pyautogui.click(x - 120, y)

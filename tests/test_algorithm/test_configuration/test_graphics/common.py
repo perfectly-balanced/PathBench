@@ -11,6 +11,7 @@ from typing import List
 
 SRC_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))), "src")
 DATA_PATH = os.path.join(os.path.dirname(SRC_PATH), os.path.join("data"))
+TEST_DATA_PATH = os.path.join(DATA_PATH, "test")
 RESOURCES_PATH = os.path.join(SRC_PATH, "resources")
 
 g_proc = None
@@ -82,7 +83,7 @@ def mse(img_a, img_b) -> float:
     return err
 
 def wait_for(rel_img: str, delay: float = 0.5, max_attempts: int = 30, confidence: float = 0.5) -> None:
-    img = os.path.join(DATA_PATH, rel_img)
+    img = os.path.join(TEST_DATA_PATH, rel_img)
     for _ in range(max_attempts):
         time.sleep(delay)
         try:
