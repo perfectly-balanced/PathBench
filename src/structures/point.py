@@ -1,4 +1,4 @@
-from typing import Union, Tuple
+from typing import Union, Tuple, Callable
 
 import torch
 import copy
@@ -65,6 +65,22 @@ class Point(torch.Tensor):
     def from_tensor(inp: torch.Tensor) -> 'Point':
         assert len(list(inp.size())) == 1
         return Point(*[int(torch.round(inp[i])) for i in range(list(inp.size())[0])])
+
+    def __apply_arithmetic_op(self, other: 'Point', op: Callable[[Union[float, int], Union[float, int]], Union[float, int]]) -> 'Point':
+        assert type(other) is Point
+        return Point(*(op(i, j) for i, j in zip(self.values, other.values)))
+
+    def __add__(self, other: 'Point') -> 'Point':
+        return self.__apply_arithmetic_op(other, lambda a, b: (a + b))
+
+    def __sub__(self, other: 'Point') -> 'Point':
+        return self.__apply_arithmetic_op(other, lambda a, b: (a - b))
+
+    def __mul__(self, other: 'Point') -> 'Point':
+        return self.__apply_arithmetic_op(other, lambda a, b: (a * b))
+
+    def __truediv__(self, other: 'Point') -> 'Point':
+        return self.__apply_arithmetic_op(other, lambda a, b: (a / b))
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Point) and (self._values == other._values)

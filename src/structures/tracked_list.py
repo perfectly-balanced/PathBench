@@ -1,5 +1,5 @@
 from typing import Any, List, Tuple
-from collections.abc import MutableSequence
+from collections.abc import MutableSequence, Iterable
 from structures.tracked_container import TrackedContainer
 
 """ A TrackedList class, used to keep track of elements, that are being added or removed from a 
@@ -12,9 +12,9 @@ from structures.tracked_container import TrackedContainer
 class TrackedList(TrackedContainer, MutableSequence):
     _list: list
 
-    def __init__(self) -> None:
+    def __init__(self, init: Iterable = []) -> None:
         TrackedContainer.__init__(self)
-        self._list = list()
+        self._list = [x for x in init]
 
     def __len__(self):
         return len(self._list)

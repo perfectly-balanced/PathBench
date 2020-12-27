@@ -18,7 +18,7 @@ class TestPoint(unittest.TestCase):
         point = Point(2, 3)
         self.assertEqual("Point(2, 3)", str(point))
 
-    def test_str_3D(self) -> None:
+    def test_str_3d(self) -> None:
         point = Point(2, 3, 4)
         self.assertEqual("Point(2, 3, 4)", str(point))
 
@@ -27,7 +27,7 @@ class TestPoint(unittest.TestCase):
         point2: Point = Point(2, 3)
         self.assertEqual(point1, point2)
 
-    def test_eq_3D(self) -> None:
+    def test_eq_3d(self) -> None:
         point1: Point = Point(2, 3, 4)
         point2: Point = Point(2, 3, 4)
         self.assertEqual(point1, point2)
@@ -39,7 +39,7 @@ class TestPoint(unittest.TestCase):
         self.assertNotEqual(point1, point2)
         self.assertNotEqual(point1, point3)
 
-    def test_ne_pos_3D(self) -> None:
+    def test_ne_pos_3d(self) -> None:
         point1: Point = Point(2, 3, 4)
         point2: Point = Point(2, 3, 5)
         self.assertNotEqual(point1, point2)

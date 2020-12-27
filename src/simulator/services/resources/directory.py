@@ -3,6 +3,8 @@ import os
 import shutil
 import json
 
+import numpy as np
+
 import dill as pickle  # used to pickle lambdas
 from typing import BinaryIO, Callable, Any
 
@@ -48,7 +50,7 @@ class Directory(Service):
     @staticmethod
     def _default_load(dir: 'Directory', name: str) -> Any:
         fi = Directory._unpickle(name, dir._full_path())
-        #Assuming this is a .json
+        # Assuming this is a .json
         if fi is None:
             return Directory._unjson(name, dir._full_path())
         return fi
@@ -63,7 +65,7 @@ class Directory(Service):
         if not load_function:
             load_function = Directory._default_load
         obj: Any = load_function(self, name)
-        if obj:
+        if (isinstance(obj, np.ndarray) and np.prod(obj.shape) > 0) or obj: # disambiguates boolean check for numpy arrays
             self._services.debug.write("Loaded [{}]".format(self._full_path() + name), DebugLevel.LOW)
         else:
             self._services.debug.write("File not found [{}]".format(self._full_path() + name), DebugLevel.LOW)

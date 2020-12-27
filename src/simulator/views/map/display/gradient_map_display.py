@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union, Dict, Optional
+from typing import List, Tuple, Union, Dict, Optional, Any
 
 import numpy as np
 
@@ -20,7 +20,7 @@ class GradientMapDisplay(MapDisplay):
     __deduced_max_colour: Colour
     __cube_colours: Dict[Point, Colour]
 
-    def __init__(self, services: Services, grid: List[List[Union[int, float]]] = None,
+    def __init__(self, services: Services, grid: Optional[np.ndarray] = None,
                  pts: List[Tuple[Union[int, float], Point]] = None,
                  min_colour: DynamicColour = None, max_colour: DynamicColour = None,
                  value_bounds: Optional[Tuple[Union[int, float], Union[int, float]]] = None,
@@ -53,12 +53,14 @@ class GradientMapDisplay(MapDisplay):
         self.__cube_colours = {}
 
     @staticmethod
-    def __transform_to_points(grid: List[List[Union[int, float]]]) -> List[Tuple[Union[int, float], Point]]:
+    def __transform_to_points(grid: Any) -> List[Tuple[Union[int, float], Point]]:
+        if not isinstance(grid, np.ndarray):
+            return GradientMapDisplay.__transform_to_points(np.array(grid))
+
         ret: List[Tuple[Union[int, float], Point]] = []
 
-        for i in range(len(grid)):
-            for j in range(len(grid[i])):
-                ret.append((grid[i][j], Point(j, i)))
+        for idx in np.ndindex(grid.shape):
+            ret.append((grid[idx], Point(*idx)))
 
         return ret
 

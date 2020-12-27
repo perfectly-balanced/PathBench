@@ -41,8 +41,7 @@ class Bug1(Algorithm):
 
             direction: np.array = np.array(self._get_grid().goal.position) - np.array(self._get_grid().agent.position)
             next_move: Point = self._get_grid().get_move_along_dir(direction)
-            next_pos: Point = Point(self._get_grid().agent.position.x + next_move.x,
-                                    self._get_grid().agent.position.y + next_move.y)
+            next_pos: Point = self._get_grid().agent.position + next_move
             if self._get_grid().is_agent_valid_pos(next_pos):
                 self.move_agent(next_pos)
             else:
@@ -64,8 +63,8 @@ class Bug1(Algorithm):
             :param __agent_dir_idx: The agent direction index
             :return: The obstacle index
             """
-            return (len(self._get_grid().EIGHT_POINTS_MOVE_VECTOR) + __agent_dir_idx - 1) % len(
-                self._get_grid().EIGHT_POINTS_MOVE_VECTOR)
+            return (len(self._get_grid().ALL_POINTS_MOVE_VECTOR) + __agent_dir_idx - 1) % len(
+                self._get_grid().ALL_POINTS_MOVE_VECTOR)
 
         def get_pos_from_dir_idx(dir_idx: int, pos: Point) -> Point:
             """
@@ -74,7 +73,7 @@ class Bug1(Algorithm):
             :param pos: The initial position
             :return: The final position
             """
-            return self._get_grid().apply_move(self._get_grid().EIGHT_POINTS_MOVE_VECTOR[dir_idx], pos)
+            return self._get_grid().apply_move(self._get_grid().ALL_POINTS_MOVE_VECTOR[dir_idx], pos)
 
         def get_obstacle_neighbours(obst_pos: Point, expand: int = 5) -> Set[Point]:
             """
@@ -111,11 +110,11 @@ class Bug1(Algorithm):
                 if agent_pos not in visited and agent_pos in available_pos and new_obstacle_pos in connected_obstacles:
                     visited.add(agent_pos)
                     return __agent_dir_idx, agent_pos, new_obstacle_pos, False
-                __agent_dir_idx = (__agent_dir_idx + 1) % len(self._get_grid().EIGHT_POINTS_MOVE_VECTOR)
+                __agent_dir_idx = (__agent_dir_idx + 1) % len(self._get_grid().ALL_POINTS_MOVE_VECTOR)
                 if prev_agent_dir_index == __agent_dir_idx:
                     return __agent_dir_idx, agent_pos, new_obstacle_pos, True
 
-        agent_dir_idx: int = (obstacle_dir_idx + 1) % len(self._get_grid().EIGHT_POINTS_MOVE_VECTOR)
+        agent_dir_idx: int = (obstacle_dir_idx + 1) % len(self._get_grid().ALL_POINTS_MOVE_VECTOR)
         cur_pos: Point = self._get_grid().agent.position
         min_dist: float = np.linalg.norm(np.array(cur_pos) - np.array(self._get_grid().goal.position))
         min_pos: Point = cur_pos

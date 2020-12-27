@@ -232,6 +232,9 @@ class MapView(View):
         return self._services.graphics.renderer
 
     def __update_cube_colour(self, p):
+        if not bool(self.map.data[p.values] & MapData.TRAVERSABLE_MASK):
+            return # we don't allow colouring obstacles / unmapped, but requesting update is still valid
+        
         self.__cube_colour = self.__deduced_traversables_colour
         for d in self.__cube_update_displays:
             d.update_cube(p)
