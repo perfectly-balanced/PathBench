@@ -39,7 +39,6 @@ def setup(args) -> None:
         launch_process([sys.executable, os.path.join(SRC_PATH, 'main.py'), '-v', '-Vwindowed-fullscreen'],
                        on_kill=lambda _: pyautogui.press('esc'))
 
-
         pyautogui.moveTo(1, 1)
         wait_for('update.png')
 
