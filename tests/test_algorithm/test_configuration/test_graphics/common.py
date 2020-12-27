@@ -10,57 +10,21 @@ import time
 import argparse
 from typing import List, Optional, Callable, Tuple
 
+# add 'PathBench/tests' to system path for module imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+
+from utils import handle_display_args, launch_process, kill_processes, remove_custom_flags, try_delete_file  # noqa: E402
+
 SRC_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))), "src")
 DATA_PATH = os.path.join(os.path.dirname(SRC_PATH), os.path.join("data"))
 TEST_DATA_PATH = os.path.join(DATA_PATH, "test")
 RESOURCES_PATH = os.path.join(SRC_PATH, "resources")
 
-g_procs: List[Tuple[subprocess.Popen, Callable[[subprocess.Popen], None]]] = []
-
-def try_delete_file(fn) -> None:
-    """
-    Attempt to delete a file.
-
-    :param fn: file to delete
-    """
-
-    try:
-        os.remove(fn)
-    except OSError as e:
-        print(e, file=sys.stderr)
-
-def kill_processes() -> None:
-    global g_procs
-
-    for p, on_kill in g_procs:
-        if on_kill:
-            on_kill(p)
-        try:
-            p.communicate(timeout=0.5)
-        except subprocess.TimeoutExpired:
-            p.kill()
-            p.communicate()
-
-    g_procs = []
-
-def launch_process(cmd, on_kill: Callable[[subprocess.Popen], None] = None) -> None:
-    global g_procs
-
-    print(" ".join(cmd))
-    g_procs.append((subprocess.Popen(cmd), on_kill))
-
 def setup(args) -> None:
     atexit.register(kill_processes)
     sys.path.append(SRC_PATH)
 
-    if args.spawn_display:
-        launch_process(["Xvfb", args.spawn_display, "-screen", "0", "2112x1376x24", "-fbdir", "/var/tmp"])
-        os.environ['DISPLAY'] = args.spawn_display
-
-    if args.view_display:
-        display = os.environ['DISPLAY'] if args.view_display == "auto" else args.view_display
-        launch_process(["x11vnc", "-display", display, "-localhost"])
-        launch_process(["vncviewer", "-display", ":0"])
+    handle_display_args(args)
 
     if not args.no_restore_resources_at_exit:
         atexit.register(restore_resources)
@@ -105,14 +69,7 @@ def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool 
     print("args:{}".format(args))
 
     # remove all custom arguments for testing framework
-    for a in ("--spawn-display", "--view-display", "--no-restore-resources-at-exit", "--no-launch-visualiser", "--no-rm-config-file"):
-        for i in range(1, len(sys.argv)):
-            s = sys.argv[i]
-            if s.startswith(a):
-                sys.argv.pop(i)
-                if len(s) == len(a) and len(sys.argv) > i and not sys.argv[i].startswith("-"):
-                    sys.argv.pop(i)  # pop value
-                break
+    remove_custom_flags("--spawn-display", "--view-display", "--no-restore-resources-at-exit", "--no-launch-visualiser", "--no-rm-config-file")
 
     setup(args)
 
