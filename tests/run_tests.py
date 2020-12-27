@@ -64,14 +64,10 @@ def main() -> bool:
         for i in range(1, len(sys.argv)):
             s = sys.argv[i]
             if s.startswith(a):
-                if len(s) == len(a):
-                    sys.argv.pop(i)
-                    if len(sys.argv) > i and not sys.argv[i].startswith("-"):
-                        sys.argv.pop(i)  # pop value
-                    break
-                else:
-                    sys.argv.pop(i)
-                    break
+                sys.argv.pop(i)
+                if len(s) == len(a) and len(sys.argv) > i and not sys.argv[i].startswith("-"):
+                    sys.argv.pop(i)  # pop value
+                break
 
     setup(args)
     return run()
