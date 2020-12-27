@@ -19,10 +19,9 @@ Optional dependency is `ompl` with installation not covered here. There are some
 
 ### Simulator Visualiser Usage
 ```bash
-cd src
-python3 main.py -v
+python3 src/main.py -v
 ```
-You **must** run the main script from the `src` directory as some files are still using paths relative to the current working directory.
+Note, the main script can be run from any working directory as PathBench doesn't use relative paths internally.
 
 | Key               	| Action                                                            	|
 |-------------------	|-------------------------------------------------------------------	|
@@ -42,7 +41,7 @@ Note, screenshots are placed in resources directory.
 
 ## Testing
 
-Dependencies:
+**Dependencies**
 
 ```bash
 pip3 install -r tests/requirements.txt
@@ -51,11 +50,13 @@ sudo apt-get install scrot
 
 ### Headless Testing
 
-Dependencies:
+**Dependencies**
 
 ```bash
 sudo apt-get install x11vnc xvfb xtightvncviewer
 ```
+
+**Example Usage**
 
 Execute the following in the same order as they appear and each one in different terminals (keep everything running):
 
