@@ -1,6 +1,8 @@
 import subprocess
 import os
 import sys
+import time
+from functools import partial
 
 from typing import List, Tuple, Callable
 
@@ -27,8 +29,12 @@ def kill_processes() -> None:
         try:
             p.communicate(timeout=0.5)
         except subprocess.TimeoutExpired:
-            p.kill()
-            p.communicate()
+            p.send_signal(subprocess.signal.SIGTERM)
+            try:
+                p.communicate(timeout=1)
+            except subprocess.TimeoutExpired:
+                p.kill()
+                p.communicate()
 
     g_procs = []
 
@@ -39,21 +45,19 @@ def launch_process(cmd, on_kill: Callable[[subprocess.Popen], None] = None) -> N
     g_procs.append((subprocess.Popen(cmd), on_kill))
 
 def handle_display_args(args) -> None:
-    global g_old_display
-
     if args.spawn_display:
-        def on_display_kill(*discard) -> None:
-            global g_old_display
-
-            if g_old_display is None:
+        cmd = ["Xvfb", args.spawn_display, "-screen", "0", "2112x1376x24", "-fbdir", "/var/tmp"]
+        if 'DISPLAY' in os.environ:
+            def on_display_kill(display, *discard) -> None:
+                os.environ['DISPLAY'] = display
+            launch_process(cmd, partial(on_display_kill, os.environ['DISPLAY']))
+        else:
+            def on_display_kill(*discard) -> None:
                 del os.environ['DISPLAY']
-            else:
-                os.environ['DISPLAY'] = g_old_display
-
-        launch_process(["Xvfb", args.spawn_display, "-screen", "0", "2112x1376x24", "-fbdir", "/var/tmp"], on_display_kill)
-
-        g_old_display = os.environ['DISPLAY'] if 'DISPLAY' in os.environ else None
+            launch_process(cmd, on_display_kill)
+        
         os.environ['DISPLAY'] = args.spawn_display
+        time.sleep(0.8) # wait for display to actually launch
 
     if args.view_display:
         display = os.environ['DISPLAY'] if args.view_display == "auto" else args.view_display
