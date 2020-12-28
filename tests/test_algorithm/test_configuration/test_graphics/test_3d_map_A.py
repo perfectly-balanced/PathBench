@@ -5,9 +5,9 @@ import cv2 as cv
 import unittest
 
 if __name__ == "__main__":
-    from common import init, destroy, mse
+    from common import init, destroy, mse, wait_for
 else:
-    from .common import init, destroy, mse
+    from .common import init, destroy, mse, wait_for
 
 def graphics_test() -> None:
     from constants import RESOURCES_PATH, TEST_DATA_PATH
@@ -48,7 +48,7 @@ def graphics_test() -> None:
     # run algo
     pyautogui.press('t')
 
-    time.sleep(1)
+    wait_for('traversables_new.png')
 
     # pick colours and other modifications of the map
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
@@ -59,12 +59,15 @@ def graphics_test() -> None:
     pyautogui.click(x, y)
     time.sleep(0.5)
 
-    # take default ss
+    wait_for('traversables_new.png')
+
+    # take ss
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
     pyautogui.click(x - 125, y)
     time.sleep(0.5)
     pyautogui.press('o')
-    time.sleep(0.5)
+
+    wait_for('traversables_new.png')
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
     pyautogui.click(x - 125, y)

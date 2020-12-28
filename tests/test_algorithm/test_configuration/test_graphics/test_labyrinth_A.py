@@ -5,9 +5,9 @@ import cv2 as cv
 import unittest
 
 if __name__ == "__main__":
-    from common import init, destroy, mse
+    from common import init, destroy, mse, wait_for
 else:
-    from .common import init, destroy, mse
+    from .common import init, destroy, mse, wait_for
 
 def graphics_test() -> None:
     from constants import RESOURCES_PATH, TEST_DATA_PATH
@@ -36,8 +36,7 @@ def graphics_test() -> None:
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'update.png'), confidence=0.6)
     pyautogui.click(x, y)
 
-    time.sleep(2)
-
+    wait_for('traversables_new.png')
     # pick colours and other modifications of the map
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
     pyautogui.click(x - 85, y)
@@ -49,6 +48,8 @@ def graphics_test() -> None:
 
     # take texture ss
     pyautogui.press('o')
+
+    wait_for('traversables_new.png')
 
     # make traversables transparent
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
@@ -67,10 +68,7 @@ def graphics_test() -> None:
     # get latest screenshot
     list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
     transparent_2 = max(list_of_ss, key=os.path.getctime)
-
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
-    pyautogui.click(x - 125, y)
-
+    time.sleep(1)
     # compare the 2 new screenshots with the expected ones
     expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "labyrinth_A_1.png"))
     expected_transparent_2 = cv.imread(os.path.join(TEST_DATA_PATH, "labyrinth_A_2.png"))

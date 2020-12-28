@@ -5,9 +5,9 @@ import cv2 as cv
 import unittest
 
 if __name__ == "__main__":
-    from common import init, destroy, mse
+    from common import init, destroy, mse, wait_for
 else:
-    from .common import init, destroy, mse
+    from .common import init, destroy, mse, wait_for
 
 def graphics_test() -> None:
     from constants import RESOURCES_PATH, TEST_DATA_PATH
@@ -41,7 +41,8 @@ def graphics_test() -> None:
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'update.png'), confidence=0.5)
     pyautogui.click(x, y)
-    time.sleep(5)
+
+    wait_for('traversables_new.png')
 
     # make traversables transparent for the RRT
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
