@@ -102,7 +102,7 @@ def graphics_test() -> None:
 
     # take texture ss
     pyautogui.press('o')
-    time.sleep(4)
+    time.sleep(3)
 
     # get the latest taken screenshot
     list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
@@ -110,7 +110,7 @@ def graphics_test() -> None:
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'one.png'), confidence=0.7)
     pyautogui.click(x, y)
-    time.sleep(3)
+    time.sleep(0.5)
     # take texture ss
     pyautogui.press('o')
     time.sleep(3)
@@ -144,10 +144,6 @@ def graphics_test() -> None:
     mse_2 = mse(transparent_not_restored_2, transparent_2)
     assert mse_1 < THRESHOLD, mse_1
     assert mse_2 != THRESHOLD, mse_2
-
-
-
-
 
 class GraphicsTestCase(unittest.TestCase):
     def test(self):
