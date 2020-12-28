@@ -57,7 +57,12 @@ def handle_display_args(args) -> None:
             launch_process(cmd, on_display_kill)
         
         os.environ['DISPLAY'] = args.spawn_display
-        time.sleep(0.8) # wait for display to actually launch
+        
+        # wait for display to actually launch
+        for _ in range(20):
+            time.sleep(0.2)
+            if os.path.exists("/var/tmp/Xvfb_screen0"):
+                break
 
     if args.view_display:
         display = os.environ['DISPLAY'] if args.view_display == "auto" else args.view_display

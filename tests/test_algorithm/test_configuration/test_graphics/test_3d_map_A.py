@@ -9,7 +9,7 @@ if __name__ == "__main__":
 else:
     from .common import init, destroy, mse
 
-def graphics_unit_test() -> None:
+def graphics_test() -> None:
     from constants import RESOURCES_PATH, TEST_DATA_PATH
     import pyautogui
 
@@ -91,15 +91,17 @@ def graphics_unit_test() -> None:
     transparent_2 = cv.imread(transparent_2)
 
     # Small error allowed for the top screen high res ss, usually very close to 0
-    assert mse(expected_transparent_1, transparent_1) < 11
-    (mse(expected_transparent_2, transparent_2))
-    assert mse(expected_transparent_2, transparent_2) < 11
+    THRESHOLD = 11
+    mse_1 = mse(expected_transparent_1, transparent_1)
+    mse_2 = mse(expected_transparent_2, transparent_2)
+    assert mse_1 < THRESHOLD, mse_1
+    assert mse_2 < THRESHOLD, mse_2
 
 class GraphicsTestCase(unittest.TestCase):
     def test(self):
         try:
             init()
-            graphics_unit_test()
+            graphics_test()
         finally:
             destroy()
 

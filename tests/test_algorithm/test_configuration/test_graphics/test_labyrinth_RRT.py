@@ -8,7 +8,7 @@ if __name__ == "__main__":
 else:
     from .common import init, destroy
 
-def graphics_unit_test() -> None:
+def graphics_test() -> None:
     from constants import RESOURCES_PATH, TEST_DATA_PATH
     import pyautogui
 
@@ -71,7 +71,7 @@ class GraphicsTestCase(unittest.TestCase):
     def test(self):
         try:
             init()
-            graphics_unit_test()
+            graphics_test()
         finally:
             destroy()
 
