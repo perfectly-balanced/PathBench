@@ -32,7 +32,6 @@ def graphics_unit_test() -> None:
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'lightblue.png'), confidence=0.9)
     pyautogui.click(x, y)
 
-
     # start and end goals
     pyautogui.rightClick(900, 964)
     time.sleep(0.5)
@@ -67,7 +66,6 @@ def graphics_unit_test() -> None:
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
     pyautogui.click(x-120, y)
 
-
 class GraphicsTestCase(unittest.TestCase):
     def test(self):
         try:
@@ -78,4 +76,4 @@ class GraphicsTestCase(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    GraphicsTestCase().run()
+    GraphicsTestCase().test()

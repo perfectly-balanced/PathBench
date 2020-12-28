@@ -77,7 +77,6 @@ def graphics_unit_test() -> None:
     pyautogui.press('o')
     time.sleep(0.5)
 
-
     # wait until ss is saved
     time.sleep(6)
 
@@ -106,4 +105,4 @@ class GraphicsTestCase(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    GraphicsTestCase().run()
+    GraphicsTestCase().test()

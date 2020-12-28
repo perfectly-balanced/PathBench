@@ -78,4 +78,4 @@ class GraphicsTestCase(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    GraphicsTestCase().run()
+    GraphicsTestCase().test()

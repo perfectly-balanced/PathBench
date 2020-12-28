@@ -23,7 +23,6 @@ def graphics_unit_test() -> None:
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'a_star.png'), confidence=0.6)
     pyautogui.click(x, y)
 
-
     # start and end goals coordinate input
     pyautogui.click(342, 545)
     pyautogui.write('17')
@@ -86,17 +85,14 @@ def graphics_unit_test() -> None:
     (mse(expected_transparent_2, transparent_2))
     assert mse(expected_transparent_2, transparent_2) < 1
 
-
 class GraphicsTestCase(unittest.TestCase):
-    def setUp(self):
-        init()
-    
-    def tearDown(self):
-        destroy()
-
     def test(self):
-        graphics_unit_test()
+        try:
+            init()
+            graphics_unit_test()
+        finally:
+            destroy()
 
 
 if __name__ == "__main__":
-    GraphicsTestCase().run()
+    GraphicsTestCase().test()
