@@ -59,18 +59,16 @@ sudo apt-get install x11vnc xvfb xtightvncviewer
 **Example Usage**
 
 1. Running an **individual** test (labyrinth with A* in this case):
-
 ```bash
 python3 tests/test_algorithm/test_configuration/test_graphics/test_labyrinth_A.py --spawn-display --view-display
 ```
 
 2. Running **all** tests:
-
 ```bash
 python3 tests/run_tests.py --spawn-display --view-display
 ```
 
-- Specifying `--view-display` will internally execute `vncviewer`. This will result in a white dialog popup. Press `Enter` when it appears, and the interactive view will subsequently appear. However, do not press `Enter` too soon, otherwise the viewer will be created before the view server has had time to initialise, which will prevent launching the interactive view. Please wait approximately a second before pressing `Enter` to allow other dependent processes to initialise.
+- Specifying `--view-display` will internally execute `vncviewer`. This will result in a white dialog popup. Press `Enter` when it appears, and the interactive view will subsequently appear. However, please wait approximately a second before pressing `Enter`, otherwise the viewer will be created before the view server has had time to initialise, which will prevent launching the interactive view (i.e. no-op).
 - For more usage details specify the help flag `-h`.
 
 Note, to view a screenshot of the screen, execute the following:
