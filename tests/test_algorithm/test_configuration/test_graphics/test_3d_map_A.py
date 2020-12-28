@@ -65,7 +65,7 @@ def graphics_unit_test() -> None:
     pyautogui.press('o')
     time.sleep(0.5)
 
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.4)
     pyautogui.click(x - 120, y)
 
     time.sleep(6)

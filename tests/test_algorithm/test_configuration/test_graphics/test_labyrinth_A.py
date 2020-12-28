@@ -81,9 +81,9 @@ def graphics_unit_test() -> None:
     print(mse(expected_transparent_2, transparent_2))
 
     # Small error allowed for the top screen high res ss, usually very close to 0
-    assert mse(expected_transparent_1, transparent_1) < 1
+    assert mse(expected_transparent_1, transparent_1) < 10
     (mse(expected_transparent_2, transparent_2))
-    assert mse(expected_transparent_2, transparent_2) < 1
+    assert mse(expected_transparent_2, transparent_2) < 10
 
 class GraphicsTestCase(unittest.TestCase):
     def test(self):
