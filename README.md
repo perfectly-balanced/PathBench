@@ -58,35 +58,25 @@ sudo apt-get install x11vnc xvfb xtightvncviewer
 
 **Example Usage**
 
-Execute the following in the same order as they appear and each one in different terminals (keep everything running):
+1. Running an **individual** test (labyrinth with A* in this case):
 
 ```bash
-Xvfb :99 -screen 0 2112x1376x24 -fbdir /var/tmp
-env "DISPLAY=:99" python3 tests/test_algorithm/test_configuration/test_graphics/test_labyrinth_A.py
+python3 tests/test_algorithm/test_configuration/test_graphics/test_labyrinth_A.py --spawn-display --view-display
 ```
 
-To have a live view of the screen, execute the following in the same order as they appear and each one in different terminals (keep everything running):
+2. Running **all** tests:
 
 ```bash
-x11vnc -display :99 -localhost
-vncviewer -display :0
+python3 tests/run_tests.py --spawn-display --view-display
 ```
 
-Note, after executing `vncviewer`, press `Enter` when the white dialog box opens, this will then launch the actual view. Quitting the view will terminate both the `vncviewer` and `x11vnc` processes. Need to re-execute both commands to re-view.
+- Specifying `--view-display` will internally execute `vncviewer`. This will result in a white dialog popup. Press `Enter` when it appears, and the interactive view will subsequently appear. However, do not press `Enter` too soon, otherwise the viewer will be created before the view server has had time to initialise, which will prevent launching the interactive view. Please wait approximately a second before pressing `Enter` to allow other dependent processes to initialise.
+- For more usage details specify the help flag `-h`.
 
-To view a screenshot of the screen, execute the following:
+Note, to view a screenshot of the screen, execute the following:
 
 ```bash
 xwud -in /var/tmp/Xvfb_screen0
-```
-
-When implementing `pyautogui` tests, before calling any `pyautogui` methods, add the following (some places do this implicitly when calling a common `init()`):
-
-```python
-import pyautogui
-import os
-import Xlib.display
-pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ['DISPLAY'])
 ```
 
 ## PathBench

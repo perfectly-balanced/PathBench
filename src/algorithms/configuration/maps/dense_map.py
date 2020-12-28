@@ -17,6 +17,8 @@ from structures import Point, Size
 if TYPE_CHECKING:
     from algorithms.configuration.maps.sparse_map import SparseMap
 
+import warnings
+
 class DenseMap(Map):
     """
     This type of map is not memory efficient as it stores a grid of entities, but it
@@ -33,6 +35,9 @@ class DenseMap(Map):
         arr_grid = None
         if grid is not None:
             arr_grid = np.atleast_2d(np.array(grid))
+            if arr_grid.dtype == object:
+                raise ValueError("Cannot create DenseMap grid from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes)")
+
             super().__init__(Size(*([0]*arr_grid.ndim)), services, mutable)
         else:
             super().__init__(services=services, mutable=mutable)
