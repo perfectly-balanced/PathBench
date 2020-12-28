@@ -1,8 +1,8 @@
 import numpy as np
-
 from collections.abc import Iterable
 from typing import Tuple
-
+import os
+import importlib.util
 
 def fmt_row(width, row):
     out = " | ".join(fmt_item(x, width) for x in row)
@@ -55,3 +55,21 @@ def array_shape(a) -> Tuple[int, ...]:
         return (len(a), *array_shape(a[0]))
     else:
         return (len(a),)
+
+def try_load_algorithm(path):
+    if not os.path.exists(path):
+        return None
+    try:
+        spec = importlib.util.spec_from_file_location("custom_loaded", path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        from algorithms.algorithm import Algorithm
+        # For now, just looking to see if it subclasses "Algorithm"
+        for item_n in dir(module):
+            if item_n.startswith("_"): continue
+            item = getattr(module, item_n)
+            if issubclass(item, Algorithm):
+                return item
+        return None
+    except:
+        return None

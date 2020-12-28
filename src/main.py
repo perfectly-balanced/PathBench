@@ -1,4 +1,11 @@
-import sys
+"""
+
+The MVC pattern was cloned from https://github.com/wesleywerner/mvc-game-design
+
+"""
+
+import copy
+import sys, os
 import argparse
 import re
 
@@ -7,11 +14,12 @@ from screeninfo import get_monitors
 
 from algorithms.configuration.configuration import Configuration
 from algorithms.lstm.trainer import Trainer
-from analyzer.analyzer import Analyzer
+from analyzer.analyzer import Analyzer, available_algorithms
 from generator.generator import Generator
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services, GenericServices
 from simulator.simulator import Simulator
+from utility.misc import try_load_algorithm
 
 class MainRunner:
     main_services: Services
@@ -34,9 +42,55 @@ class MainRunner:
         if self.main_services.settings.clear_cache:
             self.main_services.resources.cache_dir.clear()
 
+def load_all_algorithms(alg_names):
+    # if alg in available: want just alg
+    # if alg in try_load: want name + alg
+    # else return None
+    algs = []
+    for alg_n in alg_names:
+        if alg_n in available_algorithms:
+            algs.append(alg_n)
+        else:
+            alg_cls = try_load_algorithm(alg_n)
+            if alg_cls is None:
+                algs.append(None)
+            else:
+                algs.append((os.path.basename(alg_n), alg_cls))
+    return algs
 
-def configure_and_run(args) -> bool:
+
+def configure_and_run(args):
     config = Configuration()
+    config.num_dim = args.dims
+
+    if args.room_size:
+        config.generator_min_room_size = args.room_size[0]
+        config.generator_max_room_size = args.room_size[1]
+    if args.fill_rate:
+        config.generator_obstacle_fill_min = args.fill_rate[0]
+        config.generator_obstacle_fill_max = args.fill_rate[1]
+    if args.generator_type:
+        config.generator_gen_type = args.generator_gen_type
+    if args.num_maps:
+        config.generator_nr_of_examples = args.num_maps
+
+    if args.list_algorithms:
+        print("Available algorithms:")
+        for key in available_algorithms.keys():
+            print(f"  {key}")
+        print("Or specify your own file with a class that inherits from Algorithm")
+        return True
+    if args.analyzer_algorithms:
+        algorithms = load_all_algorithms(args.analyzer_algorithms)
+        if not all(algorithms):
+            invalid_algorithms = [args.analyzer_algorithms[i] for i in range(len(algorithms)) if algorithms[i] is None]
+            invalid_str = ",".join('"' + a + '"' for a in invalid_algorithms)
+            valid_str = ",".join('"' + a + '"' for a in available_algorithms)
+            print(f"Invalid algorithm(s) specified: {invalid_str}")
+            print(f"Available algorithms: {valid_str}")
+            print("Or specify your own file with a class that inherits from Algorithm")
+            return False
+        config.analyzer_algorithms = algorithms
 
     if args.visualiser:
         config.load_simulator = True
@@ -96,6 +150,9 @@ def configure_and_run(args) -> bool:
 
     config.simulator_write_debug_level = getattr(DebugLevel, args.debug)
 
+    if args.analyzer or args.analyzer_algorithms: # analyzer_algorithms implies analyzer
+        config.analyzer = True
+    
     mr = MainRunner(config)
     mr.run()
     return True
@@ -110,6 +167,14 @@ def main() -> bool:
     parser.add_argument("-d", "--debug", choices=['NONE', 'BASIC', 'LOW', 'MEDIUM', 'HIGH'], default='HIGH', help="set the debug level when running, default is high")
     parser.add_argument("-V", dest="visualiser_flags", metavar="VISUALISER_FLAG", action='append',
                         help="Visualiser options (overriding Panda3D's default Config.prc - see https://docs.panda3d.org/1.10/python/programming/configuration/configuring-panda3d#configuring-panda3d for options [windowed-fullscreen is an additional custom option])")
+    parser.add_argument("-a", "--analyzer", action='store_true', help="run analyzer")
+    parser.add_argument("--analyzer-algorithms", help="Select the algorithms to analyze", nargs="+")
+    parser.add_argument("--list-algorithms", action="store_true", help="Print out a list of available algorithms")
+    parser.add_argument("--dims", type=int, help="Set number of dimensions (generator/analyzer)", default=3)
+    parser.add_argument("--room-size", nargs=2, type=int, help="Set min/max room size in generator, in format \"min max\"")
+    parser.add_argument("--fill-rate", nargs=2, type=float, help="Set min/max fill rate in random fill rooms")
+    parser.add_argument("--generator-type", choices=list(Generator.AVAILABLE_GENERATION_METHODS), help="Choose generator type")
+    parser.add_argument("--num-maps", type=int, help="Number of maps to generate")
 
     args = parser.parse_args()
     print("args:{}".format(args))

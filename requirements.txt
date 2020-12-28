@@ -1,10 +1,10 @@
 torch
 numpy
+matplotlib
 nptyping
 panda3d
 pandas
 sklearn
-matplotlib
 torchvision
 memory_profiler
 seaborn
