@@ -64,11 +64,12 @@ def graphics_unit_test() -> None:
 
 class GraphicsTestCase(unittest.TestCase):
     def test(self):
-        init()
         try:
+            init()
             graphics_unit_test()
         finally:
             destroy()
+
 
 if __name__ == "__main__":
     GraphicsTestCase().run()

@@ -97,5 +97,6 @@ class GraphicsTestCase(unittest.TestCase):
     def test(self):
         graphics_unit_test()
 
+
 if __name__ == "__main__":
     GraphicsTestCase().run()

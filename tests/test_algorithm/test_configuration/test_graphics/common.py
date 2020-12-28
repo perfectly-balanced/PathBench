@@ -47,8 +47,6 @@ def setup(args) -> None:
         pyautogui.moveTo(1, 1)
         wait_for('update.png')
 
-g_ref = 0
-
 def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool = False, no_rm_config_file: bool = False) -> None:
     parser = argparse.ArgumentParser(prog="common.py",
                                      description="PathBench individual test initialiser",
@@ -68,10 +66,6 @@ def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool 
     if no_rm_config_file:
         sys.argv.append("--no-rm-config-file")
 
-    global g_ref
-    g_ref += 1
-    assert g_ref == 1
-
     args = parser.parse_known_args()[0]
     print("args:{}".format(args))
 
@@ -79,10 +73,6 @@ def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool 
 
 def destroy() -> None:
     global g_restore_resources
-
-    global g_ref
-    g_ref -= 1
-    assert g_ref == 0
 
     kill_processes()
 

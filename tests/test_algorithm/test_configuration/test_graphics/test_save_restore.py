@@ -95,14 +95,14 @@ def graphics_unit_test() -> None:
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'six.png'), confidence=0.9)
     pyautogui.click(x, y)
 
-
 class GraphicsTestCase(unittest.TestCase):
     def test(self):
-        init()
         try:
+            init()
             graphics_unit_test()
         finally:
             destroy()
+
 
 if __name__ == "__main__":
     GraphicsTestCase().run()
