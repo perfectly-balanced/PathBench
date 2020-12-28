@@ -81,7 +81,7 @@ def graphics_test() -> None:
     print(mse(expected_transparent_2, transparent_2))
 
     # Small error allowed for the top screen high res ss, usually very close to 0
-    THRESHOLD = 11
+    THRESHOLD = 300
     mse_1 = mse(expected_transparent_1, transparent_1)
     mse_2 = mse(expected_transparent_2, transparent_2)
     assert mse_1 < THRESHOLD, mse_1
