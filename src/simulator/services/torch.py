@@ -1,4 +1,5 @@
 import torch
+import warnings
 
 from simulator.services.debug import DebugLevel
 from simulator.services.service import Service
@@ -13,8 +14,11 @@ class Torch(Service):
         super().__init__(_services)
 
         self.__device = None
-        self.__init_seed()
-        self.__init_device()
+
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", ".*CUDA initialization.*")
+            self.__init_seed()
+            self.__init_device()
 
     def __init_seed(self):
         if torch.cuda.is_available():

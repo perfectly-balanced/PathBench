@@ -36,7 +36,7 @@ def setup(args) -> None:
         pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ['DISPLAY'])
 
     if not args.no_launch_visualiser:
-        launch_process([sys.executable, os.path.join(SRC_PATH, 'main.py'), '-v', '-Vwindowed-fullscreen'],
+        launch_process([sys.executable, os.path.join(SRC_PATH, 'main.py'), '-v', '-Vwindowed-fullscreen', '-Vaudio-library-name=null'],
                        on_kill=lambda _: pyautogui.press('esc'))
 
         pyautogui.moveTo(1, 1)
