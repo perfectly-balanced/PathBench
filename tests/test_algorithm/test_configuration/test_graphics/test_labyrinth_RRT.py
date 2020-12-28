@@ -59,7 +59,10 @@ def graphics_test() -> None:
 
     # compare the new screenshot with the expected one
     expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "labyrinth_RRT_1.png"))
+    assert os.path.exists(transparent_1), transparent_1
     transparent_1 = cv.imread(transparent_1)
+    assert transparent_1 is not None
+    assert expected_transparent_1 is not None
 
     # RRT does not run exactly the same every time, so allow bigger rate
     THRESHOLD = 3600
