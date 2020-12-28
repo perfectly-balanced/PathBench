@@ -35,9 +35,9 @@ pyautogui.write('4')
 
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'update.png'), confidence=0.6)
 pyautogui.click(x, y)
-# pyautogui.press('w', presses=5000)
 
 time.sleep(2)
+
 # pick colours and other modifications of the map
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.6)
 pyautogui.click(x - 78, y)

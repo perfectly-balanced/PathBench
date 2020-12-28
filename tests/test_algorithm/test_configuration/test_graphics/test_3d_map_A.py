@@ -2,14 +2,15 @@ import time
 import pyautogui
 import os
 import sys
+import glob
+import cv2 as cv
 
 if __name__ == "__main__":
-    from common import init, TEST_DATA_PATH
+    from common import init, mse, RESOURCES_PATH, TEST_DATA_PATH
 else:
     from .common import init, TEST_DATA_PATH
 
 init()
-
 
 # Pick 3d cube with A*
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'map.png'), confidence=0.5)
@@ -20,41 +21,77 @@ x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'algorithm.pn
 pyautogui.click(x + 150, y)
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'a_star.png'), confidence=0.5)
 pyautogui.click(x, y)
+
+# start and end goals coordinate input
+pyautogui.click(342, 545)
+pyautogui.write('1')
+pyautogui.doubleClick(422, 545)
+pyautogui.write('1')
+pyautogui.doubleClick(502, 545)
+pyautogui.write('1')
+time.sleep(0.5)
+pyautogui.doubleClick(342, 617)
+pyautogui.write('13')
+time.sleep(0.5)
+pyautogui.doubleClick(422, 617)
+pyautogui.write('1')
+pyautogui.doubleClick(502, 617)
+pyautogui.write('13')
+
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'update.png'), confidence=0.5)
 pyautogui.click(x, y)
-time.sleep(5)
 
-# rotate map to pick a pos
-pyautogui.press('a', presses=5500)
-pyautogui.rightClick(997, 532)
+# temporary
+time.sleep(5)
 
 # run algo
 pyautogui.press('t')
+
 time.sleep(1)
 
 # pick colours and other modifications of the map
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
 pyautogui.click(x - 78, y)
+
 time.sleep(0.5)
+
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'colour_1.png'), confidence=0.7)
 pyautogui.click(x, y)
 
-# take transparent default ss
+# take default ss
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
 pyautogui.click(x - 120, y)
 pyautogui.press('o')
-time.sleep(1)
+time.sleep(0.5)
 
-# take scene ss
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
 pyautogui.click(x - 120, y)
-pyautogui.press('c')
-time.sleep(0.5)
-pyautogui.press('v')
-time.sleep(0.5)
-pyautogui.press('p')
+
+time.sleep(2)
+# get latest screenshot
+list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
+transparent_1 = max(list_of_ss, key=os.path.getctime)
+
+# take new transparent ss
+pyautogui.press('o')
 time.sleep(0.5)
 
-# restore changes
-pyautogui.press('v')
-pyautogui.press('c')
+
+
+# wait until ss is saved
+time.sleep(3)
+
+# get latest screenshot
+list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
+transparent_2 = max(list_of_ss, key=os.path.getctime)
+
+# compare the 2 new screenshots with the expected ones
+expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "3d_A_1.png"))
+expected_transparent_2 = cv.imread(os.path.join(TEST_DATA_PATH, "3d_A_2.png"))
+transparent_1 = cv.imread(transparent_1)
+transparent_2 = cv.imread(transparent_2)
+
+# Small error allowed for the top screen high res ss, usually very close to 0
+assert mse(expected_transparent_1, transparent_1) < 11
+(mse(expected_transparent_2, transparent_2))
+assert mse(expected_transparent_2, transparent_2) < 11
