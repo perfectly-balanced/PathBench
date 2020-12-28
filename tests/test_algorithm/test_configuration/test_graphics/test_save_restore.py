@@ -143,7 +143,7 @@ def graphics_test() -> None:
     mse_1 = mse(transparent_restored_1, transparent_1)
     mse_2 = mse(transparent_not_restored_2, transparent_2)
     assert mse_1 < THRESHOLD, mse_1
-    assert mse_2 != THRESHOLD, mse_2
+    assert mse_2 > THRESHOLD, mse_2
 
 class GraphicsTestCase(unittest.TestCase):
     def test(self):

@@ -49,17 +49,17 @@ def graphics_test() -> None:
     pyautogui.press('o')
 
     # wait until ss is saved
-    time.sleep(3)
+    time.sleep(4)
 
     # get latest screenshot
     list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
     transparent_1 = max(list_of_ss, key=os.path.getctime)
 
+    time.sleep(3)
+
     # compare the new screenshot with the expected one
     expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "labyrinth_RRT_1.png"))
     transparent_1 = cv.imread(transparent_1)
-    time.sleep(1)
-    print(transparent_1, expected_transparent_1)
 
     # RRT does not run exactly the same every time, so allow bigger rate
     THRESHOLD = 3600
