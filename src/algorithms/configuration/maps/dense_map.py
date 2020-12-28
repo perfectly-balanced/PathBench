@@ -17,7 +17,6 @@ from structures import Point, Size
 if TYPE_CHECKING:
     from algorithms.configuration.maps.sparse_map import SparseMap
 
-import warnings
 
 class DenseMap(Map):
     """
