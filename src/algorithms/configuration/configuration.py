@@ -81,9 +81,9 @@ class Configuration:
 
         # Generator
         self.generator = False
-        self.generator_labelling_atlases = ['uniform_random_fill_120', 'block_map_120', 'house_120']
-        self.generator_nr_of_examples = 120
-        self.generator_gen_type = "house"
+        self.generator_labelling_atlases = ['block_map_100']
+        self.generator_nr_of_examples = 100
+        self.generator_gen_type = "block_map"
         self.generator_labelling_features = ["distance_to_goal_normalized",
                 "raycast_8_normalized",
                 "direction_to_goal_normalized",

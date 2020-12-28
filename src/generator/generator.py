@@ -21,7 +21,8 @@ from simulator.services.resources.atlas import Atlas
 from simulator.services.services import Services
 from simulator.services.timer import Timer
 from simulator.simulator import Simulator
-from structures import Point, Size
+from structures.point import Point
+from structures.size import Size
 from matplotlib import pyplot as plt
 if TYPE_CHECKING:
     from main import MainRunner
@@ -276,7 +277,7 @@ class Generator:
     def __can_place_square(self, size: Size, top_left_corner: Point, dimensions: Size) -> bool:
         for index in np.ndindex(*([2]*size.n_dim)):
             d_add = [x * y for (x, y) in zip([*index], [*size])]
-            p = Point(*np.add(top_left_corner, d_add))
+            p = Point(*(np.add(top_left_corner.pos, d_add)))
             if not self.__in_bounds(p, dimensions):
                 return False
 
