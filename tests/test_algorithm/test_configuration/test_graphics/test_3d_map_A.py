@@ -78,7 +78,7 @@ def graphics_unit_test() -> None:
     time.sleep(0.5)
 
     # wait until ss is saved
-    time.sleep(6)
+    time.sleep(10)
 
     # get latest screenshot
     list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))

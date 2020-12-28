@@ -62,7 +62,7 @@ def graphics_unit_test() -> None:
     pyautogui.press('o')
 
     # wait until ss is saved
-    time.sleep(3)
+    time.sleep(10)
 
     # get latest screenshot
     list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
