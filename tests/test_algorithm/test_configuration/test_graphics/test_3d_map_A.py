@@ -51,8 +51,8 @@ def graphics_test() -> None:
     time.sleep(1)
 
     # pick colours and other modifications of the map
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
-    pyautogui.click(x - 78, y)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
+    pyautogui.click(x - 85, y)
 
     time.sleep(0.5)
 
@@ -60,14 +60,14 @@ def graphics_test() -> None:
     pyautogui.click(x, y)
 
     # take default ss
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
-    pyautogui.click(x - 120, y)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
+    pyautogui.click(x - 125, y)
     time.sleep(0.5)
     pyautogui.press('o')
     time.sleep(0.5)
 
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
-    pyautogui.click(x - 120, y)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
+    pyautogui.click(x - 125, y)
 
     time.sleep(4)
     # get latest screenshot
