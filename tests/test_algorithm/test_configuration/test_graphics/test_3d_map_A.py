@@ -66,7 +66,7 @@ time.sleep(0.5)
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
 pyautogui.click(x - 120, y)
 
-time.sleep(2)
+time.sleep(6)
 # get latest screenshot
 list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
 transparent_1 = max(list_of_ss, key=os.path.getctime)
@@ -78,7 +78,7 @@ time.sleep(0.5)
 
 
 # wait until ss is saved
-time.sleep(3)
+time.sleep(6)
 
 # get latest screenshot
 list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
