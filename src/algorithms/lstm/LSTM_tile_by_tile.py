@@ -61,6 +61,7 @@ class BasicLSTMModule(MLModel):
 
         perm = self.get_sort_by_lengths_indices(x_len)
         y_sorted, _ = self.pack_data(y, x_len, perm)
+        #y_sorted = y_sorted.to(self._services.torch.device)
         #import pdb; pdb.set_trace()
 
         x = x.to(self._services.torch.device)

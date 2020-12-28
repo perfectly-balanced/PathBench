@@ -278,7 +278,7 @@ class Generator:
     def __can_place_square(self, size: Size, top_left_corner: Point, dimensions: Size) -> bool:
         for index in np.ndindex(*([2]*size.n_dim)):
             d_add = [x * y for (x, y) in zip([*index], [*size])]
-            p = Point(*np.add(top_left_corner, d_add))
+            p = Point(*(np.add(top_left_corner.pos, d_add)))
             if not self.__in_bounds(p, dimensions):
                 return False
 
