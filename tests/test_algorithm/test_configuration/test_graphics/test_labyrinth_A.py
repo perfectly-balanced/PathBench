@@ -1,6 +1,5 @@
 import time
 import os
-import sys
 import glob
 import cv2 as cv
 import pyautogui
@@ -16,7 +15,7 @@ x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'map.png'), c
 pyautogui.click(x + 160, y + 5)
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'labyrinth_new.png'), confidence=0.6)
 pyautogui.click(x, y)
-x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'algorithm_new.png'), confidence=0.6)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'algorithm_new.png'), confidence=0.5)
 pyautogui.click(x + 150, y)
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'a_star.png'), confidence=0.6)
 pyautogui.click(x, y)
@@ -50,7 +49,7 @@ time.sleep(0.5)
 pyautogui.press('o')
 
 # make traversables transparent
-x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.6)
+x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
 pyautogui.click(x - 120, y)
 
 # get the latest taken screenshot

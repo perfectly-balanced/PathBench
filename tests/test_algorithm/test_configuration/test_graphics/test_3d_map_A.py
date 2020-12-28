@@ -1,14 +1,13 @@
 import time
 import pyautogui
 import os
-import sys
 import glob
 import cv2 as cv
 
 if __name__ == "__main__":
     from common import init, mse, RESOURCES_PATH, TEST_DATA_PATH
 else:
-    from .common import init, TEST_DATA_PATH
+    from .common import init, mse, RESOURCES_PATH, TEST_DATA_PATH
 
 init()
 
