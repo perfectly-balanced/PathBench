@@ -20,13 +20,18 @@ DATA_PATH = os.path.join(os.path.dirname(SRC_PATH), os.path.join("data"))
 TEST_DATA_PATH = os.path.join(DATA_PATH, "test")
 RESOURCES_PATH = os.path.join(SRC_PATH, "resources")
 
+g_restore_resources: bool = False
+
 def setup(args) -> None:
+    global g_restore_resources
+    
     atexit.register(kill_processes)
     sys.path.append(SRC_PATH)
 
     handle_display_args(args)
 
-    if not args.no_restore_resources_at_exit:
+    g_restore_resources = not args.no_restore_resources_at_exit
+    if g_restore_resources:
         atexit.register(restore_resources)
 
     if not args.no_rm_config_file:
@@ -62,10 +67,18 @@ def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool 
     if no_rm_config_file:
         sys.argv.append("--no-rm-config-file")
 
-    args, sys.argv = parser.parse_known_args()
+    args = parser.parse_known_args()[0]
     print("args:{}".format(args))
 
     setup(args)
+
+def destroy() -> None:
+    global g_restore_resources
+
+    kill_processes()
+
+    if g_restore_resources:
+        restore_resources()
 
 def restore_resources() -> None:
     cmd = ["git", "restore", "--source=HEAD", "--staged", "--worktree", "--", RESOURCES_PATH]

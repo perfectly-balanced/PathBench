@@ -4,9 +4,9 @@ import os
 import sys
 
 if __name__ == "__main__":
-    from common import init, TEST_DATA_PATH
+    from common import init, destroy, TEST_DATA_PATH
 else:
-    from .common import init, TEST_DATA_PATH
+    from .common import init, destroy, TEST_DATA_PATH
 
 init()
 
@@ -59,3 +59,5 @@ pyautogui.press('c')
 time.sleep(0.5)
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables.png'), confidence=0.5)
 pyautogui.click(x - 120, y)
+
+destroy()

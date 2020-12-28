@@ -5,9 +5,9 @@ import glob
 import cv2 as cv
 
 if __name__ == "__main__":
-    from common import init, mse, RESOURCES_PATH, TEST_DATA_PATH
+    from common import init, destroy, mse, RESOURCES_PATH, TEST_DATA_PATH
 else:
-    from .common import init, mse, RESOURCES_PATH, TEST_DATA_PATH
+    from .common import init, destroy, mse, RESOURCES_PATH, TEST_DATA_PATH
 
 init()
 
@@ -94,3 +94,5 @@ transparent_2 = cv.imread(transparent_2)
 assert mse(expected_transparent_1, transparent_1) < 11
 (mse(expected_transparent_2, transparent_2))
 assert mse(expected_transparent_2, transparent_2) < 11
+
+destroy()

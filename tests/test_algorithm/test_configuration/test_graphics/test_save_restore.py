@@ -4,12 +4,11 @@ import os
 import sys
 
 if __name__ == "__main__":
-    from common import init, TEST_DATA_PATH
+    from common import init, destroy, TEST_DATA_PATH
 else:
-    from .common import init, TEST_DATA_PATH
+    from .common import init, destroy, TEST_DATA_PATH
 
 init()
-
 
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'map.png'), confidence=0.5)
 pyautogui.click(x + 160, y + 5)
@@ -44,7 +43,6 @@ time.sleep(0.5)
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'orange.png'), confidence=0.9)
 pyautogui.click(x, y)
 time.sleep(0.5)
-
 
 # run
 pyautogui.press('t')
@@ -94,3 +92,5 @@ x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'five.png'), 
 pyautogui.click(x, y)
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'six.png'), confidence=0.9)
 pyautogui.click(x, y)
+
+destroy()
