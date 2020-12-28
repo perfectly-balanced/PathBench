@@ -53,11 +53,11 @@ def graphics_test() -> None:
     # pick colours and other modifications of the map
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
     pyautogui.click(x - 85, y)
-
     time.sleep(0.5)
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'colour_1.png'), confidence=0.7)
     pyautogui.click(x, y)
+    time.sleep(0.5)
 
     # take default ss
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
