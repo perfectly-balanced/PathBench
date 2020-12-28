@@ -91,7 +91,7 @@ class BasicLSTMModule(MLModel):
     def pack_data(seq: torch.Tensor, lengths: torch.Tensor, perm: List[int] = None) -> Tuple[PackedSequence, List[int]]:
         if not perm:
             perm = BasicLSTMModule.get_sort_by_lengths_indices(lengths)
-        return pack_padded_sequence(seq[perm], lengths[perm], batch_first=True), perm
+        return pack_padded_sequence(seq[perm], lengths[perm].cpu(), batch_first=True), perm
 
     def forward(self, x: torch.Tensor, x_len: torch.Tensor, perm: List[int] = None) -> torch.Tensor:
         normalized_x = self._normalisation_layer1(x.view((-1, x.shape[-1]))).view(x.shape)
