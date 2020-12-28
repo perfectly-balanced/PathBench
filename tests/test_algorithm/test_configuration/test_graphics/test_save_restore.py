@@ -12,6 +12,7 @@ else:
 def graphics_test() -> None:
     from constants import RESOURCES_PATH, TEST_DATA_PATH
     import pyautogui
+
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'map.png'), confidence=0.5)
     pyautogui.click(x + 160, y + 5)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'labyrinth_new.png'), confidence=0.5)
