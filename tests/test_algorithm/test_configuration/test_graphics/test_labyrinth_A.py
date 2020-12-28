@@ -2,14 +2,16 @@ import time
 import os
 import glob
 import cv2 as cv
-import pyautogui
 
 if __name__ == "__main__":
-    from common import init, destroy, mse, RESOURCES_PATH, TEST_DATA_PATH
+    from common import init, destroy, mse
 else:
-    from .common import init, destroy, mse, RESOURCES_PATH, TEST_DATA_PATH
+    from .common import init, destroy, mse
 
 init()
+
+from constants import RESOURCES_PATH, TEST_DATA_PATH  # noqa: E402
+import pyautogui  # noqa: E402
 
 # Select map Labyrinth, A* algorithm, update
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'map.png'), confidence=0.6)

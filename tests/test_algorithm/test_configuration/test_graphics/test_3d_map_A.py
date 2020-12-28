@@ -1,15 +1,17 @@
 import time
-import pyautogui
 import os
 import glob
 import cv2 as cv
 
 if __name__ == "__main__":
-    from common import init, destroy, mse, RESOURCES_PATH, TEST_DATA_PATH
+    from common import init, destroy, mse
 else:
-    from .common import init, destroy, mse, RESOURCES_PATH, TEST_DATA_PATH
+    from .common import init, destroy, mse
 
 init()
+
+from constants import RESOURCES_PATH, TEST_DATA_PATH  # noqa: E402
+import pyautogui  # noqa: E402
 
 # Pick 3d cube with A*
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'map.png'), confidence=0.5)
@@ -74,7 +76,6 @@ transparent_1 = max(list_of_ss, key=os.path.getctime)
 # take new transparent ss
 pyautogui.press('o')
 time.sleep(0.5)
-
 
 
 # wait until ss is saved

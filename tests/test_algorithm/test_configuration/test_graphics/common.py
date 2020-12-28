@@ -1,5 +1,4 @@
 import Xlib.display
-import pyautogui
 import numpy as np
 
 import atexit
@@ -13,32 +12,33 @@ from typing import List, Optional, Callable, Tuple
 # add 'PathBench/tests' to system path for module imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
-from utils import handle_display_args, launch_process, kill_processes, try_delete_file  # noqa: E402
+from utils import make_src_modules_importable, handle_display_args, launch_process, kill_processes, try_delete_file  # noqa: E402
 
-SRC_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))), "src")
-DATA_PATH = os.path.join(os.path.dirname(SRC_PATH), os.path.join("data"))
-TEST_DATA_PATH = os.path.join(DATA_PATH, "test")
-RESOURCES_PATH = os.path.join(SRC_PATH, "resources")
+# add src folder to system path
+make_src_modules_importable()
+
+from constants import SRC_PATH, RESOURCES_PATH, TEST_DATA_PATH
 
 g_restore_resources: bool = False
 
 def setup(args) -> None:
     global g_restore_resources
     
-    atexit.register(kill_processes)
-    sys.path.append(SRC_PATH)
+    atexit.register(destroy)
 
     handle_display_args(args)
 
     g_restore_resources = not args.no_restore_resources_at_exit
-    if g_restore_resources:
-        atexit.register(restore_resources)
 
     if not args.no_rm_config_file:
         try_delete_file("./.pathbench.json")
 
-    if "DISPLAY" in os.environ:
-        pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ['DISPLAY'])
+    # import pyautogui after setting up virtual display otherwise import
+    # will fail on system with no display as $DISPLAY hasn't been set.
+    import pyautogui
+
+    # enforce correct display being used
+    pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ['DISPLAY'])
 
     if not args.no_launch_visualiser:
         launch_process([sys.executable, os.path.join(SRC_PATH, 'main.py'), '-v', '-Vwindowed-fullscreen', '-Vaudio-library-name=null'],
@@ -47,6 +47,7 @@ def setup(args) -> None:
         pyautogui.moveTo(1, 1)
         wait_for('update.png')
 
+g_ref = 0
 
 def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool = False, no_rm_config_file: bool = False) -> None:
     parser = argparse.ArgumentParser(prog="common.py",
@@ -67,6 +68,10 @@ def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool 
     if no_rm_config_file:
         sys.argv.append("--no-rm-config-file")
 
+    global g_ref
+    g_ref += 1
+    assert g_ref == 1
+
     args = parser.parse_known_args()[0]
     print("args:{}".format(args))
 
@@ -75,10 +80,16 @@ def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool 
 def destroy() -> None:
     global g_restore_resources
 
+    global g_ref
+    g_ref -= 1
+    assert g_ref == 0
+
     kill_processes()
 
     if g_restore_resources:
         restore_resources()
+    
+    atexit.unregister(destroy)
 
 def restore_resources() -> None:
     cmd = ["git", "restore", "--source=HEAD", "--staged", "--worktree", "--", RESOURCES_PATH]
@@ -88,6 +99,8 @@ def restore_resources() -> None:
     subprocess.check_call(cmd)
 
 def wait_for(rel_img: str, delay: float = 0.5, max_attempts: int = 30, confidence: float = 0.5) -> None:
+    import pyautogui
+
     img = os.path.join(TEST_DATA_PATH, rel_img)
     for _ in range(max_attempts):
         time.sleep(delay)

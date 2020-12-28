@@ -1,15 +1,16 @@
 import time
-import pyautogui
 import os
 import sys
 
 if __name__ == "__main__":
-    from common import init, destroy, TEST_DATA_PATH
+    from common import init, destroy
 else:
-    from .common import init, destroy, TEST_DATA_PATH
+    from .common import init, destroy
 
 init()
 
+from constants import TEST_DATA_PATH  # noqa: E402
+import pyautogui  # noqa: E402
 
 # Select map Labyrinth, RRT algorithm
 x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'map.png'), confidence=0.5)

@@ -1,14 +1,16 @@
 import sys
 import os
-import pyautogui
 import time
 
 if __name__ == "__main__":
-    from common import init, destroy, TEST_DATA_PATH
+    from common import init, destroy
 else:
-    from .common import init, destroy, TEST_DATA_PATH
+    from .common import init, destroy
 
 init()
+
+from constants import TEST_DATA_PATH  # noqa: E402
+import pyautogui  # noqa: E402
 
 
 # Pick 3d cube with RRT-connect
