@@ -1,5 +1,6 @@
 import copy
 import math
+import os
 from typing import List, Any, Tuple, Dict
 
 import torch
@@ -10,6 +11,7 @@ import pandas
 from torch import nn
 from torch.nn import functional as F
 from torch.utils.data import Dataset, TensorDataset, Subset
+from torchvision import transforms, datasets
 
 from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.maps.map import Map
@@ -17,8 +19,7 @@ from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule, OnlineLSTM
 from algorithms.lstm.ML_model import MLModel, EvaluationResults
 from algorithms.lstm.map_processing import MapProcessing
 from simulator.services.services import Services
-from torchvision import transforms, datasets
-
+from constants import DATA_PATH
 
 
 class CAEEncoder(nn.Module):
@@ -264,7 +265,7 @@ class CAE(MLModel):
             transforms.ToTensor(),
             transforms.Normalize(mean=(0.5,), std=(0.5,))
         ])
-        mnist = datasets.MNIST("./resources/datasets", train=True, download=True, transform=transform)
+        mnist = datasets.MNIST(os.path.join(DATA_PATH, "datasets"), train=True, download=True, transform=transform)
         if self.config["mnist_size"]:
             return Subset(mnist, range(self.config["mnist_size"])), Subset(copy.deepcopy(mnist), range(self.config["mnist_size"]))
         else:

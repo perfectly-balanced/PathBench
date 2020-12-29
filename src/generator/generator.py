@@ -1,11 +1,16 @@
-import torch
-from typing import Tuple, List, TYPE_CHECKING, Dict, Callable, Type, Set, Any, Optional
 
-import numpy as np
-from itertools import product
 import math
 import os
 import json
+from itertools import product
+from typing import Tuple, List, TYPE_CHECKING, Dict, Callable, Type, Set, Any, Optional
+
+import torch
+import numpy as np
+from matplotlib import pyplot as plt
+from natsort import natsorted
+
+from algorithms.lstm.LSTM_CAE_tile_by_tile import CAE
 from algorithms.classic.graph_based.a_star import AStar
 from algorithms.classic.testing.a_star_testing import AStarTesting
 from algorithms.configuration.configuration import Configuration
@@ -21,12 +26,10 @@ from simulator.services.services import Services
 from simulator.services.timer import Timer
 from simulator.simulator import Simulator
 from structures import Point, Size
-from matplotlib import pyplot as plt
+from constants import DATA_PATH
+
 if TYPE_CHECKING:
     from main import MainRunner
-from natsort import natsorted
-
-from algorithms.lstm.LSTM_CAE_tile_by_tile import CAE
 
 
 class Generator:
@@ -138,7 +141,7 @@ class Generator:
         self.__services.debug.write("Extended walls in " + str(timer.stop()) + " seconds", DebugLevel.BASIC)
         map_name: str = str(image_name.split('.')[0]) + ".pickle"
         if house_expo_flag:
-            path = "resources/maps/_house_expo/"
+            path = os.path.join(os.path.join(DATA_PATH, "maps"), "house_expo")
             self.__services.resources.house_expo_dir.save(map_name, res_map, path)
         else:
             self.__services.resources.maps_dir.save(map_name, res_map)
@@ -731,9 +734,9 @@ class Generator:
         self.__services.resources.maps_dir.save(map_name, mp)
 
     def convert_house_expo(self):
-        path = './resources/house_expo/'
+        path = os.path.join(os.path.join(DATA_PATH, "maps"), "house_expo")
         print("Taking images from" + path)
-        # print(os.listdir(path))
+
         for filename in natsorted(os.listdir(path)):
             print('filename:', filename)
             self.generate_map_from_image(filename, True, 2, True)
