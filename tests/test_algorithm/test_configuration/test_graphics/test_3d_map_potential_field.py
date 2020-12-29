@@ -9,35 +9,37 @@ if __name__ == "__main__":
 else:
     from .common import init, destroy, mse, wait_for
 
+
 def graphics_test() -> None:
     from constants import RESOURCES_PATH, TEST_DATA_PATH
     import pyautogui
 
-    # Pick 3d cube with RRT-connect
+    # Pick Uniform Random Fill 3D with Potential Field
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'map.png'), confidence=0.5)
     pyautogui.click(x + 160, y + 5)
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, '3d_cube.png'), confidence=0.8)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'uniform.png'), confidence=0.9)
     pyautogui.click(x, y)
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'algorithm_new.png'), confidence=0.5)
+    time.sleep(0.5)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'algorithm_new.png'), confidence=0.55)
     pyautogui.click(x + 150, y)
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'rrt_connect.png'), confidence=0.7)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'potential_field.png'), confidence=0.9)
     pyautogui.click(x, y)
 
     # start and end goals coordinate input
     pyautogui.click(342, 545)
-    pyautogui.write('1')
+    pyautogui.write('6')
     pyautogui.doubleClick(422, 545)
     pyautogui.write('1')
     pyautogui.doubleClick(502, 545)
-    pyautogui.write('1')
+    pyautogui.write('2')
     time.sleep(0.5)
     pyautogui.doubleClick(342, 617)
-    pyautogui.write('13')
+    pyautogui.write('6')
     time.sleep(0.5)
     pyautogui.doubleClick(422, 617)
-    pyautogui.write('1')
+    pyautogui.write('5')
     pyautogui.doubleClick(502, 617)
-    pyautogui.write('13')
+    pyautogui.write('5')
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'update.png'), confidence=0.5)
     pyautogui.click(x, y)
@@ -50,15 +52,7 @@ def graphics_test() -> None:
 
     # #run algo
     pyautogui.press('t')
-    time.sleep(1)
-
-    # change trace color
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'trace_new.png'), confidence=0.8)
-    pyautogui.click(x - 70, y)
-    time.sleep(0.5)
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'colour_2.png'), confidence=0.8)
-    pyautogui.click(x, y)
-    time.sleep(3)
+    time.sleep(4)
 
     # take ss
     pyautogui.press('o')
@@ -67,16 +61,16 @@ def graphics_test() -> None:
     # get latest screenshot
     list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
     transparent_1 = max(list_of_ss, key=os.path.getctime)
-    time.sleep(1)
+    time.sleep(2)
 
     # compare the screenshot with the expected one
-    expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "3d_rrt_connect.png"))
+    expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "potential_field_3d.png"))
     transparent_1 = cv.imread(transparent_1)
 
     print(mse(expected_transparent_1, transparent_1))
 
     # Some error allowed due to RRT running differently sometimes
-    THRESHOLD = 1500
+    THRESHOLD = 11
     mse_1 = mse(expected_transparent_1, transparent_1)
     assert mse_1 < THRESHOLD, mse_1
 

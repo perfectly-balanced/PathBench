@@ -9,6 +9,7 @@ if __name__ == "__main__":
 else:
     from .common import init, destroy, mse
 
+
 def graphics_test() -> None:
     from constants import RESOURCES_PATH, TEST_DATA_PATH
     import pyautogui
@@ -146,6 +147,7 @@ def graphics_test() -> None:
     mse_2 = mse(transparent_not_restored_2, transparent_2)
     assert mse_1 < THRESHOLD, mse_1
     assert mse_2 > THRESHOLD, mse_2
+
 
 class GraphicsTestCase(unittest.TestCase):
     def test(self):

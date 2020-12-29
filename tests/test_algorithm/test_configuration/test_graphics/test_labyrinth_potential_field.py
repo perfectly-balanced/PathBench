@@ -9,18 +9,19 @@ if __name__ == "__main__":
 else:
     from .common import init, destroy, mse
 
+
 def graphics_test() -> None:
     from constants import RESOURCES_PATH, TEST_DATA_PATH
     import pyautogui
 
-    # Select map Labyrinth, RRT algorithm
+    # Select map Labyrinth, Potential Field algorithm
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'map.png'), confidence=0.5)
-    pyautogui.click(x+160, y+5)
+    pyautogui.click(x + 160, y + 5)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'labyrinth_new.png'), confidence=0.5)
     pyautogui.click(x, y)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'algorithm_new.png'), confidence=0.5)
-    pyautogui.click(x+150, y)
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'rrt2.png'), confidence=0.9)
+    pyautogui.click(x + 150, y)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'potential_field.png'), confidence=0.9)
     pyautogui.click(x, y)
 
     # start and end goals coordinate input
@@ -38,7 +39,7 @@ def graphics_test() -> None:
     time.sleep(2)
     # pick colours and do other modifications on the map
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
-    pyautogui.click(x-85, y)
+    pyautogui.click(x - 85, y)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'lime.png'), confidence=0.9)
     pyautogui.click(x, y)
 
@@ -58,13 +59,14 @@ def graphics_test() -> None:
     time.sleep(3)
 
     # compare the new screenshot with the expected one
-    expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "labyrinth_rrt_1.png"))
+    expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "potential_field_transparent.png"))
     transparent_1 = cv.imread(transparent_1)
 
     # RRT does not run exactly the same every time, so allow bigger rate
-    THRESHOLD = 3600
+    THRESHOLD = 11
     mse_1 = mse(expected_transparent_1, transparent_1)
     assert mse_1 < THRESHOLD, mse_1
+
 
 class GraphicsTestCase(unittest.TestCase):
     def test(self):
