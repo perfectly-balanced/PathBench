@@ -7,6 +7,7 @@ import numpy as np
 
 from typing import Tuple, Union, List, Any, Dict, Callable
 import traceback
+from direct.gui.OnscreenText import OnscreenText
 
 from structures import Point, WHITE, TRANSPARENT
 
