@@ -47,6 +47,10 @@ class GradientGridMapDisplay(MapDisplay):
         if self.value_bounds is None:
             self.min_val = np.inf
             self.max_val = -np.inf
+            for idx in np.ndindex(self.grid.shape):
+                v = self.grid[idx]
+                self.min_val = min(self.min_val, v)
+                self.max_val = max(self.max_val, v)
         else:
             self.min_val, self.max_val = self.value_bounds
 

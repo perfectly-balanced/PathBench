@@ -253,7 +253,7 @@ class Maps:
         [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
         [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
         [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]],
-        Agent(Point(7, 7)), Goal(Point(7, 9)), unmapped_value=-1)
+        Agent(Point(7, 7), radius=1), Goal(Point(7, 9)), unmapped_value=-1, mutable=False)
 
     ogm_2d = OccupancyGridMap([ # used for dynamic growth debugging
         [0, 0, 0.2, 0.3, 0.4, 0.8, 1, 1, 0.8, 0, 0, 1, 1, 0, 0, 0, 0, 0.9],
