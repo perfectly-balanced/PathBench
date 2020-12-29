@@ -69,7 +69,7 @@ class WayPointNavigation(Algorithm):
 
         ret.append(SolidIterableMapDisplay(self._services, self.display_info_data[0], AStar.VISITED_COLOR, z_index=70))
         ret.append(SolidIterableMapDisplay(self._services, self.display_info_data[1], AStar.VISITED_COLOR, z_index=65))
-        ret.append(SolidIterableMapDisplay(self._services, self.way_points, (0, 255, 255), z_index=200, radius=5))
+        ret.append(SolidIterableMapDisplay(self._services, self.way_points, (0, 255, 255), z_index=200))
         return ret
 
     def _find_path_internal(self) -> None:

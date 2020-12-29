@@ -8,15 +8,13 @@ from simulator.views.map.display.map_display import MapDisplay
 from structures import Point, Colour
 
 class SolidMapDisplayPot(MapDisplay):
-    radius: int
     points: Union[Set[Point], List[Entity]]
     pts: Set[Point]
     point_dim: int
 
-    def __init__(self, services: Services, points, z_index=50, radius=0, custom_map: Map = None, pmaplst=None) -> None:
+    def __init__(self, services: Services, points, z_index=50, custom_map: Map = None, pmaplst=None) -> None:
         super().__init__(services, z_index=z_index, custom_map=custom_map)
         self.points = points
-        self.radius = radius
         self.color1 = Colour(0.0, 0.0, 0.6)
         self.color2 = Colour(0.0, 0.0, 0.8)
         self.color3 = Colour(0.0, 0.0, 1.0)
@@ -43,13 +41,12 @@ class SolidMapDisplayPot(MapDisplay):
         self.__point_dim = next(iter(self.pts))[0].n_dim
 
         for p in self.pts:
-            self._root_view.cube_requires_update(Entity(p[0], self.radius))
-            
+            self._root_view.cube_requires_update(p[0])
 
     def update_cube(self, p: Point) -> None:
         if self.__point_dim != 3:
             p = Point(p.x, p.y)
-        
+
         if p in self.pts:
             if p[1] < self.small+(self.range*1):
                 self._root_view.colour_cube(self.color6)

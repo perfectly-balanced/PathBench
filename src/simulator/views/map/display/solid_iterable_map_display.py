@@ -10,7 +10,6 @@ from structures.tracked import Tracked
 
 
 class SolidIterableMapDisplay(MapDisplay):
-    radius: int
     colour: DynamicColour
 
     points: Union[Set[Point], List[Entity]]
@@ -20,10 +19,9 @@ class SolidIterableMapDisplay(MapDisplay):
     __deduced_colour: Colour
 
     def __init__(self, services: Services, points: Union[Set[Point], List[Entity]],
-                 colour: DynamicColour, z_index=50, radius=0, custom_map: Map = None) -> None:
+                 colour: DynamicColour, z_index=50, custom_map: Map = None) -> None:
         super().__init__(services, z_index=z_index, custom_map=custom_map)
 
-        self.radius = radius
         self.colour = colour
 
         self.pts = points
