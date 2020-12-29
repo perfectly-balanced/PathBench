@@ -3,7 +3,6 @@ import os
 import sys
 import time
 from functools import partial
-
 from typing import List, Tuple, Callable
 
 g_procs: List[Tuple[subprocess.Popen, Callable[[subprocess.Popen], None]]] = []

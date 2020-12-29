@@ -1,3 +1,2 @@
 pyautogui
-opencv-python
 xlib

@@ -37,7 +37,7 @@ Note, the main script can be run from any working directory as PathBench doesn't
 | v 	                | Toggle visibility of view editor window                               |
 | m                 	| Toggle map between Sparse and Dense                               	|
 
-Note, screenshots are placed in resources directory.
+Note, screenshots are placed in `data/screenshots`.
 
 ## Testing
 
@@ -58,7 +58,7 @@ sudo apt-get install x11vnc xvfb xtightvncviewer
 
 **Example Usage**
 
-1. Running an **individual** test (labyrinth with A* in this case):
+1. Running an **individual** graphics test (labyrinth with A* in this case):
 ```bash
 python3 tests/test_algorithm/test_configuration/test_graphics/test_labyrinth_A.py --spawn-display --view-display
 ```
@@ -69,6 +69,7 @@ python3 tests/run_tests.py --spawn-display --view-display
 ```
 
 - Specifying `--view-display` will internally execute `vncviewer`. This will result in a white dialog popup. Press `Enter` when it appears, and the interactive view will subsequently appear. However, please wait approximately a second before pressing `Enter`, otherwise the viewer will be created before the view server has had time to initialise, which will prevent launching the interactive view (i.e. no-op).
+- Specifying `--spawn-display` for `run_tests.py` will launch an isolated virtual display for each test as they have side-effects, which would cause failures on the CI. As a result, when specifying `--view-display`, the viewer will keep relaunching itself for each graphics test.
 - For more usage details specify the help flag `-h`.
 
 Note, to view a screenshot of the screen, execute the following:
