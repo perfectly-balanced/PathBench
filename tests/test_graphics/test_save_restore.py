@@ -11,7 +11,7 @@ else:
 
 
 def graphics_test() -> None:
-    from constants import RESOURCES_PATH, TEST_DATA_PATH
+    from constants import DATA_PATH, TEST_DATA_PATH
     import pyautogui
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'map.png'), confidence=0.5)
@@ -87,7 +87,7 @@ def graphics_test() -> None:
     pyautogui.click(x, y)
     time.sleep(2)
     # get the latest taken screenshot
-    list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
+    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
     transparent_1 = max(list_of_ss, key=os.path.getctime)
 
     # take texture ss
@@ -95,7 +95,7 @@ def graphics_test() -> None:
     time.sleep(3)
 
     # get the latest taken screenshot
-    list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
+    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
     transparent_2 = max(list_of_ss, key=os.path.getctime)
 
     # test restore changes
@@ -107,7 +107,7 @@ def graphics_test() -> None:
     time.sleep(3)
 
     # get the latest taken screenshot
-    list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
+    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
     transparent_not_restored_2 = max(list_of_ss, key=os.path.getctime)
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'one.png'), confidence=0.7)
@@ -119,7 +119,7 @@ def graphics_test() -> None:
     time.sleep(3)
 
     # get the latest taken screenshot
-    list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
+    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
     transparent_restored_1 = max(list_of_ss, key=os.path.getctime)
 
     # check if all states are working

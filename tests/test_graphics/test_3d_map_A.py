@@ -11,7 +11,7 @@ else:
 
 
 def graphics_test() -> None:
-    from constants import RESOURCES_PATH, TEST_DATA_PATH
+    from constants import DATA_PATH, TEST_DATA_PATH
     import pyautogui
 
     # Pick 3d cube with A*
@@ -75,7 +75,7 @@ def graphics_test() -> None:
 
     time.sleep(4)
     # get latest screenshot
-    list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
+    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
     transparent_1 = max(list_of_ss, key=os.path.getctime)
 
     # take new transparent ss
@@ -85,7 +85,7 @@ def graphics_test() -> None:
     time.sleep(5)
 
     # get latest screenshot
-    list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
+    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
     transparent_2 = max(list_of_ss, key=os.path.getctime)
 
     # compare the 2 new screenshots with the expected ones
