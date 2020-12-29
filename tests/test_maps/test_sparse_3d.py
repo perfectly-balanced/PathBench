@@ -98,9 +98,9 @@ class TestSparseMap3D(unittest.TestCase):
                                     [Obstacle(Point(4, 4, 4), 1), Obstacle(Point(10, 10, 10), 4)],
                                     Goal(Point(18, 16, 14), 1))
         map2: DenseMap = SparseMap(Size(20, 20, 20),
-                                    Agent(Point(2, 2, 2), 1),
-                                    [Obstacle(Point(4, 4, 4), 1), Obstacle(Point(10, 10, 10), 4)],
-                                    Goal(Point(18, 16, 14), 1)).convert_to_dense_map()
+                                   Agent(Point(2, 2, 2), 1),
+                                   [Obstacle(Point(4, 4, 4), 1), Obstacle(Point(10, 10, 10), 4)],
+                                   Goal(Point(18, 16, 14), 1)).convert_to_dense_map()
         self.assertNotEqual(map1, map2)
 
     def test_ne_instance(self) -> None:
@@ -240,7 +240,3 @@ class TestSparseMap3D(unittest.TestCase):
 		}, 
 		goal: Goal: {position: Point(2, 1, 1), radius: 0}
 	}""", str(map1))
-
-
-if __name__ == '__main__':
-    TestSparseMap3D().run()

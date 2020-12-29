@@ -17,12 +17,13 @@ def run() -> bool:
                                      description="PathBench test runner",
                                      formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("--discovery-path", default=tests_path, help="recursively discovers tests using the specified file path")
+    parser.add_argument("--discovery-pattern", default='test*.py', help="regex expression with discovered tests that have a matching file path being executed")
 
     args = parser.parse_known_args()[0]
     print("args:{}".format(args))
 
     loader: TestLoader = unittest.TestLoader()
-    tests: TestSuite = loader.discover(args.discovery_path)
+    tests: TestSuite = loader.discover(args.discovery_path, args.discovery_pattern)
     testRunner: TextTestRunner = unittest.TextTestRunner()
     res: TestResult = testRunner.run(tests)
     return (len(res.errors) == 0 and len(res.failures) == 0)

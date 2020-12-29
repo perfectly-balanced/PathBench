@@ -41,7 +41,3 @@ class TestTrace(unittest.TestCase):
         entity1: Trace = Trace(Point(2, 3))
         entity2: Entity = Entity(Point(2, 3), 1)
         self.assertNotEqual(entity1, entity2)
-
-
-if __name__ == '__main__':
-    TestTrace().run()

@@ -300,7 +300,3 @@ class TestDenseMap(unittest.TestCase):
 			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
 		]
 	}""", str(map1))
-
-
-if __name__ == '__main__':
-    TestDenseMap().run()

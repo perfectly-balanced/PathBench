@@ -64,7 +64,3 @@ class TestMap(unittest.TestCase):
 
     def test_ne(self) -> None:
         self.assertNotEqual(Map(Size(3, 2)), 5)
-
-
-if __name__ == '__main__':
-    TestMap().run()
