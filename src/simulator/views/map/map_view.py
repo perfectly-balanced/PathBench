@@ -459,7 +459,6 @@ class MapView(View):
         self.renderer.draw_circle_filled(self.cube_center(p), *args, **kwargs, radius=self.__circle_filled_radius)
 
     def render_text(self, p: Point, text: str, colour: Colour = WHITE, scale: float = 0.4) -> None:
-        """ TODO: reintergrate into reworked code """
         center = self.cube_center(p)
 
         offset, hpr = Point(-0.25, 0, 0), (0, -90, 0)
