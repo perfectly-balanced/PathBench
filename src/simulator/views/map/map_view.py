@@ -10,7 +10,8 @@ from simulator.services.event_manager.events.colour_update_event import ColourUp
 from simulator.services.event_manager.events.take_map_screenshot_event import TakeMapScreenshotEvent
 from simulator.services.event_manager.events.map_update_event import MapUpdateEvent
 from simulator.services.graphics.renderer import Renderer
-from simulator.views.map.display.gradient_map_display import GradientMapDisplay
+from simulator.views.map.display.gradient_list_map_display import GradientListMapDisplay
+from simulator.views.map.display.gradient_grid_map_display import GradientGridMapDisplay
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
 from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
@@ -25,6 +26,7 @@ from simulator.views.view import View
 from structures import Point, Colour, TRANSPARENT, WHITE, BLACK
 from structures.tracked_set import TrackedSet
 from structures.tracked_list import TrackedList
+from structures.tracked_grid import TrackedGrid
 
 from panda3d.core import Camera, Texture, NodePath, GeomNode, Geom, LineSegs, TextNode, PandaNode
 
@@ -115,13 +117,10 @@ class MapView(View):
 
         if hasattr(self._services.algorithm.map, "weight_grid"):
             mp = self._services.algorithm.map
-            wl = TrackedList()
-            for idx in np.ndindex(*mp.size):
-                if mp.grid[idx] in (Map.CLEAR_ID, Map.AGENT_ID, Map.GOAL_ID):
-                    wl.append((mp.weight_grid[idx], Point(*idx)))
+            wg = TrackedGrid(mp.weight_grid)
             dc_min = self._services.state.add_colour("min occupancy", BLACK.with_a(0))
             dc_max = self._services.state.add_colour("max occupancy", BLACK)
-            display = GradientMapDisplay(self._services, pts=wl, min_colour=dc_min, max_colour=dc_max, value_bounds=mp.weight_bounds)
+            display = GradientGridMapDisplay(self._services, wg, min_colour=dc_min, max_colour=dc_max, value_bounds=(0.1, mp.traversable_threshold))
             self.__persistent_displays.append(display)
             self.__weight_grid_display = self.__persistent_displays[-1]
 
@@ -229,8 +228,8 @@ class MapView(View):
 
     def __update_cube_colour(self, p):
         if not bool(self.map.data[p.values] & MapData.TRAVERSABLE_MASK):
-            return # we don't allow colouring obstacles / unmapped, but requesting update is still valid
-        
+            return  # we don't allow colouring obstacles / unmapped, but requesting update is still valid
+
         self.__cube_colour = self.__deduced_traversables_colour
         for d in self.__cube_update_displays:
             d.update_cube(p)
@@ -345,10 +344,13 @@ class MapView(View):
                     # Note, they will still be refreshed when traversable
                     # (bg & wireframe) colour changes.
                     if self.__weight_grid_display is not None and \
-                       self._services.algorithm.map.at(lp) == Map.CLEAR_ID and \
-                       blend_colours(self.__weight_grid_display.get_colour(self._services.algorithm.map.weight_grid[lp.values]), self.__deduced_traversables_colour) == self.__cube_colour:
-                        self.__cube_modified[p.values] = False
-                        self.__cubes_requiring_update.discard(p)
+                       self._services.algorithm.map.at(lp) == Map.CLEAR_ID:
+                        clr = self.__weight_grid_display.get_colour(self._services.algorithm.map.weight_grid[lp.values])
+
+                        if (self.__deduced_traversables_colour == self.__cube_colour) or \
+                           (clr is not None and blend_colours(clr, self.__deduced_traversables_colour) == self.__cube_colour):
+                            self.__cube_modified[p.values] = False
+                            self.__cubes_requiring_update.discard(p)
 
         # update these cubes regardless of refresh
         # since the cubes that require update aren't

@@ -17,9 +17,7 @@ class WavefrontTesting(BasicTesting):
         """
         res: Dict[str, Any] = super().get_results()
 
-        step_grid = np.empty(self._services.algorithm.map.size, dtype=np.int32)
-        for v, p in self._services.algorithm.instance.step_grid:
-            step_grid[p.values] = v
+        step_grid = self._services.algorithm.instance.step_grid
         res["search_space"] = 100 - BasicTesting.get_occupancy_percentage_grid(step_grid, 0)
         return res
 

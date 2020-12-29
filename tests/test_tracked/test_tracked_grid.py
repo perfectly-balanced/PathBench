@@ -34,6 +34,12 @@ class TestTrackedGrid(unittest.TestCase):
         self.assertTrue(type(self.tr_grid[0][0, 0]) is np.int32)
         self.assertTrue(type(self.tr_grid[0, 0][0]) is np.int32)
 
+    def test_ndim(self) -> None:
+        self.assertEqual(self.tr_grid.ndim, 3)
+        self.assertEqual(self.tr_grid[0].ndim, 2)
+        self.assertEqual(self.tr_grid[0][0].ndim, 1)
+        self.assertEqual(self.tr_grid[0, 0].ndim, 1)
+
     def test_values(self) -> None:
         expected = np.full((5, 6, 7), 0, dtype=np.int32)
         expected[0, 0, 1] = 1

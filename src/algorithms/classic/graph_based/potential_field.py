@@ -1,5 +1,4 @@
-from typing import List, Tuple
-from typing import Set, List, Tuple, Optional, Dict
+from typing import Set, List, Tuple, Optional, Dict, Union
 from memory_profiler import profile
 import numpy as np
 
@@ -10,11 +9,11 @@ from algorithms.configuration.entities.goal import Goal
 from algorithms.configuration.maps.map import Map
 from algorithms.configuration.entities.obstacle import Obstacle
 from simulator.services.services import Services
-from simulator.views.map.display.gradient_map_display import GradientMapDisplay
+from simulator.views.map.display.gradient_grid_map_display import GradientGridMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
 from structures import Point, DynamicColour, Colour, BLUE
-from structures.tracked_list import TrackedList
-from structures.factory import gen_list
+from structures.tracked_grid import TrackedGrid
+from structures.factory import gen_grid
 
 
 class PotentialField(Algorithm):
@@ -23,7 +22,7 @@ class PotentialField(Algorithm):
     any realistic 3D map.
     """
 
-    step_grid: List[Tuple[int, Point]]
+    step_grid: Union[np.ndarray, TrackedGrid]
     step_grid_min_colour: DynamicColour
     step_grid_max_colour: DynamicColour
 
@@ -37,16 +36,12 @@ class PotentialField(Algorithm):
     def __init__(self, services: Services, testing: BasicTesting = None):
         super().__init__(services, testing)
 
-        grid: Map = self._get_grid()
-        ls: List[Tuple[int, Point]] = []
-        for idx in np.ndindex(*grid.size):
-            ls.append((0, Point(*idx)))
-        self.step_grid = gen_list(self._services, ls)
+        self.step_grid = gen_grid(self._services, np.full(self._get_grid().size, 0, dtype=np.float32))
 
         self.step_grid_min_colour = self._services.state.add_colour("step min", BLUE.with_alpha(0))
         self.step_grid_max_colour = self._services.state.add_colour("step max", BLUE)
 
-        self.__map_displays = [GradientMapDisplay(self._services, pts=self.step_grid, min_colour=self.step_grid_min_colour, max_colour=self.step_grid_max_colour)]
+        self.__map_displays = [GradientGridMapDisplay(self._services, self.step_grid, min_colour=self.step_grid_min_colour, max_colour=self.step_grid_max_colour)]
 
     def set_display_info(self) -> List[MapDisplay]:
         """
@@ -103,15 +98,14 @@ class PotentialField(Algorithm):
     def potential_field_planning(self, grid):
         # calc potential field
         pmap = self.calc_potential_field(grid)
-        for i in range(len(self.step_grid)):
-            p = self.step_grid[i][1]
-            self.step_grid[i] = (pmap[p.values], p)
+        for idx in np.ndindex(pmap.shape):
+            self.step_grid[idx] = pmap[idx]
         self.key_frame(ignore_key_frame_skip=True)
 
         nums = []
-        for index in np.ndindex(*pmap.shape):
-            if pmap[index] < 1000000:
-                nums.append(pmap[index])
+        for idx in np.ndindex(pmap.shape):
+            if pmap[idx] < 1000000:
+                nums.append(pmap[idx])
         self.pmapnew = set(nums)
 
         # search path

@@ -181,6 +181,7 @@ class OccupancyGridMap(DenseMap):
                             goal=copy.deepcopy(self.goal),
                             services=self.services,
                             mutable=self.mutable)
+        mp.size = copy.deepcopy(self.size)
         mp.traversable_threshold = copy.deepcopy(self.traversable_threshold)
         mp.weight_grid = copy.deepcopy(self.weight_grid)
         mp.trace = copy.deepcopy(self.trace)

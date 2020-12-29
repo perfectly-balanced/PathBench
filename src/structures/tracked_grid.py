@@ -22,6 +22,10 @@ class _TrackedGridView():
     def dtype(self) -> Any:
         return self._values.dtype
 
+    @property
+    def ndim(self) -> int:
+        return self._values.ndim
+
     def __setitem__(self, index, value):
         if isinstance(index, tuple):
             self._grid.modified.append(((*self._partial_index, *index), self._values[index]))
@@ -53,6 +57,10 @@ class TrackedGrid(Tracked):
     @property
     def dtype(self) -> Any:
         return self._values.dtype
+
+    @property
+    def ndim(self) -> int:
+        return self._values.ndim
 
     def insert(self, index, value):
         self._elem_added(value)
