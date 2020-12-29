@@ -57,7 +57,7 @@ maps = {
     "House": ("house_10/6", True),
     "Long Wall": (Maps.grid_map_labyrinth2, True),
     "Labyrinth": (Maps.grid_map_labyrinth, True),
-    "3D Example": (Maps.grid_map_3d_example, True),
+    "3D Cube": (Maps.grid_map_3d_example, True),
     "Small Obstacle": (Maps.grid_map_one_obstacle.convert_to_dense_map(), True),
     "SLAM Map 1": ("map10", False),
     "SLAM Map 1 (compressed)": ("map11", True),
@@ -192,7 +192,7 @@ config.trainer_bypass_and_replace_pre_processed_cache = False
 #Analyzer
 config.analyzer = analyzer_start
 
-MainRunner(config).run_multiple()
+MainRunner(config).run()
 
 #To brute force generate map from image
 # map_gen_from_img = False

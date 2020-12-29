@@ -1,4 +1,3 @@
-from constants import DATA_PATH
 from algorithms.configuration.entities.entity import Entity
 from algorithms.configuration.maps.map import Map
 from algorithms.configuration.maps.occupancy_grid_map import OccupancyGridMap
@@ -7,9 +6,8 @@ from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
 from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
-from simulator.services.event_manager.events.take_screenshot_event import TakeScreenshotEvent
 from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
-from simulator.services.event_manager.events.take_screenshot_tex_event import TakeScreenshotTexEvent
+from simulator.services.event_manager.events.take_map_screenshot_event import TakeMapScreenshotEvent
 from simulator.services.event_manager.events.map_update_event import MapUpdateEvent
 from simulator.services.graphics.renderer import Renderer
 from simulator.views.map.display.gradient_map_display import GradientMapDisplay
@@ -201,9 +199,7 @@ class MapView(View):
         elif isinstance(event, ColourUpdateEvent):
             if event.view.is_effective():
                 self.__update_view(False)
-        elif isinstance(event, TakeScreenshotEvent):
-            self.__take_screenshot()
-        elif isinstance(event, TakeScreenshotTexEvent):
+        elif isinstance(event, TakeMapScreenshotEvent):
             self.__take_hd_screenshot()
 
     def to_logical_point(self, p: Point) -> Point:
@@ -385,10 +381,6 @@ class MapView(View):
 
     def colour_cube(self, src: Colour) -> None:
         self.__cube_colour = blend_colours(src, self.__cube_colour)
-
-    def __take_screenshot(self) -> None:
-        self._services.resources.screenshots_dir.append(
-            lambda fn: self._services.graphics.window.win.save_screenshot(fn))
 
     def __take_hd_screenshot(self):
         mx, my, mz = self.__map.data.shape

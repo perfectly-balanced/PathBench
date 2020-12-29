@@ -10,18 +10,18 @@ PathBench is a motion planning platform used to develop, assess, compare and vis
 The following installation and run instructions have been used for running PathBench on **Ubuntu 18 and 20**.
 
 ### Installing dependencies
+
 ```bash
-sudo pip3 install torch numpy nptyping opencv-python panda3d pandas sklearn matplotlib torchvision memory_profiler seaborn dill natsort
+pip3 install -r requirements.txt
 ```
 
-Optional dependency is `ompl` with installation not covered here.
+Optional dependency is `ompl` with installation not covered here. There are some extra dependencies needed for testing, and are detailed [here](#testing).
 
 ### Simulator Visualiser Usage
 ```bash
-cd src
-python3 main.py -v
+python3 src/main.py -v
 ```
-You **must** run the main script from the `src` directory as some files are still using paths relative to the current working directory.
+Note, the main script can be run from any working directory as PathBench doesn't use relative paths internally.
 
 | Key               	| Action                                                            	|
 |-------------------	|-------------------------------------------------------------------	|
@@ -38,6 +38,44 @@ You **must** run the main script from the `src` directory as some files are stil
 | m                 	| Toggle map between Sparse and Dense                               	|
 
 Note, screenshots are placed in resources directory.
+
+## Testing
+
+**Dependencies**
+
+```bash
+pip3 install -r tests/requirements.txt
+sudo apt-get install scrot
+```
+
+### Headless Testing
+
+**Dependencies**
+
+```bash
+sudo apt-get install x11vnc xvfb xtightvncviewer
+```
+
+**Example Usage**
+
+1. Running an **individual** test (labyrinth with A* in this case):
+```bash
+python3 tests/test_algorithm/test_configuration/test_graphics/test_labyrinth_A.py --spawn-display --view-display
+```
+
+2. Running **all** tests:
+```bash
+python3 tests/run_tests.py --spawn-display --view-display
+```
+
+- Specifying `--view-display` will internally execute `vncviewer`. This will result in a white dialog popup. Press `Enter` when it appears, and the interactive view will subsequently appear. However, please wait approximately a second before pressing `Enter`, otherwise the viewer will be created before the view server has had time to initialise, which will prevent launching the interactive view (i.e. no-op).
+- For more usage details specify the help flag `-h`.
+
+Note, to view a screenshot of the screen, execute the following:
+
+```bash
+xwud -in /var/tmp/Xvfb_screen0
+```
 
 ## PathBench
 
@@ -60,7 +98,7 @@ The simulator has a custom GUI that can be used to modify the master launch conf
     <img src="./readme_files/config.png" alt="PathBench Simulator Configuration" width="400" align="middle" />
 </p>
 
-To run and use the simulator see [Quick Start](quick-start).
+To run and use the simulator see [Quick Start](#quick-start).
 
 <br />
 

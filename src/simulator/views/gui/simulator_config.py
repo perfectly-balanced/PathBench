@@ -7,7 +7,6 @@ from typing import Tuple, Union, List, Any, Dict, Callable
 import traceback
 
 from structures import Point, WHITE, TRANSPARENT
-from constants import DATA_PATH
 
 from simulator.services.services import Services
 from simulator.services.debug import DebugLevel
@@ -106,7 +105,7 @@ class SimulatorConfig(DirectObject):
         "House 3D": ("house_10_3d/6_3d", True),
         "Long Wall": (Maps.grid_map_one_obstacle1, True),
         "Labyrinth": (Maps.grid_map_labyrinth, True),
-        "3D Example": (Maps.grid_map_3d_example, True),
+        "3D Cube": (Maps.grid_map_3d_example, True),
         "vin test 8x8": (Maps.grid_map_small_one_obstacle2, True),
         "vin test 8x8 -2": (Maps.grid_map_small_one_obstacle, True),
         "vin test 8x8 -3": (Maps.grid_map_small_one_obstacle3, True),
@@ -334,7 +333,9 @@ class SimulatorConfig(DirectObject):
                             numLines=1,
                             width=3,
                             suppressKeys=True,
-                            text_align=TextNode.ACenter)
+                            text_align=TextNode.ACenter,
+                            focusInCommand=self.clear_text,
+                            focusInExtraArgs=[i])
             self.__entries.append(e)
             e.bind(DGG.EXIT, self.__entry_exit_callback)
             e.bind(DGG.ENTER, self.__entry_enter_callback)
@@ -444,7 +445,7 @@ class SimulatorConfig(DirectObject):
         else:
             for e in self.__entries:
                 e['focus'] = False
-            
+
     def __update_simulator_callback(self) -> None:
         mp = self.__maps[self.__maps_option.get()]
         algo = self.__algorithms[self.__algorithms_option.get()]
@@ -537,3 +538,6 @@ class SimulatorConfig(DirectObject):
     def notify(self, event: Event) -> None:
         if isinstance(event, ToggleSimulatorConfigEvent):
             self.__window.toggle_visible()
+
+    def clear_text(self, i):
+        self.__entries[i].enterText('')

@@ -1,2 +1,14 @@
 torch
 numpy
+nptyping
+panda3d
+pandas
+sklearn
+matplotlib
+torchvision
+memory_profiler
+seaborn
+dill
+natsort
+screeninfo
+opencv-python
