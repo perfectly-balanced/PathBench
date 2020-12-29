@@ -11,7 +11,7 @@ else:
 
 
 def graphics_test() -> None:
-    from constants import RESOURCES_PATH, TEST_DATA_PATH
+    from constants import DATA_PATH, TEST_DATA_PATH
     import pyautogui
 
     # Pick Uniform Random Fill 3D with Potential Field
@@ -59,7 +59,7 @@ def graphics_test() -> None:
     time.sleep(3)
 
     # get latest screenshot
-    list_of_ss = glob.glob(os.path.join(RESOURCES_PATH, 'screenshots/*.png'))
+    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
     transparent_1 = max(list_of_ss, key=os.path.getctime)
     time.sleep(2)
 

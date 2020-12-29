@@ -17,7 +17,7 @@ from utils import make_src_modules_importable, handle_display_args, launch_proce
 # add src folder to system path
 make_src_modules_importable()
 
-from constants import SRC_PATH, RESOURCES_PATH, TEST_DATA_PATH  # noqa: E402
+from constants import SRC_PATH, DATA_PATH, TEST_DATA_PATH  # noqa: E402
 
 g_restore_resources: bool = False
 
@@ -82,10 +82,10 @@ def destroy() -> None:
     atexit.unregister(destroy)
 
 def restore_resources() -> None:
-    cmd = ["git", "restore", "--source=HEAD", "--staged", "--worktree", "--", RESOURCES_PATH]
+    cmd = ["git", "restore", "--source=HEAD", "--staged", "--worktree", "--", DATA_PATH]
     subprocess.check_call(cmd)
 
-    cmd = ["git", "clean", "-dxf", "--", RESOURCES_PATH]
+    cmd = ["git", "clean", "-dxf", "--", DATA_PATH]
     subprocess.check_call(cmd)
 
 def wait_for(rel_img: str, delay: float = 0.5, max_attempts: int = 30, confidence: float = 0.5) -> None:
