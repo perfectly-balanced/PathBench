@@ -49,7 +49,3 @@ class TestTrackedList(unittest.TestCase):
         self.assertEqual(self.tr_list.modified[-1], 100)
         self.assertEqual(self.tr_list._list[-1], 100)
         self.assertEqual(len(self.tr_list.modified), 6)
-
-
-if __name__ == '__main__':
-    TestTrackedList().run()

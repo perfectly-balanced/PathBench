@@ -20,18 +20,16 @@ class RosMap(OccupancyGridMap):
 
     def __init__(self, agent: Agent, goal: Goal,
                  get_grid: Callable[[], List[Any]],
-                 weight_bounds: Tuple[Real, Real] = (0, 100), traversable_threshold: Real = 80, unmapped_value: Real = -1,
+                 weight_bounds: Tuple[Real, Real] = (0, 1), traversable_threshold: Real = 0.8, unmapped_value: Real = -1,
                  wp_publish: Optional[Callable[[Point], None]] = None,
                  update_requested: Optional[Callable[[], None]] = None,
                  services: Services = None,
                  mutable: bool = True) -> None:
-        super().__init__(services=services, mutable=mutable)
+        super().__init__(agent=agent, goal=goal, services=services, mutable=mutable)
 
         self.__get_grid = get_grid
         self.__wp_publish = wp_publish
         self.__update_requested = update_requested
-        self.agent = agent
-        self.goal = goal
         self.__weight_bounds = weight_bounds
         self.__traversable_threshold = traversable_threshold
         self.__unmapped_value = unmapped_value
@@ -55,7 +53,7 @@ class RosMap(OccupancyGridMap):
         mp = RosMap(copy.deepcopy(self.agent), copy.deepcopy(self.goal),
                     self.__get_grid, self.__weight_bounds, self.__traversable_threshold, self.__unmapped_value,
                     self.__wp_publish, self.__update_requested,
-                    services=self.services)
+                    self.services, self.mutable)
         mp.size = copy.deepcopy(self.size)
         mp.weight_grid = copy.deepcopy(self.weight_grid)
         mp.traversable_threshold = copy.deepcopy(self.traversable_threshold)

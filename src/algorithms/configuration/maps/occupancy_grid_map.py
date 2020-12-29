@@ -177,10 +177,12 @@ class OccupancyGridMap(DenseMap):
         return None
 
     def __deepcopy__(self, memo: Dict) -> 'OccupancyGridMap':
-        mp = self.__class__(copy.deepcopy(self.weight_grid),
-                            copy.deepcopy(self.agent), copy.deepcopy(self.goal),
-                            traversable_threshold=self.traversable_threshold,
-                            services=self.services)
+        mp = self.__class__(agent=copy.deepcopy(self.agent),
+                            goal=copy.deepcopy(self.goal),
+                            services=self.services,
+                            mutable=self.mutable)
+        mp.traversable_threshold = copy.deepcopy(self.traversable_threshold)
+        mp.weight_grid = copy.deepcopy(self.weight_grid)
         mp.trace = copy.deepcopy(self.trace)
         mp.obstacles = copy.deepcopy(self.obstacles)
         mp.grid = copy.deepcopy(self.grid)

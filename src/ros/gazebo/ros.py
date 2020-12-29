@@ -222,6 +222,7 @@ class Ros:
         config.simulator_initial_map = RosMap(Agent(agent_pos, radius=self.INFLATE),
                                               Goal(self.goal),
                                               self._get_grid,
+                                              (0, 100), 80,
                                               wp_publish=self._send_way_point)
 
         s = Services(config)
@@ -232,7 +233,7 @@ class Ros:
         print("Created Simulator")
         return sim
 
-    def _world_to_grid(self, pos, origin = None):
+    def _world_to_grid(self, pos, origin=None):
         '''
         converts from meters coordinates to grid coordinates (SIZE)
         '''
@@ -246,7 +247,7 @@ class Ros:
         grid_pos[1] = self.SIZE.height - grid_pos[1] - 1
         return Point(*grid_pos)
 
-    def _grid_to_world(self, pos, origin = None):
+    def _grid_to_world(self, pos, origin=None):
         '''
         converts grid coordinates (SIZE) to meters coordinates 
         '''

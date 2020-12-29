@@ -13,8 +13,16 @@ def run() -> bool:
 
     tests_path = os.path.dirname(os.path.abspath(__file__))
     
+    parser = argparse.ArgumentParser(prog="run_tests.py",
+                                     description="PathBench test runner",
+                                     formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument("--discovery-path", default=tests_path, help="recursively discovers tests using the specified file path")
+
+    args = parser.parse_known_args()[0]
+    print("args:{}".format(args))
+
     loader: TestLoader = unittest.TestLoader()
-    tests: TestSuite = loader.discover(tests_path)
+    tests: TestSuite = loader.discover(args.discovery_path)
     testRunner: TextTestRunner = unittest.TextTestRunner()
     res: TestResult = testRunner.run(tests)
     return (len(res.errors) == 0 and len(res.failures) == 0)

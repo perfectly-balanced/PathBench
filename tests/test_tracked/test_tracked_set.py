@@ -97,7 +97,3 @@ class TestTrackedSet(unittest.TestCase):
     #     self.assertEqual(len(self.tr_set.modified), 7)
     #     self.assertEqual(self.tr_set.modified[-1], 2)
     #
-
-
-if __name__ == '__main__':
-    TestTrackedSet().run()
