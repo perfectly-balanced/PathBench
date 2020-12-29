@@ -10,20 +10,20 @@ import argparse
 from typing import List, Optional, Callable, Tuple
 
 # add 'PathBench/tests' to system path for module imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils import make_src_modules_importable, handle_display_args, launch_process, kill_processes, try_delete_file  # noqa: E402
 
 # add src folder to system path
 make_src_modules_importable()
 
-from constants import SRC_PATH, RESOURCES_PATH, TEST_DATA_PATH
+from constants import SRC_PATH, RESOURCES_PATH, TEST_DATA_PATH  # noqa: E402
 
 g_restore_resources: bool = False
 
 def setup(args) -> None:
     global g_restore_resources
-    
+
     atexit.register(destroy)
 
     handle_display_args(args)
@@ -78,7 +78,7 @@ def destroy() -> None:
 
     if g_restore_resources:
         restore_resources()
-    
+
     atexit.unregister(destroy)
 
 def restore_resources() -> None:
