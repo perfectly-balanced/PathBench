@@ -10,7 +10,7 @@ from simulator.services.algorithm_runner import AlgorithmRunner
 from simulator.services.services import Services
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
 from simulator.views.map.display.online_lstm_map_display import OnlineLSTMMapDisplay
-from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
+from simulator.views.map.display.solid_iterable_map_display import SolidIterableMapDisplay
 from structures import Point
 
 
@@ -60,7 +60,7 @@ class CombinedOnlineLSTM(Algorithm):
 
         return super().set_display_info() + [
             *active_kernel_displays,
-            SolidColourMapDisplay(self._services, self.__total_path, (0, 150, 0), z_index=80),
+            SolidIterableMapDisplay(self._services, self.__total_path, (0, 150, 0), z_index=80),
         ]
 
     # TODO when max_it is inf take the solution where we are closer to the goal or implement special case

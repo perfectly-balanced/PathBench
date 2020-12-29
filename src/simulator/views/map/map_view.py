@@ -13,7 +13,7 @@ from simulator.services.graphics.renderer import Renderer
 from simulator.views.map.display.gradient_list_map_display import GradientListMapDisplay
 from simulator.views.map.display.gradient_grid_map_display import GradientGridMapDisplay
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
-from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
+from simulator.views.map.display.solid_grid_map_display import SolidGridMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
 from simulator.views.map.display.numbers_map_display import NumbersMapDisplay
 from simulator.views.map.display.online_lstm_map_display import OnlineLSTMMapDisplay
@@ -70,6 +70,7 @@ class MapView(View):
         self.__world = self._services.graphics.window.render.attach_new_node("world")
 
         # MAP #
+        extended_walls: bool = False
         map_size = self._services.algorithm.map.size
         map_data = np.empty((*map_size, 1) if map_size.n_dim == 2 else map_size, dtype=np.uint8)
         self.__cube_modified = np.empty(map_data.shape, dtype=bool)
@@ -79,6 +80,10 @@ class MapView(View):
             if i == Map.WALL_ID:
                 map_data[x, y, z] = MapData.OBSTACLE_MASK
                 self.__cube_modified[x, y, z] = False
+            elif i == Map.EXTENDED_WALL_ID:
+                map_data[x, y, z] = MapData.EXTENDED_WALL_MASK | MapData.TRAVERSABLE_MASK
+                self.__cube_modified[x, y, z] = True
+                extended_walls = True
             elif i == Map.UNMAPPED_ID:
                 map_data[x, y, z] = MapData.UNMAPPED_MASK
                 self.__cube_modified[x, y, z] = False
@@ -105,19 +110,15 @@ class MapView(View):
         self.__persistent_displays = [EntitiesMapDisplay(self._services)]
         self.__entities_map_display = self.__persistent_displays[-1]
 
-        extended_walls = TrackedSet()
-        for x, y, z in np.ndindex(map_data.shape):
-            p = Point(x, y) if map_size.n_dim == 2 else Point(x, y, z)
-            if self._services.algorithm.map.at(p) == Map.EXTENDED_WALL_ID:
-                extended_walls.add(Point(x, y, z))  # using 3D points is more efficient
         if extended_walls:
+            grid = TrackedGrid(self.map.data, copy=False)
             dc = self._services.state.add_colour("extended wall", Colour(0.5).with_a(0.5))
-            self.__persistent_displays.append(SolidColourMapDisplay(self._services, extended_walls, dc, z_index=0))
+            self.__persistent_displays.append(SolidGridMapDisplay(self._services, grid, dc, z_index=0, comparator=lambda x: bool(x & MapData.EXTENDED_WALL_MASK)))
             self.__extended_walls_display = self.__persistent_displays[-1]
 
         if hasattr(self._services.algorithm.map, "weight_grid"):
             mp = self._services.algorithm.map
-            wg = TrackedGrid(mp.weight_grid)
+            wg = TrackedGrid(mp.weight_grid, copy=False)
             dc_min = self._services.state.add_colour("min occupancy", BLACK.with_a(0))
             dc_max = self._services.state.add_colour("max occupancy", BLACK)
             display = GradientGridMapDisplay(self._services, wg, min_colour=dc_min, max_colour=dc_max, value_bounds=(0.1, mp.traversable_threshold))
@@ -258,6 +259,11 @@ class MapView(View):
                     self.__set_cube_colour(p, TRANSPARENT, TRANSPARENT)
                 else:
                     self.map.data[p.values] = MapData.TRAVERSABLE_MASK
+
+                    wgd = self.__weight_grid_display
+                    if wgd is not None:
+                        wgd.cube_colours[p.values] = wgd.get_colour(wgd.grid[p.values])
+
                     self.__update_cube_colour(p)
         else:  # 3D
             for p in updated_cells:
@@ -274,6 +280,10 @@ class MapView(View):
             self.map.traversables_mesh.structural_update(updated_cells)
             for p in updated_cells:
                 if bool(self.map.data[p.values] & MapData.TRAVERSABLE_MASK):
+                    wgd = self.__weight_grid_display
+                    if wgd is not None:
+                        wgd.cube_colours[p.values] = wgd.get_colour(wgd.grid[p.values])
+
                     self.__update_cube_colour(p)
 
         self.__displays.clear()
@@ -335,8 +345,7 @@ class MapView(View):
                     # we don't want to track extended walls once rendered.
                     # Note, they will still be refreshed when traversable
                     # (bg & wireframe) colour changes.
-                    if self.__extended_walls_display is not None and \
-                       self._services.algorithm.map.at(lp) == Map.EXTENDED_WALL_ID:
+                    if bool(self.map.data[p.values] & MapData.EXTENDED_WALL_MASK):
                         self.__cube_modified[p.values] = False
                         self.__cubes_requiring_update.discard(p)
 

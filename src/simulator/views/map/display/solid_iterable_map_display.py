@@ -9,7 +9,7 @@ from structures import Point, Colour, DynamicColour
 from structures.tracked import Tracked
 
 
-class SolidColourMapDisplay(MapDisplay):
+class SolidIterableMapDisplay(MapDisplay):
     radius: int
     colour: DynamicColour
 

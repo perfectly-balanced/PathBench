@@ -22,7 +22,7 @@ class GradientGridMapDisplay(MapDisplay):
     max_value: float
     __deduced_min_colour: Colour
     __deduced_max_colour: Colour
-    __cube_colours: np.ndarray
+    cube_colours: np.ndarray
 
     def __init__(self, services: Services,
                  grid: Union[np.ndarray, TrackedGrid],
@@ -57,9 +57,9 @@ class GradientGridMapDisplay(MapDisplay):
         self.__deduced_min_colour = self.min_colour()
         self.__deduced_max_colour = self.max_colour()
 
-        self.__cube_colours = np.full(self.grid.shape, None, dtype=Colour)
+        self.cube_colours = np.full(self.grid.shape, None, dtype=Colour)
         for idx in np.ndindex(self.grid.shape):
-            self.__cube_colours[idx] = self.get_colour(self.grid[idx])
+            self.cube_colours[idx] = self.get_colour(self.grid[idx])
 
         self.offset = Point(*([0]*self.grid.ndim)) if offset is None else offset
 
@@ -113,7 +113,7 @@ class GradientGridMapDisplay(MapDisplay):
 
         rv = self.get_renderer_view()
         for idx, _ in self.grid.modified:
-            self.__cube_colours[idx] = self.get_colour(self.grid[idx])
+            self.cube_colours[idx] = self.get_colour(self.grid[idx])
             rv.cube_requires_update(Point(*idx))
 
     def __render_eager(self) -> None:
@@ -130,14 +130,14 @@ class GradientGridMapDisplay(MapDisplay):
         rv = self.get_renderer_view()
         for idx in np.ndindex(self.grid.shape):
             clr = self.get_colour(self.grid[idx])
-            if clr != self.__cube_colours[idx]:
+            if clr != self.cube_colours[idx]:
                 rv.cube_requires_update(Point(*idx))
-                self.__cube_colours[idx] = clr
+                self.cube_colours[idx] = clr
 
     def update_cube(self, p: Point) -> None:
         p = Point(*p.values[:self.grid.ndim]) - self.offset
         if p.values < self.grid.shape:
-            c = self.__cube_colours[p.values]
+            c = self.cube_colours[p.values]
             if c is not None:
                 self._root_view.colour_cube(c)
 

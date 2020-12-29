@@ -22,6 +22,7 @@ class MapData(ABC):
     TRAVERSABLE_MASK: Final = np.uint8(1 << 0)
     OBSTACLE_MASK: Final = np.uint8(1 << 1)
     UNMAPPED_MASK: Final = np.uint8(1 << 2)
+    EXTENDED_WALL_MASK: Final = np.uint8(1 << 3)
 
     data: Final[NDArray[(Any, Any, Any), np.uint8]]
 
