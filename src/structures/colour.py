@@ -1,4 +1,5 @@
-from typing import Tuple, Callable
+from typing import Tuple, Callable, Any
+import numpy as np
 
 from utility.compatibility import Final
 
@@ -8,9 +9,18 @@ class Colour:
     Alpha is optional and defaults to 1.0.
     If single argument 'x' given, this translates to (x, x, x, 1.0).
     """
-    __data: Tuple[float, float, float, float]
+    __values: Tuple[float, float, float, float]
 
     def __init__(self, *colours, **kwargs):
+        if len(colours) == 4:
+            self.__values = colours
+            assert len(kwargs) == 0, "unknown optional args"
+            assert self.__values[0] >= 0 and self.__values[0] <= 1, self.__values
+            assert self.__values[1] >= 0 and self.__values[1] <= 1, self.__values
+            assert self.__values[2] >= 0 and self.__values[2] <= 1, self.__values
+            assert self.__values[3] >= 0 and self.__values[3] <= 1, self.__values
+            return
+
         keys = ("r", "g", "b", "a", "red", "green", "blue", "alpha")
 
         def get(kshort: str, klong: str, defaultable: bool = False) -> float:
@@ -27,7 +37,7 @@ class Colour:
 
         if len(colours) == 1 and len(kwargs) == 1 and ("a" in kwargs or "alpha" in kwargs):
             c = colours[0]
-            self.__data = (c, c, c, get("a", "alpha"))
+            self.__values = (c, c, c, get("a", "alpha"))
         elif len(kwargs) != 0 and any(k in kwargs for k in keys):
             r = get("r", "red")
             g = get("g", "green")
@@ -37,30 +47,27 @@ class Colour:
             assert len(kwargs) == (3 if a == None else 4), "unknown optional args"
             assert len(colours) == 0, "unknown positional args"
 
-            self.__data = (r, g, b, a if a != None else 1.0)
+            self.__values = (r, g, b, a if a != None else 1.0)
         else:
             assert len(kwargs) == 0, "unknown optional args"
             if len(colours) == 1:
                 c = colours[0]
-                self.__data = (c, c, c, 1.0)
+                self.__values = (c, c, c, 1.0)
             elif len(colours) == 3:
-                self.__data = (*colours, 1.0)
-            else:
-                assert len(colours) == 4, "invalid number of args"
-                self.__data = colours
+                self.__values = (*colours, 1.0)
 
-        assert self.__data[0] >= 0 and self.__data[0] <= 1, self.__data
-        assert self.__data[1] >= 0 and self.__data[1] <= 1, self.__data
-        assert self.__data[2] >= 0 and self.__data[2] <= 1, self.__data
-        assert self.__data[3] >= 0 and self.__data[3] <= 1, self.__data
+        assert self.__values[0] >= 0 and self.__values[0] <= 1, self.__values
+        assert self.__values[1] >= 0 and self.__values[1] <= 1, self.__values
+        assert self.__values[2] >= 0 and self.__values[2] <= 1, self.__values
+        assert self.__values[3] >= 0 and self.__values[3] <= 1, self.__values
 
     @property
-    def colours(self):
-        return self.__data
+    def values(self):
+        return self.__values
 
     @property
     def red(self):
-        return self.__data[0]
+        return self.__values[0]
 
     @property
     def r(self):
@@ -68,7 +75,7 @@ class Colour:
 
     @property
     def green(self):
-        return self.__data[1]
+        return self.__values[1]
 
     @property
     def g(self):
@@ -76,7 +83,7 @@ class Colour:
 
     @property
     def blue(self):
-        return self.__data[2]
+        return self.__values[2]
 
     @property
     def b(self):
@@ -84,7 +91,7 @@ class Colour:
 
     @property
     def alpha(self):
-        return self.__data[3]
+        return self.__values[3]
 
     @property
     def a(self):
@@ -115,39 +122,34 @@ class Colour:
         return self.with_alpha(value)
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, Colour) and self.__data == other.__data
+        return isinstance(other, Colour) and self.__values == other.__values
 
     def __ne__(self, other: object) -> bool:
         return not (self == other)
 
-    def __apply_arithmetic_op(self, other: 'Colour', op: Callable[[float, float], float]) -> 'Colour':
-        def clamp(x: float) -> float:
-            return max(0, min(x, 1))
-
-        r, g, b, a = self.__data
-        ro, go, bo, ao = other.__data
-        return Colour(clamp(op(r, ro)), clamp(op(g, go)), clamp(op(b, bo)), clamp(op(a, ao)))
+    def __apply_arithmetic_op(self, other: 'Colour', op: Callable[[Any, Any], Any]) -> 'Colour':
+        return Colour(*np.clip(op(self.__values, other.__values), 0, 1))
 
     def __add__(self, other: 'Colour') -> 'Colour':
-        return self.__apply_arithmetic_op(other, lambda a, b: (a + b))
+        return self.__apply_arithmetic_op(other, np.add)
 
     def __sub__(self, other: 'Colour') -> 'Colour':
-        return self.__apply_arithmetic_op(other, lambda a, b: (a - b))
+        return self.__apply_arithmetic_op(other, np.subtract)
 
     def __mul__(self, other: 'Colour') -> 'Colour':
-        return self.__apply_arithmetic_op(other, lambda a, b: (a * b))
+        return self.__apply_arithmetic_op(other, np.multiply)
 
     def __truediv__(self, other: 'Colour') -> 'Colour':
-        return self.__apply_arithmetic_op(other, lambda a, b: (a / b))
+        return self.__apply_arithmetic_op(other, np.divide)
 
     def __repr__(self) -> str:
-        return f"Colour({', '.join(str(i) for i in self.__data)})"
+        return f"Colour({', '.join(str(i) for i in self.__values)})"
 
     def __getitem__(self, index):
-        return self.__data[index]
+        return self.__values[index]
 
     def __hash__(self) -> int:
-        return hash(self.__data)
+        return hash(self.__values)
 
 
 WHITE: Final[Colour] = Colour(1)

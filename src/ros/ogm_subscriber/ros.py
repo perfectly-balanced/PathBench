@@ -2,6 +2,7 @@ import os
 import sys
 import threading
 from threading import Lock, Condition
+from typing import Optional
 
 import numpy as np
 
@@ -26,24 +27,27 @@ from structures import Size, Point  # noqa: E402
 from maps import Maps  # noqa: E402
 
 class Ros:
-    _resolution: float
-    _origin: Point
-    _size: Size
-    _grid: np.ndarray
+    _resolution: Optional[float]
+    _origin: Optional[Point]
+    _size: Optional[Size]
+    _grid: Optional[np.ndarray]
+    _sim: Optional[Simulator]
 
-    def __init__(self):
+    def __init__(self, fake: bool = False):
         self._resolution = None
         self._origin = None
         self._size = None
         self._grid = None
+        self._sim = None
 
-        rospy.init_node("algo")
-        rospy.Subscriber("/map", OccupancyGrid, self._set_slam)
-        self.agent = None
-        self.grid = None
-        rospy.sleep(2)
+        if fake:
+            import ogm_publisher
+            self._set_grid(ogm_publisher.load_grid())
+        else:
+            rospy.init_node("algo")
+            rospy.Subscriber("/map", OccupancyGrid, self._set_grid)
 
-    def _set_slam(self, msg):
+    def _set_grid(self, msg):        
         minfo = msg.info
         rgrid = np.array(msg.data, dtype=np.int8).astype(np.uint8)
 
@@ -52,24 +56,23 @@ class Ros:
         self._size = Size(minfo.width, minfo.height)
         self._grid = np.empty(self._size[::-1], dtype=np.float32)
 
+        for i in range(len(rgrid)):
+            if rgrid[i] >= 240:
+                rgrid[i] = 255
+            else:
+                rgrid[i] = (rgrid[i] // 50) * 50
+
         for j in range(self._size.height):
             for i in range(self._size.width):
                 v = rgrid[j * self._size.width + i]
-                self._grid[j, i] = min(1, max(0, 1 - v / 255))
+                self._grid[j, i] = min(1, max(0, 1.0 - v / 255.0))
+
+        if self._sim is not None:
+            self._sim.services.algorithm.map.request_update()
 
     def _get_grid(self):
         grid = self._grid
         return grid
-
-    def _set_agent_pos(self, odom_msg):
-        self.agent = odom_msg
-
-    def _get_agent_pos(self):
-        ret = self.agent
-        return ret
-
-    def _update_requested(self):
-        pass  # request slam
 
     def _setup_sim(self) -> Simulator:
         config = Configuration()
@@ -81,25 +84,27 @@ class Ros:
         config.simulator_algorithm_type = AStar
         config.simulator_algorithm_parameters = ([], {})
         config.simulator_testing_type = AStarTesting
-        config.simulator_initial_map = RosMap(self._size,
-                                              Agent(Point(0, 0)),
+        config.simulator_initial_map = RosMap(Agent(Point(0, 0)),
                                               Goal(Point(0, 1)),
-                                              self._get_grid,
-                                              update_requested=self._update_requested)
+                                              self._get_grid)
         s = Services(config)
+        
+        while self._grid is None:
+            rospy.sleep(0.5)
         s.algorithm.map.request_update()
+        
         sim = Simulator(s)
         return sim
 
     def _find_goal(self):
         rospy.loginfo("Starting Simulator")
-        sim = self._setup_sim()
-        sim.start()
+        self._sim = self._setup_sim()
+        self._sim.start()
 
     def start(self):
         self._find_goal()
 
 
 if __name__ == "__main__":
-    ros = Ros()
+    ros = Ros(fake=True)
     ros.start()

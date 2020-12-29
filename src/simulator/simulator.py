@@ -107,3 +107,7 @@ class Simulator:
                 self.__services.ev_manager.unregister_listener(self.__map)
                 self.__services.ev_manager.unregister_tick_listener(self.__map)
             self.__try_setup_map_graphics()
+
+    @property
+    def services(self) -> Services:
+        return self.__services

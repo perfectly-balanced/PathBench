@@ -51,8 +51,6 @@ class Ros:
             "vel": rospy.Publisher("/cmd_vel", Twist, queue_size=10),  # velocity
         }
         self.agent = None
-        self.grid = None
-        rospy.sleep(2)
 
     def _set_slam(self, msg):
         self._grid_lock.acquire()
@@ -198,10 +196,12 @@ class Ros:
         vel_msg.angular.x, vel_msg.angular.y, vel_msg.angular.z = rot
         self.pubs["vel"].publish(vel_msg)
 
-    def _update_requested(self):
-        pass  # request slam
-
     def _setup_sim(self) -> Simulator:
+        print("Sleeping")
+        while self._grid is None:
+            rospy.sleep(0.5)
+        print("Woken")
+
         agent = self._get_agent_pos()
         agent_pos = self._world_to_grid([agent.pose.position.x, agent.pose.position.y])
 
@@ -219,12 +219,10 @@ class Ros:
         config.simulator_algorithm_type = AStar
         config.simulator_algorithm_parameters = ([], {})
         config.simulator_testing_type = AStarTesting
-        config.simulator_initial_map = RosMap(self.SIZE,
-                                              Agent(agent_pos, radius=self.INFLATE),
+        config.simulator_initial_map = RosMap(Agent(agent_pos, radius=self.INFLATE),
                                               Goal(self.goal),
                                               self._get_grid,
-                                              wp_publish=self._send_way_point,
-                                              update_requested=self._update_requested)
+                                              wp_publish=self._send_way_point)
 
         s = Services(config)
         print("Requesting")
@@ -277,8 +275,6 @@ class Ros:
         rospy.loginfo("Starting LSTM")
 
         self._find_goal()
-
-        # rospy.spin()
 
 
 if __name__ == "__main__":
