@@ -126,16 +126,15 @@ class MapModel(Model):
             try:
                 self._services.algorithm.instance.find_path()
             except AlgorithmTerminated:
-                print("Terminated algorithm")
+                self._services.debug.write("Terminated algorithm", DebugLevel.BASIC)
                 self._services.ev_manager.post(KeyFrameEvent(refresh=True))
             if self._services.settings.simulator_key_frame_speed == 0:
                 # no animation hence there hasn't been a chance to render
                 # the last state of the algorithm.
                 self._services.ev_manager.post(KeyFrameEvent(refresh=True))
-            self.cv.acquire()
-            self.last_thread = None
-            self.cv.notify()
-            self.cv.release()
+            with self.cv:
+                self.last_thread = None
+                self.cv.notify()
 
         self.last_thread = Thread(target=compute_wrapper, daemon=True)
         self.last_thread.start()

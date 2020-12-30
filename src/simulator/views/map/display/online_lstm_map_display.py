@@ -37,19 +37,15 @@ class OnlineLSTMMapDisplay(MapDisplay):
         self.__render_line(mp.agent.position, mp.goal.position, Colour(1, 0, 1))
         self.__render_arc(mp.agent.position, mp.goal.position, Colour(1, 0, 1))
 
-    """
-    'distance_to_goal_normalized'(4323596448) = {Tensor}
-    tensor(0.4342)
-    'raycast_8_normalized'(4323234992) = {Tensor}
-    tensor([0.1200, 0.3677, 0.1200, 0.1697, 0.4800, 0.6223, 0.4400, 0.1697])
-    'direction_to_goal_normalized'(4323596368) = {Tensor}
-    tensor([0.2534, -0.9674])
-    'agent_goal_angle'(4323234920) = {Tensor}
-    tensor(-1.3146)
-    """
-
     def __render_arc(self, p1: Point, p2: Point, colour: Colour):
-        raise NotImplementedError
+        center = p1
+        radius = 1
+        
+        dir = p2.to_tensor() - p1.to_tensor()
+        angle = torch.atan2(dir[1], dir[0])
+        angle %= 2 * np.pi
 
+        self.get_renderer_view().draw_arc(center, angle, radius=radius, colour=colour)
+        
     def __render_line(self, p1: Point, p2: Point, colour: Colour):
         self.get_renderer_view().draw_line(colour, p1, p2)

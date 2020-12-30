@@ -46,7 +46,3 @@ class TestExtendedWall(unittest.TestCase):
         entity1: ExtendedWall = ExtendedWall(Point(2, 3), 10)
         entity2: Entity = Entity(Point(2, 3), 10)
         self.assertNotEqual(entity1, entity2)
-
-
-if __name__ == '__main__':
-    TestExtendedWall().run()

@@ -147,7 +147,7 @@ class SimulatorConfig(DirectObject):
                 [], {"global_kernel": (CombinedOnlineLSTM, ([], {})), "global_kernel_max_it": 100})),
             "LSTM Bagging": (CombinedOnlineLSTM, CombinedOnlineLSTMTesting, ([], {})),
             "CAE Online LSTM": (
-                OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"})),
+                OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_3000_block_map_3000_house_3000_model"})),
             "Online LSTM": (OnlineLSTM, BasicTesting, (
                 [],
                 {"load_name": "tile_by_tile_training_uniform_random_fill_3000_block_map_3000_house_3000_model"})),

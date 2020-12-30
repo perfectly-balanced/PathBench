@@ -45,7 +45,3 @@ class TestEntity(unittest.TestCase):
         entity1: int = 2
         entity2: Entity = Entity(Point(2, 3), 10)
         self.assertNotEqual(entity1, entity2)
-
-
-if __name__ == '__main__':
-    TestEntity().run()

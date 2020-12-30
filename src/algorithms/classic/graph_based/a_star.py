@@ -8,9 +8,9 @@ from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.entities.goal import Goal
 from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
-from simulator.views.map.display.gradient_map_display import GradientMapDisplay
+from simulator.views.map.display.gradient_list_map_display import GradientListMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
-from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
+from simulator.views.map.display.solid_iterable_map_display import SolidIterableMapDisplay
 from structures import Point, Colour, BLUE, DynamicColour
 from structures.factory import gen_set, gen_heap
 from structures.heap import Heap
@@ -54,8 +54,8 @@ class AStar(Algorithm):
         self.pq_colour_min = self._services.state.add_colour("explored min", Colour(0.27, 0.33, 0.35, 0.2))
         self.visited_colour = self._services.state.add_colour("visited", Colour(0.19, 0.19, 0.2, 0.8))
 
-        self.__map_displays = [SolidColourMapDisplay(self._services, self.mem.visited, self.visited_colour, z_index=50),
-                               GradientMapDisplay(self._services, pts=self.mem.priority_queue, min_colour=self.pq_colour_min,
+        self.__map_displays = [SolidIterableMapDisplay(self._services, self.mem.visited, self.visited_colour, z_index=50),
+                               GradientListMapDisplay(self._services, self.mem.priority_queue, min_colour=self.pq_colour_min,
                                                   max_colour=self.pq_colour_max, z_index=49, inverted=True)]
 
     def set_display_info(self) -> List[MapDisplay]:
@@ -98,7 +98,7 @@ class AStar(Algorithm):
 
             for n, idx in grid.get_next_positions_with_move_index(next_node):
                 if n not in self.mem.visited:
-                    dist = grid.get_movement_cost_from_index(idx)
+                    dist = grid.get_movement_cost_from_index(idx, n)
                     if n not in self.mem.g or self.mem.g[next_node] + dist < self.mem.g[n]:
                         # it does not matter if we have duplicates as we will not be looking at them
                         # therefore it does not affect the priority

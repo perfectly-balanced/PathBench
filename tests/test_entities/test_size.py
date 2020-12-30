@@ -1,4 +1,5 @@
-import unittest, copy
+import unittest
+import copy
 
 from structures import Size
 
@@ -59,7 +60,3 @@ class TestSize(unittest.TestCase):
         self.assertEqual(tuple(size), (2, 3, 4))
         self.assertEqual(size.values, (2, 3, 4))
         self.assertEqual(list(size), [2, 3, 4])
-
-
-if __name__ == '__main__':
-    TestSize().run()

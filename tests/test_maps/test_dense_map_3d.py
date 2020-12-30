@@ -16,6 +16,7 @@ from structures import Size, Point
 
 class TestDenseMap3D(unittest.TestCase):
     maxDiff = None
+
     def test_copy(self) -> None:
         map1: DenseMap = Maps.grid_map_3d_example
         map2: DenseMap = copy.copy(map1)
@@ -43,18 +44,18 @@ class TestDenseMap3D(unittest.TestCase):
             [[DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.WALL_ID], [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID]]
         ])
         map2: DenseMap = DenseMap([
-            [[DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID], 
-             [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID], 
+            [[DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID],
+             [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID],
              [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID]
-            ], 
-            [[DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID], 
-             [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID], 
+             ],
+            [[DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID],
+             [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID],
              [DenseMap.WALL_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID]
-            ], 
-            [[DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID], 
-             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID], 
+             ],
+            [[DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
+             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID],
              [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID]
-            ]
+             ]
         ])
         self.assertNotEqual(map1, map2)
 
@@ -104,32 +105,32 @@ class TestDenseMap3D(unittest.TestCase):
 
     def test_ne_all(self) -> None:
         map1: DenseMap = DenseMap([
-            [[DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID], 
-             [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID], 
+            [[DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID],
+             [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID],
              [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID]
-            ], 
-            [[DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID], 
-             [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID], 
+             ],
+            [[DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID],
+             [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID],
              [DenseMap.WALL_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID]
-            ], 
-            [[DenseMap.EXTENDED_WALL_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID], 
-             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID], 
+             ],
+            [[DenseMap.EXTENDED_WALL_ID, DenseMap.CLEAR_ID, DenseMap.GOAL_ID],
+             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID],
              [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID]
-            ]
+             ]
         ])
         map2: DenseMap = DenseMap([
-            [[DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID], 
-             [DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL_ID, DenseMap.CLEAR_ID], 
+            [[DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID],
+             [DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL_ID, DenseMap.CLEAR_ID],
              [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID]
-            ], 
-            [[DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID], 
-             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID], 
+             ],
+            [[DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID],
+             [DenseMap.CLEAR_ID, DenseMap.CLEAR_ID, DenseMap.WALL_ID],
              [DenseMap.WALL_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID]
-            ], 
-            [[DenseMap.WALL_ID, DenseMap.GOAL_ID, DenseMap.WALL_ID], 
-             [DenseMap.EXTENDED_WALL_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID], 
+             ],
+            [[DenseMap.WALL_ID, DenseMap.GOAL_ID, DenseMap.WALL_ID],
+             [DenseMap.EXTENDED_WALL_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID],
              [DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID]
-            ]
+             ]
         ])
         self.assertNotEqual(map1, map2)
 
@@ -151,7 +152,7 @@ class TestDenseMap3D(unittest.TestCase):
         ])
         map2: int = 3
         self.assertNotEqual(map1, map2)
-    
+
     def test_eq_sparse_map(self) -> None:
         map1: DenseMap = DenseMap([
             [[DenseMap.WALL_ID, DenseMap.WALL_ID, DenseMap.CLEAR_ID], [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.CLEAR_ID]],
@@ -169,7 +170,7 @@ class TestDenseMap3D(unittest.TestCase):
         map1: DenseMap = Maps.grid_map_3d_example_4_4_4
         map2: SparseMap = map1.convert_to_sparse_map()
         self.assertEqual(map1, map2)
-    
+
     def test_move_agent_normal(self) -> None:
         map1: DenseMap = DenseMap([
             [[DenseMap.CLEAR_ID, DenseMap.WALL_ID, DenseMap.WALL_ID], [DenseMap.AGENT_ID, DenseMap.CLEAR_ID, DenseMap.EXTENDED_WALL_ID]],
@@ -238,7 +239,7 @@ class TestDenseMap3D(unittest.TestCase):
         ])
         self.assertFalse(map1.is_agent_valid_pos(Point(1, 0, 0)))
         self.assertFalse(map1.is_agent_valid_pos(Point(1, 0, 0)))
-        self.assertFalse(map1.is_agent_valid_pos(Point(-1, -1, -1)))   
+        self.assertFalse(map1.is_agent_valid_pos(Point(-1, -1, -1)))
 
     def test_str(self) -> None:
         map1: DenseMap = DenseMap([
@@ -307,7 +308,3 @@ class TestDenseMap3D(unittest.TestCase):
 			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
 		]
 	}""", str(map1))
-
-
-if __name__ == '__main__':
-    TestDenseMap3D().run()

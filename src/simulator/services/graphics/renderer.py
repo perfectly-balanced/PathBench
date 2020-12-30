@@ -17,7 +17,7 @@ class Renderer():
         self.__draw_nps = []
         self.__circles = []
         self.__line_segs = LineSegs()
-        self.__line_segs.set_thickness(2.5)
+        self.__line_segs.set_thickness(4)
 
     def push_root(self, np: NodePath) -> None:
         assert isinstance(np, NodePath)
@@ -57,11 +57,10 @@ class Renderer():
         np.set_pos(*p)
         np.set_scale(scale)
 
-    def make_arc(self, p: Point, angle_degs: float = 360, nsteps: int = 16, radius: float = 0.06, colour: Colour = WHITE) -> None:
+    def draw_arc(self, p: Point, angle_rads: float = 2 * math.pi, nsteps: int = 16, radius: float = 0.06, colour: Colour = WHITE) -> None:
         ls = self.__line_segs
         ls.set_color(*colour)
 
-        angle_rads = angle_degs * (math.pi / 180.0)
         x, y, z = p
 
         ls.move_to(x + radius, y, z)
@@ -72,7 +71,7 @@ class Renderer():
             ls.draw_to(tx, ty, z)
 
     def draw_circle(self, p: Point, *args, **kwargs) -> None:
-        self.make_arc(p, 360, *args, **kwargs)
+        self.draw_arc(p, 2 * math.pi, *args, **kwargs)
 
     def draw_circle_filled(self, p: Point, nsteps=16, radius: float = 0.06, colour: Colour = WHITE) -> None:
         gn = GeomNode("circle")

@@ -1,4 +1,5 @@
-import unittest, copy
+import unittest
+import copy
 
 from structures import Point
 
@@ -59,7 +60,3 @@ class TestPoint(unittest.TestCase):
         self.assertEqual(tuple(point), (2, 3, 4))
         self.assertEqual(point.values, (2, 3, 4))
         self.assertEqual(list(point), [2, 3, 4])
-
-
-if __name__ == '__main__':
-    TestPoint().run()

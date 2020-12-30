@@ -11,7 +11,7 @@ from algorithms.configuration.entities.trace import Trace
 from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
 from simulator.services.algorithm_runner import AlgorithmRunner
 from simulator.services.services import Services
-from simulator.views.map.display.gradient_map_display import GradientMapDisplay
+from simulator.views.map.display.gradient_list_map_display import GradientListMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
 from structures import Point
 
@@ -29,7 +29,7 @@ class AStarHeuristicAugmentation(AStar):
 
     def set_display_info(self) -> List[MapDisplay]:
         ret: List[MapDisplay] = super().set_display_info()
-        ret.append(GradientMapDisplay(self._services, self._heuristic_multiplier, min_color=np.array([100., 0., 0.]),
+        ret.append(GradientListMapDisplay(self._services, self._heuristic_multiplier, min_color=np.array([100., 0., 0.]),
                                max_color=np.array([250., 250., 250.]), z_index=25))
         return ret
 
