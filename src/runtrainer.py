@@ -177,7 +177,7 @@ if args.full_train:
         config.generator_gen_type = m
         config.generator_labelling_atlases = [m + '_' + str(nbr_ex)]
 
-        MainRunner(config).run_multiple()
+        MainRunner(config).run()
 
 config.generator_labelling_atlases = [m + '_' + str(nbr_ex) for m in gen_maps.values()]
 #Generator

@@ -210,7 +210,8 @@ class BasicTesting:
 
     @staticmethod
     def get_smoothness(trace: List[Trace], agent: Agent) -> float:
-        trace.append(Trace(agent.position))
+        if (not trace) or trace[-1].position != agent.position:
+            trace.append(Trace(agent.position))
         angle = 0
         prev_angle = None
 

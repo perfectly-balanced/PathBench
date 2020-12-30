@@ -161,6 +161,8 @@ class Map:
         :param direction: The true direction
         :return: The :ref:`ALL_POINTS_MOVE_VECTOR` point
         """
+        if not any(direction):
+            import pdb; pdb.set_trace()
         assert(any(direction))
         dir_length = math.sqrt(sum(i*i for i in direction))
         norm_direction = list(map(lambda i: i/dir_length, direction))
