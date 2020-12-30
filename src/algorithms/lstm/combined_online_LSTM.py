@@ -26,13 +26,14 @@ class CombinedOnlineLSTM(Algorithm):
                  max_it: float = float('inf'), threaded: bool = False):
         super().__init__(services, testing)
 
-        self.kernel_names = [
-            "tile_by_tile_training_house_10_model",
-            "tile_by_tile_training_house_100_model",
-            "tile_by_tile_training_house_1000_model",
-            "tile_by_tile_training_uniform_random_fill_1000_model",
-            "tile_by_tile_training_uniform_random_fill_3000_block_map_3000_house_3000_model",
-        ]
+        if not self.kernel_names:
+            self.kernel_names = [
+                "tile_by_tile_training_house_10_model",
+                "tile_by_tile_training_house_100_model",
+                "tile_by_tile_training_house_1000_model",
+                "tile_by_tile_training_uniform_random_fill_1000_model",
+                "tile_by_tile_training_uniform_random_fill_3000_block_map_3000_house_3000_model",
+            ]
 
         self._max_it = max_it
         self._threaded = threaded
