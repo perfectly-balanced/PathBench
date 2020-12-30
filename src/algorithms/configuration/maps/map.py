@@ -146,7 +146,7 @@ class Map:
         :param direction: The direction
         :return: The index corresponding to :ref:`ALL_POINTS_MOVE_VECTOR`
         """
-        direction = direction.tolist() if torch.is_tensor(direction) else direction
+        direction = direction.tolist() if hasattr(direction, "tolist") else direction
         rounded_point = self.get_move_along_dir(direction)
         return self.ALL_POINTS_MOVE_VECTOR.index(rounded_point)
 
