@@ -542,7 +542,6 @@ class Generator:
                     min_room_size=Size(*([min_map_size] * dimensions.n_dim)),
                     max_room_size=Size(*([max_map_size] * dimensions.n_dim)),
                 )
-            #print('grid is \n', mp.grid)
             atlas.append(mp)
             maps.append(mp)
             progress_bar.step()
