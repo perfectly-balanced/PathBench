@@ -205,7 +205,6 @@ class MLModel(torch.nn.Module):
                 MapProcessing.pick_sequential_features(d[data_category_seq], data_seq)
             ), data))
 
-            #data_features_sequence = list(map(lambda t: t if t.shape != (0,) else t.reshape(0, 1), data_features_sequence))
             data_seq_dataset: Dataset = PackedDataset(data_features_sequence)
 
         if data_single:
@@ -231,8 +230,7 @@ class MLModel(torch.nn.Module):
         # load data
         for tr in self.config["training_data"]:
             self._services.debug.write("Loading data: " + tr, DebugLevel.BASIC, streams=[self.__training_stream])
-            load = self._services.resources.training_data_dir.load(tr)
-            data = data + load
+            data = data + self._services.resources.training_data_dir.load(tr)
 
         if not data:
             raise Exception("No training data")

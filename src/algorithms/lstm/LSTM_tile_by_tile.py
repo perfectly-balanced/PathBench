@@ -61,8 +61,6 @@ class BasicLSTMModule(MLModel):
 
         perm = self.get_sort_by_lengths_indices(x_len)
         y_sorted, _ = self.pack_data(y, x_len, perm)
-        #y_sorted = y_sorted.to(self._services.torch.device)
-        #import pdb; pdb.set_trace()
 
         x = x.to(self._services.torch.device)
         x_len = x_len.to(self._services.torch.device)
@@ -74,10 +72,8 @@ class BasicLSTMModule(MLModel):
             Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         x, x_len, y_sorted, perm = self._prepare_data_before_forward(inputs, labels)
         out = self.forward(x, x_len, perm).view(-1, 8)
-        #import pdb; pdb.set_trace()
         if len(y_sorted) != len(out):
             y_sorted = torch.tensor(y_sorted.tolist() + [0]).to(self._services.torch.device)
-        #assert(len(y_sorted) == len(out))
         l: torch.Tensor = self.config["loss"](out, y_sorted)
         return l, out, y_sorted
 
