@@ -49,7 +49,7 @@ class FlatMap(MapData):
                  depth: Real = 0.1):
         super().__init__(services, data, parent, name)
 
-        self.__lines = LRU(15)
+        self.__lines = LRU(16)
 
         if square_size is None:
             # basic heuristic for decreasing square
