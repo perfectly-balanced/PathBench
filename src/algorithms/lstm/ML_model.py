@@ -1,5 +1,4 @@
 import numpy as np
-import pandas
 
 from sklearn import metrics
 from io import StringIO
