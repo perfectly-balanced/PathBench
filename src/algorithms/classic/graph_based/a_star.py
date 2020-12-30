@@ -98,7 +98,7 @@ class AStar(Algorithm):
 
             for n, idx in grid.get_next_positions_with_move_index(next_node):
                 if n not in self.mem.visited:
-                    dist = grid.get_movement_cost_from_index(idx)
+                    dist = grid.get_movement_cost_from_index(idx, n)
                     if n not in self.mem.g or self.mem.g[next_node] + dist < self.mem.g[n]:
                         # it does not matter if we have duplicates as we will not be looking at them
                         # therefore it does not affect the priority

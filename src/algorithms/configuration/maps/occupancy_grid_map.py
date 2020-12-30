@@ -1,6 +1,6 @@
 import numpy as np
 
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional, Tuple, Union
 from numbers import Real
 import copy
 
@@ -17,6 +17,7 @@ from algorithms.configuration.maps.sparse_map import SparseMap
 from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.goal import Goal
+from algorithms.configuration.entities.entity import Entity
 from algorithms.configuration.entities.obstacle import Obstacle
 from utility.misc import flatten, array_shape
 from utility.compatibility import Final
@@ -26,6 +27,7 @@ class OccupancyGridMap(DenseMap):
     weight_grid: np.array
     traversable_threshold: float
     DEFAULT_TRAVERSABLE_THRESHOLD: Final[float] = 0.95
+    __cached_move_costs: List[float]
 
     def __init__(self,
                  weight_grid: Optional[List[Any]] = None,
@@ -41,6 +43,7 @@ class OccupancyGridMap(DenseMap):
         self.goal = goal
         self.weight_grid = None
         self.traversable_threshold = None
+        self.__cached_move_costs = []
         if weight_grid is not None:
             self.set_grid(weight_grid, weight_bounds, traversable_threshold, unmapped_value)
 
@@ -175,6 +178,19 @@ class OccupancyGridMap(DenseMap):
 
     def convert_to_sparse_map(self) -> Optional[SparseMap]:
         return None
+
+    def get_movement_cost(self, frm: Union[Point, Entity] = None, to: Union[Point, Entity] = None) -> float:
+        cost = super().get_movement_cost(frm, to)
+        if isinstance(to, Entity):
+            to = to.position
+        return cost + self.weight_grid[to.values]
+    
+    def get_movement_cost_from_index(self, idx: int, frm: Point) -> float:
+        if not self.__cached_move_costs:
+            zeros = Point(*[0 for i in range(self.size.n_dim)])
+            self.__cached_move_costs = list(map(lambda p: Map.get_movement_cost(self, zeros, p), self.ALL_POINTS_MOVE_VECTOR))
+        to = frm + self.ALL_POINTS_MOVE_VECTOR[idx]
+        return self.__cached_move_costs[idx] + self.weight_grid[to.values]
 
     def __deepcopy__(self, memo: Dict) -> 'OccupancyGridMap':
         mp = self.__class__(agent=copy.deepcopy(self.agent),
