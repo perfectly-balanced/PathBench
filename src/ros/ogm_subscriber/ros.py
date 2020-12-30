@@ -5,6 +5,7 @@ from threading import Lock, Condition
 from typing import Optional
 
 import numpy as np
+import cv2 as cv
 
 import rospy
 from nav_msgs.msg import OccupancyGrid
@@ -47,25 +48,30 @@ class Ros:
             rospy.init_node("algo")
             rospy.Subscriber("/map", OccupancyGrid, self._set_grid)
 
-    def _set_grid(self, msg):        
+    def _set_grid(self, msg):
         minfo = msg.info
         rgrid = np.array(msg.data, dtype=np.int8).astype(np.uint8)
 
         self._resolution = minfo.resolution
         self._origin = Point(minfo.origin.position.x, minfo.origin.position.y)
         self._size = Size(minfo.width, minfo.height)
-        self._grid = np.empty(self._size[::-1], dtype=np.float32)
 
-        for i in range(len(rgrid)):
-            if rgrid[i] >= 240:
-                rgrid[i] = 255
-            else:
-                rgrid[i] = (rgrid[i] // 50) * 50
-
+        grid = np.empty(self._size[::-1], dtype=np.float32)
         for j in range(self._size.height):
             for i in range(self._size.width):
-                v = rgrid[j * self._size.width + i]
-                self._grid[j, i] = min(1, max(0, 1.0 - v / 255.0))
+                grid[j, i] = rgrid[j * self._size.width + i]
+
+        MAX_SIZE = 128
+        if MAX_SIZE < self._size.height or MAX_SIZE < self._size.width:
+            scale = MAX_SIZE / self._size.height
+            if (MAX_SIZE / self._size.width) < scale:
+                scale = MAX_SIZE / self._size.width
+            grid = cv.resize(grid, None, fx=scale, fy=scale, interpolation=cv.INTER_AREA)
+
+        for idx in np.ndindex(grid.shape):
+            grid[idx] = min(1, max(0, 1.0 - grid[idx] / 255.0))
+
+        self._grid = grid
 
         if self._sim is not None:
             self._sim.services.algorithm.map.request_update()
@@ -88,11 +94,11 @@ class Ros:
                                               Goal(Point(0, 1)),
                                               self._get_grid)
         s = Services(config)
-        
+
         while self._grid is None:
             rospy.sleep(0.5)
         s.algorithm.map.request_update()
-        
+
         sim = Simulator(s)
         return sim
 
