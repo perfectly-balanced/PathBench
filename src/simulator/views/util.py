@@ -1,10 +1,12 @@
 from structures import Colour
+import numpy as np
 
 def blend_colours(src: Colour, dst: Colour):
     wda = dst.a * (1 - src.a)  # weighted dst alpha
+    cs = np.multiply(src.values, src.a) + np.multiply(dst.values, wda)
+
     a = src.a + wda
-    d = (a if a != 0 else 1)
-    r = (src.r * src.a + dst.r * wda) / d
-    g = (src.g * src.a + dst.g * wda) / d
-    b = (src.b * src.a + dst.b * wda) / d
-    return Colour(r, g, b, a)
+    if a != 0:
+        cs = np.divide(cs, a)
+
+    return Colour(*cs)

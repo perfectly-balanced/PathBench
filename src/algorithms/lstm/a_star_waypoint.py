@@ -12,12 +12,12 @@ from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
 from simulator.services.algorithm_runner import AlgorithmRunner
 from simulator.services.services import Services
 from simulator.views.map.display.map_display import MapDisplay
-from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
-from structures import Point
+from simulator.views.map.display.solid_iterable_map_display import SolidIterableMapDisplay
+from structures import Point, Colour
 
 
 class WayPointNavigation(Algorithm):
-    SIMPLE_ANIMATIONS: bool = True
+    SIMPLE_ANIMATIONS: bool = False
 
     way_points: List[Point]
     display_info_data: List[Union[Set[Any], List]]
@@ -67,9 +67,12 @@ class WayPointNavigation(Algorithm):
             if not self.__is_local_anim and self.__global_kernel_anim:
                 ret += self.__global_kernel_anim.instance.set_display_info()
 
-        ret.append(SolidColourMapDisplay(self._services, self.display_info_data[0], AStar.VISITED_COLOR, z_index=70))
-        ret.append(SolidColourMapDisplay(self._services, self.display_info_data[1], AStar.VISITED_COLOR, z_index=65))
-        ret.append(SolidColourMapDisplay(self._services, self.way_points, (0, 255, 255), z_index=200, radius=5))
+        visited_colour = self._services.state.add_colour("visited", Colour(0.19, 0.19, 0.2, 0.8))
+        waypoint_colour = self._services.state.add_colour("waypoint", Colour(0, 1, 1))
+
+        ret.append(SolidIterableMapDisplay(self._services, self.display_info_data[0], visited_colour, z_index=70))
+        ret.append(SolidIterableMapDisplay(self._services, self.display_info_data[1], visited_colour, z_index=65))
+        ret.append(SolidIterableMapDisplay(self._services, self.way_points, waypoint_colour, z_index=200))
         return ret
 
     def _find_path_internal(self) -> None:

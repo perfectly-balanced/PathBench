@@ -34,7 +34,3 @@ class TestTrackedHeap(unittest.TestCase):
         self.tr_heap.pop()
         self.assertEqual(self.tr_heap.modified[-1], 1)
         self.assertEqual(len(self.tr_heap.modified), 6)
-
-
-if __name__ == '__main__':
-    TestTrackedHeap().run()

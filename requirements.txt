@@ -12,3 +12,4 @@ dill
 natsort
 screeninfo
 opencv-python
+lru-dict

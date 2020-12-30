@@ -77,7 +77,7 @@ def graphics_test() -> None:
     print(mse(expected_transparent_1, transparent_1))
 
     # Some error allowed due to RRT running differently sometimes
-    THRESHOLD = 11
+    THRESHOLD = 30
     mse_1 = mse(expected_transparent_1, transparent_1)
     assert mse_1 < THRESHOLD, mse_1
 

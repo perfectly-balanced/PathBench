@@ -8,7 +8,7 @@ from algorithms.configuration.maps.map import Map
 from simulator.services.services import Services
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
 from simulator.views.map.display.map_display import MapDisplay
-from simulator.views.map.display.solid_colour_map_display import SolidColourMapDisplay
+from simulator.views.map.display.solid_iterable_map_display import SolidIterableMapDisplay
 from structures import Point
 
 

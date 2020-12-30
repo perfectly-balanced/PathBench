@@ -59,11 +59,11 @@ def graphics_test() -> None:
     time.sleep(3)
 
     # compare the new screenshot with the expected one
-    expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "potential_field_transparent.png"))
+    expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "potential_field_2d.png"))
     transparent_1 = cv.imread(transparent_1)
 
     # RRT does not run exactly the same every time, so allow bigger rate
-    THRESHOLD = 11
+    THRESHOLD = 30
     mse_1 = mse(expected_transparent_1, transparent_1)
     assert mse_1 < THRESHOLD, mse_1
 

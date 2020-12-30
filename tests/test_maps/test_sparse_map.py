@@ -270,7 +270,3 @@ class TestSparseMap(unittest.TestCase):
 		}, 
 		goal: Goal: {position: Point(1, 2), radius: 0}
 	}""", str(map1))
-
-
-if __name__ == '__main__':
-    TestSparseMap().run()

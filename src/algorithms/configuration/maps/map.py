@@ -376,11 +376,12 @@ class Map:
             frm = frm.position
 
         if isinstance(to, Entity):
-            to = frm.position
+            to = to.position
 
         return self.get_distance(frm, to)
 
-    def get_movement_cost_from_index(self, idx: int) -> float:
+    def get_movement_cost_from_index(self, idx: int, frm: Optional[Point] = None) -> float:
+        # Note, frm is not required here but may be for derived classes (e.g. OccupancyGridMap).
         if not self.__cached_move_costs:
             zeros = Point(*[0 for i in range(self.size.n_dim)])
             self.__cached_move_costs = list(map(lambda p: self.get_movement_cost(zeros, p), self.ALL_POINTS_MOVE_VECTOR))
