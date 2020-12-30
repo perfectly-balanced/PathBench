@@ -90,8 +90,8 @@ class Ros:
         config.simulator_algorithm_type = AStar
         config.simulator_algorithm_parameters = ([], {})
         config.simulator_testing_type = AStarTesting
-        config.simulator_initial_map = RosMap(Agent(Point(0, 0)),
-                                              Goal(Point(0, 1)),
+        config.simulator_initial_map = RosMap(Agent(Point(40,40)),
+                                              Goal(Point(30, 20)),
                                               self._get_grid)
         s = Services(config)
 
