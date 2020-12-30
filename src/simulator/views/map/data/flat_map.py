@@ -17,6 +17,8 @@ from numbers import Real
 import numpy as np
 from nptyping import NDArray
 
+from lru import LRU
+
 class FlatMap(MapData):
     squares: Final[List[NodePath]]
     square_meshes: Final[List[SquareMesh]]
@@ -47,7 +49,7 @@ class FlatMap(MapData):
                  depth: Real = 0.1):
         super().__init__(services, data, parent, name)
 
-        self.__lines = {}
+        self.__lines = LRU(15)
 
         if square_size is None:
             # basic heuristic for decreasing square
@@ -151,8 +153,7 @@ class FlatMap(MapData):
             bc = None
 
         pixel = to_pixel(c)
-        wfc = blend_colours(wfc, c)
-        wfpixel = to_pixel(wfc)
+        wfpixel = to_pixel(blend_colours(wfc, c))
 
         line = array.array('B')
         for _ in range(wfd2):
@@ -191,7 +192,9 @@ class FlatMap(MapData):
 
     def render_square(self, p: Point, c: Colour, wfc: Colour) -> None:
         px, py = int(p[0]), int(p[1])
-        l, wfl, tl = self.__lines[(c, wfc)] if (c, wfc) in self.__lines else self.__create_lines(c, wfc)
+
+        ls = self.__lines.get((c, wfc))
+        l, wfl, tl = self.__create_lines(c, wfc) if ls is None else ls
         
         # find corresponding block texture & offset points accordingly
         block_x_idx = px // self.block_size
