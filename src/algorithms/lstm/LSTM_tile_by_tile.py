@@ -110,7 +110,7 @@ class BasicLSTMModule(MLModel):
         inp_len = torch.Tensor([1])
         res = self.forward(inp, inp_len)
         _, mov_idx = torch.max(res.squeeze(), 0)
-        return Map.ALL_POINTS_MOVE_VECTOR[mov_idx].to_tensor()
+        return mp.ALL_POINTS_MOVE_VECTOR[mov_idx].to_tensor()
 
     @staticmethod
     def get_config() -> Dict[str, Any]:
