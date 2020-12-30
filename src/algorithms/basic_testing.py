@@ -238,9 +238,12 @@ class BasicTesting:
         else:
             obstacles = np.full(grid.size, grid.CLEAR_ID, dtype=np.uint8)
             for o in grid.obstacles:
-                if type(o) is Obstacle: # we don't want extended wall
+                if type(o) is Obstacle:  # we don't want extended wall
                     obstacles[o.position.values] = grid.WALL_ID
             obstacles = np.transpose(np.where(obstacles == grid.WALL_ID))
+
+        if len(grid.obstacles) == 0:
+            return 0
 
         obstacle_dists = []
         for t in trace:

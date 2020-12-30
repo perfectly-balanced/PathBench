@@ -20,7 +20,7 @@ class RosMap(OccupancyGridMap):
 
     def __init__(self, agent: Agent, goal: Goal,
                  get_grid: Callable[[], List[Any]],
-                 weight_bounds: Tuple[Real, Real] = (0, 1), traversable_threshold: Real = 0.8, unmapped_value: Real = -1,
+                 weight_bounds: Optional[Tuple[Real, Real]] = None, traversable_threshold: Optional[Real] = None, unmapped_value: Optional[Real] = None,
                  wp_publish: Optional[Callable[[Point], None]] = None,
                  update_requested: Optional[Callable[[], None]] = None,
                  services: Services = None,
