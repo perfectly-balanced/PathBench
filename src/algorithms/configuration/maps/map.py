@@ -1,10 +1,9 @@
-import copy
 from typing import List, Optional, Set, Dict, Callable, TypeVar, Union, Tuple
-
-import math
-import numpy as np
-import torch
 from itertools import product
+import copy
+import math
+
+import numpy as np
 
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.entity import Entity
