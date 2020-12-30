@@ -15,6 +15,7 @@ class SolidIterableMapDisplay(MapDisplay):
     points: Union[Set[Point], List[Entity]]
     __old_pts: Optional[Union[Set[Point], List[Entity]]]
     __point_dim: int
+    __tracked_data: List[Tracked]
 
     __deduced_colour: Colour
 
@@ -27,6 +28,7 @@ class SolidIterableMapDisplay(MapDisplay):
         self.pts = points
         self.__old_pts = None
         self.__point_dim = None
+        self.__tracked_data = [self.pts] if isinstance(self.pts, Tracked) else []
 
         self.__deduced_colour = self.colour()
 
@@ -64,7 +66,7 @@ class SolidIterableMapDisplay(MapDisplay):
             self._root_view.cube_requires_update(p)
 
     def get_tracked_data(self) -> List[Tracked]:
-        return [self.pts] if isinstance(self.pts, Tracked) else []
+        return self.__tracked_data
 
     def update_cube(self, p: Point) -> None:
         if self.__point_dim != 3:

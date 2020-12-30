@@ -13,6 +13,7 @@ from structures.tracked_grid import TrackedGrid
 class GradientListMapDisplay(MapDisplay):
     inverted: bool
     pts: List[Tuple[Union[int, float], Point]]
+    __tracked_data: List[Tracked]
     min_colour: DynamicColour
     max_colour: DynamicColour
     min_value: float
@@ -29,6 +30,8 @@ class GradientListMapDisplay(MapDisplay):
         super().__init__(services, z_index=z_index, custom_map=custom_map)
 
         self.pts = pts
+
+        self.__tracked_data = [self.pts] if isinstance(self.pts, Tracked) else []
 
         assert min_colour is not None
         assert max_colour is not None
@@ -123,4 +126,4 @@ class GradientListMapDisplay(MapDisplay):
             self._root_view.colour_cube(self.__cube_colours[p])
 
     def get_tracked_data(self) -> List[Tracked]:
-        return [self.pts] if isinstance(self.pts, Tracked) else []
+        return self.__tracked_data

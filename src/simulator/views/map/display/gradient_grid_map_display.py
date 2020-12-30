@@ -16,6 +16,7 @@ class GradientGridMapDisplay(MapDisplay):
     inverted: bool
     value_bounds: Optional[Tuple[Real, Real]]
     grid: Union[np.ndarray, TrackedGrid]
+    __tracked_data: List[Tracked]
     min_colour: DynamicColour
     max_colour: DynamicColour
     min_value: float
@@ -35,6 +36,8 @@ class GradientGridMapDisplay(MapDisplay):
             self.grid = grid
         else:
             self.grid = np.array(grid)
+
+        self.__tracked_data = [self.grid] if isinstance(self.grid, Tracked) else []
 
         assert min_colour is not None
         assert max_colour is not None
@@ -142,4 +145,4 @@ class GradientGridMapDisplay(MapDisplay):
                 self._root_view.colour_cube(c)
 
     def get_tracked_data(self) -> List[Tracked]:
-        return [self.grid] if isinstance(self.grid, Tracked) else []
+        return self.__tracked_data

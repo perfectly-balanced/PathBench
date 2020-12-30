@@ -15,6 +15,7 @@ from structures.tracked import Tracked
 class SolidGridMapDisplay(MapDisplay):
     grid: Union[np.ndarray, TrackedGrid]
     comparator: Callable[[Real], bool]
+    __tracked_data: List[Tracked]
 
     colour: DynamicColour
     __deduced_colour: Colour
@@ -29,6 +30,7 @@ class SolidGridMapDisplay(MapDisplay):
             self.grid = np.array(grid)
 
         self.comparator = comparator
+        self.__tracked_data = [self.grid] if isinstance(self.grid, Tracked) else []
 
         self.colour = colour
         self.__deduced_colour = self.colour()
@@ -57,7 +59,7 @@ class SolidGridMapDisplay(MapDisplay):
                 self._root_view.cube_requires_update(Point(*idx))
 
     def get_tracked_data(self) -> List[Tracked]:
-        return [self.grid] if isinstance(self.grid, Tracked) else []
+        return self.__tracked_data
 
     def update_cube(self, p: Point) -> None:
         p = Point(*p.values[:self.grid.ndim]) - self.offset

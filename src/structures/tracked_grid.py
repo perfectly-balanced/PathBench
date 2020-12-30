@@ -27,7 +27,7 @@ class _TrackedGridView():
         return self._values.ndim
 
     def __setitem__(self, index, value):
-        if isinstance(index, tuple):
+        if type(index) is tuple:
             self._grid.modified.append(((*self._partial_index, *index), self._values[index]))
             self._values[index] = value
         elif self._values.ndim == 1:
@@ -37,7 +37,7 @@ class _TrackedGridView():
             return _TrackedGridView(self._grid, (*self._partial_index, index), self._values[index])
 
     def __getitem__(self, index):
-        if isinstance(index, tuple) or self._values.ndim == 1:
+        if type(index) is tuple or self._values.ndim == 1:
             return self._values[index]
         else:
             return _TrackedGridView(self._grid, (*self._partial_index, index), self._values[index])
@@ -67,14 +67,14 @@ class TrackedGrid(Tracked):
         self._list.insert(index, value)
 
     def __setitem__(self, index, value):
-        if isinstance(index, tuple):
+        if type(index) is tuple:
             self.modified.append((index, self._values[index]))
             self._values[index] = value
         else:
             return _TrackedGridView(self, (index,), self._values[index])
 
     def __getitem__(self, index):
-        if isinstance(index, tuple):
+        if type(index) is tuple:
             return self._values[index]
         else:
             return _TrackedGridView(self, (index,), self._values[index])
