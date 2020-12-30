@@ -163,7 +163,7 @@ class MapProcessing:
     @staticmethod
     def raycast_8_feature(mp: Map) -> torch.Tensor:
         ret: List[torch.Tensor] = []
-        for mv in mp.EIGHT_POINTS_MOVE_VECTOR:
+        for mv in mp.ALL_POINTS_MOVE_VECTOR:
             hit_point: torch.Tensor = MapProcessing.__get_hit_point_along_dir(mp, mv).to_tensor()
             dir: torch.Tensor = MapProcessing.__get_pos(mp.agent) - hit_point
             ret.append(torch.norm(dir))
@@ -183,7 +183,7 @@ class MapProcessing:
     def valid_moves_feature(mp: Map) -> torch.Tensor:
         neighbours: Set[Point] = set(mp.get_neighbours(mp.agent.position))
         res: torch.Tensor = torch.zeros(8)
-        for idx, mv in enumerate(mp.EIGHT_POINTS_MOVE_VECTOR):
+        for idx, mv in enumerate(mp.ALL_POINTS_MOVE_VECTOR):
             next_point: Point = Map.apply_move(mv, mp.agent.position)
             if next_point in neighbours:
                 res[idx] = 1

@@ -35,6 +35,7 @@ from nptyping import NDArray
 from typing import List, Any, Tuple, Optional, Union, Set, Callable
 from heapq import heappush, heappop
 import os
+import math
 
 
 class MapView(View):
@@ -458,11 +459,11 @@ class MapView(View):
     def draw_sphere(self, p: Point, *args, **kwargs) -> None:
         self.renderer.draw_sphere(self.cube_center(p), *args, **kwargs, scale=self.__sphere_scale)
 
-    def make_arc(self, p: Point, *args, **kwargs) -> None:
-        self.renderer.make_arc(self.cube_center(p), *args, **kwargs)
+    def draw_arc(self, p: Point, *args, **kwargs) -> None:
+        self.renderer.draw_arc(self.cube_center(p), *args, **kwargs)
 
     def draw_circle(self, p: Point, *args, **kwargs) -> None:
-        self.make_arc(p, 360, *args, **kwargs)
+        self.draw_arc(p, 2 * math.pi, *args, **kwargs)
 
     def draw_circle_filled(self, p: Point, *args, **kwargs) -> None:
         self.renderer.draw_circle_filled(self.cube_center(p), *args, **kwargs, radius=self.__circle_filled_radius)

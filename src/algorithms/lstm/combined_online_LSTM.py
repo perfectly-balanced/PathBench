@@ -11,7 +11,7 @@ from simulator.services.services import Services
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
 from simulator.views.map.display.online_lstm_map_display import OnlineLSTMMapDisplay
 from simulator.views.map.display.solid_iterable_map_display import SolidIterableMapDisplay
-from structures import Point
+from structures import Point, Colour
 
 
 class CombinedOnlineLSTM(Algorithm):
@@ -26,19 +26,13 @@ class CombinedOnlineLSTM(Algorithm):
                  max_it: float = float('inf'), threaded: bool = False):
         super().__init__(services, testing)
 
-        if not kernel_names:
-            self.kernel_names = [
-                "caelstm_section_lstm_training_block_map_10000_model",
-                "caelstm_section_lstm_training_uniform_random_fill_10000_model",
-                "caelstm_section_lstm_training_house_10000_model",
-                "caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model",
-                "caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_model",
-                "tile_by_tile_training_uniform_random_fill_10000_model",
-                "tile_by_tile_training_block_map_10000_model",
-                "tile_by_tile_training_house_10000_model",
-                "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_model",
-                "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model",
-            ]
+        self.kernel_names = [
+            "tile_by_tile_training_house_10_model",
+            "tile_by_tile_training_house_100_model",
+            "tile_by_tile_training_house_1000_model",
+            "tile_by_tile_training_uniform_random_fill_1000_model",
+            "tile_by_tile_training_uniform_random_fill_3000_block_map_3000_house_3000_model",
+        ]
 
         self._max_it = max_it
         self._threaded = threaded
@@ -58,9 +52,11 @@ class CombinedOnlineLSTM(Algorithm):
                 EntitiesMapDisplay(self._services, custom_map=self.__active_kernel.map),
             ]
 
+        trace_colour = self._services.state.add_colour("trace", Colour(0, 0.9, 0))
+
         return super().set_display_info() + [
             *active_kernel_displays,
-            SolidIterableMapDisplay(self._services, self.__total_path, (0, 150, 0), z_index=80),
+            SolidIterableMapDisplay(self._services, self.__total_path, trace_colour, z_index=80),
         ]
 
     # TODO when max_it is inf take the solution where we are closer to the goal or implement special case

@@ -1,0 +1,351 @@
+[2020-11-23 22:12:42] - Starting holdout training: {
+	data_features: ['distance_to_goal_normalized', 'raycast_8_normalized', 'direction_to_goal_normalized', 'agent_goal_angle'],
+	data_labels: ['next_position_index'],
+	data_single_features: [],
+	data_single_labels: [],
+	epochs: 100,
+	loss: CrossEntropyLoss(),
+	optimizer: <function BasicLSTMModule.get_config.<locals>.<lambda> at 0x7ff68f69e700>,
+	validation_ratio: 0.2,
+	test_ratio: 0.2,
+	save_name: tile_by_tile,
+	training_data: ['training_uniform_random_fill_1000'],
+	batch_size: 50,
+	num_layers: 2,
+	lstm_input_size: 12,
+	lstm_output_size: 8,
+}
+
+[2020-11-23 22:12:42] - Starting data pre processing
+[2020-11-23 22:12:42] - Cache miss, starting new training data pre processing
+[2020-11-23 22:12:42] - Loading data: training_uniform_random_fill_1000
+[2020-11-23 22:12:48] - Picking features
+[2020-11-23 22:12:49] - Cache hit, training data loaded from cache
+[2020-11-23 22:12:49] - Finished data pre processing 
+
+[2020-11-23 22:12:49] - Training: <class 'algorithms.lstm.LSTM_tile_by_tile.BasicLSTMModule'>
+[2020-11-23 22:12:50] - Training 	 Epoch: 0 	 Loss: 5.814357 	 Accuracy 0.53 	 Precision: 0.51 	 Recall: 0.44 	 F1: 0.40
+[2020-11-23 22:12:50] - Validation 	 Epoch: 0 	 Loss: 23.805239 	 Accuracy 0.39 	 Precision: 0.33 	 Recall: 0.31 	 F1: 0.28
+
+[2020-11-23 22:12:50] - Training 	 Epoch: 1 	 Loss: 4.490491 	 Accuracy 0.63 	 Precision: 0.63 	 Recall: 0.63 	 F1: 0.60
+[2020-11-23 22:12:51] - Validation 	 Epoch: 1 	 Loss: 19.490736 	 Accuracy 0.59 	 Precision: 0.55 	 Recall: 0.54 	 F1: 0.51
+
+[2020-11-23 22:12:51] - Training 	 Epoch: 2 	 Loss: 3.622097 	 Accuracy 0.69 	 Precision: 0.68 	 Recall: 0.69 	 F1: 0.68
+[2020-11-23 22:12:51] - Validation 	 Epoch: 2 	 Loss: 14.794089 	 Accuracy 0.63 	 Precision: 0.55 	 Recall: 0.59 	 F1: 0.55
+
+[2020-11-23 22:12:51] - Training 	 Epoch: 3 	 Loss: 3.041419 	 Accuracy 0.72 	 Precision: 0.70 	 Recall: 0.71 	 F1: 0.70
+[2020-11-23 22:12:52] - Validation 	 Epoch: 3 	 Loss: 11.652164 	 Accuracy 0.67 	 Precision: 0.67 	 Recall: 0.63 	 F1: 0.60
+
+[2020-11-23 22:12:52] - Training 	 Epoch: 4 	 Loss: 2.717242 	 Accuracy 0.73 	 Precision: 0.72 	 Recall: 0.73 	 F1: 0.72
+[2020-11-23 22:12:52] - Validation 	 Epoch: 4 	 Loss: 9.253149 	 Accuracy 0.75 	 Precision: 0.74 	 Recall: 0.72 	 F1: 0.72
+
+[2020-11-23 22:12:53] - Training 	 Epoch: 5 	 Loss: 2.555802 	 Accuracy 0.76 	 Precision: 0.75 	 Recall: 0.75 	 F1: 0.75
+[2020-11-23 22:12:53] - Validation 	 Epoch: 5 	 Loss: 7.765841 	 Accuracy 0.77 	 Precision: 0.75 	 Recall: 0.75 	 F1: 0.75
+
+[2020-11-23 22:12:53] - Training 	 Epoch: 6 	 Loss: 2.460785 	 Accuracy 0.76 	 Precision: 0.75 	 Recall: 0.76 	 F1: 0.75
+[2020-11-23 22:12:53] - Validation 	 Epoch: 6 	 Loss: 7.087281 	 Accuracy 0.77 	 Precision: 0.75 	 Recall: 0.74 	 F1: 0.75
+
+[2020-11-23 22:12:54] - Training 	 Epoch: 7 	 Loss: 2.392992 	 Accuracy 0.76 	 Precision: 0.75 	 Recall: 0.76 	 F1: 0.75
+[2020-11-23 22:12:54] - Validation 	 Epoch: 7 	 Loss: 6.794683 	 Accuracy 0.77 	 Precision: 0.76 	 Recall: 0.75 	 F1: 0.75
+
+[2020-11-23 22:12:54] - Training 	 Epoch: 8 	 Loss: 2.345117 	 Accuracy 0.77 	 Precision: 0.76 	 Recall: 0.76 	 F1: 0.76
+[2020-11-23 22:12:54] - Validation 	 Epoch: 8 	 Loss: 6.607581 	 Accuracy 0.78 	 Precision: 0.76 	 Recall: 0.76 	 F1: 0.76
+
+[2020-11-23 22:12:55] - Training 	 Epoch: 9 	 Loss: 2.303775 	 Accuracy 0.77 	 Precision: 0.76 	 Recall: 0.77 	 F1: 0.76
+[2020-11-23 22:12:55] - Validation 	 Epoch: 9 	 Loss: 6.464525 	 Accuracy 0.79 	 Precision: 0.77 	 Recall: 0.76 	 F1: 0.77
+
+[2020-11-23 22:12:55] - Training 	 Epoch: 10 	 Loss: 2.263955 	 Accuracy 0.77 	 Precision: 0.76 	 Recall: 0.77 	 F1: 0.76
+[2020-11-23 22:12:56] - Validation 	 Epoch: 10 	 Loss: 6.337998 	 Accuracy 0.79 	 Precision: 0.78 	 Recall: 0.77 	 F1: 0.77
+
+[2020-11-23 22:12:56] - Training 	 Epoch: 11 	 Loss: 2.227225 	 Accuracy 0.78 	 Precision: 0.76 	 Recall: 0.77 	 F1: 0.76
+[2020-11-23 22:12:56] - Validation 	 Epoch: 11 	 Loss: 6.219062 	 Accuracy 0.80 	 Precision: 0.79 	 Recall: 0.78 	 F1: 0.78
+
+[2020-11-23 22:12:57] - Training 	 Epoch: 12 	 Loss: 2.197886 	 Accuracy 0.78 	 Precision: 0.76 	 Recall: 0.77 	 F1: 0.76
+[2020-11-23 22:12:57] - Validation 	 Epoch: 12 	 Loss: 6.114328 	 Accuracy 0.80 	 Precision: 0.79 	 Recall: 0.78 	 F1: 0.78
+
+[2020-11-23 22:12:57] - Training 	 Epoch: 13 	 Loss: 2.173369 	 Accuracy 0.78 	 Precision: 0.76 	 Recall: 0.77 	 F1: 0.77
+[2020-11-23 22:12:57] - Validation 	 Epoch: 13 	 Loss: 6.032074 	 Accuracy 0.81 	 Precision: 0.80 	 Recall: 0.79 	 F1: 0.79
+
+[2020-11-23 22:12:58] - Training 	 Epoch: 14 	 Loss: 2.149798 	 Accuracy 0.78 	 Precision: 0.77 	 Recall: 0.78 	 F1: 0.77
+[2020-11-23 22:12:58] - Validation 	 Epoch: 14 	 Loss: 5.975396 	 Accuracy 0.81 	 Precision: 0.81 	 Recall: 0.79 	 F1: 0.80
+
+[2020-11-23 22:12:58] - Training 	 Epoch: 15 	 Loss: 2.121209 	 Accuracy 0.79 	 Precision: 0.77 	 Recall: 0.79 	 F1: 0.78
+[2020-11-23 22:12:58] - Validation 	 Epoch: 15 	 Loss: 5.923071 	 Accuracy 0.82 	 Precision: 0.81 	 Recall: 0.79 	 F1: 0.80
+
+[2020-11-23 22:12:59] - Training 	 Epoch: 16 	 Loss: 2.088949 	 Accuracy 0.79 	 Precision: 0.78 	 Recall: 0.79 	 F1: 0.78
+[2020-11-23 22:12:59] - Validation 	 Epoch: 16 	 Loss: 5.852379 	 Accuracy 0.81 	 Precision: 0.81 	 Recall: 0.79 	 F1: 0.80
+
+[2020-11-23 22:12:59] - Training 	 Epoch: 17 	 Loss: 2.059370 	 Accuracy 0.79 	 Precision: 0.78 	 Recall: 0.79 	 F1: 0.78
+[2020-11-23 22:13:00] - Validation 	 Epoch: 17 	 Loss: 5.768635 	 Accuracy 0.82 	 Precision: 0.81 	 Recall: 0.79 	 F1: 0.80
+
+[2020-11-23 22:13:00] - Training 	 Epoch: 18 	 Loss: 2.033461 	 Accuracy 0.79 	 Precision: 0.78 	 Recall: 0.80 	 F1: 0.79
+[2020-11-23 22:13:00] - Validation 	 Epoch: 18 	 Loss: 5.681628 	 Accuracy 0.82 	 Precision: 0.82 	 Recall: 0.80 	 F1: 0.80
+
+[2020-11-23 22:13:00] - Training 	 Epoch: 19 	 Loss: 2.008134 	 Accuracy 0.79 	 Precision: 0.78 	 Recall: 0.80 	 F1: 0.78
+[2020-11-23 22:13:01] - Validation 	 Epoch: 19 	 Loss: 5.591320 	 Accuracy 0.82 	 Precision: 0.81 	 Recall: 0.79 	 F1: 0.80
+
+[2020-11-23 22:13:01] - Training 	 Epoch: 20 	 Loss: 1.981418 	 Accuracy 0.80 	 Precision: 0.78 	 Recall: 0.80 	 F1: 0.79
+[2020-11-23 22:13:01] - Validation 	 Epoch: 20 	 Loss: 5.497810 	 Accuracy 0.82 	 Precision: 0.81 	 Recall: 0.80 	 F1: 0.80
+
+[2020-11-23 22:13:02] - Training 	 Epoch: 21 	 Loss: 1.951281 	 Accuracy 0.80 	 Precision: 0.78 	 Recall: 0.80 	 F1: 0.79
+[2020-11-23 22:13:02] - Validation 	 Epoch: 21 	 Loss: 5.401856 	 Accuracy 0.82 	 Precision: 0.82 	 Recall: 0.80 	 F1: 0.81
+
+[2020-11-23 22:13:02] - Training 	 Epoch: 22 	 Loss: 1.916009 	 Accuracy 0.80 	 Precision: 0.79 	 Recall: 0.81 	 F1: 0.80
+[2020-11-23 22:13:02] - Validation 	 Epoch: 22 	 Loss: 5.300329 	 Accuracy 0.82 	 Precision: 0.82 	 Recall: 0.80 	 F1: 0.81
+
+[2020-11-23 22:13:03] - Training 	 Epoch: 23 	 Loss: 1.876404 	 Accuracy 0.81 	 Precision: 0.80 	 Recall: 0.81 	 F1: 0.80
+[2020-11-23 22:13:03] - Validation 	 Epoch: 23 	 Loss: 5.192616 	 Accuracy 0.82 	 Precision: 0.82 	 Recall: 0.81 	 F1: 0.81
+
+[2020-11-23 22:13:03] - Training 	 Epoch: 24 	 Loss: 1.835310 	 Accuracy 0.81 	 Precision: 0.80 	 Recall: 0.82 	 F1: 0.81
+[2020-11-23 22:13:03] - Validation 	 Epoch: 24 	 Loss: 5.084493 	 Accuracy 0.84 	 Precision: 0.83 	 Recall: 0.82 	 F1: 0.82
+
+[2020-11-23 22:13:04] - Training 	 Epoch: 25 	 Loss: 1.795349 	 Accuracy 0.82 	 Precision: 0.81 	 Recall: 0.82 	 F1: 0.81
+[2020-11-23 22:13:04] - Validation 	 Epoch: 25 	 Loss: 4.983605 	 Accuracy 0.84 	 Precision: 0.83 	 Recall: 0.82 	 F1: 0.82
+
+[2020-11-23 22:13:04] - Training 	 Epoch: 26 	 Loss: 1.757544 	 Accuracy 0.82 	 Precision: 0.81 	 Recall: 0.82 	 F1: 0.81
+[2020-11-23 22:13:05] - Validation 	 Epoch: 26 	 Loss: 4.891789 	 Accuracy 0.84 	 Precision: 0.84 	 Recall: 0.83 	 F1: 0.83
+
+[2020-11-23 22:13:05] - Training 	 Epoch: 27 	 Loss: 1.721640 	 Accuracy 0.82 	 Precision: 0.81 	 Recall: 0.83 	 F1: 0.82
+[2020-11-23 22:13:05] - Validation 	 Epoch: 27 	 Loss: 4.805188 	 Accuracy 0.84 	 Precision: 0.83 	 Recall: 0.83 	 F1: 0.83
+
+[2020-11-23 22:13:05] - Training 	 Epoch: 28 	 Loss: 1.686764 	 Accuracy 0.82 	 Precision: 0.81 	 Recall: 0.83 	 F1: 0.82
+[2020-11-23 22:13:06] - Validation 	 Epoch: 28 	 Loss: 4.717784 	 Accuracy 0.84 	 Precision: 0.83 	 Recall: 0.83 	 F1: 0.83
+
+[2020-11-23 22:13:06] - Training 	 Epoch: 29 	 Loss: 1.652762 	 Accuracy 0.83 	 Precision: 0.82 	 Recall: 0.84 	 F1: 0.82
+[2020-11-23 22:13:06] - Validation 	 Epoch: 29 	 Loss: 4.628300 	 Accuracy 0.85 	 Precision: 0.84 	 Recall: 0.83 	 F1: 0.83
+
+[2020-11-23 22:13:07] - Training 	 Epoch: 30 	 Loss: 1.620040 	 Accuracy 0.83 	 Precision: 0.82 	 Recall: 0.84 	 F1: 0.83
+[2020-11-23 22:13:07] - Validation 	 Epoch: 30 	 Loss: 4.552046 	 Accuracy 0.85 	 Precision: 0.84 	 Recall: 0.83 	 F1: 0.84
+
+[2020-11-23 22:13:07] - Training 	 Epoch: 31 	 Loss: 1.584770 	 Accuracy 0.84 	 Precision: 0.83 	 Recall: 0.84 	 F1: 0.83
+[2020-11-23 22:13:07] - Validation 	 Epoch: 31 	 Loss: 4.498603 	 Accuracy 0.85 	 Precision: 0.85 	 Recall: 0.83 	 F1: 0.84
+
+[2020-11-23 22:13:08] - Training 	 Epoch: 32 	 Loss: 1.543645 	 Accuracy 0.85 	 Precision: 0.84 	 Recall: 0.85 	 F1: 0.84
+[2020-11-23 22:13:08] - Validation 	 Epoch: 32 	 Loss: 4.444496 	 Accuracy 0.85 	 Precision: 0.84 	 Recall: 0.83 	 F1: 0.83
+
+[2020-11-23 22:13:08] - Training 	 Epoch: 33 	 Loss: 1.504882 	 Accuracy 0.85 	 Precision: 0.84 	 Recall: 0.85 	 F1: 0.84
+[2020-11-23 22:13:08] - Validation 	 Epoch: 33 	 Loss: 4.379609 	 Accuracy 0.85 	 Precision: 0.85 	 Recall: 0.83 	 F1: 0.83
+
+[2020-11-23 22:13:09] - Training 	 Epoch: 34 	 Loss: 1.477389 	 Accuracy 0.85 	 Precision: 0.84 	 Recall: 0.85 	 F1: 0.85
+[2020-11-23 22:13:09] - Validation 	 Epoch: 34 	 Loss: 4.298056 	 Accuracy 0.86 	 Precision: 0.85 	 Recall: 0.83 	 F1: 0.84
+
+[2020-11-23 22:13:09] - Training 	 Epoch: 35 	 Loss: 1.463246 	 Accuracy 0.85 	 Precision: 0.84 	 Recall: 0.85 	 F1: 0.85
+[2020-11-23 22:13:10] - Validation 	 Epoch: 35 	 Loss: 4.229820 	 Accuracy 0.86 	 Precision: 0.85 	 Recall: 0.84 	 F1: 0.84
+
+[2020-11-23 22:13:10] - Training 	 Epoch: 36 	 Loss: 1.445415 	 Accuracy 0.85 	 Precision: 0.84 	 Recall: 0.86 	 F1: 0.85
+[2020-11-23 22:13:10] - Validation 	 Epoch: 36 	 Loss: 4.161207 	 Accuracy 0.86 	 Precision: 0.85 	 Recall: 0.84 	 F1: 0.84
+
+[2020-11-23 22:13:10] - Training 	 Epoch: 37 	 Loss: 1.430767 	 Accuracy 0.85 	 Precision: 0.84 	 Recall: 0.86 	 F1: 0.85
+[2020-11-23 22:13:11] - Validation 	 Epoch: 37 	 Loss: 4.087389 	 Accuracy 0.86 	 Precision: 0.86 	 Recall: 0.85 	 F1: 0.85
+
+[2020-11-23 22:13:11] - Training 	 Epoch: 38 	 Loss: 1.396379 	 Accuracy 0.85 	 Precision: 0.84 	 Recall: 0.86 	 F1: 0.85
+[2020-11-23 22:13:11] - Validation 	 Epoch: 38 	 Loss: 4.040357 	 Accuracy 0.87 	 Precision: 0.86 	 Recall: 0.85 	 F1: 0.85
+
+[2020-11-23 22:13:12] - Training 	 Epoch: 39 	 Loss: 1.365021 	 Accuracy 0.86 	 Precision: 0.85 	 Recall: 0.86 	 F1: 0.85
+[2020-11-23 22:13:12] - Validation 	 Epoch: 39 	 Loss: 3.979933 	 Accuracy 0.87 	 Precision: 0.86 	 Recall: 0.85 	 F1: 0.85
+
+[2020-11-23 22:13:12] - Training 	 Epoch: 40 	 Loss: 1.338773 	 Accuracy 0.86 	 Precision: 0.85 	 Recall: 0.86 	 F1: 0.85
+[2020-11-23 22:13:12] - Validation 	 Epoch: 40 	 Loss: 3.902064 	 Accuracy 0.87 	 Precision: 0.86 	 Recall: 0.85 	 F1: 0.85
+
+[2020-11-23 22:13:13] - Training 	 Epoch: 41 	 Loss: 1.321043 	 Accuracy 0.86 	 Precision: 0.85 	 Recall: 0.87 	 F1: 0.86
+[2020-11-23 22:13:13] - Validation 	 Epoch: 41 	 Loss: 3.838615 	 Accuracy 0.87 	 Precision: 0.86 	 Recall: 0.86 	 F1: 0.86
+
+[2020-11-23 22:13:13] - Training 	 Epoch: 42 	 Loss: 1.312663 	 Accuracy 0.86 	 Precision: 0.85 	 Recall: 0.87 	 F1: 0.86
+[2020-11-23 22:13:13] - Validation 	 Epoch: 42 	 Loss: 3.775277 	 Accuracy 0.87 	 Precision: 0.86 	 Recall: 0.86 	 F1: 0.86
+
+[2020-11-23 22:13:14] - Training 	 Epoch: 43 	 Loss: 1.305973 	 Accuracy 0.87 	 Precision: 0.86 	 Recall: 0.87 	 F1: 0.86
+[2020-11-23 22:13:14] - Validation 	 Epoch: 43 	 Loss: 3.727000 	 Accuracy 0.88 	 Precision: 0.87 	 Recall: 0.87 	 F1: 0.87
+
+[2020-11-23 22:13:14] - Training 	 Epoch: 44 	 Loss: 1.299296 	 Accuracy 0.87 	 Precision: 0.86 	 Recall: 0.88 	 F1: 0.87
+[2020-11-23 22:13:15] - Validation 	 Epoch: 44 	 Loss: 3.692460 	 Accuracy 0.88 	 Precision: 0.87 	 Recall: 0.87 	 F1: 0.87
+
+[2020-11-23 22:13:15] - Training 	 Epoch: 45 	 Loss: 1.274778 	 Accuracy 0.87 	 Precision: 0.86 	 Recall: 0.88 	 F1: 0.87
+[2020-11-23 22:13:15] - Validation 	 Epoch: 45 	 Loss: 3.669171 	 Accuracy 0.88 	 Precision: 0.87 	 Recall: 0.87 	 F1: 0.87
+
+[2020-11-23 22:13:15] - Training 	 Epoch: 46 	 Loss: 1.253059 	 Accuracy 0.87 	 Precision: 0.87 	 Recall: 0.88 	 F1: 0.87
+[2020-11-23 22:13:16] - Validation 	 Epoch: 46 	 Loss: 3.600243 	 Accuracy 0.88 	 Precision: 0.88 	 Recall: 0.87 	 F1: 0.87
+
+[2020-11-23 22:13:16] - Training 	 Epoch: 47 	 Loss: 1.226191 	 Accuracy 0.88 	 Precision: 0.87 	 Recall: 0.88 	 F1: 0.88
+[2020-11-23 22:13:16] - Validation 	 Epoch: 47 	 Loss: 3.566028 	 Accuracy 0.88 	 Precision: 0.87 	 Recall: 0.87 	 F1: 0.87
+
+[2020-11-23 22:13:17] - Training 	 Epoch: 48 	 Loss: 1.206178 	 Accuracy 0.88 	 Precision: 0.87 	 Recall: 0.89 	 F1: 0.88
+[2020-11-23 22:13:17] - Validation 	 Epoch: 48 	 Loss: 3.516982 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.88 	 F1: 0.88
+
+[2020-11-23 22:13:17] - Training 	 Epoch: 49 	 Loss: 1.191254 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+[2020-11-23 22:13:17] - Validation 	 Epoch: 49 	 Loss: 3.466952 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.88 	 F1: 0.88
+
+[2020-11-23 22:13:18] - Training 	 Epoch: 50 	 Loss: 1.181776 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.90 	 F1: 0.89
+[2020-11-23 22:13:18] - Validation 	 Epoch: 50 	 Loss: 3.440575 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.88 	 F1: 0.88
+
+[2020-11-23 22:13:18] - Training 	 Epoch: 51 	 Loss: 1.169540 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+[2020-11-23 22:13:18] - Validation 	 Epoch: 51 	 Loss: 3.406659 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.88 	 F1: 0.88
+
+[2020-11-23 22:13:19] - Training 	 Epoch: 52 	 Loss: 1.153035 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+[2020-11-23 22:13:19] - Validation 	 Epoch: 52 	 Loss: 3.386660 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+
+[2020-11-23 22:13:19] - Training 	 Epoch: 53 	 Loss: 1.133427 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.89
+[2020-11-23 22:13:20] - Validation 	 Epoch: 53 	 Loss: 3.354880 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+
+[2020-11-23 22:13:20] - Training 	 Epoch: 54 	 Loss: 1.113925 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.90 	 F1: 0.89
+[2020-11-23 22:13:20] - Validation 	 Epoch: 54 	 Loss: 3.326119 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:21] - Training 	 Epoch: 55 	 Loss: 1.099894 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.90 	 F1: 0.89
+[2020-11-23 22:13:21] - Validation 	 Epoch: 55 	 Loss: 3.288776 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:21] - Training 	 Epoch: 56 	 Loss: 1.088808 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+[2020-11-23 22:13:21] - Validation 	 Epoch: 56 	 Loss: 3.264285 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:22] - Training 	 Epoch: 57 	 Loss: 1.080782 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+[2020-11-23 22:13:22] - Validation 	 Epoch: 57 	 Loss: 3.240523 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+
+[2020-11-23 22:13:22] - Training 	 Epoch: 58 	 Loss: 1.071377 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+[2020-11-23 22:13:22] - Validation 	 Epoch: 58 	 Loss: 3.231638 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:23] - Training 	 Epoch: 59 	 Loss: 1.062377 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+[2020-11-23 22:13:23] - Validation 	 Epoch: 59 	 Loss: 3.222733 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+
+[2020-11-23 22:13:23] - Training 	 Epoch: 60 	 Loss: 1.050813 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:24] - Validation 	 Epoch: 60 	 Loss: 3.222815 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+
+[2020-11-23 22:13:24] - Training 	 Epoch: 61 	 Loss: 1.042721 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:24] - Validation 	 Epoch: 61 	 Loss: 3.229066 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+
+[2020-11-23 22:13:24] - Training 	 Epoch: 62 	 Loss: 1.033698 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:25] - Validation 	 Epoch: 62 	 Loss: 3.240628 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.90
+
+[2020-11-23 22:13:25] - Training 	 Epoch: 63 	 Loss: 1.028517 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.91 	 F1: 0.90
+[2020-11-23 22:13:25] - Validation 	 Epoch: 63 	 Loss: 3.267305 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+
+[2020-11-23 22:13:26] - Training 	 Epoch: 64 	 Loss: 1.018231 	 Accuracy 0.91 	 Precision: 0.90 	 Recall: 0.91 	 F1: 0.90
+[2020-11-23 22:13:26] - Validation 	 Epoch: 64 	 Loss: 3.283696 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:26] - Training 	 Epoch: 65 	 Loss: 1.012874 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:26] - Validation 	 Epoch: 65 	 Loss: 3.326636 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:27] - Training 	 Epoch: 66 	 Loss: 1.007715 	 Accuracy 0.91 	 Precision: 0.90 	 Recall: 0.91 	 F1: 0.90
+[2020-11-23 22:13:27] - Validation 	 Epoch: 66 	 Loss: 3.333283 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+
+[2020-11-23 22:13:27] - Training 	 Epoch: 67 	 Loss: 1.018583 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+[2020-11-23 22:13:27] - Validation 	 Epoch: 67 	 Loss: 3.377290 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+
+[2020-11-23 22:13:28] - Training 	 Epoch: 68 	 Loss: 1.024360 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+[2020-11-23 22:13:28] - Validation 	 Epoch: 68 	 Loss: 3.356721 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.90 	 F1: 0.89
+
+[2020-11-23 22:13:28] - Training 	 Epoch: 69 	 Loss: 1.038206 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.88 	 F1: 0.88
+[2020-11-23 22:13:29] - Validation 	 Epoch: 69 	 Loss: 3.396032 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.90 	 F1: 0.89
+
+[2020-11-23 22:13:29] - Training 	 Epoch: 70 	 Loss: 1.061282 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.88 	 F1: 0.88
+[2020-11-23 22:13:29] - Validation 	 Epoch: 70 	 Loss: 3.437945 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:29] - Training 	 Epoch: 71 	 Loss: 1.112732 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.88 	 F1: 0.88
+[2020-11-23 22:13:30] - Validation 	 Epoch: 71 	 Loss: 3.522707 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.88 	 F1: 0.88
+
+[2020-11-23 22:13:30] - Training 	 Epoch: 72 	 Loss: 1.073704 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.88 	 F1: 0.88
+[2020-11-23 22:13:30] - Validation 	 Epoch: 72 	 Loss: 3.279714 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.88 	 F1: 0.88
+
+[2020-11-23 22:13:31] - Training 	 Epoch: 73 	 Loss: 1.014708 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.89 	 F1: 0.89
+[2020-11-23 22:13:31] - Validation 	 Epoch: 73 	 Loss: 3.198685 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.88 	 F1: 0.88
+
+[2020-11-23 22:13:31] - Training 	 Epoch: 74 	 Loss: 1.008528 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.89 	 F1: 0.89
+[2020-11-23 22:13:31] - Validation 	 Epoch: 74 	 Loss: 3.115160 	 Accuracy 0.91 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+
+[2020-11-23 22:13:32] - Training 	 Epoch: 75 	 Loss: 1.015142 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.89 	 F1: 0.89
+[2020-11-23 22:13:32] - Validation 	 Epoch: 75 	 Loss: 3.176696 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:32] - Training 	 Epoch: 76 	 Loss: 1.014115 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+[2020-11-23 22:13:32] - Validation 	 Epoch: 76 	 Loss: 3.181351 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:33] - Training 	 Epoch: 77 	 Loss: 0.996448 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.89 	 F1: 0.89
+[2020-11-23 22:13:33] - Validation 	 Epoch: 77 	 Loss: 3.201648 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.88 	 F1: 0.89
+
+[2020-11-23 22:13:33] - Training 	 Epoch: 78 	 Loss: 0.962483 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:34] - Validation 	 Epoch: 78 	 Loss: 3.139977 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.88 	 F1: 0.89
+
+[2020-11-23 22:13:34] - Training 	 Epoch: 79 	 Loss: 0.941715 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:34] - Validation 	 Epoch: 79 	 Loss: 3.116644 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.88 	 F1: 0.89
+
+[2020-11-23 22:13:34] - Training 	 Epoch: 80 	 Loss: 0.936365 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:35] - Validation 	 Epoch: 80 	 Loss: 3.107523 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:35] - Training 	 Epoch: 81 	 Loss: 0.931989 	 Accuracy 0.91 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:35] - Validation 	 Epoch: 81 	 Loss: 3.094602 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:36] - Training 	 Epoch: 82 	 Loss: 0.933195 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:36] - Validation 	 Epoch: 82 	 Loss: 3.082685 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:36] - Training 	 Epoch: 83 	 Loss: 0.940765 	 Accuracy 0.91 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:36] - Validation 	 Epoch: 83 	 Loss: 3.060194 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:37] - Training 	 Epoch: 84 	 Loss: 0.944431 	 Accuracy 0.91 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:37] - Validation 	 Epoch: 84 	 Loss: 3.038670 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+
+[2020-11-23 22:13:37] - Training 	 Epoch: 85 	 Loss: 0.947417 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:37] - Validation 	 Epoch: 85 	 Loss: 3.033094 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+
+[2020-11-23 22:13:38] - Training 	 Epoch: 86 	 Loss: 0.952130 	 Accuracy 0.91 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:38] - Validation 	 Epoch: 86 	 Loss: 3.050735 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.90
+
+[2020-11-23 22:13:38] - Training 	 Epoch: 87 	 Loss: 0.943500 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:39] - Validation 	 Epoch: 87 	 Loss: 3.081812 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.90
+
+[2020-11-23 22:13:39] - Training 	 Epoch: 88 	 Loss: 0.921350 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.91 	 F1: 0.91
+[2020-11-23 22:13:39] - Validation 	 Epoch: 88 	 Loss: 3.072938 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+
+[2020-11-23 22:13:39] - Training 	 Epoch: 89 	 Loss: 0.914047 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.91 	 F1: 0.91
+[2020-11-23 22:13:40] - Validation 	 Epoch: 89 	 Loss: 3.052434 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+
+[2020-11-23 22:13:40] - Training 	 Epoch: 90 	 Loss: 0.944944 	 Accuracy 0.91 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:40] - Validation 	 Epoch: 90 	 Loss: 3.088408 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:41] - Training 	 Epoch: 91 	 Loss: 0.960089 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.89 	 F1: 0.90
+[2020-11-23 22:13:41] - Validation 	 Epoch: 91 	 Loss: 3.093283 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:41] - Training 	 Epoch: 92 	 Loss: 0.917735 	 Accuracy 0.91 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:41] - Validation 	 Epoch: 92 	 Loss: 3.215651 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:42] - Training 	 Epoch: 93 	 Loss: 0.892866 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.90 	 F1: 0.90
+[2020-11-23 22:13:42] - Validation 	 Epoch: 93 	 Loss: 3.270943 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+
+[2020-11-23 22:13:42] - Training 	 Epoch: 94 	 Loss: 0.887593 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.90 	 F1: 0.91
+[2020-11-23 22:13:42] - Validation 	 Epoch: 94 	 Loss: 3.248412 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.89
+
+[2020-11-23 22:13:43] - Training 	 Epoch: 95 	 Loss: 0.872578 	 Accuracy 0.92 	 Precision: 0.91 	 Recall: 0.91 	 F1: 0.91
+[2020-11-23 22:13:43] - Validation 	 Epoch: 95 	 Loss: 3.099178 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+
+[2020-11-23 22:13:43] - Training 	 Epoch: 96 	 Loss: 0.866451 	 Accuracy 0.92 	 Precision: 0.91 	 Recall: 0.91 	 F1: 0.91
+[2020-11-23 22:13:44] - Validation 	 Epoch: 96 	 Loss: 3.008822 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.90 	 F1: 0.89
+
+[2020-11-23 22:13:44] - Training 	 Epoch: 97 	 Loss: 0.868831 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.91 	 F1: 0.91
+[2020-11-23 22:13:44] - Validation 	 Epoch: 97 	 Loss: 2.972412 	 Accuracy 0.91 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+
+[2020-11-23 22:13:44] - Training 	 Epoch: 98 	 Loss: 0.871364 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.91 	 F1: 0.91
+[2020-11-23 22:13:45] - Validation 	 Epoch: 98 	 Loss: 2.975620 	 Accuracy 0.91 	 Precision: 0.90 	 Recall: 0.90 	 F1: 0.90
+
+[2020-11-23 22:13:45] - Training 	 Epoch: 99 	 Loss: 0.889720 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.90 	 F1: 0.91
+[2020-11-23 22:13:45] - Validation 	 Epoch: 99 	 Loss: 3.054289 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.89 	 F1: 0.89
+
+
+[2020-11-23 22:13:45] - Evaluation: <class 'algorithms.lstm.LSTM_tile_by_tile.BasicLSTMModule'>
+[2020-11-23 22:13:45] - Evaluation 	 Epoch: 0 	 Loss: 3.732440 	 Accuracy 0.87 	 Precision: 0.88 	 Recall: 0.86 	 F1: 0.87
+
+[2020-11-23 22:13:45] - Saved model as tile_by_tile_training_uniform_random_fill_1000_model
+[2020-11-23 22:13:45] - Model: BasicLSTMModule(
+  (_normalisation_layer1): BatchNorm1d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (_lstm_layer): LSTM(12, 8, num_layers=2, batch_first=True)
+  (_normalisation_layer2): BatchNorm1d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (_fc): Linear(in_features=8, out_features=8, bias=True)
+)
+[2020-11-23 22:13:45] - Model loss: 3.732440233230591
+[2020-11-23 22:13:45] - Model accuracy: 0.8707271597265382
+[2020-11-23 22:13:45] - Model precision: 0.8795247576926388
+[2020-11-23 22:13:45] - Model recall: 0.8590977433931285
+[2020-11-23 22:13:45] - Model f1: 0.86596918007615
+[2020-11-23 22:13:45] - Model confusion matrix: 
+[[295   0   3   5   0   0  10   0]
+ [  0 206   1   0   2   0   0   7]
+ [  4   1 210   2  13   0   0   0]
+ [ 23   0  11 130   0   0   3   0]
+ [  0   2  11   1 142   0   0   2]
+ [  0   3   0   0   0 129   1  16]
+ [ 38   0   0   0   0  10 114   2]
+ [  0  25   0   0   1  11   0 175]]
