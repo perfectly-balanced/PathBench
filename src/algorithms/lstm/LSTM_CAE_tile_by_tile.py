@@ -237,12 +237,8 @@ class CAE(MLModel):
             ],
             "save_name": "caelstm_section_cae",
             "training_data": [
-                #'training_house_100'
-                #"training_" + str(config.) + "_" + str(ui.nbr_ex)
-                # "training_uniform_random_fill_10", #IMPT
-               #"training_uniform_random_fill_100",
                 "training_house_1000",
-            ], # training_uniform_random_fill_10000_block_map_10000_house_10000, "training_uniform_random_fill_10000_block_map_10000", "training_house_10000", "training_uniform_random_fill_10000", "training_block_map_10000",
+            ],
             "use_mnist_instead": False,
             "mnist_size": None,
             "epochs": 100,

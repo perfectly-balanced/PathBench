@@ -215,7 +215,6 @@ class BasicTesting:
         angle = 0
         prev_angle = None
 
-        # print(trace)
         for i in range(1, len(trace)):
 
             if(not trace[i - 1].position == trace[i].position):

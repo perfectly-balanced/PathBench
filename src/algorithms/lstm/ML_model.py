@@ -45,7 +45,6 @@ class EvaluationResults:
         if with_print:
             self.__services.debug.write("{}: {}".format(self.name, str(type(self.__model))), DebugLevel.BASIC,
                                         streams=[self.__stream])
-        # self.__services.debug.write("Training data: " + str(data_loader.dataset), DebugLevel.BASIC, streams=[self.__stream])
 
         self.__epoch_acc = {}
         self.__stats_acc = []

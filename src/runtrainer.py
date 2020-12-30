@@ -11,7 +11,6 @@ from simulator.services.debug import DebugLevel
 from analyzer.analyzer import Analyzer
 from generator.generator import Generator
 
-#Might be redundant
 from structures import Size
 from simulator.services import services
 import pickle
@@ -73,8 +72,7 @@ maps = {
     "House Expo Sample": ("_house_expo/10",False)
     }
 
-#LSTM Bagging is referred to as CombinedOnlineLSTM, it is used as a glboal kernel for LWP
-
+#LSTM Bagging is referred to as CombinedOnlineLSTM, it is used as a global kernel for LWP
 
 algorithms = {
     "A*": (AStar, AStarTesting, ([], {})),
@@ -147,7 +145,7 @@ config.clear_cache = True
 
 #Generator
 mp = maps[chosen_map] 
- #Chooses map for generation
+#Chooses map for generation
 
 #Simulator
 config.load_simulator = sim_start
@@ -188,7 +186,6 @@ if config.generator_house_expo:
     
 elif gen_start:
     gen_map = gen_maps[chosen_map]
-    #config.generator_labelling_atlases = [gen_map + '_' + str(nbr_ex)]
     config.generator_gen_type = gen_map
 
 #Trainer
