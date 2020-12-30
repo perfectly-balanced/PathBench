@@ -8,7 +8,7 @@ import cv2 as cv
 
 import rospy
 from nav_msgs.msg import OccupancyGrid, Odometry
-from geometry_msgs.msg import PoseWithCovarianceStamped, Twist, PoseStamped
+from geometry_msgs.msg import Twist
 
 # Add PathBench/src to system path for module imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -32,6 +32,7 @@ import utility.math as m  # noqa: E402
 
 class Ros:
     INFLATE = 3
+    MAX_SIZE = 128
 
     def __init__(self):
         self._grid = None
@@ -41,7 +42,9 @@ class Ros:
         self._ros_res = None
         self._current_wp = None
         self._cur_wp = None
-        self.goal = Point(10, 10)
+        self._goal = Point(55, 40)
+        self._agent = None
+        self._scale = 1
 
         rospy.init_node("pb3d", log_level=rospy.INFO)
         rospy.Subscriber("/map", OccupancyGrid, self._set_slam)
@@ -49,7 +52,6 @@ class Ros:
         self.pubs = {
             "vel": rospy.Publisher("/cmd_vel", Twist, queue_size=10),  # velocity
         }
-        self.agent = None
 
     def _set_slam(self, msg):
         map_info = msg.info
@@ -67,12 +69,11 @@ class Ros:
             row = int((i - col) / self._ros_size.width)
             grid[self._ros_size.height - row - 1, col] = raw_grid[i]
 
-        MAX_SIZE = 128
-        if MAX_SIZE < self._ros_size.height or MAX_SIZE < self._ros_size.width:
-            scale = MAX_SIZE / self._ros_size.height
-            if (MAX_SIZE / self._ros_size.width) < scale:
-                scale = MAX_SIZE / self._ros_size.width
-            grid = cv.resize(grid, None, fx=scale, fy=scale, interpolation=cv.INTER_AREA)
+        if self.MAX_SIZE is not None and (self.MAX_SIZE < self._ros_size.height or self.MAX_SIZE < self._ros_size.width):
+            self._scale = self.MAX_SIZE / self._ros_size.height
+            if (self.MAX_SIZE / self._ros_size.width) < self._scale:
+                self._scale = self.MAX_SIZE / self._ros_size.width
+            grid = cv.resize(grid, None, fx=self._scale, fy=self._scale, interpolation=cv.INTER_AREA)
 
         self._grid = grid
 
@@ -82,11 +83,8 @@ class Ros:
     def _get_grid(self):
         return self._grid
 
-    def _set_agent_pos(self, odom_msg):
-        self.agent = odom_msg.pose
-
-    def _get_agent_pos(self):
-        return self.agent
+    def _set_agent_pos(self, msg):
+        self._agent = msg.pose
 
     @staticmethod
     def unit_vector(v):
@@ -114,9 +112,8 @@ class Ros:
         rospy.loginfo("Sending waypoint: {}".format(wp))
 
         for _ in range(max_it):
-            agent = self._get_agent_pos()
-            agent_pos = np.array([agent.pose.position.x, agent.pose.position.y])
-            q_agent_orientation = agent.pose.orientation
+            agent_pos = np.array([self._agent.pose.position.x, self._agent.pose.position.y])
+            q_agent_orientation = self._agent.pose.orientation
             q_agent_orientation = [q_agent_orientation.x, q_agent_orientation.y,
                                    q_agent_orientation.z, q_agent_orientation.w]
             agent_rot = m.euler_from_quaternion(q_agent_orientation, axes='sxyz')[0]
@@ -174,18 +171,15 @@ class Ros:
         self.pubs["vel"].publish(vel_msg)
 
     def _setup_sim(self) -> Simulator:
-        while self._grid is None:
+        while self._grid is None or self._agent is None:
+            print("Sleep...")
             rospy.sleep(0.5)
 
-        """
-        agent = self._get_agent_pos()
-        agent_pos = self._world_to_grid([agent.pose.position.x, agent.pose.position.y])
-        """
-        agent_pos = Point(10, 10)
+        agent_pos = self._world_to_grid([self._agent.pose.position.x, self._agent.pose.position.y])
 
         print("Agent Position: {}".format(agent_pos))
-        # print(self._ros_origin, [agent.pose.position.x, agent.pose.position.y])
-        print(self._ros_size)
+        print(self._ros_origin, [self._agent.pose.position.x, self._agent.pose.position.y])
+        print(self._ros_size, Size(*self._grid.shape))
         print(self._ros_res)
 
         config = Configuration()
@@ -198,7 +192,7 @@ class Ros:
         config.simulator_algorithm_parameters = ([], {})
         config.simulator_testing_type = AStarTesting
         config.simulator_initial_map = RosMap(Agent(agent_pos, radius=self.INFLATE),
-                                              Goal(self.goal),
+                                              Goal(self._goal),
                                               self._get_grid,
                                               traversable_threshold=50,
                                               unmapped_value=-1,
@@ -209,33 +203,40 @@ class Ros:
         sim = Simulator(s)
         return sim
 
-    def _world_to_grid(self, pos, origin=None):
+    def _world_to_grid(self, pos, scaled: bool = True):
         '''
-        converts from meters coordinates to grid coordinates (self._ros_size)
+        converts from meters coordinates to grid coordinates.
+        If `scaled`, convert to PathBench's OGM size, otherwise use ROS's size.
         '''
 
-        if origin is None:
-            origin = self._ros_origin
-
-        grid_pos = [pos[0] - origin[0], pos[1] - origin[1]]
+        grid_pos = [pos[0] - self._ros_origin[0], pos[1] - self._ros_origin[1]]
         grid_pos = [int(round(grid_pos[0] / self._ros_res)),
                     int(round(grid_pos[1] / self._ros_res))]
         grid_pos[1] = self._ros_size.height - grid_pos[1] - 1
+
+        if scaled:
+            grid_pos[0] = int(round(grid_pos[0] * self._scale))
+            grid_pos[1] = int(round(grid_pos[1] * self._scale))
+
         return Point(*grid_pos)
 
-    def _grid_to_world(self, pos, origin=None):
+    def _grid_to_world(self, pos, scaled: bool = True):
         '''
-        converts grid coordinates (self._ros_size) to meters coordinates 
+        converts grid coordinates to meters coordinates.
+        If `scaled`, assume grid coordinates are relative to 
+        PathBench's OGM size, otherwise assume ROS's size.
         '''
 
-        if origin is None:
-            origin = self._ros_origin
+        if scaled:
+            grid_pos[0] = grid_pos[0] / self._scale
+            grid_pos[1] = grid_pos[1] / self._scale
 
         world_pos = [pos.x, self._ros_size.height - pos.y - 1]
         world_pos = [world_pos[0] * self._ros_res + self._ros_res * 0.5,
                      world_pos[1] * self._ros_res + self._ros_res * 0.5]
-        world_pos = [world_pos[0] + origin[0],
-                     world_pos[1] + origin[1]]
+        world_pos = [world_pos[0] + self._ros_origin[0],
+                     world_pos[1] + self._ros_origin[1]]
+
         return world_pos
 
     def _find_goal(self):

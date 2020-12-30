@@ -264,7 +264,7 @@ class MapView(View):
                     if wgd is not None:
                         wgd.cube_colours[p.values] = wgd.get_colour(wgd.grid[p.values])
 
-                    self.__update_cube_colour(p)
+                    self.__cubes_requiring_update.add(p)
         else:  # 3D
             for p in updated_cells:
                 i = self._services.algorithm.map.at(p)
@@ -276,18 +276,27 @@ class MapView(View):
                     self.__cube_modified[p.values] = False
                 else:
                     self.map.data[p.values] = MapData.TRAVERSABLE_MASK
+
             self.map.obstacles_mesh.structural_update(updated_cells)
             self.map.traversables_mesh.structural_update(updated_cells)
+
             for p in updated_cells:
                 if bool(self.map.data[p.values] & MapData.TRAVERSABLE_MASK):
                     wgd = self.__weight_grid_display
                     if wgd is not None:
                         wgd.cube_colours[p.values] = wgd.get_colour(wgd.grid[p.values])
 
-                    self.__update_cube_colour(p)
+                    self.__cubes_requiring_update.add(p)
+
+        self.__entities_map_display.render()
+        self.__display_updates_cube = False
+
+        for p in self.__cubes_requiring_update:
+            self.__update_cube_colour(self.to_point3(p))
 
         self.__displays.clear()
         self.__cube_update_displays.clear()
+        self.__cubes_requiring_update.clear()
 
     def __clear_scratch(self) -> None:
         assert self.renderer.root == self.__scratch

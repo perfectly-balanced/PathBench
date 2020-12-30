@@ -127,6 +127,10 @@ class OccupancyGridMap(DenseMap):
                     remove_obstacle(p)
                     updated_cells.append(p)
 
+        # entities
+        self.grid[self.agent.position.values] = self.AGENT_ID
+        self.grid[self.goal.position.values] = self.GOAL_ID
+
         if updated_cells and self.services is not None:
             self.services.ev_manager.post(MapUpdateEvent(updated_cells))
 
@@ -184,7 +188,7 @@ class OccupancyGridMap(DenseMap):
         if isinstance(to, Entity):
             to = to.position
         return cost + self.weight_grid[to.values]
-    
+
     def get_movement_cost_from_index(self, idx: int, frm: Point) -> float:
         if not self.__cached_move_costs:
             zeros = Point(*[0 for i in range(self.size.n_dim)])
