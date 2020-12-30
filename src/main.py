@@ -94,18 +94,7 @@ def configure_and_run(args) -> bool:
     if args.generator:
         config.generator = True
 
-    if args.debug == 'NONE':
-        config.simulator_write_debug_level = DebugLevel.NONE
-    elif args.debug == 'BASIC':
-        config.simulator_write_debug_level = DebugLevel.BASIC
-    elif args.debug == 'LOW':
-        config.simulator_write_debug_level = DebugLevel.LOW
-    elif args.debug == 'MEDIUM':
-        config.simulator_write_debug_level = DebugLevel.MEDIUM
-    elif args.debug == 'HIGH':
-        config.simulator_write_debug_level = DebugLevel.HIGH
-    else:
-        raise NotImplementedError
+    config.simulator_write_debug_level = getattr(DebugLevel, args.debug)
 
     mr = MainRunner(config)
     mr.run()
