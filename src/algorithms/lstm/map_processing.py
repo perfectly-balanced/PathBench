@@ -69,7 +69,7 @@ class MapProcessing:
 
     @staticmethod
     def pick_sequential_features(sequential_features: List[Dict[str, torch.Tensor]], feature_names: List[str]) -> List[
-        Dict[str, torch.Tensor]]:
+            Dict[str, torch.Tensor]]:
         """
         Extracts only certain features from the sequence of features
         """

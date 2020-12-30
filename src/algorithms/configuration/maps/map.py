@@ -194,11 +194,11 @@ class Map:
         if not follow:
             return self.move(self.agent, to, no_trace)
         else:
-            line: List[Point] = self.get_line_sequence(self.agent.position, to)[1:] # Get rid of first point, the current agent pos
+            line: List[Point] = self.get_line_sequence(self.agent.position, to)[1:]  # Get rid of first point, the current agent pos
             for next_pos in line:
                 if not self.move(self.agent, next_pos, no_trace):
                     return False
-            return True        
+            return True
 
     def get_line_sequence(self, frm: Point, to: Point) -> List[Point]:
         '''

@@ -69,9 +69,9 @@ class Configuration:
         self.generator_nr_of_examples = 100
         self.generator_gen_type = "block_map"
         self.generator_labelling_features = ["distance_to_goal_normalized",
-                "raycast_8_normalized",
-                "direction_to_goal_normalized",
-                "agent_goal_angle"]
+                                             "raycast_8_normalized",
+                                             "direction_to_goal_normalized",
+                                             "agent_goal_angle"]
         self.generator_labelling_labels = ["next_position_index"]
         self.generator_single_labelling_features = []
         self.generator_single_labelling_labels = []
@@ -83,9 +83,9 @@ class Configuration:
         self.generator_show_gen_sample = False
         self.generator_house_expo = False
         self.generator_size = 64
-        
+
         self.num_dim = 2
-        
+
         # Trainer
         self.trainer = False
         self.trainer_model = BasicLSTMModule

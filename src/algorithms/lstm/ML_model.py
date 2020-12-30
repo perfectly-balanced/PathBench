@@ -1,9 +1,5 @@
-#from pandas.tests.extension.numpy_.test_numpy_nested import np
 import numpy as np
-import pandas 
-
-import numpy as np
-import pandas.tests.extension
+import pandas
 
 from sklearn import metrics
 from io import StringIO
@@ -289,8 +285,8 @@ class MLModel(torch.nn.Module):
         if self._services.settings.trainer_bypass_and_replace_pre_processed_cache:
             self._services.debug.write("Deleting " + str(
                 self.prefix_name() + "_pre_processed_data") + " (trainer_bypass_and_replace_pre_processed_cache = True)",
-                                       DebugLevel.BASIC,
-                                       streams=[self.__training_stream])
+                DebugLevel.BASIC,
+                streams=[self.__training_stream])
             self._services.resources.cache_dir.delete_entry(self.prefix_name() + "_pre_processed_data")
 
         data_features, data_labels = self._services.resources.cache_dir.get_or_save(
@@ -374,7 +370,7 @@ class MLModel(torch.nn.Module):
             plot(validation_raw, "Validation")
 
     def train_model(self, data_loader: DataLoader, validation_loader: DataLoader) -> Tuple[
-        EvaluationResults, EvaluationResults]:
+            EvaluationResults, EvaluationResults]:
         train_results = EvaluationResults(self._services, self, "Training", data_loader, self.__training_stream)
         validation_results = EvaluationResults(self._services, self, "Validation", validation_loader,
                                                self.__training_stream)
