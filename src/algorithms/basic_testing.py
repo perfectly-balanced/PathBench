@@ -1,4 +1,4 @@
-from threading import Condition
+from direct.stdpy.threading import Condition
 from typing import Dict, Any, List, Callable, Optional
 from operator import mul
 from functools import reduce
@@ -17,6 +17,7 @@ from simulator.services.services import Services
 from simulator.services.timer import Timer
 from simulator.views.map.display.map_display import MapDisplay
 from structures import Size, Point
+from utility.misc import cond_var_wait_for
 
 
 class BasicTesting:
@@ -96,7 +97,7 @@ class BasicTesting:
                 with self.cv:
                     self.requires_key_frame = True
                     self.cv.notify()
-                    self.cv.wait_for(lambda: not self.requires_key_frame or self.is_terminated())
+                    cond_var_wait_for(self.cv, lambda: not self.requires_key_frame or self.is_terminated())
             self.key_frame_skip_count = 0
         else:
             self.key_frame_skip_count += 1

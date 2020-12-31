@@ -1,5 +1,5 @@
 import copy
-from threading import Thread
+from direct.stdpy.threading import Thread
 from typing import List, Tuple, Optional, Set
 
 from algorithms.algorithm import Algorithm

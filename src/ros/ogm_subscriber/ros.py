@@ -1,6 +1,5 @@
 import os
 import sys
-from threading import Lock, Condition
 from typing import Optional
 
 import numpy as np

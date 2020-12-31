@@ -1,4 +1,4 @@
-from threading import Thread, Condition
+from direct.stdpy.threading import Thread, Condition
 import time
 
 from algorithms.configuration.maps.dense_map import DenseMap
@@ -11,6 +11,7 @@ from simulator.services.event_manager.events.key_frame_event import KeyFrameEven
 from simulator.services.services import Services
 from simulator.services.timer import Timer
 from structures import Point
+from utility.misc import cond_var_wait_for
 
 class AlgorithmTerminated(Exception):
     pass
@@ -60,11 +61,11 @@ class MapModel(Model):
                 self.requires_key_frame = False
                 self.cv.notify_all()
         with self.cv:
-            self.cv.wait_for(lambda: self.last_thread is None or self.requires_key_frame, timeout=0.8)
+            cond_var_wait_for(self.cv, lambda: self.last_thread is None or self.requires_key_frame, timeout=0.8)
             if self.last_thread is not None:
                 self.requires_key_frame = False
                 self.cv.notify_all()
-                self.cv.wait_for(lambda: self.last_thread is None, timeout=0.8)
+                cond_var_wait_for(self.cv, lambda: self.last_thread is None, timeout=0.8)
             self.requires_key_frame = False
             if self.last_thread is None:
                 self._services.ev_manager.post(KeyFrameEvent(refresh=True))
@@ -107,7 +108,7 @@ class MapModel(Model):
             dt = self.frame_timer.stop()
             if self.requires_key_frame or (dt < MAX_FRAME_DT):
                 with self.cv:
-                    if self.cv.wait_for(lambda: self.requires_key_frame or self.last_thread is None, timeout=(MAX_FRAME_DT - dt)):
+                    if cond_var_wait_for(self.cv, lambda: self.requires_key_frame or self.last_thread is None, timeout=(MAX_FRAME_DT - dt)):
                         self.processing_key_frame = True
                         self._services.ev_manager.post(KeyFrameEvent())
                 self.frame_timer = Timer()
