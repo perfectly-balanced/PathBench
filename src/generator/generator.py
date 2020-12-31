@@ -555,9 +555,14 @@ class Generator:
             }
             dimensions_path = '_3d' if num_dim == 3 else ''
             if json_save:
+                if not os.path.isdir(self.__services.resources.maps_dir._full_path() + atlas_name + dimensions_path):
+                    os.mkdir(self.__services.resources.maps_dir._full_path() + atlas_name + dimensions_path)
+                    
                 with open(self.__services.resources.maps_dir._full_path() + atlas_name + dimensions_path + '/' + str(_) + dimensions_path + '.json', 'w') as outfile:
                     json.dump(map_as_dict, outfile)
                     self.__services.debug.write("Dumping JSON: " + str(_) + "\n", DebugLevel.LOW)
+
+                    
 
         # print(maps[1].grid)
 
