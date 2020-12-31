@@ -1,6 +1,6 @@
-from direct.stdpy.threading import Thread, Condition
 import time
 
+from utility.threading import Thread, Condition, cond_var_wait_for
 from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.maps.sparse_map import SparseMap
 from simulator.models.model import Model
@@ -11,7 +11,6 @@ from simulator.services.event_manager.events.key_frame_event import KeyFrameEven
 from simulator.services.services import Services
 from simulator.services.timer import Timer
 from structures import Point
-from utility.misc import cond_var_wait_for
 
 class AlgorithmTerminated(Exception):
     pass
@@ -150,11 +149,11 @@ class MapModel(Model):
         else:
             self._services.debug.write("Map conversion not applicable", DebugLevel.BASIC)
             return
-        
+
         if mp is None:
             self._services.debug.write("Map conversion not applicable", DebugLevel.BASIC)
             return
-        
+
         self.reset()
         timer: Timer = Timer()
         self._services.algorithm.map = mp

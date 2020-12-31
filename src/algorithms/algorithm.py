@@ -1,4 +1,4 @@
-from direct.stdpy.threading import Condition
+from utility.threading import Condition
 from typing import Optional, List
 from abc import ABC, abstractmethod
 

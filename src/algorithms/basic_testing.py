@@ -1,4 +1,3 @@
-from direct.stdpy.threading import Condition
 from typing import Dict, Any, List, Callable, Optional
 from operator import mul
 from functools import reduce
@@ -7,6 +6,7 @@ import time
 import numpy as np
 from structures.heap import Heap
 
+from utility.threading import Condition, cond_var_wait_for
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.trace import Trace
 from algorithms.configuration.entities.obstacle import Obstacle
@@ -18,7 +18,6 @@ from simulator.services.services import Services
 from simulator.services.timer import Timer
 from simulator.views.map.display.map_display import MapDisplay
 from structures import Size, Point
-from utility.misc import cond_var_wait_for
 
 
 class BasicTesting:
