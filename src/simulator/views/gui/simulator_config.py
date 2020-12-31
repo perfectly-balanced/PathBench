@@ -224,7 +224,7 @@ class SimulatorConfig(DirectObject):
         self.__algorithms_option = DirectOptionMenu(text="options",
                                                     scale=0.14,
                                                     parent=self.__window.frame,
-                                                    initialitem=self.__algorithm_keys.index("A*"),
+                                                    initialitem=self.__algorithm_keys.index("A*") if "A*" in self.__algorithm_keys else 0,
                                                     items=self.__algorithm_keys,
                                                     pos=(-0.46, 0.4, -0.5),
                                                     highlightColor=(0.65, 0.65, 0.65, 1),
