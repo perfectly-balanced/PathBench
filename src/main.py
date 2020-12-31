@@ -201,7 +201,7 @@ def main() -> bool:
 
     # Miscellaneous
     parser.add_argument("--dims", type=int, help="[generator|analyzer] number of dimensions", default=3)
-    parser.add_argument("--algorithms", help="[visualiser|analyzer] algorithms to load", nargs="+")
+    parser.add_argument("--algorithms", help="[visualiser|analyzer] algorithms to load (either built-in algorithm name or module file path)", nargs="+")
     parser.add_argument("--list-algorithms", action="store_true", help="[visualiser|analyzer] output list of available built-in algorithms")
 
     parser.add_argument("-d", "--debug", choices=['NONE', 'BASIC', 'LOW', 'MEDIUM', 'HIGH'], default='LOW', help="debug level when running, default is low")
