@@ -1,9 +1,9 @@
 from simulator.controllers.controller import Controller
 from simulator.views.gui.gui_view import GuiView
-from direct.showbase.DirectObject import DirectObject
 from simulator.services.event_manager.events.toggle_view_event import ToggleViewEvent
 from simulator.services.event_manager.events.toggle_simulator_config_event import ToggleSimulatorConfigEvent
 
+from direct.showbase.DirectObject import DirectObject
 
 
 class GuiController(Controller, DirectObject):

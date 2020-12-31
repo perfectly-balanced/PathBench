@@ -1,12 +1,3 @@
-import copy
-import sys
-import os
-import argparse
-import re
-
-from panda3d.core import load_prc_file_data
-from screeninfo import get_monitors
-
 from algorithms.configuration.configuration import Configuration
 from algorithms.algorithm_manager import AlgorithmManager
 from algorithms.lstm.trainer import Trainer
@@ -15,6 +6,15 @@ from generator.generator import Generator
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
 from simulator.simulator import Simulator
+
+import copy
+import sys
+import os
+import argparse
+import re
+
+from panda3d.core import load_prc_file_data
+from screeninfo import get_monitors
 
 class MainRunner:
     main_services: Services
