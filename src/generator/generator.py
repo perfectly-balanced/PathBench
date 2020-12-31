@@ -278,7 +278,7 @@ class Generator:
     def __can_place_square(self, size: Size, top_left_corner: Point, dimensions: Size) -> bool:
         for index in np.ndindex(*([2]*size.n_dim)):
             d_add = [x * y for (x, y) in zip([*index], [*size])]
-            p = Point(*np.add(top_left_corner, d_add))
+            p = Point(*(np.add(top_left_corner.values, d_add)))
             if not self.__in_bounds(p, dimensions):
                 return False
 
@@ -519,7 +519,7 @@ class Generator:
         """.format(nr_of_samples, gen_type, dimensions, fill_range, nr_of_obstacle_range, min_map_range, max_map_range), DebugLevel.BASIC)
 
         atlas_name = "{}_{}".format(gen_type, str(nr_of_samples))
-        #atlas: Atlas = self.__services.resources.maps_dir.create_atlas(atlas_name)
+        atlas: Atlas = self.__services.resources.maps_dir.create_atlas(atlas_name)
         progress_bar: Progress = self.__services.debug.progress_debug(nr_of_samples, DebugLevel.BASIC)
         progress_bar.start()
         maps: List[Map] = []
@@ -536,15 +536,13 @@ class Generator:
                 )
             else:  # house map
                 min_map_size = int(np.random.randint(min_map_range[0], min_map_range[1]))
-                print(min_map_size)
                 max_map_size = int(np.random.randint(max_map_range[0], max_map_range[1]))
-                print(max_map_size)
                 mp: Map = self.__generate_random_house(
                     dimensions,
                     min_room_size=Size(*([min_map_size] * dimensions.n_dim)),
                     max_room_size=Size(*([max_map_size] * dimensions.n_dim)),
                 )
-
+            atlas.append(mp)
             maps.append(mp)
             progress_bar.step()
 
@@ -573,7 +571,7 @@ class Generator:
 
         self.__services.debug.write("""Starting Labelling: [
             atlases: {},
-            feature_list: {},works differently for negative numbers in Python 2 and 3. The following code, however, handles that:
+            feature_list: {},
 
 
             label_list: {},

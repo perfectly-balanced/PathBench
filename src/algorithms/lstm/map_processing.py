@@ -69,7 +69,7 @@ class MapProcessing:
 
     @staticmethod
     def pick_sequential_features(sequential_features: List[Dict[str, torch.Tensor]], feature_names: List[str]) -> List[
-        Dict[str, torch.Tensor]]:
+            Dict[str, torch.Tensor]]:
         """
         Extracts only certain features from the sequence of features
         """
@@ -182,7 +182,7 @@ class MapProcessing:
     @staticmethod
     def valid_moves_feature(mp: Map) -> torch.Tensor:
         neighbours: Set[Point] = set(mp.get_neighbours(mp.agent.position))
-        res: torch.Tensor = torch.zeros(8)
+        res: torch.Tensor = torch.zeros(8) if mp.size.n_dim == 2 else torch.zeros(26)
         for idx, mv in enumerate(mp.ALL_POINTS_MOVE_VECTOR):
             next_point: Point = Map.apply_move(mv, mp.agent.position)
             if next_point in neighbours:
@@ -192,6 +192,7 @@ class MapProcessing:
     @staticmethod
     def local_map_normalized_feature(mp: Map) -> torch.Tensor:
         extents: int = 4
+        dim = mp.size.n_dim
 
         if not isinstance(mp, DenseMap):
             raise Exception("mp has to be of type DenseMap")
@@ -232,7 +233,7 @@ class MapProcessing:
         return list(map(
             lambda el: mp.get_move_along_dir(
                 MapProcessing.__get_pos(el[1]) - MapProcessing.__get_pos(el[0])).to_tensor(),
-            zip(mp.trace, mp.trace[1:] + [Trace(mp.goal.position)]))
+            zip(mp.trace, mp.trace[1:]))
         )
 
     @staticmethod
@@ -240,12 +241,13 @@ class MapProcessing:
         move_indexes: List[int] = list(map(
             lambda el: mp.get_move_index(
                 MapProcessing.__get_pos(el[1]) - MapProcessing.__get_pos(el[0])),
-            zip(mp.trace, mp.trace[1:] + [Trace(mp.goal.position)]))
+            zip(mp.trace, mp.trace[1:]))
         )
-
         res: List[torch.Tensor] = []
         for move_idx in move_indexes:
             res.append(torch.tensor(float(move_idx)))
+        if len(res) == 0:
+            res.append(torch.tensor(float(0)))
         return res
 
     """ End Labels """

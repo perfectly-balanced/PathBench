@@ -72,6 +72,8 @@ class BasicLSTMModule(MLModel):
             Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         x, x_len, y_sorted, perm = self._prepare_data_before_forward(inputs, labels)
         out = self.forward(x, x_len, perm).view(-1, 8)
+        if len(y_sorted) != len(out):
+            y_sorted = torch.tensor(y_sorted.tolist() + [0]).to(self._services.torch.device)
         l: torch.Tensor = self.config["loss"](out, y_sorted)
         return l, out, y_sorted
 
@@ -85,7 +87,7 @@ class BasicLSTMModule(MLModel):
     def pack_data(seq: torch.Tensor, lengths: torch.Tensor, perm: List[int] = None) -> Tuple[PackedSequence, List[int]]:
         if not perm:
             perm = BasicLSTMModule.get_sort_by_lengths_indices(lengths)
-        return pack_padded_sequence(seq[perm], lengths[perm], batch_first=True), perm
+        return pack_padded_sequence(seq[perm], lengths[perm].cpu(), batch_first=True), perm
 
     def forward(self, x: torch.Tensor, x_len: torch.Tensor, perm: List[int] = None) -> torch.Tensor:
         normalized_x = self._normalisation_layer1(x.view((-1, x.shape[-1]))).view(x.shape)
@@ -120,11 +122,8 @@ class BasicLSTMModule(MLModel):
             ],
             "save_name": "tile_by_tile",
             "training_data": [
-                'training_house_1000'
-                # "training__house_expo"
-                #"training_house_100", #Impt
+                'training_uniform_random_fill_120_block_map_120_house_120'
             ],
-            # training_uniform_random_fill_10000_block_map_10000_house_10000, "training_uniform_random_fill_10000_block_map_10000", "training_house_10000", "training_uniform_random_fill_10000", "training_block_map_10000",
             "epochs": 100,
             "num_layers": 2,
             "lstm_input_size": 12,

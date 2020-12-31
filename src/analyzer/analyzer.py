@@ -31,7 +31,6 @@ from io import StringIO
 import seaborn as sns
 import matplotlib.pyplot as plt
 import resource
-import psutil
 import copy
 import random
 import tracemalloc

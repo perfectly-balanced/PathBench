@@ -25,7 +25,7 @@ from constants import DATA_PATH
 class CAEEncoder(nn.Module):
     def __init__(self, latent_dim: int):
         super().__init__()
-        #The four convolutional layers, and four batch normalization layers in the CAE Encoder. 
+        # The four convolutional layers, and four batch normalization layers in the CAE Encoder.
         self.conv1 = nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, padding=1)
         self.bn1 = nn.BatchNorm2d(num_features=64)
         self.conv2 = nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, padding=1)
@@ -37,8 +37,8 @@ class CAEEncoder(nn.Module):
         self.latent_linear = nn.Linear(in_features=8 * 4 * 4, out_features=latent_dim)
         self.bn_latent = nn.BatchNorm1d(num_features=latent_dim)
 
-        #Define the forward motion of the CAE Encoder, basically applies the Leakey Relu + Max pool activation function -
-        # to the Batch Normalized Convolutional Layer, 
+        # Define the forward motion of the CAE Encoder, basically applies the Leakey Relu + Max pool activation function -
+        # to the Batch Normalized Convolutional Layer,
     def forward(self, input):
         out1 = F.leaky_relu(F.max_pool2d(self.bn1(self.conv1(input)), kernel_size=2, stride=2))
         out2 = F.leaky_relu(F.max_pool2d(self.bn2(self.conv2(out1)), kernel_size=2, stride=2))
@@ -53,7 +53,7 @@ class CAEDecoder(nn.Module):
         super().__init__()
 
         self.__with_skip = with_skip
-        #Similar to above, but in opposite order
+        # Similar to above, but in opposite order
         self.latent_linear = nn.Linear(in_features=latent_dim, out_features=8 * 4 * 4)
         self.bn_latent = nn.BatchNorm1d(num_features=8 * 4 * 4)
         self.deconv1 = nn.ConvTranspose2d(in_channels=8, out_channels=16, kernel_size=2, stride=2)
@@ -81,7 +81,7 @@ class CAEDecoder(nn.Module):
         return out5
 
 
-#Actual MLModel CAE class
+# Actual MLModel CAE class
 class CAE(MLModel):
     MAP_COLORMAP_FULL = LinearSegmentedColormap.from_list("my_list", [(1, 1, 1), (0, 0, 0), (1, 0, 0), (0, 1, 0)])
     MAP_COLORMAP = "gray_r"
@@ -89,7 +89,7 @@ class CAE(MLModel):
 
     def __init__(self, services: Services, config: Dict[str, any]):
         super().__init__(services, config)
-        #Run encoder then dedoder
+        # Run encoder then dedoder
         self.encoder = CAEEncoder(self.config["latent_dim"])
         self.decoder = CAEDecoder(self.config["latent_dim"], self.config["with_skip_connections"])
 
@@ -112,7 +112,7 @@ class CAE(MLModel):
             return features, labels
 
     def batch_start(self, inputs: torch.Tensor, labels: torch.Tensor) -> Tuple[
-        torch.Tensor, torch.Tensor, torch.Tensor]:
+            torch.Tensor, torch.Tensor, torch.Tensor]:
 
         inp = inputs[0].view((inputs[0].shape[0], -1)).to(self._services.torch.device)
         lbl = labels[0].view((labels[0].shape[0], -1)).to(self._services.torch.device)
@@ -237,12 +237,8 @@ class CAE(MLModel):
             ],
             "save_name": "caelstm_section_cae",
             "training_data": [
-                #'training_house_100'
-                #"training_" + str(config.) + "_" + str(ui.nbr_ex)
-                # "training_uniform_random_fill_10", #IMPT
-               #"training_uniform_random_fill_100",
                 "training_house_1000",
-            ], # training_uniform_random_fill_10000_block_map_10000_house_10000, "training_uniform_random_fill_10000_block_map_10000", "training_house_10000", "training_uniform_random_fill_10000", "training_block_map_10000",
+            ],
             "use_mnist_instead": False,
             "mnist_size": None,
             "epochs": 100,
@@ -355,32 +351,32 @@ class LSTMCAEModel(BasicLSTMModule):
     @staticmethod
     def get_config() -> Dict[str, Any]:
         return {
-              "data_features": [
-                  "raycast_8_normalized",
-                  "distance_to_goal_normalized",
-                  "direction_to_goal_normalized",
-                  "agent_goal_angle",
-              ],
-              "data_single_features": [
-                  "global_map",
-              ],
-              "data_labels": [
-                  "next_position_index",
-              ],
-              "custom_encoder": None, # "caelstm_section_cae_training_uniform_random_fill_10000_block_map_10000_house_10000_model",
-              "save_name": "caelstm_section_lstm",
-              "training_data": [
-                  "training_house_100"
-                  #"training_uniform_random_fill_10000",
-                  #"training_block_map_10000",
-                  #"training_house_10000",
-              ], # training_uniform_random_fill_10000_block_map_10000_house_10000, "training_uniform_random_fill_10000_block_map_10000", "training_house_10000", "training_uniform_random_fill_10000", "training_block_map_10000",
-              "epochs": 21,
-              "num_layers": 2,
-              #"with_init_fn": False,
-              #"input_size": 114,
-              "lstm_input_size": 112,
-              "lstm_output_size": 8,
-              "loss": nn.CrossEntropyLoss(),
-              "optimizer": lambda model: torch.optim.Adam(model.parameters(), lr=0.01),
+            "data_features": [
+                "raycast_8_normalized",
+                "distance_to_goal_normalized",
+                "direction_to_goal_normalized",
+                "agent_goal_angle",
+            ],
+            "data_single_features": [
+                "global_map",
+            ],
+            "data_labels": [
+                "next_position_index",
+            ],
+            "custom_encoder": None,  # "caelstm_section_cae_training_uniform_random_fill_10000_block_map_10000_house_10000_model",
+            "save_name": "caelstm_section_lstm",
+            "training_data": [
+                "training_house_100"
+                # "training_uniform_random_fill_10000",
+                # "training_block_map_10000",
+                # "training_house_10000",
+            ],  # training_uniform_random_fill_10000_block_map_10000_house_10000, "training_uniform_random_fill_10000_block_map_10000", "training_house_10000", "training_uniform_random_fill_10000", "training_block_map_10000",
+            "epochs": 21,
+            "num_layers": 2,
+            # "with_init_fn": False,
+            # "input_size": 114,
+            "lstm_input_size": 112,
+            "lstm_output_size": 8,
+            "loss": nn.CrossEntropyLoss(),
+            "optimizer": lambda model: torch.optim.Adam(model.parameters(), lr=0.01),
         }

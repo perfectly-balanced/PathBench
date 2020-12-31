@@ -1,9 +1,9 @@
-import copy
 from typing import List, Optional, Set, Dict, Callable, TypeVar, Union, Tuple
-
-import math
-import numpy as np
 from itertools import product
+import copy
+import math
+
+import numpy as np
 
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.entity import Entity
@@ -116,10 +116,6 @@ class Map:
         """
         # modified initialisation of visited set for n dimensional nodes
         if visited is None:
-            #visited = [False for _ in range(self.size.width)]
-
-            # for i in range(self.dim - 1):
-            #    visited = [visited for _ in range(self.size[i + 1])]
             visited: Set[Point] = set()
 
         if self.is_agent_valid_pos(obstacle_start_point):
@@ -149,6 +145,7 @@ class Map:
         :param direction: The direction
         :return: The index corresponding to :ref:`ALL_POINTS_MOVE_VECTOR`
         """
+        direction = direction.tolist() if hasattr(direction, "tolist") else direction
         rounded_point = self.get_move_along_dir(direction)
         return self.ALL_POINTS_MOVE_VECTOR.index(rounded_point)
 
@@ -158,6 +155,7 @@ class Map:
         :param direction: The true direction
         :return: The :ref:`ALL_POINTS_MOVE_VECTOR` point
         """
+        assert(any(direction))
         dir_length = math.sqrt(sum(i*i for i in direction))
         norm_direction = list(map(lambda i: i/dir_length, direction))
         rounded_direction = list(map(lambda i: round(i), norm_direction))
@@ -195,23 +193,11 @@ class Map:
 
         if not follow:
             return self.move(self.agent, to, no_trace)
-        # else:
-        #     line: List[Point] = self.get_line_sequence(self.agent.position, to)
-        #     for next_pos in line:
-        #         if not self.move(self.agent, next_pos, no_trace):
-        #             return False
-        #     return True
-            # for pt in EIGHT_POINTS_MOVE_VECTOR:
-            #     inx = int(next_pos.x + point.x)
-            #     iny = int(next_pos.y + point.y)
         else:
-            line: List[Point] = self.get_line_sequence(self.agent.position, to)
-            print(line)
-            n = 0
+            line: List[Point] = self.get_line_sequence(self.agent.position, to)[1:]  # Get rid of first point, the current agent pos
             for next_pos in line:
                 if not self.move(self.agent, next_pos, no_trace):
-                    if n != 0:
-                        return False
+                    return False
             return True
 
     def get_line_sequence(self, frm: Point, to: Point) -> List[Point]:

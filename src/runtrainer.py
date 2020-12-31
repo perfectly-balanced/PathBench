@@ -5,13 +5,12 @@ from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.maps.map import Map
 from maps import Maps
-from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule,OnlineLSTM
+from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule, OnlineLSTM
 from algorithms.lstm.ML_model import MLModel
 from simulator.services.debug import DebugLevel
 from analyzer.analyzer import Analyzer
 from generator.generator import Generator
 
-#Might be redundant
 from structures import Size
 from simulator.services import services
 import pickle
@@ -31,7 +30,7 @@ from algorithms.configuration.configuration import Configuration
 from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
 from algorithms.lstm.a_star_waypoint import WayPointNavigation
 from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
-from algorithms.lstm.LSTM_CAE_tile_by_tile import CAE,LSTMCAEModel
+from algorithms.lstm.LSTM_CAE_tile_by_tile import CAE, LSTMCAEModel
 
 
 # planner testing
@@ -42,10 +41,17 @@ from algorithms.classic.testing.dijkstra_testing import DijkstraTesting
 from algorithms.classic.testing.wavefront_testing import WavefrontTesting
 from algorithms.classic.testing.way_point_navigation_testing import WayPointNavigationTesting
 
+import argparse
 
-#Dictionaries of possible options
-from main_gui import GUI
+parser = argparse.ArgumentParser(prog="runtrainer.py",
+                                 description="PathBench trainer runner",
+                                 formatter_class=argparse.RawTextHelpFormatter)
+parser.add_argument('-n', '--num_maps', type=int, default=100, help="number of maps to generate for the trainer")
+parser.add_argument('-m', '--model', choices=['LSTM'], default='LSTM', help="model to train")
+parser.add_argument('-f', '--full_train', action='store_true', help='set this to train from scratch')
 
+args = parser.parse_args()
+print("args:{}".format(args))
 
 config = type(Configuration)
 
@@ -63,11 +69,10 @@ maps = {
     "SLAM Map 1 (compressed)": ("map11", True),
     "SLAM Map 2": ("map14", False),
     "SLAM Map 3": ("map12", False),
-    "House Expo Sample": ("_house_expo/10",False)
-    }
+    "House Expo Sample": ("_house_expo/10", False)
+}
 
-#LSTM Bagging is referred to as CombinedOnlineLSTM, it is used as a glboal kernel for LWP
-
+# LSTM Bagging is referred to as CombinedOnlineLSTM, it is used as a global kernel for LWP
 
 algorithms = {
     "A*": (AStar, AStarTesting, ([], {})),
@@ -102,72 +107,57 @@ debug = {
 }
 
 gen_maps = {
-    "Uniform Random Fill" : "uniform_random_fill",
-    "Block":"block_map",
-    "House" : "house"
+    "Uniform Random Fill": "uniform_random_fill",
+    "Block": "block_map",
+    "House": "house"
 }
 
 labelling = {
     BasicLSTMModule: [[
-    "distance_to_goal_normalized",
-    "raycast_8_normalized",
-    "direction_to_goal_normalized",
-    "agent_goal_angle"],['next_position_index'],[],[]],
-    CAE: [[],[],['global_map'],['global_map']],
-    LSTMCAEModel: [[],[],['global_map'],['global_map']],
-    CombinedOnlineLSTM: [[],[],['global_map'],['global_map']]
-    
-    } 
+        "distance_to_goal_normalized",
+        "raycast_8_normalized",
+        "direction_to_goal_normalized",
+        "agent_goal_angle"], ['next_position_index'], [], []],
+    CAE: [[], [], ['global_map'], ['global_map']],
+    LSTMCAEModel: [[], [], ['global_map'], ['global_map']],
+    CombinedOnlineLSTM: [[], [], ['global_map'], ['global_map']]
+
+}
 
 
-#Input hyperparametres here 
-chosen_map = 'House Expo Sample'
-algo = algorithms['A*'] #Choose which planner 
-ani = animations['Fast'] #Choose animation speed
-debug = debug['High'] #Choose debug level 
-training_algo = CombinedOnlineLSTM #Chooses the algorithm to train, either CAE, BasicLSTMModule,LSTMCAEModel
-nbr_ex = 100 #Number of maps generated
-show_sample_map = False #shows 5 samples
-gen_start = False
-train_start = False
-sim_start = True
+# Input hyperparametres here
+chosen_map = 'House'
+algo = algorithms['A*']  # Choose which planner
+ani = animations['Fast']  # Choose animation speed
+debug = debug['High']  # Choose debug level
+training_algo = BasicLSTMModule  # Chooses the algorithm to train, either CAE, BasicLSTMModule,LSTMCAEModel
+nbr_ex = args.num_maps  # Number of maps generated
+show_sample_map = False  # shows 5 samples
+gen_start = True
+train_start = True
+sim_start = False
 config.generator_house_expo = False
 analyzer_start = False
-config.generator_size = 64 # Change the size of the maps generated
+config.generator_size = 64  # Change the size of the maps generated
 
-
-#Cache
+# Cache
 config.clear_cache = True
 
-#Generator
-mp = maps[chosen_map] 
- #Chooses map for generation
+# Generator
+mp = maps[chosen_map]
+# Chooses map for generation
 
-#Simulator
+# Simulator
 config.load_simulator = sim_start
-config.simulator_graphics = True
+config.simulator_graphics = False
 config.simulator_initial_map, config.simulator_grid_display = mp
 config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = algo
 config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani
 config.simulator_write_debug_level = debug
 
-#Generator
-config.generator = gen_start
-if config.generator_house_expo:
-    gen_map = '_house_expo'
-    config.generator_labelling_atlases = [gen_map]
-    config.generator_nr_of_examples = nbr_ex
-    
-elif gen_start:
-    gen_map = gen_maps[chosen_map]
-    config.generator_labelling_atlases = [gen_map + '_' + str(nbr_ex)]
-    config.generator_nr_of_examples = nbr_ex
-    config.generator_gen_type = gen_map
-
-
-#These are for training
+# These are for training
 config.generator_labelling_features = labelling[training_algo][0]
-config.generator_labelling_labels =  labelling[training_algo][1]
+config.generator_labelling_labels = labelling[training_algo][1]
 config.generator_single_labelling_features = labelling[training_algo][2]
 config.generator_single_labelling_labels = labelling[training_algo][3]
 
@@ -177,28 +167,44 @@ config.generator_aug_single_labelling_features = []
 config.generator_aug_single_labelling_labels = []
 config.generator_modify = None
 config.generator_show_gen_sample = show_sample_map
+config.generator_nr_of_examples = nbr_ex
 
-#Trainer
+if args.full_train:
+    config.generator = True
+    for m in gen_maps.values():
+        config.generator_gen_type = m
+        config.generator_labelling_atlases = [m + '_' + str(nbr_ex)]
+
+        MainRunner(config).run()
+
+config.generator_labelling_atlases = [m + '_' + str(nbr_ex) for m in gen_maps.values()]
+# Generator
+config.generator = gen_start
+if config.generator_house_expo:
+    gen_map = '_house_expo'
+    config.generator_labelling_atlases = [gen_map]
+
+elif gen_start:
+    gen_map = gen_maps[chosen_map]
+    config.generator_gen_type = gen_map
+
+# Trainer
 config.trainer = train_start
-config.trainer_model = training_algo #Either BasicLSTMModule or CAE or LSTMCAEModel
-config.trainer_custom_config = {
-    "local_kernel": (AStar, ([], {})),
-    "global_kernel": (CombinedOnlineLSTM, ([], {})), "global_kernel_max_it": 100
-    }
+config.trainer_model = training_algo  # Either BasicLSTMModule or CAE or LSTMCAEModel
+config.trainer_custom_config = None
 
 config.trainer_pre_process_data_only = False
 config.trainer_bypass_and_replace_pre_processed_cache = False
 
-#Analyzer
+# Analyzer
 config.analyzer = analyzer_start
 
 MainRunner(config).run()
 
-#To brute force generate map from image
+# To brute force generate map from image
 # map_gen_from_img = False
 
 # if map_gen_from_img == True:
 #     Services = Services(config)
 #     generated_map = Generator(Services)
 #     generated_map.generate_map_from_image("map1.png",True,2)
-

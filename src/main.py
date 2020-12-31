@@ -42,54 +42,59 @@ def configure_and_run(args) -> bool:
         config.load_simulator = True
         config.simulator_graphics = True
 
-        if args.visualiser_flags is not None:
-            integral_pair_re = re.compile("\s*\(\s*[0-9]+\s*,\s*[0-9]+\s*\)\s*")
-            naked_integral_pair_re = re.compile("\s*[0-9]+\s*[0-9]+\s*")
+    if args.trainer:
+        config.trainer = True
 
-            data = ""
+    if args.visualiser_flags is not None:
+        integral_pair_re = re.compile("\s*\(\s*[0-9]+\s*,\s*[0-9]+\s*\)\s*")
+        naked_integral_pair_re = re.compile("\s*[0-9]+\s*[0-9]+\s*")
 
-            def use_display_resolution():
-                nonlocal data
+        data = ""
 
-                for m in get_monitors():
-                    data += "win-size {} {}\n".format(m.width, m.height)
-                    break
+        def use_display_resolution():
+            nonlocal data
 
-            for f in args.visualiser_flags:
-                if f.strip().lower() == "windowed-fullscreen":
-                    use_display_resolution()
-                    data += "win-origin 0 0\n"
-                    data += "undecorated true\n"
-                    continue
+            for m in get_monitors():
+                data += "win-size {} {}\n".format(m.width, m.height)
+                break
 
-                n, v = f.split("=")
-                n = n.strip().lower()
-                v = v.strip().lower()
-                if v in ("true", "1", "yes"):
-                    data += "{} true\n".format(n)
-                elif v in ("false", "0", "no"):
-                    data += "{} false\n".format(n)
-                elif integral_pair_re.match(v) is not None:
-                    v = re.sub('{\s+}|\(|\)', '', v)
-                    v1, v2 = v.split(',')
-                    data += "{} {} {}\n".format(n, v1, v2)
-                elif naked_integral_pair_re.match(v) is not None:
-                    v = v.strip()
-                    v = re.sub('\s+', ',', v)
-                    v1, v2 = v.split(',')
-                    data += "{} {} {}\n".format(n, v1, v2)
-                else:
-                    data += "{} {}".format(n, v)
-
-            if "fullscreen true" in data and "win-size" not in data:
+        for f in args.visualiser_flags:
+            if f.strip().lower() == "windowed-fullscreen":
                 use_display_resolution()
+                data += "win-origin 0 0\n"
+                data += "undecorated true\n"
+                continue
 
-            load_prc_file_data('', data)
+            n, v = f.split("=")
+            n = n.strip().lower()
+            v = v.strip().lower()
+            if v in ("true", "1", "yes"):
+                data += "{} true\n".format(n)
+            elif v in ("false", "0", "no"):
+                data += "{} false\n".format(n)
+            elif integral_pair_re.match(v) is not None:
+                v = re.sub('{\s+}|\(|\)', '', v)
+                v1, v2 = v.split(',')
+                data += "{} {} {}\n".format(n, v1, v2)
+            elif naked_integral_pair_re.match(v) is not None:
+                v = v.strip()
+                v = re.sub('\s+', ',', v)
+                v1, v2 = v.split(',')
+                data += "{} {} {}\n".format(n, v1, v2)
+            else:
+                data += "{} {}".format(n, v)
+
+        if "fullscreen true" in data and "win-size" not in data:
+            use_display_resolution()
+
+        load_prc_file_data('', data)
     elif args.visualiser_flags:
         raise ValueError("Visualiser isn't running, but flags were provided")
 
     if args.generator:
         config.generator = True
+
+    config.simulator_write_debug_level = getattr(DebugLevel, args.debug)
 
     mr = MainRunner(config)
     mr.run()
@@ -101,6 +106,8 @@ def main() -> bool:
                                      formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("-v", "--visualiser", action='store_true', help="run simulator with graphics")
     parser.add_argument("-g", "--generator", action='store_true', help="run generator")
+    parser.add_argument("-t", "--trainer", action='store_true', help="runs model trainer")
+    parser.add_argument("-d", "--debug", choices=['NONE', 'BASIC', 'LOW', 'MEDIUM', 'HIGH'], default='HIGH', help="set the debug level when running, default is high")
     parser.add_argument("-V", dest="visualiser_flags", metavar="VISUALISER_FLAG", action='append',
                         help="Visualiser options (overriding Panda3D's default Config.prc - see https://docs.panda3d.org/1.10/python/programming/configuration/configuring-panda3d#configuring-panda3d for options [windowed-fullscreen is an additional custom option])")
 
