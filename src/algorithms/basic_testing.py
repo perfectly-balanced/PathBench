@@ -119,8 +119,10 @@ class BasicTesting:
                 with self.cv:
                     self.requires_key_frame = True
                     self.cv.notify()
-                    cond_var_wait_for(self.cv, sleep_pred, timeout=sleep_dt)
-                sleep_dt = sleep_dt - time.time() + t
+                    cond_var_wait_for(self.cv, sleep_pred)
+                nt = time.time()
+                sleep_dt = sleep_dt - nt + t
+                t = nt
 
         if self.is_terminated():
             from simulator.models.map_model import AlgorithmTerminated
