@@ -137,10 +137,9 @@ class WayPointNavigation(Algorithm):
         local_kernel_algo.find_path(agent_pos=self.way_points[-1], goal_pos=self._get_grid().goal.position)
         local_kernel_algo.map.replay_trace(lambda m: self.__replay(m))
         self.__accumulate_space(local_kernel_algo)
-        self.key_frame()
         self.__local_kernel_anim = None
         self.__global_kernel_anim = None
-        self.key_frame()
+        self.key_frame(True)
 
     def __update_map(self, local_kernel_algo, global_kernel_algo):
         if isinstance(self._get_grid(), RosMap):
