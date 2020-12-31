@@ -148,7 +148,7 @@ def configure_common(config, args) -> bool:
         for key in AlgorithmManager.builtins.keys():
             print(f"  {key}")
         print("Or specify your own file with a class that inherits from Algorithm")
-        return True
+        sys.exit(0)
 
     if args.algorithms:
         algorithms = AlgorithmManager.load_all(args.algorithms)
