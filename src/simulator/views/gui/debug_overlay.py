@@ -1,12 +1,15 @@
 from direct.showbase.ShowBase import ShowBase
 from simulator.services.services import Services
-from simulator.services.debug import DebugLevel
 from direct.gui.OnscreenText import OnscreenText
 from panda3d.core import TextNode
 from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
 from structures import DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
-from typing import Optional, Callable
+from simulator.services.event_manager.events.state_initialising_event import StateInitialisingEvent
+from simulator.services.event_manager.events.state_running_event import StateRunningEvent
+from simulator.services.event_manager.events.state_initialised_event import StateInitialisedEvent
+from simulator.services.event_manager.events.state_done_event import StateDoneEvent
+from simulator.services.event_manager.events.state_terminated_event import StateTerminatedEvent
 
 
 class DebugOverlay():
@@ -22,15 +25,15 @@ class DebugOverlay():
         for i in range(0, 5):
             l = OnscreenText(text=self.__labels[i],
                              parent=self.__base.aspect2d,
-                             pos=(-1.45, 0.92 - i * 0.05),
+                             pos=(-1.35, 0.92 - i * 0.05),
                              mayChange=True,
-                             align=TextNode.ALeft,
+                             align=TextNode.ARight,
                              scale=0.03)
             self.__debug_labels.append(l)
 
         self.__debug_var = []
         for i in range(0, 5):
-            v = OnscreenText(text="..",
+            v = OnscreenText(text="-",
                              parent=self.__base.aspect2d,
                              pos=(-1.3, 0.92 - i * 0.05),
                              mayChange=True,
@@ -39,6 +42,7 @@ class DebugOverlay():
             self.__debug_var.append(v)
 
         self.__services.ev_manager.register_listener(self)
+        self.__services.debug_state_ev_manager.register_listener(self)
         self.__text_colour = self.__services.state.add_colour("debug overlay", WHITE)
 
     def set_text_colour(self, colour):
@@ -46,9 +50,22 @@ class DebugOverlay():
             self.__debug_labels[i].setFg(colour)
             self.__debug_var[i].setFg(colour)
 
-    # use setText(), getText(), clearText()
+    def set_text(self, i, text):
+        self.__debug_var[i].setText(str(text))
 
     def notify(self, event: Event) -> None:
+        if isinstance(event, StateInitialisedEvent):
+            self.set_text(4, "Initialised")
+            self.set_text(1, self.__services.algorithm.map.goal.position)
+            self.set_text(2, self.__services.algorithm.map.agent.position)
+        if isinstance(event, StateInitialisingEvent):
+            self.set_text(4, "Initialising")
+        if isinstance(event, StateRunningEvent):
+            self.set_text(4, "Running")
+        if isinstance(event, StateTerminatedEvent):
+            self.set_text(4, "Terminated")
+        if isinstance(event, StateDoneEvent):
+            self.set_text(4, "Done")
         if isinstance(event, ColourUpdateEvent):
             if event.colour.name == self.__text_colour.name:
                 self.set_text_colour(self.__text_colour())

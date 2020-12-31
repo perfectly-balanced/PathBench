@@ -1,8 +1,11 @@
 from typing import TYPE_CHECKING, Optional
 
 from simulator.services.debug import Debug
+from simulator.services.event_manager.debug_state_event_manager import DebugStateEventManager
 from simulator.services.event_manager.event_manager import EventManager
 from simulator.services.event_manager.events.reinit_event import ReinitEvent
+from simulator.services.event_manager.events.state_initialising_event import StateInitialisingEvent
+from simulator.services.event_manager.events.state_initialised_event import StateInitialisedEvent
 
 if TYPE_CHECKING:
     from algorithms.configuration.configuration import Configuration
@@ -19,6 +22,7 @@ class Services:
     __settings: 'Configuration'
     __debug: Debug
     __ev_manager: EventManager
+    __debug_state_ev_manager: DebugStateEventManager
     __state: 'PersistentState'
     __algorithm_runner: 'AlgorithmRunner'
     __graphics: Optional['GraphicsManager']
@@ -28,6 +32,7 @@ class Services:
     def __init__(self, config: 'Configuration') -> None:
         self.__settings = None
         self.__debug = None
+        self.__debug_state_ev_manager = None
         self.__ev_manager = None
         self.__state = None
         self.__graphics = None
@@ -48,6 +53,7 @@ class Services:
         self.__settings = config
         self.__debug = Debug(self)
         self.__ev_manager = EventManager(self)
+        self.__debug_state_ev_manager = DebugStateEventManager(self)
         self.__state = PersistentState(self, types=[SimulatorConfigState])
         self.__resources_dir = Resources(self)
         self.__torch = Torch(self)
@@ -58,9 +64,11 @@ class Services:
             self.__graphics = GraphicsManager(self)
 
     def reinit(self, refresh_map: bool = False) -> None:
+        self.__debug_state_ev_manager.post(StateInitialisingEvent())
         from simulator.services.algorithm_runner import AlgorithmRunner
         self.__algorithm_runner = AlgorithmRunner(self)
         self.__algorithm_runner.reset_algorithm(refresh_map)
+        self.__debug_state_ev_manager.post(StateInitialisedEvent())
         self.ev_manager.post(ReinitEvent())
 
     @property
@@ -86,6 +94,14 @@ class Services:
     @ev_manager.getter
     def ev_manager(self) -> 'EventManager':
         return self.__ev_manager
+
+    @property
+    def debug_state_ev_manager(self) -> str:
+        return 'debug_state_ev_manager'
+
+    @ev_manager.getter
+    def debug_state_ev_manager(self) -> 'DebugStateEventManager':
+        return self.__debug_state_ev_manager
 
     @property
     def graphics(self) -> str:

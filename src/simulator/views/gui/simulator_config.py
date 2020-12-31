@@ -91,6 +91,7 @@ class SimulatorConfig(DirectObject):
                     frameColor=WIDGET_BG_COLOUR,
                     frameSize=(-1.4, 1.4, -0.011, 0.011),
                     pos=(-0.2, 0.0, 0.4))
+
         DirectFrame(parent=self.__window.frame,
                     borderWidth=(.0, .0),
                     frameColor=WIDGET_BG_COLOUR,
@@ -145,6 +146,7 @@ class SimulatorConfig(DirectObject):
                                             borderWidth=(.0, .0),
                                             pos=(-1.55, 0.0, -3.2),
                                             scale=(0.11, 1.1, 0.11))
+
         self.map_label = DirectLabel(parent=self.__window.frame,
                                      text="Map:",
                                      text_fg=WHITE,
@@ -154,6 +156,7 @@ class SimulatorConfig(DirectObject):
                                      borderWidth=(.0, .0),
                                      pos=(-1.52, 0.4, 0.),
                                      scale=(0.17, 1.09, 0.13))
+
         self.algo_label = DirectLabel(parent=self.__window.frame,
                                       text="Algorithm:",
                                       text_fg=WHITE,
@@ -163,6 +166,7 @@ class SimulatorConfig(DirectObject):
                                       borderWidth=(.0, .0),
                                       pos=(-1.52, 0.4, -0.5),
                                       scale=(0.17, 1.09, 0.13))
+
         self.animation_label = DirectLabel(parent=self.__window.frame,
                                            text="Animation:",
                                            text_fg=WHITE,
@@ -172,6 +176,7 @@ class SimulatorConfig(DirectObject):
                                            borderWidth=(.0, .0),
                                            pos=(-1.52, 0.4, -1),
                                            scale=(0.17, 1.09, 0.13))
+
         self.agent_label = DirectLabel(parent=self.__window.frame,
                                        text="Agent:",
                                        text_fg=WHITE,
