@@ -33,9 +33,11 @@ class Renderer():
     def push_line_thickness(self, thickness: float) -> None:
         self.__render_lines()
         self.__thicknesses.append(thickness)
+        self.__line_segs.set_thickness(thickness)
 
     def pop_line_thickness(self) -> float:
         self.__render_lines()
+        self.__line_segs.set_thickness(self.__thicknesses[-2])
         return self.__thicknesses.pop()
 
     @property
