@@ -43,7 +43,7 @@ from algorithms.classic.testing.way_point_navigation_testing import WayPointNavi
 
 import argparse
 
-parser = argparse.ArgumentParser(prog="runtrainer.py",
+parser = argparse.ArgumentParser(prog="run_trainer.py",
                                  description="PathBench trainer runner",
                                  formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('-n', '--num_maps', type=int, default=100, help="number of maps to generate for the trainer")

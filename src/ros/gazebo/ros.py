@@ -1,6 +1,5 @@
 import os
 import sys
-from threading import Lock, Condition
 
 import numpy as np
 import cv2 as cv
