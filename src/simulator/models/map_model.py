@@ -1,6 +1,6 @@
-from threading import Thread, Condition
 import time
 
+from utility.threading import Thread, Condition, cond_var_wait_for
 from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.maps.sparse_map import SparseMap
 from simulator.models.model import Model
@@ -60,11 +60,11 @@ class MapModel(Model):
                 self.requires_key_frame = False
                 self.cv.notify_all()
         with self.cv:
-            self.cv.wait_for(lambda: self.last_thread is None or self.requires_key_frame, timeout=0.8)
+            cond_var_wait_for(self.cv, lambda: self.last_thread is None or self.requires_key_frame, timeout=0.8)
             if self.last_thread is not None:
                 self.requires_key_frame = False
                 self.cv.notify_all()
-                self.cv.wait_for(lambda: self.last_thread is None, timeout=0.8)
+                cond_var_wait_for(self.cv, lambda: self.last_thread is None, timeout=0.8)
             self.requires_key_frame = False
             if self.last_thread is None:
                 self._services.ev_manager.post(KeyFrameEvent(refresh=True))
@@ -107,7 +107,7 @@ class MapModel(Model):
             dt = self.frame_timer.stop()
             if self.requires_key_frame or (dt < MAX_FRAME_DT):
                 with self.cv:
-                    if self.cv.wait_for(lambda: self.requires_key_frame or self.last_thread is None, timeout=(MAX_FRAME_DT - dt)):
+                    if cond_var_wait_for(self.cv, lambda: self.requires_key_frame or self.last_thread is None, timeout=(MAX_FRAME_DT - dt)):
                         self.processing_key_frame = True
                         self._services.ev_manager.post(KeyFrameEvent())
                 self.frame_timer = Timer()
@@ -149,11 +149,11 @@ class MapModel(Model):
         else:
             self._services.debug.write("Map conversion not applicable", DebugLevel.BASIC)
             return
-        
+
         if mp is None:
             self._services.debug.write("Map conversion not applicable", DebugLevel.BASIC)
             return
-        
+
         self.reset()
         timer: Timer = Timer()
         self._services.algorithm.map = mp

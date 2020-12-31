@@ -1,5 +1,5 @@
 import copy
-from threading import Thread
+from utility.threading import Thread
 from typing import List, Tuple, Optional, Set
 
 from algorithms.algorithm import Algorithm
@@ -26,7 +26,7 @@ class CombinedOnlineLSTM(Algorithm):
                  max_it: float = float('inf'), threaded: bool = False):
         super().__init__(services, testing)
 
-        if not self.kernel_names:
+        if not kernel_names:
             self.kernel_names = [
                 "tile_by_tile_training_house_10_model",
                 "tile_by_tile_training_house_100_model",

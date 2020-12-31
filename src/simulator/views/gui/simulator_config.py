@@ -3,6 +3,8 @@ from direct.gui.DirectGui import DirectFrame, DirectButton, DirectLabel, DirectE
 from direct.showbase.ShowBase import ShowBase
 from direct.showbase.DirectObject import DirectObject
 
+import numpy as np
+
 from typing import Tuple, Union, List, Any, Dict, Callable
 import traceback
 
@@ -125,9 +127,9 @@ class SimulatorConfig(DirectObject):
 
     __animations = {
         "None": (0, 0),
-        "Normal": (0.00001, 0),
+        "Normal": (np.finfo(float).eps, 0),
         "Slow": (0.5, 0),
-        "Fast": (0.16, 20)
+        "Fast": (np.finfo(float).eps, 20)
     }
 
     def __init__(self, services: Services, mouse1_press_callbacks: List[Callable[[], None]]):
@@ -147,7 +149,7 @@ class SimulatorConfig(DirectObject):
                 [], {"global_kernel": (CombinedOnlineLSTM, ([], {})), "global_kernel_max_it": 100})),
             "LSTM Bagging": (CombinedOnlineLSTM, CombinedOnlineLSTMTesting, ([], {})),
             "CAE Online LSTM": (
-                OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_3000_block_map_3000_house_3000_model"})),
+                OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_cae_training_house_100_model"})),
             "Online LSTM": (OnlineLSTM, BasicTesting, (
                 [],
                 {"load_name": "tile_by_tile_training_uniform_random_fill_3000_block_map_3000_house_3000_model"})),
