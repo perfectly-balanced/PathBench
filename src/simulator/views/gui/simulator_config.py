@@ -152,7 +152,7 @@ class SimulatorConfig(DirectObject):
                 OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_cae_training_house_100_model"})),
             "Online LSTM": (OnlineLSTM, BasicTesting, (
                 [],
-                {"load_name": "tile_by_tile_training_uniform_random_fill_3000_block_map_3000_house_3000_model"})),
+                {"load_name": "tile_by_tile_training_uniform_random_fill_30000_block_map_30000_house_30000_model"})),
             "SPRM": (SPRM, BasicTesting, ([], {})),
             "RT": (RT, BasicTesting, ([], {})),
             "RRT": (RRT, BasicTesting, ([], {})),
