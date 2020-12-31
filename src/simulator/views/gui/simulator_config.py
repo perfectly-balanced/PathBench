@@ -127,7 +127,7 @@ class SimulatorConfig(DirectObject):
         "None": (0, 0),
         "Normal": (0.00001, 0),
         "Slow": (0.5, 0),
-        "Fast": (0.16, 20)
+        "Fast": (0.00001, 20)
     }
 
     def __init__(self, services: Services, mouse1_press_callbacks: List[Callable[[], None]]):

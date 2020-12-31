@@ -2,6 +2,7 @@ from direct.stdpy.threading import Condition
 from typing import Dict, Any, List, Callable, Optional
 from operator import mul
 from functools import reduce
+import time
 
 import numpy as np
 from structures.heap import Heap
@@ -41,6 +42,7 @@ class BasicTesting:
         self.cv = None
         self.key_frame_skip_count = 0
         self.total_time = 0
+        self.last_frame_time = 0
         self.requires_key_frame = False
         self.reset()
 
@@ -52,6 +54,7 @@ class BasicTesting:
         self.cv = None
         self.key_frame_skip_count = 0
         self.total_time = 0
+        self.last_frame_time = 0
         if self._services.settings.simulator_key_frame_speed == 0 or not self._services.settings.simulator_graphics:
             self.key_frame = lambda *args, **kwargs: None
         else:
@@ -87,6 +90,10 @@ class BasicTesting:
         if root_key_frame:
             root_key_frame.instance.testing.key_frame(ignore_key_frame_skip=ignore_key_frame_skip, only_render=only_render)
 
+        def sleep_pred():
+            return not self.requires_key_frame or self.is_terminated()
+
+        # skip render frame
         if ignore_key_frame_skip or self.key_frame_skip_count >= self._services.settings.simulator_key_frame_skip:
             self.display_info = self._services.algorithm.instance.set_display_info()
 
@@ -97,10 +104,23 @@ class BasicTesting:
                 with self.cv:
                     self.requires_key_frame = True
                     self.cv.notify()
-                    cond_var_wait_for(self.cv, lambda: not self.requires_key_frame or self.is_terminated())
+                    cond_var_wait_for(self.cv, sleep_pred)
             self.key_frame_skip_count = 0
         else:
             self.key_frame_skip_count += 1
+
+        # limit key frame speed
+        if self.cv is not None:
+            t = time.time()
+            sleep_dt = self._services.settings.simulator_key_frame_speed - (t - self.last_frame_time)
+            self.last_frame_time = t
+
+            while sleep_dt > 0:
+                with self.cv:
+                    self.requires_key_frame = True
+                    self.cv.notify()
+                    cond_var_wait_for(self.cv, sleep_pred, timeout=sleep_dt)
+                sleep_dt = sleep_dt - time.time() + t
 
         if self.is_terminated():
             from simulator.models.map_model import AlgorithmTerminated
