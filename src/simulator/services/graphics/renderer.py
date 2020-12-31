@@ -10,14 +10,16 @@ class Renderer():
     __roots: List[NodePath]
     __draw_nps: List[NodePath]
     __circles: List[Tuple[int, float, Geom]]
+    __thicknesses: List[float]
     __line_segs: LineSegs
 
     def __init__(self, root: NodePath) -> None:
         self.__roots = [root]
         self.__draw_nps = []
         self.__circles = []
+        self.__thicknesses = [2.5]
         self.__line_segs = LineSegs()
-        self.__line_segs.set_thickness(4)
+        self.__line_segs.set_thickness(2.5)
 
     def push_root(self, np: NodePath) -> None:
         assert isinstance(np, NodePath)
@@ -27,6 +29,14 @@ class Renderer():
     def pop_root(self) -> NodePath:
         self.render()
         return self.__roots.pop()
+
+    def push_line_thickness(self, thickness: float) -> None:
+        self.__render_lines()
+        self.__thicknesses.append(thickness)
+
+    def pop_line_thickness(self) -> float:
+        self.__render_lines()
+        return self.__thicknesses.pop()
 
     @property
     def line_segs(self) -> LineSegs:

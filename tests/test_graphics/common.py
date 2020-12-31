@@ -41,7 +41,7 @@ def setup(args) -> None:
     pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ['DISPLAY'])
 
     if not args.no_launch_visualiser:
-        launch_process([sys.executable, os.path.join(SRC_PATH, 'main.py'), '-v', '-Vwindowed-fullscreen', '-Vaudio-library-name=null'],
+        launch_process([sys.executable, os.path.join(SRC_PATH, 'main.py'), '-d', args.debug, '-v', '-Vwindowed-fullscreen', '-Vaudio-library-name=null'],
                        on_kill=lambda _: pyautogui.press('esc'))
 
         pyautogui.moveTo(1, 1)
@@ -56,6 +56,7 @@ def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool 
     parser.add_argument("--no-restore-resources-at-exit", action="store_true", help="do not restore and clean resources folder when test exits")
     parser.add_argument("--no-launch-visualiser", action="store_true", help="do not launch PathBench visualiser")
     parser.add_argument("--no-rm-config-file", action="store_true", help="do not delete PathBench configuration file")
+    parser.add_argument("-d", "--debug", choices=['NONE', 'BASIC', 'LOW', 'MEDIUM', 'HIGH'], default='NONE', help="set the debug level when running, default is none")
 
     if no_restore_resources_at_exit:
         sys.argv.append("--no-restore-resources-at-exit")

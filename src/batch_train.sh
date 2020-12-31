@@ -4,4 +4,4 @@
 module load anaconda3/personal
 
 pip3 install -r $HOME/projects/PathBench/requirements.txt
-python3 $HOME/projects/PathBench/src/runtrainer.py -n 30 -f
+python3 $HOME/projects/PathBench/src/run_trainer.py -n 30 -f
