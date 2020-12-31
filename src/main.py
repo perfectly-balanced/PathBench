@@ -8,13 +8,13 @@ from panda3d.core import load_prc_file_data
 from screeninfo import get_monitors
 
 from algorithms.configuration.configuration import Configuration
+from algorithms.algorithm_manager import AlgorithmManager
 from algorithms.lstm.trainer import Trainer
 from analyzer.analyzer import Analyzer, available_algorithms
 from generator.generator import Generator
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
 from simulator.simulator import Simulator
-from utility.misc import try_load_algorithm
 
 class MainRunner:
     main_services: Services
@@ -36,22 +36,6 @@ class MainRunner:
 
         if self.main_services.settings.clear_cache:
             self.main_services.resources.cache_dir.clear()
-
-def load_all_algorithms(alg_names):
-    # if alg in available: want just alg
-    # if alg in try_load: want name + alg
-    # else return None
-    algs = []
-    for alg_n in alg_names:
-        if alg_n in available_algorithms:
-            algs.append(alg_n)
-        else:
-            alg_cls = try_load_algorithm(alg_n)
-            if alg_cls is None:
-                algs.append(None)
-            else:
-                algs.append((os.path.basename(alg_n), alg_cls))
-    return algs
 
 def arg_valid(attr, args):
     if not getattr(args, attr):
@@ -90,28 +74,6 @@ def configure_generator(config, args) -> bool:
 def configure_analyzer(config, args) -> bool:
     if args.analyzer:
         config.analyzer = True
-    
-    if args.list_algorithms:
-        print("Available algorithms:")
-        for key in available_algorithms.keys():
-            print(f"  {key}")
-        print("Or specify your own file with a class that inherits from Algorithm")
-        return True
-
-    if args.analyzer_algorithms:
-        if not arg_valid("analyzer", args):
-            return False
-
-        algorithms = load_all_algorithms(args.analyzer_algorithms)
-        if not all(algorithms):
-            invalid_algorithms = [args.analyzer_algorithms[i] for i in range(len(algorithms)) if algorithms[i] is None]
-            invalid_str = ",".join('"' + a + '"' for a in invalid_algorithms)
-            valid_str = ",".join('"' + a + '"' for a in available_algorithms)
-            print(f"Invalid algorithm(s) specified: {invalid_str}")
-            print(f"Available algorithms: {valid_str}")
-            print("Or specify your own file with a class that inherits from Algorithm")
-            return False
-        config.analyzer_algorithms = algorithms
 
     return True
 
@@ -181,6 +143,25 @@ def configure_common(config, args) -> bool:
 
     config.simulator_write_debug_level = getattr(DebugLevel, args.debug)
 
+    if args.list_algorithms:
+        print("Available algorithms:")
+        for key in available_algorithms.keys():
+            print(f"  {key}")
+        print("Or specify your own file with a class that inherits from Algorithm")
+        return True
+
+    if args.algorithms:
+        algorithms = AlgorithmManager.load_all(args.algorithms)
+        if not all(algorithms):
+            invalid_algorithms = [args.algorithms[i] for i in range(len(algorithms)) if algorithms[i] is None]
+            invalid_str = ",".join('"' + a + '"' for a in invalid_algorithms)
+            valid_str = ",".join('"' + a + '"' for a in available_algorithms)
+            print(f"Invalid algorithm(s) specified: {invalid_str}")
+            print(f"Available algorithms: {valid_str}")
+            print("Or specify your own file with a class that inherits from Algorithm")
+            return False
+        config.algorithms = dict(algorithms)
+    
     return True
 
 def configure_and_run(args):
@@ -212,10 +193,6 @@ def main() -> bool:
     parser.add_argument("-V", dest="visualiser_flags", metavar="VISUALISER_FLAG", action='append',
                         help="[visualiser] options (overrides Panda3D's default Config.prc - see https://docs.panda3d.org/1.10/python/programming/configuration/configuring-panda3d#configuring-panda3d [windowed-fullscreen is an additional custom boolean flag])")
 
-    # Analyzer arguments
-    parser.add_argument("--analyzer-algorithms", help="[analyzer] algorithms to analyze", nargs="+")
-    parser.add_argument("--list-algorithms", action="store_true", help="[analyzer] output list of available algorithms")
-
     # Generator arguments
     parser.add_argument("--room-size", nargs=2, type=int, help="[generator] min/max room size, in format \"min max\"")
     parser.add_argument("--fill-rate", nargs=2, type=float, help="[generator] min/max fill rate in random fill rooms")
@@ -224,6 +201,9 @@ def main() -> bool:
 
     # Miscellaneous
     parser.add_argument("--dims", type=int, help="[generator|analyzer] number of dimensions", default=3)
+    parser.add_argument("--algorithms", help="[visualiser|analyzer] algorithms to load", nargs="+")
+    parser.add_argument("--list-algorithms", action="store_true", help="[visualiser|analyzer] output list of available built-in algorithms")
+
     parser.add_argument("-d", "--debug", choices=['NONE', 'BASIC', 'LOW', 'MEDIUM', 'HIGH'], default='LOW', help="debug level when running, default is low")
 
     args = parser.parse_args()

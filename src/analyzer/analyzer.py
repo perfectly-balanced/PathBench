@@ -642,7 +642,7 @@ class Analyzer:
         for i in range(45):
             maps.append("testing_maps_pickles/block_map_1000/" + str(i))
 
-        algorithm_names_classes: Union[str, Tuple[str, Type[Algorithm]]] = self.__services.settings.analyzer_algorithms
+        algorithm_names_classes: Union[str, Tuple[str, Type[Algorithm]]] = self.__services.settings.algorithms
 
         algorithms: List[Tuple[Type[Algorithm], Type[BasicTesting], Tuple[list, dict]]] = \
             list(map(

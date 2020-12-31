@@ -1,4 +1,5 @@
 from typing import Tuple, Callable, Type, List, Optional, Dict, Any, Union
+import copy
 
 from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
@@ -51,7 +52,7 @@ class Configuration:
 
     # Misc
     analyzer: bool
-    analyzer_algorithms: List[str]
+    algorithms: Dict[str, Tuple[Type[Algorithm], Type[BasicTesting], Tuple[List[Any], Dict[str, Any]]]]
     load_simulator: bool
     clear_cache: bool
     num_dim: int
@@ -102,9 +103,12 @@ class Configuration:
         self.trainer_pre_process_data_only = False
         self.trainer_bypass_and_replace_pre_processed_cache = False
 
-        # Custom behaviour settings
+        # Analyzer
         self.analyzer = False
-        self.analyzer_algorithms = ["A*", "Dijkstra"]
+
+        # Common
+        from algorithms.algorithm_manager import AlgorithmManager
+        self.algorithms = copy.deepcopy(AlgorithmManager.builtins)
 
         # Simulator
         self.load_simulator = False
