@@ -53,9 +53,15 @@ class GradientListMapDisplay(MapDisplay):
         self.__cube_colours = {}
 
     def get_colour(self, val: float) -> Colour:
+        mag = (val - self.min_val)
+
         d = (self.max_val - self.min_val)
-        d = d if d != 0 else 1
-        mag = (val - self.min_val) / d
+        if d != 0:
+            mag /= d
+
+        # catch NaN in addition to out-of-bounds
+        if not (mag >= 0 and mag <= 1):
+            return None
 
         cmag = Colour(mag, mag, mag, mag)
         cmin = self.__deduced_min_colour
