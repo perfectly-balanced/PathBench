@@ -160,8 +160,13 @@ def configure_common(config, args) -> bool:
             print(f"Available algorithms: {valid_str}")
             print("Or specify your own file with a class that inherits from Algorithm")
             return False
-        config.algorithms = dict(algorithms)
-    
+
+        algorithms = dict(algorithms)
+        if args.include_builtin_algorithms:
+            algorithms.update(AlgorithmManager.builtins)
+
+        config.algorithms = algorithms
+
     return True
 
 def configure_and_run(args):
@@ -182,7 +187,7 @@ def main() -> bool:
     parser = argparse.ArgumentParser(prog="main.py",
                                      description="PathBench runner",
                                      formatter_class=argparse.RawTextHelpFormatter)
-    
+
     # Run arguments
     parser.add_argument("-v", "--visualiser", action='store_true', help="run visualiser (simulator with graphics)")
     parser.add_argument("-g", "--generator", action='store_true', help="run generator")
@@ -202,6 +207,7 @@ def main() -> bool:
     # Miscellaneous
     parser.add_argument("--dims", type=int, help="[generator|analyzer] number of dimensions", default=3)
     parser.add_argument("--algorithms", help="[visualiser|analyzer] algorithms to load (either built-in algorithm name or module file path)", nargs="+")
+    parser.add_argument("--include-builtin-algorithms", action='store_true', help="include all builtin algorithms even when a custom list is provided via '--algorithms'")
     parser.add_argument("--list-algorithms", action="store_true", help="[visualiser|analyzer] output list of available built-in algorithms")
 
     parser.add_argument("-d", "--debug", choices=['NONE', 'BASIC', 'LOW', 'MEDIUM', 'HIGH'], default='LOW', help="debug level when running, default is low")
