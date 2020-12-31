@@ -18,29 +18,26 @@ elif _THREADING_TYPE == "DIRECT2":
 from typing import Optional, Callable  # noqa: E402
 import time  # noqa: E402
 
-def _cond_var_wait_for_direct(cv: Condition, predicate: Callable[[], bool], timeout: Optional[float] = None) -> bool:
-    if timeout is None:
-        while not predicate():
-            cv.wait()
-        return True
-    else:
-        start = time.time()
-        while not predicate():
-            if not cv.wait(timeout + start - time.time()):
-                return False
-        return True
-
-def _cond_var_wait_for_std(cv: Condition, predicate: Callable[[], bool], timeout: Optional[float] = None) -> bool:
-    return cv.wait_for(predicate, timeout)
-
-
-"""
-cond_var_wait_for()
-
--> Same behaviour as `cv.wait_for()`, but use to be compatible with all threading modules.
-"""
-
 if _THREADING_TYPE == "STD":
-    cond_var_wait_for = _cond_var_wait_for_std
+    def cond_var_wait_for(cv: Condition, predicate: Callable[[], bool], timeout: Optional[float] = None) -> bool:
+        """
+        Same behaviour as `cv.wait_for()`, but use to be compatible with all threading modules.
+        """
+
+        return cv.wait_for(predicate, timeout)
 else:
-    cond_var_wait_for = _cond_var_wait_for_direct
+    def cond_var_wait_for(cv: Condition, predicate: Callable[[], bool], timeout: Optional[float] = None) -> bool:
+        """
+        Same behaviour as `cv.wait_for()`, but use to be compatible with all threading modules.
+        """
+
+        if timeout is None:
+            while not predicate():
+                cv.wait()
+            return True
+        else:
+            start = time.time()
+            while not predicate():
+                if not cv.wait(timeout + start - time.time()):
+                    return False
+            return True
