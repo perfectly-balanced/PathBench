@@ -41,7 +41,7 @@ pd.plotting.register_matplotlib_converters()
 
 available_algorithms = {
     "A*": (AStar, AStarTesting, ([], {}), "A*"),
-    "Wave-front" : (Wavefront, WavefrontTesting, ([], {}), "Wave-front" ),
+    "Wave-front": (Wavefront, WavefrontTesting, ([], {}), "Wave-front"),
     "Dijkstra": (Dijkstra, DijkstraTesting, ([], {}), "Dijkstra"),
     "Online LSTM": (OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_model"}), "Online LSTM"),
     "Online LSTM (ubh 10000 training)": (OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}), "Online LSTM (ubh 10000 training)"),
@@ -57,7 +57,7 @@ available_algorithms = {
     "Bug 1": (Bug1, BasicTesting, ([], {}), "Bug 1"),
     "Bug 2": (Bug2, BasicTesting, ([], {}), "Bug 2"),
     "Potential Field": (PotentialField, BasicTesting, ([], {}), "Potential Field"),
-    #"VIN": (VINTest, BasicTesting, ([], {}), "VIN"),
+    # "VIN": (VINTest, BasicTesting, ([], {}), "VIN"),
     "RRT Connect": (RRT_Connect, BasicTesting, ([], {}), "RRT Connect")
 }
 
@@ -125,7 +125,7 @@ if HAS_OMPL:
         "OMPL LBKPIECE1": (OMPL_LBKPIECE1, BasicTesting, ([], {}), "OMPL LBKPIECE1"),
         "OMPL LBTRRT": (OMPL_LBTRRT, BasicTesting, ([], {}), "OMPL LBTRRT"),
         "OMPL PRM": (OMPL_PRM, BasicTesting, ([], {}), "OMPL PRM"),
-        "OMPL STRIDE": (OMPL_STRIDE, BasicTesting, ([], {}), "OMPL STRIDE"), 
+        "OMPL STRIDE": (OMPL_STRIDE, BasicTesting, ([], {}), "OMPL STRIDE"),
         "OMPL SBL": (OMPL_SBL, BasicTesting, ([], {}), "OMPL SBL"),
     })
 
@@ -641,22 +641,14 @@ class Analyzer:
 
         for i in range(45):
             maps.append("testing_maps_pickles/block_map_1000/" + str(i))
-            # maps.append("uniform_random_fill_10000/" + str(i*4))
-            # maps.append("block_map_10000/" + str(i*4))
-            # maps.append("house_10000/" + str(i*4))
 
-        # maps = self.__convert_maps(maps)
-        # maps = [Maps.grid_map_small_one_obstacle2]#], Maps.grid_map_labyrinth2]
-
-        # "RRT*": (RRT_Star, BasicTesting, ([], {}), "RRT*"),
         algorithm_names_classes: Union[str, Tuple[str, Type[Algorithm]]] = self.__services.settings.analyzer_algorithms
-        
+
         algorithms: List[Tuple[Type[Algorithm], Type[BasicTesting], Tuple[list, dict]]] = \
-                list(map(
-                    lambda alg:
-                        available_algorithms[alg] if isinstance(alg, str) else
-                        (alg[1], BasicTesting, ([], {}), alg[0])
-                    , algorithm_names_classes))
+            list(map(
+                lambda alg:
+                available_algorithms[alg] if isinstance(alg, str) else
+                (alg[1], BasicTesting, ([], {}), alg[0]), algorithm_names_classes))
 
         algorithm_names: List[str] = list(map(
             lambda algo: algo[3],
@@ -688,10 +680,10 @@ class Analyzer:
         print(df)
         print('********************************')
         print(dffull)
-        
+
         plot4, axs3 = plt.subplots(ncols=3)
         plot4.set_size_inches(18, 12)
-        
+
         p1b = sns.barplot(x="Algorithm", y="Average Memory", data=df, ax=axs3[0])
         p1b.set_xticklabels(p1b.get_xticklabels(), rotation=40, ha="right", fontsize=9)
         p1b.set_title('Average Memory vs. Algorithm ')
@@ -706,10 +698,10 @@ class Analyzer:
         p3b.set_xticklabels(p1b.get_xticklabels(), rotation=40, ha="right", fontsize=9)
         p3b.set_title('Average Obstacle Clearance vs. Algorithm ')
         p3b.set_ylabel('Average Obstacle Clearance')
-        
+
         plot3, axs2 = plt.subplots(ncols=3)
         plot3.set_size_inches(18, 12)
-        
+
         p1a = sns.violinplot(x="Algorithm", y="Memory", data=dffull, ax=axs2[0])
         p1a.set_xticklabels(p1a.get_xticklabels(), rotation=40, ha="right", fontsize=9)
         p1a.set_title('Memory vs. Algorithm ')
@@ -719,12 +711,12 @@ class Analyzer:
         p2a.set_xticklabels(p1a.get_xticklabels(), rotation=40, ha="right", fontsize=9)
         p2a.set_title('Trajectory Smoothness vs. Algorithm ')
         p2a.set_ylabel('Trajectory Smoothness (rad/move)')
-        
+
         p3a = sns.violinplot(x="Algorithm", y='Obstacle Clearance', data=dffull, ax=axs2[2])
         p3a.set_xticklabels(p1a.get_xticklabels(), rotation=40, ha="right", fontsize=9)
         p3a.set_title('Obstacle Clearance vs. Algorithm ')
         p3a.set_ylabel('Obstacle Clearance')
-        
+
         plot2, axs1 = plt.subplots(ncols=5)
         plot2.set_size_inches(18, 12)
 

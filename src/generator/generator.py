@@ -796,16 +796,18 @@ class Generator:
                 maps = generator.generate_maps(settings.generator_nr_of_examples, Size(*([64] * settings.num_dim)),
                                                settings.generator_gen_type, fill_rate, [1, 6], min_room, max_room, num_dim=settings.num_dim, json_save=False)
 
-        # This will display 5 of the maps generated
-        if settings.generator_show_gen_sample and not settings.generator_house_expo:
-            if settings.generator_nr_of_examples > 0:
-                # show sample
-                for i in range(5):
-                    plt.imshow(maps[i].grid, cmap=CAE.MAP_COLORMAP_FULL)
-                    plt.show()
+            # This will display 5 of the maps generated
+            if settings.generator_show_gen_sample:
+                if settings.generator_nr_of_examples > 0:
+                    # show sample
+                    for i in range(5):
+                        plt.imshow(maps[i].grid, cmap=CAE.MAP_COLORMAP_FULL)
+                        plt.show()
 
-        if settings.generator_aug_labelling_features or settings.generator_aug_labelling_labels or \
-                settings.generator_aug_single_labelling_features or settings.generator_aug_single_labelling_labels:
+        if settings.generator_aug_labelling_features or \
+           settings.generator_aug_labelling_labels or \
+           settings.generator_aug_single_labelling_features or \
+           settings.generator_aug_single_labelling_labels:
             # augment
             generator.augment_label_maps(settings.generator_labelling_atlases,
                                          settings.generator_aug_labelling_features,
@@ -815,14 +817,7 @@ class Generator:
 
         if settings.generator_house_expo:
             generator.convert_house_expo()
-            # generator.label_maps(settings.generator_labelling_atlases,
-            #                      settings.generator_labelling_features,
-            #                      settings.generator_labelling_labels,
-            #                      settings.generator_single_labelling_features,
-            #                      settings.generator_single_labelling_labels)
-
         else:
-
             generator.label_maps(settings.generator_labelling_atlases,
                                  settings.generator_labelling_features,
                                  settings.generator_labelling_labels,
