@@ -10,7 +10,7 @@ from screeninfo import get_monitors
 from algorithms.configuration.configuration import Configuration
 from algorithms.algorithm_manager import AlgorithmManager
 from algorithms.lstm.trainer import Trainer
-from analyzer.analyzer import Analyzer, available_algorithms
+from analyzer.analyzer import Analyzer
 from generator.generator import Generator
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
@@ -145,7 +145,7 @@ def configure_common(config, args) -> bool:
 
     if args.list_algorithms:
         print("Available algorithms:")
-        for key in available_algorithms.keys():
+        for key in AlgorithmManager.builtins.keys():
             print(f"  {key}")
         print("Or specify your own file with a class that inherits from Algorithm")
         return True
@@ -155,7 +155,7 @@ def configure_common(config, args) -> bool:
         if not all(algorithms):
             invalid_algorithms = [args.algorithms[i] for i in range(len(algorithms)) if algorithms[i] is None]
             invalid_str = ",".join('"' + a + '"' for a in invalid_algorithms)
-            valid_str = ",".join('"' + a + '"' for a in available_algorithms)
+            valid_str = ",".join('"' + a + '"' for a in AlgorithmManager.builtins.keys())
             print(f"Invalid algorithm(s) specified: {invalid_str}")
             print(f"Available algorithms: {valid_str}")
             print("Or specify your own file with a class that inherits from Algorithm")
