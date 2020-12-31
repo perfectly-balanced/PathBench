@@ -10,7 +10,7 @@ import argparse
 from typing import List, Optional, Callable, Tuple
 
 # add 'PathBench/tests' to system path for module imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils import make_src_modules_importable, handle_display_args, launch_process, kill_processes, try_delete_file  # noqa: E402
 
