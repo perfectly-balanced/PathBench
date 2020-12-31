@@ -52,7 +52,7 @@ class GradientListMapDisplay(MapDisplay):
 
         self.__cube_colours = {}
 
-    def get_colour(self, val: float) -> Colour:
+    def get_colour(self, val: float) -> Optional[Colour]:
         mag = (val - self.min_val)
 
         d = (self.max_val - self.min_val)
@@ -129,7 +129,9 @@ class GradientListMapDisplay(MapDisplay):
 
     def update_cube(self, p: Point) -> None:
         if p in self.__cube_colours:
-            self._root_view.colour_cube(self.__cube_colours[p])
+            clr = self.__cube_colours[p]
+            if clr is not None:
+                self._root_view.colour_cube(clr)
 
     def get_tracked_data(self) -> List[Tracked]:
         return self.__tracked_data
