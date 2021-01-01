@@ -26,7 +26,7 @@ from simulator.services.services import Services
 from simulator.services.timer import Timer
 from simulator.simulator import Simulator
 from structures import Point, Size
-from constants import DATA_PATH
+from utility.constants import DATA_PATH
 
 if TYPE_CHECKING:
     from main import MainRunner
@@ -768,56 +768,58 @@ class Generator:
     @staticmethod
     def main(m: 'MainRunner') -> None:
         generator: Generator = Generator(m.main_services)
+        settings = m.main_services.settings
 
-        if m.main_services.settings.generator_modify:
-            generator.modify_map(*m.main_services.settings.generator_modify())
+        if settings.generator_modify:
+            generator.modify_map(*settings.generator_modify())
 
-        if not m.main_services.settings.generator_house_expo:
-            if m.main_services.settings.generator_size == 8:  # Fill rate and nr obstacle range (1,2) is for unifrom random fill (0.1,0.2)
-                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([8] * m.main_services.settings.num_dim)),
-                                               m.main_services.settings.generator_gen_type, [0.1, 0.2], [1, 2], [3, 4], [5, 7], num_dim=m.main_services.settings.num_dim, json_save=True)
+        fill_rate = [settings.generator_obstacle_fill_min, settings.generator_obstacle_fill_max]
+        min_room_size = max(settings.generator_min_room_size, settings.generator_size)
+        max_room_size = min(settings.generator_max_room_size, settings.generator_size)
+        min_room = [min_room_size, min_room_size + 1]
+        max_room = [max_room_size, max_room_size + 1]
 
-            elif m.main_services.settings.generator_size == 16:
-                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([16] * m.main_services.settings.num_dim)),
-                                               m.main_services.settings.generator_gen_type, [0.3, 0.5], [2, 4], [4, 6], [8, 11], num_dim=m.main_services.settings.num_dim, json_save=True)
+        if not settings.generator_house_expo:
+            if settings.generator_size == 8:  # Fill rate and nr obstacle range (1,2) is for unifrom random fill (0.1,0.2)
+                maps = generator.generate_maps(settings.generator_nr_of_examples, Size(*([8] * settings.num_dim)),
+                                               settings.generator_gen_type, fill_rate, [1, 2], min_room, max_room, num_dim=settings.num_dim, json_save=True)
 
-            elif m.main_services.settings.generator_size == 28:
-                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([28] * m.main_services.settings.num_dim)),
-                                               m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 4], [6, 10], [14, 22], num_dim=m.main_services.settings.num_dim, json_save=True)
+            elif settings.generator_size == 16:
+                maps = generator.generate_maps(settings.generator_nr_of_examples, Size(*([16] * settings.num_dim)),
+                                               settings.generator_gen_type, fill_rate, [2, 4], min_room, max_room, num_dim=settings.num_dim, json_save=True)
+
+            elif settings.generator_size == 28:
+                maps = generator.generate_maps(settings.generator_nr_of_examples, Size(*([28] * settings.num_dim)),
+                                               settings.generator_gen_type, fill_rate, [1, 4], min_room, max_room, num_dim=settings.num_dim, json_save=True)
 
             else:
-                maps = generator.generate_maps(m.main_services.settings.generator_nr_of_examples, Size(*([64] * m.main_services.settings.num_dim)),
-                                               m.main_services.settings.generator_gen_type, [0.1, 0.3], [1, 6], [8, 15], [35, 45], num_dim=m.main_services.settings.num_dim, json_save=False)
+                maps = generator.generate_maps(settings.generator_nr_of_examples, Size(*([64] * settings.num_dim)),
+                                               settings.generator_gen_type, fill_rate, [1, 6], min_room, max_room, num_dim=settings.num_dim, json_save=False)
 
-        # This will display 5 of the maps generated
-        if m.main_services.settings.generator_show_gen_sample and not m.main_services.settings.generator_house_expo:
-            if m.main_services.settings.generator_nr_of_examples > 0:
-                # show sample
-                for i in range(5):
-                    plt.imshow(maps[i].grid, cmap=CAE.MAP_COLORMAP_FULL)
-                    plt.show()
+            # This will display 5 of the maps generated
+            if settings.generator_show_gen_sample:
+                if settings.generator_nr_of_examples > 0:
+                    # show sample
+                    for i in range(5):
+                        plt.imshow(maps[i].grid, cmap=CAE.MAP_COLORMAP_FULL)
+                        plt.show()
 
-        if m.main_services.settings.generator_aug_labelling_features or m.main_services.settings.generator_aug_labelling_labels or \
-                m.main_services.settings.generator_aug_single_labelling_features or m.main_services.settings.generator_aug_single_labelling_labels:
+        if settings.generator_aug_labelling_features or \
+           settings.generator_aug_labelling_labels or \
+           settings.generator_aug_single_labelling_features or \
+           settings.generator_aug_single_labelling_labels:
             # augment
-            generator.augment_label_maps(m.main_services.settings.generator_labelling_atlases,
-                                         m.main_services.settings.generator_aug_labelling_features,
-                                         m.main_services.settings.generator_aug_labelling_labels,
-                                         m.main_services.settings.generator_aug_single_labelling_features,
-                                         m.main_services.settings.generator_aug_single_labelling_labels)
+            generator.augment_label_maps(settings.generator_labelling_atlases,
+                                         settings.generator_aug_labelling_features,
+                                         settings.generator_aug_labelling_labels,
+                                         settings.generator_aug_single_labelling_features,
+                                         settings.generator_aug_single_labelling_labels)
 
-        if m.main_services.settings.generator_house_expo:
+        if settings.generator_house_expo:
             generator.convert_house_expo()
-            # generator.label_maps(m.main_services.settings.generator_labelling_atlases,
-            #                      m.main_services.settings.generator_labelling_features,
-            #                      m.main_services.settings.generator_labelling_labels,
-            #                      m.main_services.settings.generator_single_labelling_features,
-            #                      m.main_services.settings.generator_single_labelling_labels)
-
         else:
-
-            generator.label_maps(m.main_services.settings.generator_labelling_atlases,
-                                 m.main_services.settings.generator_labelling_features,
-                                 m.main_services.settings.generator_labelling_labels,
-                                 m.main_services.settings.generator_single_labelling_features,
-                                 m.main_services.settings.generator_single_labelling_labels)
+            generator.label_maps(settings.generator_labelling_atlases,
+                                 settings.generator_labelling_features,
+                                 settings.generator_labelling_labels,
+                                 settings.generator_single_labelling_features,
+                                 settings.generator_single_labelling_labels)

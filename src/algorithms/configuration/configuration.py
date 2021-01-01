@@ -1,4 +1,5 @@
 from typing import Tuple, Callable, Type, List, Optional, Dict, Any, Union
+import copy
 
 from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
@@ -38,6 +39,10 @@ class Configuration:
     generator_show_gen_sample: bool
     generator_house_expo: bool
     generator_size: int
+    generator_obstacle_fill_min: float
+    generator_obstacle_fill_max: float
+    generator_min_room_size: int
+    generator_max_room_size: int
 
     # Trainer
     trainer: bool
@@ -47,6 +52,7 @@ class Configuration:
 
     # Misc
     analyzer: bool
+    algorithms: Dict[str, Tuple[Type[Algorithm], Type[BasicTesting], Tuple[List[Any], Dict[str, Any]]]]
     load_simulator: bool
     clear_cache: bool
     num_dim: int
@@ -82,6 +88,10 @@ class Configuration:
         self.generator_modify = None
         self.generator_show_gen_sample = False
         self.generator_house_expo = False
+        self.generator_obstacle_fill_min = 0.1
+        self.generator_obstacle_fill_max = 0.3
+        self.generator_min_room_size = 3
+        self.generator_max_room_size = 16
         self.generator_size = 64
 
         self.num_dim = 2
@@ -93,8 +103,12 @@ class Configuration:
         self.trainer_pre_process_data_only = False
         self.trainer_bypass_and_replace_pre_processed_cache = False
 
-        # Custom behaviour settings
+        # Analyzer
         self.analyzer = False
+
+        # Common
+        from algorithms.algorithm_manager import AlgorithmManager
+        self.algorithms = copy.deepcopy(AlgorithmManager.builtins)
 
         # Simulator
         self.load_simulator = False

@@ -69,4 +69,4 @@ def handle_display_args(args) -> None:
         launch_process(["vncviewer", "-display", ":0"])
 
 def make_src_modules_importable() -> None:
-    sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
