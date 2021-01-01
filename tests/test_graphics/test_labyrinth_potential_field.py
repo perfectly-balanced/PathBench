@@ -11,7 +11,7 @@ else:
 
 
 def graphics_test() -> None:
-    from constants import DATA_PATH, TEST_DATA_PATH
+    from utility.constants import DATA_PATH, TEST_DATA_PATH
     import pyautogui
 
     # Select map Labyrinth, Potential Field algorithm

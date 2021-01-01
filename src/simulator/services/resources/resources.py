@@ -3,7 +3,7 @@ from simulator.services.resources.directories import ModelDir, CacheDir, ImagesD
 from simulator.services.resources.directory import Directory
 from simulator.services.services import Services
 
-from constants import ROOT_PATH
+from utility.constants import ROOT_PATH
 
 class Resources(Directory):
     model_dir: ModelDir

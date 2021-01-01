@@ -26,7 +26,7 @@ from simulator.services.services import Services
 from simulator.services.timer import Timer
 from simulator.simulator import Simulator
 from structures import Point, Size
-from constants import DATA_PATH
+from utility.constants import DATA_PATH
 
 if TYPE_CHECKING:
     from main import MainRunner

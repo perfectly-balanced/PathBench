@@ -7,7 +7,7 @@ from typing import Tuple, Union, Callable, List
 import os
 
 from structures import Colour, WHITE, BLACK, TRANSPARENT
-from constants import GUI_DATA_PATH
+from utility.constants import GUI_DATA_PATH
 
 from simulator.services.services import Services
 from simulator.services.persistent_state import PersistentState

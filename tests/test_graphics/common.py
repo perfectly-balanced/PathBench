@@ -17,7 +17,7 @@ from utils import make_src_modules_importable, handle_display_args, launch_proce
 # add src folder to system path
 make_src_modules_importable()
 
-from constants import SRC_PATH, DATA_PATH, TEST_DATA_PATH  # noqa: E402
+from utility.constants import SRC_PATH, DATA_PATH, TEST_DATA_PATH  # noqa: E402
 
 g_restore_resources: bool = False
 

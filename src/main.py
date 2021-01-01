@@ -1,7 +1,3 @@
-import sys
-import os
-sys.path.insert(0, os.path.dirname(__file__))
-
 from algorithms.configuration.configuration import Configuration
 from algorithms.algorithm_manager import AlgorithmManager
 from algorithms.lstm.trainer import Trainer

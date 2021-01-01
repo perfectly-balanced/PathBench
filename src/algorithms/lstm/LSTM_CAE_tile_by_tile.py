@@ -19,7 +19,7 @@ from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule, OnlineLSTM
 from algorithms.lstm.ML_model import MLModel, EvaluationResults
 from algorithms.lstm.map_processing import MapProcessing
 from simulator.services.services import Services
-from constants import DATA_PATH
+from utility.constants import DATA_PATH
 
 
 class CAEEncoder(nn.Module):
