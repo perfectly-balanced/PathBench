@@ -5,9 +5,9 @@ import cv2 as cv
 import unittest
 
 if __name__ == "__main__":
-    from common import init, destroy, mse, wait_for
+    from common import init, destroy, mse, wait_for, screenshot_saved
 else:
-    from .common import init, destroy, mse, wait_for
+    from .common import init, destroy, mse, wait_for, screenshot_saved
 
 
 def graphics_test() -> None:
@@ -43,6 +43,7 @@ def graphics_test() -> None:
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'update.png'), confidence=0.5)
     pyautogui.click(x, y)
 
+    wait_for('initialised.png')
     wait_for('traversables_new.png')
 
     # make traversables transparent for the RRT
@@ -51,7 +52,7 @@ def graphics_test() -> None:
 
     # #run algo
     pyautogui.press('t')
-    time.sleep(1)
+    wait_for('done.png')
 
     # change trace color
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'trace_new.png'), confidence=0.8)
@@ -59,11 +60,11 @@ def graphics_test() -> None:
     time.sleep(0.5)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'colour_2.png'), confidence=0.8)
     pyautogui.click(x, y)
-    time.sleep(3)
 
     # take ss
+    file_num = len(glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png')))
     pyautogui.press('o')
-    time.sleep(3)
+    screenshot_saved(file_num)
 
     # get latest screenshot
     list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))

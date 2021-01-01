@@ -5,9 +5,9 @@ import cv2 as cv
 import unittest
 
 if __name__ == "__main__":
-    from common import init, destroy, mse, wait_for
+    from common import init, destroy, mse, wait_for, screenshot_saved
 else:
-    from .common import init, destroy, mse, wait_for
+    from .common import init, destroy, mse, wait_for, screenshot_saved
 
 
 def graphics_test() -> None:
@@ -44,6 +44,7 @@ def graphics_test() -> None:
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'update.png'), confidence=0.5)
     pyautogui.click(x, y)
 
+    wait_for('initialised.png')
     wait_for('traversables_new.png')
 
     # make traversables transparent for the RRT
@@ -52,11 +53,12 @@ def graphics_test() -> None:
 
     # #run algo
     pyautogui.press('t')
-    time.sleep(4)
+    wait_for('done.png')
 
     # take ss
+    file_num = len(glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png')))
     pyautogui.press('o')
-    time.sleep(3)
+    screenshot_saved(file_num)
 
     # get latest screenshot
     list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))

@@ -43,7 +43,6 @@ class DebugOverlay():
             self.__debug_var.append(v)
 
         self.__services.ev_manager.register_listener(self)
-        self.__services.debug_state_ev_manager.register_listener(self)
         self.__text_colour = self.__services.state.add_colour("debug overlay", WHITE)
 
     def set_text_colour(self, colour):

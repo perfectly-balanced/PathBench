@@ -7,12 +7,14 @@ import sys
 import os
 import time
 import argparse
+import glob
 from typing import List, Optional, Callable, Tuple
 
 # add 'PathBench/tests' to system path for module imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils import make_src_modules_importable, handle_display_args, launch_process, kill_processes, try_delete_file  # noqa: E402
+from utils import make_src_modules_importable, handle_display_args, launch_process, kill_processes, \
+    try_delete_file  # noqa: E402
 
 # add src folder to system path
 make_src_modules_importable()
@@ -20,6 +22,7 @@ make_src_modules_importable()
 from utility.constants import SRC_PATH, DATA_PATH, TEST_DATA_PATH  # noqa: E402
 
 g_restore_resources: bool = False
+
 
 def setup(args) -> None:
     global g_restore_resources
@@ -41,22 +44,30 @@ def setup(args) -> None:
     pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ['DISPLAY'])
 
     if not args.no_launch_visualiser:
-        launch_process([sys.executable, os.path.join(SRC_PATH, 'main.py'), '-d', args.debug, '-v', '-Vwindowed-fullscreen', '-Vaudio-library-name=null', '--deterministic'],
-                       on_kill=lambda _: pyautogui.press('esc'))
+        launch_process(
+            [sys.executable, os.path.join(SRC_PATH, 'main.py'), '-d', args.debug, '-v', '-Vwindowed-fullscreen',
+             '-Vaudio-library-name=null', '--deterministic'],
+            on_kill=lambda _: pyautogui.press('esc'))
 
         pyautogui.moveTo(1, 1)
         wait_for('update.png')
 
-def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool = False, no_rm_config_file: bool = False) -> None:
+
+def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool = False,
+         no_rm_config_file: bool = False) -> None:
     parser = argparse.ArgumentParser(prog="common.py",
                                      description="PathBench individual test initialiser",
                                      formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument("--spawn-display", nargs='?', default=None, const=":99", help="spawn a virtual display for testing graphics and sets $DISPLAY")
-    parser.add_argument("--view-display", nargs='?', default=None, const="auto", help="open an interactive view of a virtual display (defaults to view $DISPLAY)")
-    parser.add_argument("--no-restore-resources-at-exit", action="store_true", help="do not restore and clean resources folder when test exits")
+    parser.add_argument("--spawn-display", nargs='?', default=None, const=":99",
+                        help="spawn a virtual display for testing graphics and sets $DISPLAY")
+    parser.add_argument("--view-display", nargs='?', default=None, const="auto",
+                        help="open an interactive view of a virtual display (defaults to view $DISPLAY)")
+    parser.add_argument("--no-restore-resources-at-exit", action="store_true",
+                        help="do not restore and clean resources folder when test exits")
     parser.add_argument("--no-launch-visualiser", action="store_true", help="do not launch PathBench visualiser")
     parser.add_argument("--no-rm-config-file", action="store_true", help="do not delete PathBench configuration file")
-    parser.add_argument("-d", "--debug", choices=['NONE', 'BASIC', 'LOW', 'MEDIUM', 'HIGH'], default='NONE', help="set the debug level when running, default is none")
+    parser.add_argument("-d", "--debug", choices=['NONE', 'BASIC', 'LOW', 'MEDIUM', 'HIGH'], default='NONE',
+                        help="set the debug level when running, default is none")
 
     if no_restore_resources_at_exit:
         sys.argv.append("--no-restore-resources-at-exit")
@@ -72,6 +83,7 @@ def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool 
 
     setup(args)
 
+
 def destroy() -> None:
     global g_restore_resources
 
@@ -82,12 +94,14 @@ def destroy() -> None:
 
     atexit.unregister(destroy)
 
+
 def restore_resources() -> None:
     cmd = ["git", "restore", "--source=HEAD", "--staged", "--worktree", "--", DATA_PATH]
     subprocess.check_call(cmd)
 
     cmd = ["git", "clean", "-dxf", "--", DATA_PATH]
     subprocess.check_call(cmd)
+
 
 def wait_for(rel_img: str, delay: float = 0.5, max_attempts: int = 30, confidence: float = 0.5) -> None:
     import pyautogui
@@ -102,8 +116,15 @@ def wait_for(rel_img: str, delay: float = 0.5, max_attempts: int = 30, confidenc
             continue
     raise RuntimeError("Unable to locate '{}' on screen".format(img))
 
+
 # Lower values better
 def mse(img_a, img_b) -> float:
     err = np.sum((img_a.astype("float") - img_b.astype("float")) ** 2)
     err /= float(img_a.shape[0] * img_a.shape[1])
     return err
+
+
+def screenshot_saved(file_num):
+    while True:
+        if file_num < len(glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))):
+            break

@@ -5,9 +5,9 @@ import cv2 as cv
 import unittest
 
 if __name__ == "__main__":
-    from common import init, destroy, mse
+    from common import init, destroy, mse, wait_for, screenshot_saved
 else:
-    from .common import init, destroy, mse
+    from .common import init, destroy, mse, wait_for, screenshot_saved
 
 
 def graphics_test() -> None:
@@ -36,7 +36,8 @@ def graphics_test() -> None:
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'update.png'), confidence=0.5)
     pyautogui.click(x, y)
-    time.sleep(2)
+    wait_for('initialised.png')
+
     # pick colours and do other modifications on the map
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
     pyautogui.click(x - 85, y)
@@ -44,25 +45,23 @@ def graphics_test() -> None:
     pyautogui.click(x, y)
 
     pyautogui.press('t')
-    time.sleep(2)
+    wait_for('done.png')
 
     # take texture ss
+    file_num = len(glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png')))
     pyautogui.press('o')
-
-    # wait until ss is saved
-    time.sleep(4)
+    screenshot_saved(file_num)
 
     # get latest screenshot
     list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
     transparent_1 = max(list_of_ss, key=os.path.getctime)
 
-    time.sleep(3)
+    time.sleep(2)
 
     # compare the new screenshot with the expected one
     expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "potential_field_2d.png"))
     transparent_1 = cv.imread(transparent_1)
 
-    # RRT does not run exactly the same every time, so allow bigger rate
     THRESHOLD = 30
     mse_1 = mse(expected_transparent_1, transparent_1)
     assert mse_1 < THRESHOLD, mse_1

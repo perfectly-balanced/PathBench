@@ -5,9 +5,9 @@ import cv2 as cv
 import unittest
 
 if __name__ == "__main__":
-    from common import init, destroy, mse, wait_for
+    from common import init, destroy, mse, wait_for, screenshot_saved
 else:
-    from .common import init, destroy, mse, wait_for
+    from .common import init, destroy, mse, wait_for, screenshot_saved
 
 
 def graphics_test() -> None:
@@ -43,8 +43,7 @@ def graphics_test() -> None:
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'update.png'), confidence=0.5)
     pyautogui.click(x, y)
 
-    # temporary
-    time.sleep(5)
+    wait_for('initialised.png')
 
     # run algo
     pyautogui.press('t')
@@ -61,34 +60,37 @@ def graphics_test() -> None:
     time.sleep(0.5)
 
     wait_for('traversables_new.png')
+    wait_for('done.png')
 
-    # take ss
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
     pyautogui.click(x - 125, y)
-    time.sleep(0.5)
+
+    # take ss
+    file_num = len(glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png')))
     pyautogui.press('o')
+
+    # get latest screenshot
+    screenshot_saved(file_num)
+    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
+    transparent_1 = max(list_of_ss, key=os.path.getctime)
 
     wait_for('traversables_new.png')
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
     pyautogui.click(x - 125, y)
 
-    time.sleep(4)
-    # get latest screenshot
-    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
-    transparent_1 = max(list_of_ss, key=os.path.getctime)
-
     # take new transparent ss
     pyautogui.press('o')
 
     # wait until ss is saved
-    time.sleep(5)
+    screenshot_saved(file_num + 1)
 
     # get latest screenshot
     list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
     transparent_2 = max(list_of_ss, key=os.path.getctime)
 
     # compare the 2 new screenshots with the expected ones
+    time.sleep(1)
     expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "3d_A_1.png"))
     expected_transparent_2 = cv.imread(os.path.join(TEST_DATA_PATH, "3d_A_2.png"))
     transparent_1 = cv.imread(transparent_1)
