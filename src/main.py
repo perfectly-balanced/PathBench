@@ -162,8 +162,15 @@ def configure_common(config, args) -> bool:
             print("Or specify your own file with a class that inherits from Algorithm")
             return False
 
-        algorithms = dict(flatten(algorithms, depth=1))
-        print(flatten(algorithms, depth=1))
+        algorithms = list(flatten(algorithms, depth=1))
+
+        # name uniqueness
+        names = [a[0] for a in algorithms]
+        if len(set(names)) != len(names):
+            print("Name conflict detected in custom algorithm list:", names)
+            return False
+
+        algorithms = dict(algorithms)
         if args.include_builtin_algorithms:
             algorithms.update(AlgorithmManager.builtins)
 
