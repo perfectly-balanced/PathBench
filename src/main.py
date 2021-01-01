@@ -6,6 +6,7 @@ from generator.generator import Generator
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
 from simulator.simulator import Simulator
+from utility.misc import flatten
 
 import copy
 import sys
@@ -153,7 +154,7 @@ def configure_common(config, args) -> bool:
     if args.algorithms:
         algorithms = AlgorithmManager.load_all(args.algorithms)
         if not all(algorithms):
-            invalid_algorithms = [args.algorithms[i] for i in range(len(algorithms)) if algorithms[i] is None]
+            invalid_algorithms = [args.algorithms[i] for i in range(len(algorithms)) if not algorithms[i]]
             invalid_str = ",".join('"' + a + '"' for a in invalid_algorithms)
             valid_str = ",".join('"' + a + '"' for a in AlgorithmManager.builtins.keys())
             print(f"Invalid algorithm(s) specified: {invalid_str}")
@@ -161,7 +162,8 @@ def configure_common(config, args) -> bool:
             print("Or specify your own file with a class that inherits from Algorithm")
             return False
 
-        algorithms = dict(algorithms)
+        algorithms = dict(flatten(algorithms, depth=1))
+        print(flatten(algorithms, depth=1))
         if args.include_builtin_algorithms:
             algorithms.update(AlgorithmManager.builtins)
 

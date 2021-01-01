@@ -3,6 +3,7 @@ from utility.compatibility import HAS_OMPL
 
 from typing import Optional, List, Type, Dict, Any, Tuple
 import importlib.util
+import inspect
 import os
 import copy
 
@@ -151,7 +152,7 @@ class AlgorithmManager():
             })
 
     @staticmethod
-    def load_all(ids: List[str]) -> List[Optional[Tuple[str, MetaData]]]:
+    def load_all(ids: List[str]) -> List[List[Tuple[str, MetaData]]]:
         """
         Returns a list of algorithms from a list of names or file paths.
 
@@ -160,33 +161,38 @@ class AlgorithmManager():
         we return the result of AlgorithmManager.try_load_from_file().
         """
 
-        algs: List[Union[Optional[Type[Algorithm]], Optional[Tuple[str, Type[Algorithm]]]]] = []
+        algs: List[List[Tuple[str, MetaData]]] = []
         for alg in ids:
             if alg in AlgorithmManager.builtins:
-                algs.append(copy.deepcopy((alg, AlgorithmManager.builtins[alg])))
+                algs.append([copy.deepcopy((alg, AlgorithmManager.builtins[alg]))])
             else:
                 algs.append(AlgorithmManager.try_load_from_file(alg))
         return algs
 
     @staticmethod
-    def try_load_from_file(path: str) -> Optional[Tuple[str, MetaData]]:
+    def try_load_from_file(path: str) -> List[Tuple[str, MetaData]]:
+        algs = []
+
         if not os.path.exists(path):
-            return None
+            return algs
 
         try:
             spec = importlib.util.spec_from_file_location("custom_loaded", path)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
 
-            # return first class that inherits from "Algorithm"
+            # return all classes that inherit from "Algorithm"
             for name in dir(module):
                 if name.startswith("_"):
                     continue
+
                 cls = getattr(module, name)
-                if issubclass(cls, Algorithm):
-                    name = cls.name if "name" in cls.__dict__ else os.path.basename(path)
+                if inspect.isclass(cls) and cls is not Algorithm and issubclass(cls, Algorithm):
+                    name = cls.name if "name" in cls.__dict__ else os.path.basename(path) + " ({})".format(name)
                     testing = cls.testing if "testing" in cls.__dict__ else BasicTesting
-                    return (name, (cls, testing, ([], {})))
-            return None
+                    algs.append((name, (cls, testing, ([], {}))))
+
+            return algs
         except:
-            return None
+            raise
+            return []

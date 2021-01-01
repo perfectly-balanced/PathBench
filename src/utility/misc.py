@@ -39,14 +39,18 @@ def print_header():
 def exclude_from_dict(d, keys):
     return {key: d[key] for key in d if key not in keys}
 
-def flatten(l, ignored_values=[]):
-    for el in l:
-        if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
-            for el2 in flatten(el):
-                if el2 not in ignored_values:
-                    yield el2
-        elif el not in ignored_values:
-            yield el
+def flatten(l, ignored_values=[], depth: int = np.iinfo(np.int32).max):
+    if depth == 0:
+        for e in l:
+            yield e
+    else:
+        for el in l:
+            if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
+                for el2 in flatten(el, ignored_values, depth-1):
+                    if el2 not in ignored_values:
+                        yield el2
+            elif el not in ignored_values:
+                yield el
 
 def array_shape(a) -> Tuple[int, ...]:
     if isinstance(a[0], Iterable):
