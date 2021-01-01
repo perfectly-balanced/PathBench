@@ -194,7 +194,7 @@ class Map:
         if not follow:
             return self.move(self.agent, to, no_trace)
         else:
-            line: List[Point] = self.get_line_sequence(self.agent.position, to)[1:]  # Get rid of first point, the current agent pos
+            line: List[Point] = self.get_line_sequence(self.agent.position, to)
             for next_pos in line:
                 if not self.move(self.agent, next_pos, no_trace):
                     return False
@@ -206,10 +206,10 @@ class Map:
         Given coordinate of two n dimensional points. The task to find all the intermediate points required for 
         drawing line AB.
         '''
-        start = np.array([[to[i] for i in range(self.size.n_dim)]])
-        end = np.array([frm[i] for i in range(self.size.n_dim)])
+        start = np.array([[frm[i] for i in range(self.size.n_dim)]])
+        end = np.array([to[i] for i in range(self.size.n_dim)])
         coord_list = bresenhamline(start, end)
-        sequence = list(map(lambda x: Point(*list(x)), coord_list)) + [to]
+        sequence = list(map(lambda x: Point(*list(x)), coord_list))
         return sequence
 
     def is_valid_line_sequence(self, line_sequence: List[Point]) -> bool:
