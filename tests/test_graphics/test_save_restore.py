@@ -5,9 +5,9 @@ import cv2 as cv
 import unittest
 
 if __name__ == "__main__":
-    from common import init, destroy, mse
+    from common import init, destroy, mse, wait_for, screenshot_saved
 else:
-    from .common import init, destroy, mse
+    from .common import init, destroy, mse, wait_for, screenshot_saved
 
 
 def graphics_test() -> None:
@@ -36,15 +36,15 @@ def graphics_test() -> None:
     # update
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'update.png'), confidence=0.5)
     pyautogui.click(x, y)
-    pyautogui.press('w', presses=5000)
+    wait_for('initialised.png')
 
     # go into state 1
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'one.png'), confidence=0.7)
     pyautogui.click(x, y)
 
     # pick colors and other modifications of the map
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
-    pyautogui.click(x - 78, y)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.6)
+    pyautogui.click(x - 80, y)
     time.sleep(0.5)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'orange.png'), confidence=0.9)
     pyautogui.click(x, y)
@@ -52,47 +52,49 @@ def graphics_test() -> None:
 
     # run
     pyautogui.press('t')
-    time.sleep(0.5)
+    wait_for('done.png')
+
     # change trace color
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'trace.png'), confidence=0.7)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'trace.png'), confidence=0.8)
     pyautogui.click(x - 70, y)
     time.sleep(0.5)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'colour_1.png'), confidence=0.8)
     pyautogui.click(x, y)
-    time.sleep(2)
 
     # take texture ss
+    file_num = len(glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png')))
     pyautogui.press('o')
-    time.sleep(2)
-
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'save.png'), confidence=0.7)
+    screenshot_saved(file_num)
+    time.sleep(0.5)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'save.png'), confidence=0.8)
     pyautogui.click(x, y)
-    time.sleep(2)
+    time.sleep(0.5)
+
     # go to state 2
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'two.png'), confidence=0.7)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'two.png'), confidence=0.8)
     pyautogui.click(x, y)
 
     # change colors
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
-    pyautogui.click(x - 78, y)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.6)
+    pyautogui.click(x - 80, y)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'lime.png'), confidence=0.9)
     pyautogui.click(x, y)
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'trace.png'), confidence=0.7)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'trace.png'), confidence=0.8)
     pyautogui.click(x - 70, y)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'lightblue.png'), confidence=0.7)
     pyautogui.click(x, y)
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'visited.png'), confidence=0.7)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'visited.png'), confidence=0.75)
     pyautogui.click(x - 70, y)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'colour_2.png'), confidence=0.7)
     pyautogui.click(x, y)
-    time.sleep(2)
+
     # get the latest taken screenshot
     list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
     transparent_1 = max(list_of_ss, key=os.path.getctime)
 
     # take texture ss
     pyautogui.press('o')
-    time.sleep(3)
+    screenshot_saved(file_num + 1)
 
     # get the latest taken screenshot
     list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
@@ -104,7 +106,7 @@ def graphics_test() -> None:
 
     # take texture ss
     pyautogui.press('o')
-    time.sleep(3)
+    screenshot_saved(file_num + 2)
 
     # get the latest taken screenshot
     list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
@@ -116,7 +118,7 @@ def graphics_test() -> None:
 
     # take texture ss
     pyautogui.press('o')
-    time.sleep(3)
+    screenshot_saved(file_num + 3)
 
     # get the latest taken screenshot
     list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
