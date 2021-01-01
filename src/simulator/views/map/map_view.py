@@ -168,7 +168,7 @@ class MapView(View):
         self.renderer.line_segs.set_thickness(self.__line_thickness)
 
         self.__update_view(True)
-        self._services.debug_state_ev_manager.post(StateInitialisedEvent())
+        self._services.ev_manager.broadcast(StateInitialisedEvent())
 
     def destroy(self) -> None:
         self.__map.destroy()

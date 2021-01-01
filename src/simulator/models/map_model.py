@@ -79,12 +79,12 @@ class MapModel(Model):
     def move(self, to: Point) -> None:
         self.reset()
         self._services.algorithm.map.move_agent(to, True)
-        self._services.debug_state_ev_manager.post(StateEntityUpdateEvent())
+        self._services.ev_manager.broadcast(StateEntityUpdateEvent())
 
     def move_goal(self, to: Point) -> None:
         self.reset()
         self._services.algorithm.map.move(self._services.algorithm.map.goal, to, True)
-        self._services.debug_state_ev_manager.post(StateEntityUpdateEvent())
+        self._services.ev_manager.broadcast(StateEntityUpdateEvent())
 
     def stop_algorithm(self) -> None:
         self.key_frame_is_paused = True
@@ -144,7 +144,7 @@ class MapModel(Model):
                 # the last state of the algorithm.
                 self._services.ev_manager.post(KeyFrameEvent(refresh=True))
 
-            self._services.debug_state_ev_manager.post(StateTerminatedEvent() if terminated else StateDoneEvent())
+            self._services.ev_manager.broadcast(StateTerminatedEvent() if terminated else StateDoneEvent())
 
             with self.cv:
                 self.last_thread = None

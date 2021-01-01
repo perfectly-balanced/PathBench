@@ -44,7 +44,7 @@ class MapController(Controller, DirectObject):
             self._services.state.view_idx = i
         
         def compute_trace():
-            self._services.debug_state_ev_manager.post(StateRunningEvent())
+            self._services.ev_manager.broadcast(StateRunningEvent())
             self._model.compute_trace()
 
         self.accept('mouse1', left_click)
