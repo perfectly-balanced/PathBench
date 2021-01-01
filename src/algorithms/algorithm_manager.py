@@ -5,7 +5,9 @@ from typing import Optional, List, Type, Dict, Any, Tuple
 import importlib.util
 import inspect
 import os
+import sys
 import copy
+import traceback
 
 # planner testing
 from algorithms.basic_testing import BasicTesting
@@ -171,10 +173,10 @@ class AlgorithmManager():
 
     @staticmethod
     def try_load_from_file(path: str) -> List[Tuple[str, MetaData]]:
-        algs = []
-
         if not os.path.exists(path):
-            return algs
+            msg = "File '{}' does not exist".format(path)
+            print(msg, file=sys.stderr)
+            return []
 
         try:
             spec = importlib.util.spec_from_file_location("custom_loaded", path)
@@ -182,6 +184,7 @@ class AlgorithmManager():
             spec.loader.exec_module(module)
 
             # return all classes that inherit from "Algorithm"
+            algs = []
             for name in dir(module):
                 if name.startswith("_"):
                     continue
@@ -191,8 +194,8 @@ class AlgorithmManager():
                     name = cls.name if "name" in cls.__dict__ else os.path.basename(path) + " ({})".format(name)
                     testing = cls.testing if "testing" in cls.__dict__ else BasicTesting
                     algs.append((name, (cls, testing, ([], {}))))
-
             return algs
         except:
-            raise
+            msg = "Failed to load algorithms from file '{}', reason:\n{}".format(path, traceback.format_exc())
+            print(msg, file=sys.stderr)
             return []

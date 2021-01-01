@@ -157,9 +157,9 @@ def configure_common(config, args) -> bool:
             invalid_algorithms = [args.algorithms[i] for i in range(len(algorithms)) if not algorithms[i]]
             invalid_str = ",".join('"' + a + '"' for a in invalid_algorithms)
             valid_str = ",".join('"' + a + '"' for a in AlgorithmManager.builtins.keys())
-            print(f"Invalid algorithm(s) specified: {invalid_str}")
-            print(f"Available algorithms: {valid_str}")
-            print("Or specify your own file with a class that inherits from Algorithm")
+            print(f"Invalid algorithm(s) specified: {invalid_str}", file=sys.stderr)
+            print(f"Available algorithms: {valid_str}", file=sys.stderr)
+            print("Or specify your own file with a class that inherits from Algorithm", file=sys.stderr)
             return False
 
         algorithms = list(flatten(algorithms, depth=1))
@@ -167,7 +167,7 @@ def configure_common(config, args) -> bool:
         # name uniqueness
         names = [a[0] for a in algorithms]
         if len(set(names)) != len(names):
-            print("Name conflict detected in custom algorithm list:", names)
+            print("Name conflict detected in custom algorithm list:", names, file=sys.stderr)
             return False
 
         algorithms = dict(algorithms)
