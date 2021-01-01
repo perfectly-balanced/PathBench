@@ -9,6 +9,7 @@ from simulator.services.event_manager.events.key_frame_event import KeyFrameEven
 from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
 from simulator.services.event_manager.events.take_map_screenshot_event import TakeMapScreenshotEvent
 from simulator.services.event_manager.events.map_update_event import MapUpdateEvent
+from simulator.services.event_manager.events.state_initialised_event import StateInitialisedEvent
 from simulator.services.graphics.renderer import Renderer
 from simulator.views.map.display.gradient_list_map_display import GradientListMapDisplay
 from simulator.views.map.display.gradient_grid_map_display import GradientGridMapDisplay
@@ -167,6 +168,7 @@ class MapView(View):
         self.renderer.line_segs.set_thickness(self.__line_thickness)
 
         self.__update_view(True)
+        self._services.debug_state_ev_manager.post(StateInitialisedEvent())
 
     def destroy(self) -> None:
         self.__map.destroy()

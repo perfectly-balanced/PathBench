@@ -65,11 +65,24 @@ class Services:
 
     def reinit(self, refresh_map: bool = False) -> None:
         self.__debug_state_ev_manager.post(StateInitialisingEvent())
-        from simulator.services.algorithm_runner import AlgorithmRunner
-        self.__algorithm_runner = AlgorithmRunner(self)
-        self.__algorithm_runner.reset_algorithm(refresh_map)
-        self.__debug_state_ev_manager.post(StateInitialisedEvent())
-        self.ev_manager.post(ReinitEvent())
+
+        skip_frame = True
+
+        def do_reinit(task):
+            nonlocal skip_frame
+
+            if skip_frame:
+                skip_frame = False
+                return task.cont
+
+            from simulator.services.algorithm_runner import AlgorithmRunner
+            self.__algorithm_runner = AlgorithmRunner(self)
+            self.__algorithm_runner.reset_algorithm(refresh_map)
+            self.ev_manager.post(ReinitEvent())
+            return task.done
+
+        # refresh graphics before reinitialise
+        self.graphics.window.taskMgr.do_method_later(0, do_reinit, 'reinit')
 
     @property
     def state(self) -> str:

@@ -42,12 +42,17 @@ class MapController(Controller, DirectObject):
 
         def set_view(i):
             self._services.state.view_idx = i
+        
+        def compute_trace():
+            self._services.debug_state_ev_manager.post(StateRunningEvent())
+            self._model.compute_trace()
 
         self.accept('mouse1', left_click)
         self.accept('mouse3', right_click)
         self.accept("m", lambda: self._model.toggle_convert_map())
         self.accept("x", lambda: self._model.toggle_pause_algorithm())
         self.accept("o", lambda: self._services.ev_manager.post(TakeMapScreenshotEvent()))
+        self.accept("t", compute_trace)
 
         for i in range(6):
             self.accept(str(i+1), partial(set_view, i))
@@ -62,10 +67,6 @@ class MapController(Controller, DirectObject):
                         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.5]]] + \
             [[[-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
                 [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]] for _ in range(40)]
-
-        def running():
-            self._services.debug_state_ev_manager.post(StateRunningEvent())
-            self._model.compute_trace()
 
         def grow_map():
             from algorithms.configuration.maps.occupancy_grid_map import OccupancyGridMap
@@ -95,7 +96,6 @@ class MapController(Controller, DirectObject):
                         return
 
         self.accept("h", grow_map)
-        self.accept("t", running)
 
     def destroy(self) -> None:
         self.ignore_all()

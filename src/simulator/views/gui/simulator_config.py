@@ -360,6 +360,9 @@ class SimulatorConfig(DirectObject):
         # launch simulation
         config = self.__services.settings
 
+        config.map_name = self.__maps_option.get()
+        config.algorithm_name = self.__algorithms_option.get()
+
         refresh_map = (self.__state.agent != mp[0].agent.position) or \
                       (self.__state.goal != mp[0].goal.position) or \
                       (mp[0] != config.simulator_initial_map)

@@ -13,30 +13,11 @@ class DebugStateEventManager:
     We coordinate communication between the Model, View, and Controller.
     """
     __listeners: WeakKeyDictionary
-    __tick_listeners: WeakKeyDictionary
-    __event_queue: List[Event]
     __services: 'Services'
 
     def __init__(self, __services: 'Services') -> None:
         self.__listeners = WeakKeyDictionary()
-        self.__tick_listeners = WeakKeyDictionary()
-        self.__event_queue = []
         self.__services = __services
-
-    def register_tick_listener(self, listener: Any) -> None:
-        """
-        Add a tick listener only
-        :param listener: The listener
-        """
-        self.__tick_listeners[listener] = 1
-
-    def unregister_tick_listener(self, listener: Any) -> None:
-        """
-        Remove the listener
-        :param listener: The listener
-        """
-        if listener in self.__tick_listeners.keys():
-            del self.__tick_listeners[listener]
 
     def register_listener(self, listener: Any) -> None:
         """
@@ -62,26 +43,6 @@ class DebugStateEventManager:
         It will be broadcast to all listeners.
         :param event: The event to post
         """
-        # unify event with an existing one if
-        # allowed -> prevents spamming of events.
-        if event._unifiable:
-            for e in self.__event_queue:
-                if type(e) == type(event):
-                    print("absorbed")
-                    e._absorb(event)
-                    return
-
-        self.__event_queue.append(event)
-        self.__services.debug.write(str(event), DebugLevel.MEDIUM)
-
-    def tick(self) -> None:
-        """
-        Sends all messages form the event queue
-        """
-        for tick_listener in self.__tick_listeners.keys():
-            tick_listener.tick()
-        # send all events
-        while len(self.__event_queue) > 0:
-            event = self.__event_queue.pop(0)
-            for listener in list(self.__listeners.keys()):
-                listener.notify(event)
+        
+        for listener in list(self.__listeners.keys()):
+            listener.notify(event)

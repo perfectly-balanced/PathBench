@@ -10,6 +10,7 @@ from simulator.services.event_manager.events.state_running_event import StateRun
 from simulator.services.event_manager.events.state_initialised_event import StateInitialisedEvent
 from simulator.services.event_manager.events.state_done_event import StateDoneEvent
 from simulator.services.event_manager.events.state_terminated_event import StateTerminatedEvent
+from simulator.services.event_manager.events.state_entity_update_event import StateEntityUpdateEvent
 
 
 class DebugOverlay():
@@ -58,14 +59,21 @@ class DebugOverlay():
             self.set_text(4, "Initialised")
             self.set_text(1, self.__services.algorithm.map.goal.position)
             self.set_text(2, self.__services.algorithm.map.agent.position)
-        if isinstance(event, StateInitialisingEvent):
+        elif isinstance(event, StateEntityUpdateEvent):
+            self.set_text(1, self.__services.algorithm.map.goal.position)
+            self.set_text(2, self.__services.algorithm.map.agent.position)
+        elif isinstance(event, StateInitialisingEvent):
             self.set_text(4, "Initialising")
-        if isinstance(event, StateRunningEvent):
+            self.set_text(0, self.__services.settings.map_name)
+            self.set_text(3, self.__services.settings.algorithm_name)
+            self.set_text(1, "-")
+            self.set_text(2, "-")
+        elif isinstance(event, StateRunningEvent):
             self.set_text(4, "Running")
-        if isinstance(event, StateTerminatedEvent):
+        elif isinstance(event, StateTerminatedEvent):
             self.set_text(4, "Terminated")
-        if isinstance(event, StateDoneEvent):
+        elif isinstance(event, StateDoneEvent):
             self.set_text(4, "Done")
-        if isinstance(event, ColourUpdateEvent):
+        elif isinstance(event, ColourUpdateEvent):
             if event.colour.name == self.__text_colour.name:
                 self.set_text_colour(self.__text_colour())

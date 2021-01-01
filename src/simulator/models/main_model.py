@@ -45,4 +45,3 @@ class MainModel(Model):
     def __run_main_loop(self) -> None:
         while self.__running:
             self._services.ev_manager.tick()
-            self._services.debug_state_ev_manager.tick()

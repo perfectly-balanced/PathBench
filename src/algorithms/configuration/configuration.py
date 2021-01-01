@@ -56,6 +56,8 @@ class Configuration:
     load_simulator: bool
     clear_cache: bool
     num_dim: int
+    map_name: Optional[str]
+    algorithm_name: Optional[str]
 
     def __init__(self) -> None:
         # Simulator settings
@@ -109,6 +111,9 @@ class Configuration:
         # Common
         from algorithms.algorithm_manager import AlgorithmManager
         self.algorithms = copy.deepcopy(AlgorithmManager.builtins)
+
+        self.map_name = None
+        self.algorithm_name = None
 
         # Simulator
         self.load_simulator = False
