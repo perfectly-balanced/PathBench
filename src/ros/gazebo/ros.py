@@ -13,6 +13,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 
 from algorithms.classic.graph_based.a_star import AStar  # noqa: E402
 from algorithms.classic.testing.a_star_testing import AStarTesting  # noqa: E402
+from algorithms.classic.testing.way_point_navigation_testing import WayPointNavigationTesting  # noqa: E402
+from algorithms.lstm.a_star_waypoint import WayPointNavigation  # noqa: E402
+from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM  # noqa: E402
 from algorithms.configuration.configuration import Configuration  # noqa: E402
 from algorithms.configuration.entities.agent import Agent  # noqa: E402
 from algorithms.configuration.entities.goal import Goal  # noqa: E402
@@ -37,9 +40,6 @@ class Ros:
         self._ros_origin = None
         self._ros_size = None
         self._ros_res = None
-        self._current_wp = None
-        self._cur_wp = None
-        self._goal = Point(55, 40)
         self._agent = None
         self._scale = 1
 
@@ -59,12 +59,12 @@ class Ros:
             self._ros_res = map_info.resolution
             self._ros_origin = [map_info.origin.position.x, map_info.origin.position.y]
 
-        grid = np.empty(self._ros_size[::-1], dtype=np.float32)
+        grid = np.empty(self._ros_size, dtype=np.float32)
 
         for i in range(len(raw_grid)):
             col = i % self._ros_size.width
             row = int((i - col) / self._ros_size.width)
-            grid[self._ros_size.height - row - 1, col] = raw_grid[i]
+            grid[col, self._ros_size.height - row - 1] = raw_grid[i]
 
         if self.MAX_SIZE is not None and (self.MAX_SIZE < self._ros_size.height or self.MAX_SIZE < self._ros_size.width):
             self._scale = self.MAX_SIZE / self._ros_size.height
@@ -94,8 +94,6 @@ class Ros:
         return np.arccos(np.clip(np.dot(v1, v2), -1.0, 1.0))
 
     def _send_way_point(self, wp):
-        self._cur_wp = wp
-
         goal_tresh = 0.1
         angle_tresh = 0.1
         sleep = 0.01
@@ -104,8 +102,7 @@ class Ros:
         forward_multiplier = 0.5
         found = False
 
-        self._current_wp = wp = self._grid_to_world(wp)
-        wp = np.array(wp)
+        wp = np.array(self._grid_to_world(wp))
         rospy.loginfo("Sending waypoint: {}".format(wp))
 
         for _ in range(max_it):
@@ -121,13 +118,13 @@ class Ros:
             dist_left = np.linalg.norm(goal_dir)
 
             # print()
-            #print("Position: {}, Agent Angle: {}".format(agent_pos, agent_rot))
-            #print("Angle Left: {}, Dist Left: {}".format(angle_left, dist_left))
+            # print("Position: {}, Agent Angle: {}".format(agent_pos, agent_rot))
+            # print("Angle Left: {}, Dist Left: {}".format(angle_left, dist_left))
 
             # rotate
             if not np.abs(angle_left) < angle_tresh:
                 rot_speed = np.clip(angle_left * rot_multiplier, -1, 1)
-                #print("Rotating with speed: {}".format(rot_speed))
+                # print("Rotating with speed: {}".format(rot_speed))
                 self._send_vel_msg(rot=rot_speed)
                 rospy.sleep(sleep)
                 continue
@@ -145,8 +142,6 @@ class Ros:
 
         # stop
         self._send_vel_msg()
-
-        self._current_wp = None
 
         rospy.loginfo("Waypoint found: {}".format(found))
 
@@ -181,15 +176,22 @@ class Ros:
 
         config = Configuration()
 
+        # general
         config.simulator_graphics = True
         config.simulator_write_debug_level = DebugLevel.LOW
         config.simulator_key_frame_speed = 0.16
         config.simulator_key_frame_skip = 20
-        config.simulator_algorithm_type = AStar
-        config.simulator_algorithm_parameters = ([], {})
-        config.simulator_testing_type = AStarTesting
+
+        # algorithm
+        config.simulator_algorithm_type = WayPointNavigation  # AStarTesting # WayPointNavigation
+        config.simulator_algorithm_parameters = ([],
+                                                 {"global_kernel": (CombinedOnlineLSTM, ([], {})),
+                                                  "global_kernel_max_it": 30})
+        config.simulator_testing_type = WayPointNavigationTesting  # AStar # WayPointNavigationTesting  # BasicTesting
+
+        # map
         config.simulator_initial_map = RosMap(Agent(agent_pos, radius=self.INFLATE),
-                                              Goal(self._goal),
+                                              Goal(Point(0, 0)),
                                               self._get_grid,
                                               traversable_threshold=50,
                                               unmapped_value=-1,
@@ -212,8 +214,7 @@ class Ros:
         grid_pos[1] = self._ros_size.height - grid_pos[1] - 1
 
         if scaled:
-            grid_pos[0] = int(round(grid_pos[0] * self._scale))
-            grid_pos[1] = int(round(grid_pos[1] * self._scale))
+            grid_pos = [int(round(p * self._scale)) for p in grid_pos]
 
         return Point(*grid_pos)
 
@@ -225,10 +226,9 @@ class Ros:
         '''
 
         if scaled:
-            grid_pos[0] = grid_pos[0] / self._scale
-            grid_pos[1] = grid_pos[1] / self._scale
+            pos = [(p / self._scale) for p in pos]
 
-        world_pos = [pos.x, self._ros_size.height - pos.y - 1]
+        world_pos = [pos[0], self._ros_size.height - pos[1] - 1]
         world_pos = [world_pos[0] * self._ros_res + self._ros_res * 0.5,
                      world_pos[1] * self._ros_res + self._ros_res * 0.5]
         world_pos = [world_pos[0] + self._ros_origin[0],
