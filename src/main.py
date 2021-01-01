@@ -183,7 +183,6 @@ def configure_common(config, args) -> bool:
         random.seed(args.std_random_seed)
         torch.manual_seed(args.torch_random_seed)
         np.random.seed(args.numpy_random_seed)
-        print("HERE")
 
     return True
 
