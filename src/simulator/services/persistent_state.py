@@ -8,6 +8,7 @@ from simulator.services.debug import DebugLevel
 from utility.misc import exclude_from_dict
 from utility.compatibility import Final
 
+from weakref import WeakSet
 from typing import Dict, Any, List, Optional
 import json
 import os
@@ -24,15 +25,15 @@ class PersistentStateObject(ABC):
         ...
 
 class PersistentStateView(PersistentStateObject):
-    __services: Services
+    __services_set: WeakSet
     state: 'PersistentState'
     index: int
     colours: Dict[str, DynamicColour]
 
     EFFECTIVE_VIEW: Final[int] = -1
 
-    def __init__(self, services: Services, state: 'PersistentState', index: int) -> None:
-        self.__services = services
+    def __init__(self, services_set: WeakSet, state: 'PersistentState', index: int) -> None:
+        self.__services_set = services_set
         self.state = state
         self.index = index
 
@@ -41,7 +42,8 @@ class PersistentStateView(PersistentStateObject):
     def __colour_callback(self, colour: DynamicColour) -> None:
         if self.index == self.state.view_idx:
             self.state.effective_view.colours[colour.name].set_all(colour.colour, colour.visible)
-        self.__services.ev_manager.post(ColourUpdateEvent(colour, self))
+        for s in self.__services_set:
+            s.ev_manager.post(ColourUpdateEvent(colour, self))
 
     def _add_colour(self, name: str, colour: Colour, visible: bool) -> DynamicColour:
         if name in self.colours:
@@ -76,7 +78,8 @@ class PersistentStateView(PersistentStateObject):
     def is_effective(self) -> bool:
         return self.index == PersistentStateView.EFFECTIVE_VIEW
 
-class PersistentState(Service):
+class PersistentState():
+    __services_set: WeakSet
     file_name: str
 
     MAX_VIEWS: Final[int] = 6
@@ -89,28 +92,35 @@ class PersistentState(Service):
 
     __save_task: Optional['Task']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **exclude_from_dict(kwargs, ["file_name", "types"]))
-        self.file_name = kwargs["file_name"] if "file_name" in kwargs else ".pathbench.json"
-        self.types = {o.__name__: o for o in kwargs["types"]} if "types" in kwargs else {}
+    def __init__(self, services: Services, types={}, file_name=".pathbench.json"):
+        self.file_name = file_name
+        self.types = {o.__name__: o for o in types}
 
+        self.__services_set = WeakSet([services])
         self.__objects = []
         self.__save_task = None
 
         self.reset(False)
         self.load()
         self.save()
+    
+    def add_services(self, services: Services):
+        self.__services_set.add(services)
+    
+    @property
+    def root_services(self) -> Services:
+        return next(iter(self.__services_set))
 
     def reset(self, save: bool = True) -> None:
-        self.effective_view = PersistentStateView(self._services, self, PersistentStateView.EFFECTIVE_VIEW)
-        self.views = [PersistentStateView(self._services, self, i) for i in range(self.MAX_VIEWS)]
+        self.effective_view = PersistentStateView(self.__services_set, self, PersistentStateView.EFFECTIVE_VIEW)
+        self.views = [PersistentStateView(self.__services_set, self, i) for i in range(self.MAX_VIEWS)]
         self.__view_idx = 0
         if save:
             self.save()
 
     def load(self) -> None:
         if os.path.isfile(self.file_name):
-            self._services.debug.write("Loading state from '{}'".format(self.file_name), DebugLevel.BASIC)
+            self.root_services.debug.write("Loading state from '{}'".format(self.file_name), DebugLevel.BASIC)
             with open(self.file_name, 'r') as f:
                 try:
                     jdata = json.load(f)
@@ -126,13 +136,13 @@ class PersistentState(Service):
                         self.__objects.append(o)
                 except:
                     msg = "Failed to load state data from '{}', reason:\n{}".format(self.file_name, traceback.format_exc())
-                    self._services.debug.write(msg, DebugLevel.NONE)
+                    self.root_services.debug.write(msg, DebugLevel.NONE)
                     self.reset()
         else:
-            self._services.debug.write("'{}' not found, falling back to default state data".format(self.file_name), DebugLevel.BASIC)
+            self.root_services.debug.write("'{}' not found, falling back to default state data".format(self.file_name), DebugLevel.BASIC)
 
     def save(self) -> None:
-        self._services.debug.write("Saving state to '{}'".format(self.file_name), DebugLevel.BASIC)
+        self.root_services.debug.write("Saving state to '{}'".format(self.file_name), DebugLevel.BASIC)
         data = {}
         data["view_index"] = self.view_idx
         data["views"] = [self.views[v]._to_json() for v in range(self.MAX_VIEWS)]
@@ -142,20 +152,20 @@ class PersistentState(Service):
                 json.dump(data, f, sort_keys=True, indent=4)
         except:
             msg = "Failed to save state data to '{}', reason:\n{}State data attempted to be save:\n{}".format(self.file_name, traceback.format_exc(), data)
-            self._services.debug.write(msg, DebugLevel.NONE)
+            self.root_services.debug.write(msg, DebugLevel.NONE)
 
         if self.__save_task is not None:
-            self._services.graphics.window.taskMgr.remove(self.__save_task)
+            self.root_services.graphics.window.taskMgr.remove(self.__save_task)
             self.__save_task = None
 
     def schedule_save(self, delay: float = 0) -> None:
         if delay < 0:
             return
 
-        if delay > 0 and self._services.graphics is not None:
-            tm = self._services.graphics.window.taskMgr
+        if delay > 0 and self.root_services.graphics is not None:
+            tm = self.root_services.graphics.window.taskMgr
             if self.__save_task is None:
-                self._services.debug.write("Scheduling state save to be executed {} seconds from now".format(delay), DebugLevel.BASIC)
+                self.root_services.debug.write("Scheduling state save to be executed {} seconds from now".format(delay), DebugLevel.BASIC)
                 self.__save_task = tm.doMethodLater(delay, lambda _: self.save(), "save_persistent_state")
         else:
             self.save()
@@ -167,7 +177,7 @@ class PersistentState(Service):
         dc = self.effective_view._add_colour(name, default_colour, default_visible)
         for v in range(self.MAX_VIEWS):
             self.views[v]._add_colour(name, default_colour, default_visible)
-        self._services.ev_manager.post(NewColourEvent(dc))
+        self.root_services.ev_manager.post(NewColourEvent(dc))
         self.schedule_save(save_delay)
         return dc
 

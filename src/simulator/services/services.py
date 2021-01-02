@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from simulator.services.resources.resources import Resources
     from simulator.services.torch import Torch
 
+_g_persistent_state = None
 
 class Services:
     """
@@ -50,7 +51,16 @@ class Services:
         self.__settings = config
         self.__debug = Debug(self)
         self.__ev_manager = EventManager(self)
-        self.__state = PersistentState(self, types=[SimulatorConfigState])
+
+        # persistent state is shared across all active services
+        global _g_persistent_state
+        if _g_persistent_state is None:
+            _g_persistent_state = PersistentState(self, types=[SimulatorConfigState])
+            self.__state = _g_persistent_state
+        else:
+            self.__state = _g_persistent_state
+            _g_persistent_state.add_services(self)
+
         self.__resources_dir = Resources(self)
         self.__torch = Torch(self)
         self.__algorithm_runner = AlgorithmRunner(self)
