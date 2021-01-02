@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING, Optional
 from simulator.services.debug import Debug
 from simulator.services.event_manager.event_manager import EventManager
 from simulator.services.event_manager.events.reinit_event import ReinitEvent
+from simulator.services.event_manager.events.state_initialising_event import StateInitialisingEvent
+from simulator.services.event_manager.events.state_initialised_event import StateInitialisedEvent
 
 if TYPE_CHECKING:
     from algorithms.configuration.configuration import Configuration
@@ -58,6 +60,11 @@ class Services:
             self.__graphics = GraphicsManager(self)
 
     def reinit(self, refresh_map: bool = False) -> None:
+        self.__ev_manager.broadcast(StateInitialisingEvent())
+
+        if self.graphics is not None:
+            self.graphics.force_render_frame()
+        
         from simulator.services.algorithm_runner import AlgorithmRunner
         self.__algorithm_runner = AlgorithmRunner(self)
         self.__algorithm_runner.reset_algorithm(refresh_map)

@@ -11,9 +11,16 @@ from simulator.services.event_manager.events.key_frame_event import KeyFrameEven
 from simulator.services.services import Services
 from simulator.services.timer import Timer
 from structures import Point
+from simulator.services.event_manager.events.state_done_event import StateDoneEvent
+from simulator.services.event_manager.events.state_terminated_event import StateTerminatedEvent
+from simulator.services.event_manager.events.state_entity_update_event import StateEntityUpdateEvent
+from simulator.services.event_manager.events.initialise_event import InitialiseEvent
+from simulator.services.event_manager.events.reinit_event import ReinitEvent
+
 
 class AlgorithmTerminated(Exception):
     pass
+
 
 class MapModel(Model):
     speed: int
@@ -72,10 +79,12 @@ class MapModel(Model):
     def move(self, to: Point) -> None:
         self.reset()
         self._services.algorithm.map.move_agent(to, True)
+        self._services.ev_manager.broadcast(StateEntityUpdateEvent())
 
     def move_goal(self, to: Point) -> None:
         self.reset()
         self._services.algorithm.map.move(self._services.algorithm.map.goal, to, True)
+        self._services.ev_manager.broadcast(StateEntityUpdateEvent())
 
     def stop_algorithm(self) -> None:
         self.key_frame_is_paused = True
@@ -119,6 +128,7 @@ class MapModel(Model):
         self.reset()
 
         def compute_wrapper() -> None:
+            terminated = False
             self.key_frame_is_paused = False
             if self._services.settings.simulator_key_frame_speed > 0:
                 self._services.algorithm.instance.set_condition(self.cv)
@@ -128,10 +138,14 @@ class MapModel(Model):
             except AlgorithmTerminated:
                 self._services.debug.write("Terminated algorithm", DebugLevel.BASIC)
                 self._services.ev_manager.post(KeyFrameEvent(refresh=True))
+                terminated = True
             if self._services.settings.simulator_key_frame_speed == 0:
                 # no animation hence there hasn't been a chance to render
                 # the last state of the algorithm.
                 self._services.ev_manager.post(KeyFrameEvent(refresh=True))
+
+            self._services.ev_manager.broadcast(StateTerminatedEvent() if terminated else StateDoneEvent())
+
             with self.cv:
                 self.last_thread = None
                 self.cv.notify()

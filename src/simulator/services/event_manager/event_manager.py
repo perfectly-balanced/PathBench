@@ -57,6 +57,17 @@ class EventManager:
 
         if listener in self.__listeners.keys():
             del self.__listeners[listener]
+    
+    def broadcast(self, event: Event) -> None:
+        """
+        Broadcast an event to all listeners
+        immediately.
+
+        :param event: The event to post
+        """
+        
+        for listener in list(self.__listeners.keys()):
+            listener.notify(event)
 
     def post(self, event: Event) -> None:
         """
@@ -82,8 +93,8 @@ class EventManager:
         """
         for tick_listener in self.__tick_listeners.keys():
             tick_listener.tick()
+        
         # send all events
         while len(self.__event_queue) > 0:
             event = self.__event_queue.pop(0)
-            for listener in list(self.__listeners.keys()):
-                listener.notify(event)
+            self.broadcast(event)

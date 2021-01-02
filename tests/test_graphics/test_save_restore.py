@@ -5,9 +5,9 @@ import cv2 as cv
 import unittest
 
 if __name__ == "__main__":
-    from common import init, destroy, mse
+    from common import init, destroy, take_screenshot, wait_for, compare_images
 else:
-    from .common import init, destroy, mse
+    from .common import init, destroy, take_screenshot, wait_for, compare_images
 
 
 def graphics_test() -> None:
@@ -52,7 +52,9 @@ def graphics_test() -> None:
 
     # run
     pyautogui.press('t')
-    time.sleep(0.5)
+    wait_for('done.png')
+    time.sleep(0.2)
+
     # change trace color
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'trace.png'), confidence=0.7)
     pyautogui.click(x - 70, y)
@@ -61,13 +63,12 @@ def graphics_test() -> None:
     pyautogui.click(x, y)
     time.sleep(2)
 
-    # take texture ss
-    pyautogui.press('o')
-    time.sleep(2)
+    transparent_1 = take_screenshot()
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'save.png'), confidence=0.7)
     pyautogui.click(x, y)
     time.sleep(2)
+
     # go to state 2
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'two.png'), confidence=0.7)
     pyautogui.click(x, y)
@@ -86,41 +87,21 @@ def graphics_test() -> None:
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'colour_2.png'), confidence=0.7)
     pyautogui.click(x, y)
     time.sleep(2)
-    # get the latest taken screenshot
-    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
-    transparent_1 = max(list_of_ss, key=os.path.getctime)
 
-    # take texture ss
-    pyautogui.press('o')
-    time.sleep(3)
-
-    # get the latest taken screenshot
-    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
-    transparent_2 = max(list_of_ss, key=os.path.getctime)
+    transparent_2 = take_screenshot()
 
     # test restore changes
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'restore.png'), confidence=0.7)
     pyautogui.click(x, y)
+    time.sleep(0.5)
 
-    # take texture ss
-    pyautogui.press('o')
-    time.sleep(3)
-
-    # get the latest taken screenshot
-    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
-    transparent_not_restored_2 = max(list_of_ss, key=os.path.getctime)
+    transparent_not_restored_2 = take_screenshot()
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'one.png'), confidence=0.7)
     pyautogui.click(x, y)
-    time.sleep(0.5)
+    time.sleep(2)
 
-    # take texture ss
-    pyautogui.press('o')
-    time.sleep(3)
-
-    # get the latest taken screenshot
-    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
-    transparent_restored_1 = max(list_of_ss, key=os.path.getctime)
+    transparent_restored_1 = take_screenshot()
 
     # check if all states are working
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'three.png'), confidence=0.9)
@@ -132,21 +113,8 @@ def graphics_test() -> None:
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'six.png'), confidence=0.9)
     pyautogui.click(x, y)
 
-    # compare the 2 new screenshots with the expected ones
-    transparent_1 = cv.imread(transparent_1)
-    transparent_2 = cv.imread(transparent_2)
-    transparent_not_restored_2 = cv.imread(transparent_not_restored_2)
-    transparent_restored_1 = cv.imread(transparent_restored_1)
-
-    print(mse(transparent_restored_1, transparent_1))
-    print(mse(transparent_not_restored_2, transparent_2))
-
-    # Small error allowed for the top screen high res ss, usually very close to 0
-    THRESHOLD = 1
-    mse_1 = mse(transparent_restored_1, transparent_1)
-    mse_2 = mse(transparent_not_restored_2, transparent_2)
-    assert mse_1 < THRESHOLD, mse_1
-    assert mse_2 > THRESHOLD, mse_2
+    compare_images(transparent_restored_1, transparent_1, threshold=1)
+    compare_images(transparent_not_restored_2, transparent_2, threshold=1)
 
 
 class GraphicsTestCase(unittest.TestCase):

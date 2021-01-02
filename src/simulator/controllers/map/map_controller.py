@@ -7,6 +7,7 @@ from simulator.controllers.controller import Controller
 from simulator.controllers.map.map_picker import MapPicker
 from simulator.controllers.map.camera_controller import CameraController
 from simulator.services.event_manager.events.take_map_screenshot_event import TakeMapScreenshotEvent
+from simulator.services.event_manager.events.state_running_event import StateRunningEvent
 
 import math
 from typing import Optional
@@ -41,13 +42,17 @@ class MapController(Controller, DirectObject):
 
         def set_view(i):
             self._services.state.view_idx = i
+        
+        def compute_trace():
+            self._services.ev_manager.broadcast(StateRunningEvent())
+            self._model.compute_trace()
 
         self.accept('mouse1', left_click)
         self.accept('mouse3', right_click)
-        self.accept("t", lambda: self._model.compute_trace())
         self.accept("m", lambda: self._model.toggle_convert_map())
         self.accept("x", lambda: self._model.toggle_pause_algorithm())
         self.accept("o", lambda: self._services.ev_manager.post(TakeMapScreenshotEvent()))
+        self.accept("t", compute_trace)
 
         for i in range(6):
             self.accept(str(i+1), partial(set_view, i))

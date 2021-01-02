@@ -16,6 +16,9 @@ import re
 
 from panda3d.core import load_prc_file_data
 from screeninfo import get_monitors
+import torch
+import numpy as np
+import random
 
 class MainRunner:
     main_services: Services
@@ -176,6 +179,11 @@ def configure_common(config, args) -> bool:
 
         config.algorithms = algorithms
 
+    if args.deterministic:
+        random.seed(args.std_random_seed)
+        torch.manual_seed(args.torch_random_seed)
+        np.random.seed(args.numpy_random_seed)
+
     return True
 
 def configure_and_run(args):
@@ -215,9 +223,15 @@ def main() -> bool:
 
     # Miscellaneous
     parser.add_argument("--dims", type=int, help="[generator|analyzer] number of dimensions", default=3)
+
     parser.add_argument("--algorithms", help="[visualiser|analyzer] algorithms to load (either built-in algorithm name or module file path)", nargs="+")
     parser.add_argument("--include-builtin-algorithms", action='store_true', help="include all builtin algorithms even when a custom list is provided via '--algorithms'")
     parser.add_argument("--list-algorithms", action="store_true", help="[visualiser|analyzer] output list of available built-in algorithms")
+
+    parser.add_argument("--deterministic", action='store_true', help="use pre-defined random seeds for deterministic exeuction")
+    parser.add_argument("--std-random-seed", type=int, default=0, help="'random' module random number generator seed")
+    parser.add_argument("--numpy-random-seed", type=int, default=0, help="'numpy' module random number generator seed")
+    parser.add_argument("--torch-random-seed", type=int, default=0, help="'torch' module random number generator seed")
 
     parser.add_argument("-d", "--debug", choices=['NONE', 'BASIC', 'LOW', 'MEDIUM', 'HIGH'], default='LOW', help="debug level when running, default is low")
 

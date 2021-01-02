@@ -3,8 +3,10 @@ from simulator.models.model import Model
 from simulator.services.services import Services
 from simulator.views.gui.view_editor import ViewEditor
 from simulator.views.gui.simulator_config import SimulatorConfig
+from simulator.views.gui.debug_overlay import DebugOverlay
 
 from typing import Optional, List, Callable
+
 
 class GuiView(View):
     __vs: ViewEditor
@@ -17,3 +19,4 @@ class GuiView(View):
         self.__mouse1_press_callback = []
         self.__vs = ViewEditor(self._services, self.__mouse1_press_callback)
         self.__sc = SimulatorConfig(self._services, self.__mouse1_press_callback)
+        self.__do = DebugOverlay(self._services)
