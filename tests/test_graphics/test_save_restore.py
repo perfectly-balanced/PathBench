@@ -5,9 +5,9 @@ import cv2 as cv
 import unittest
 
 if __name__ == "__main__":
-    from common import init, destroy, mse, wait_for, take_screenshot, compare_images
+    from common import init, destroy, take_screenshot, wait_for, compare_images
 else:
-    from .common import init, destroy, mse, wait_for, take_screenshot, compare_images
+    from .common import init, destroy, take_screenshot, wait_for, compare_images
 
 
 def graphics_test() -> None:
@@ -36,15 +36,15 @@ def graphics_test() -> None:
     # update
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'update.png'), confidence=0.5)
     pyautogui.click(x, y)
-    wait_for('initialised.png')
+    pyautogui.press('w', presses=5000)
 
     # go into state 1
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'one.png'), confidence=0.7)
     pyautogui.click(x, y)
 
     # pick colors and other modifications of the map
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.6)
-    pyautogui.click(x - 80, y)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
+    pyautogui.click(x - 78, y)
     time.sleep(0.5)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'orange.png'), confidence=0.9)
     pyautogui.click(x, y)
@@ -53,45 +53,47 @@ def graphics_test() -> None:
     # run
     pyautogui.press('t')
     wait_for('done.png')
+    time.sleep(0.2)
 
     # change trace color
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'trace.png'), confidence=0.8)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'trace.png'), confidence=0.7)
     pyautogui.click(x - 70, y)
     time.sleep(0.5)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'colour_1.png'), confidence=0.8)
     pyautogui.click(x, y)
-    time.sleep(0.5)
-    
+    time.sleep(2)
+
     transparent_1 = take_screenshot()
 
-    time.sleep(0.5)
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'save.png'), confidence=0.8)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'save.png'), confidence=0.7)
     pyautogui.click(x, y)
-    time.sleep(0.5)
+    time.sleep(2)
 
     # go to state 2
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'two.png'), confidence=0.8)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'two.png'), confidence=0.7)
     pyautogui.click(x, y)
 
     # change colors
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.6)
-    pyautogui.click(x - 80, y)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
+    pyautogui.click(x - 78, y)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'lime.png'), confidence=0.9)
     pyautogui.click(x, y)
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'trace.png'), confidence=0.8)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'trace.png'), confidence=0.7)
     pyautogui.click(x - 70, y)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'lightblue.png'), confidence=0.7)
     pyautogui.click(x, y)
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'visited.png'), confidence=0.75)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'visited.png'), confidence=0.7)
     pyautogui.click(x - 70, y)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'colour_2.png'), confidence=0.7)
     pyautogui.click(x, y)
+    time.sleep(2)
 
     transparent_2 = take_screenshot()
 
     # test restore changes
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'restore.png'), confidence=0.7)
     pyautogui.click(x, y)
+    time.sleep(0.5)
 
     transparent_not_restored_2 = take_screenshot()
 
@@ -113,6 +115,7 @@ def graphics_test() -> None:
 
     compare_images(transparent_restored_1, transparent_1, threshold=1)
     compare_images(transparent_not_restored_2, transparent_2, threshold=1)
+
 
 class GraphicsTestCase(unittest.TestCase):
     def test(self):
