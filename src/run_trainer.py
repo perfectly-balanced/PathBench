@@ -4,7 +4,7 @@ from typing import Tuple, Callable, Type, List, Optional, Dict, Any, Union
 from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.maps.map import Map
-from maps import Maps
+from map_manager import MapManager
 from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule, OnlineLSTM
 from algorithms.lstm.ML_model import MLModel
 from simulator.services.debug import DebugLevel
@@ -57,20 +57,7 @@ config = type(Configuration)
 
 config = Configuration()
 
-maps = {
-    "Uniform Random Fill": ("uniform_random_fill_10/0", True),
-    "Block": ("block_map_10/6", True),
-    "House": ("house_10/6", True),
-    "Long Wall": (Maps.grid_map_labyrinth2, True),
-    "Labyrinth": (Maps.grid_map_labyrinth, True),
-    "3D Cube": (Maps.grid_map_3d_example, True),
-    "Small Obstacle": (Maps.grid_map_one_obstacle.convert_to_dense_map(), True),
-    "SLAM Map 1": ("map10", False),
-    "SLAM Map 1 (compressed)": ("map11", True),
-    "SLAM Map 2": ("map14", False),
-    "SLAM Map 3": ("map12", False),
-    "House Expo Sample": ("_house_expo/10", False)
-}
+maps = MapManager.maps
 
 # LSTM Bagging is referred to as CombinedOnlineLSTM, it is used as a global kernel for LWP
 

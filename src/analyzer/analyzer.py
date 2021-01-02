@@ -11,7 +11,6 @@ from algorithms.configuration.configuration import Configuration
 from algorithms.basic_testing import BasicTesting
 from algorithms.algorithm import Algorithm
 from structures import Point
-from maps import Maps
 
 from io import StringIO
 import seaborn as sns
