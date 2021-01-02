@@ -14,12 +14,12 @@ from typing import List, Optional, Callable, Tuple
 # add 'PathBench/tests' to system path for module imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from utils import make_src_modules_importable, handle_display_args, launch_process, kill_processes, \
-    try_delete_file  # noqa: E402
+from utils import make_src_modules_importable, handle_display_args, try_delete_file  # noqa: E402
 
 # add src folder to system path
 make_src_modules_importable()
 
+from utility.process import launch_process, kill_processes  # noqa: E402
 from utility.constants import SRC_PATH, DATA_PATH, TEST_DATA_PATH  # noqa: E402
 from simulator.services.resources.directory import Directory  # noqa: E402
 
