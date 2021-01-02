@@ -24,19 +24,18 @@ class SolidIterableMapDisplay(MapDisplay):
         super().__init__(services, z_index=z_index, custom_map=custom_map)
 
         self.colour = colour
+        self.__deduced_colour = self.colour()
 
         self.pts = points
         self.__old_pts = None
         self.__point_dim = None
         self.__tracked_data = [self.pts] if isinstance(self.pts, Tracked) else []
 
-        self.__deduced_colour = self.colour()
+        self.updates_cubes = True
 
     def render(self, *discarded) -> None:
         if len(self.pts) == 0:
             return
-
-        self._root_view.display_updates_cube()
 
         c = self.colour()
         refresh = c != self.__deduced_colour
@@ -71,6 +70,11 @@ class SolidIterableMapDisplay(MapDisplay):
     def update_cube(self, p: Point) -> None:
         if self.__point_dim != 3:
             p = Point(p.x, p.y)
-        
+
         if p in self.pts:
             self._root_view.colour_cube(self.__deduced_colour)
+
+    def request_update_all_cubes(self) -> None:
+        rv = self.get_renderer_view()
+        for p in self.pts:
+            rv.cube_requires_update(p)

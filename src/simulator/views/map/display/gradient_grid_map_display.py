@@ -66,6 +66,8 @@ class GradientGridMapDisplay(MapDisplay):
 
         self.offset = Point(*([0]*self.grid.ndim)) if offset is None else offset
 
+        self.updates_cubes = True
+
     def get_colour(self, val: float) -> Optional[Colour]:
         mag = (val - self.min_val)
 
@@ -86,8 +88,6 @@ class GradientGridMapDisplay(MapDisplay):
         return clr
 
     def render(self, *discarded) -> None:
-        self.get_renderer_view().display_updates_cube()
-
         c = self.min_colour()
         refresh = c != self.__deduced_min_colour
         self.__deduced_min_colour = c
@@ -146,3 +146,8 @@ class GradientGridMapDisplay(MapDisplay):
 
     def get_tracked_data(self) -> List[Tracked]:
         return self.__tracked_data
+
+    def request_update_all_cubes(self) -> None:
+        rv = self.get_renderer_view()
+        for idx in np.ndindex(self.grid.shape):
+            rv.cube_requires_update(Point(*idx))

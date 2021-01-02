@@ -48,9 +48,10 @@ class MapView(View):
     __tracked_data: List[Any]
 
     __cube_modified: NDArray[(Any, Any, Any), bool]
-    __cube_update_displays: List[Any]
+    __cube_update_displays: List[MapDisplay]
+    __previous_cube_update_displays: List[MapDisplay]
+    __previous_cube_update_displays_rendered: List[bool]
     __cubes_requiring_update: Set[Point]
-    __display_updates_cube: bool
     __cube_colour: Colour
 
     __scratch: NodePath
@@ -64,8 +65,9 @@ class MapView(View):
         self.__tracked_data = []
 
         self.__cube_update_displays = []
+        self.__previous_cube_update_displays = []
+        self.__previous_cube_update_displays_rendered = []
         self.__cubes_requiring_update = set()
-        self.__display_updates_cube = False
         self.__cube_colour = None
 
         # world (dummy node)
@@ -243,8 +245,9 @@ class MapView(View):
     def __map_update(self, updated_cells: List[Point]) -> None:
         self.__get_displays()
         while len(self.__displays) > 0:
-            display = heappop(self.__displays)
-            self.__cube_update_displays.append(display)
+            d = heappop(self.__displays)
+            if d.updates_cubes:
+                self.__cube_update_displays.append(d)
 
         if self.map.dim == 2:
             obs_c = self.map.obstacles_dc()
@@ -292,12 +295,10 @@ class MapView(View):
                     self.__cubes_requiring_update.add(p)
 
         self.__entities_map_display.render()
-        self.__display_updates_cube = False
 
         for p in self.__cubes_requiring_update:
             self.__update_cube_colour(self.to_point3(p))
 
-        self.__displays.clear()
         self.__cube_update_displays.clear()
         self.__cubes_requiring_update.clear()
 
@@ -312,21 +313,41 @@ class MapView(View):
             self.add_child(d)
             heappush(self.__displays, d)
             self.__tracked_data += d.get_tracked_data()
+            if d.updates_cubes:
+                if d._previous_cube_update_displays_idx is None:
+                    d._previous_cube_update_displays_idx = len(self.__previous_cube_update_displays)
+                    self.__previous_cube_update_displays_rendered.append(True)
+                    self.__previous_cube_update_displays.append(d)
+                else:
+                    self.__previous_cube_update_displays_rendered[d._previous_cube_update_displays_idx] = True
 
         for d in self.__persistent_displays:
             add_diplay(d)
         for d in self._services.algorithm.instance.get_display_info():
             add_diplay(d)
+        
+        offset = 0
+        for i in range(len(self.__previous_cube_update_displays)):
+            i -= offset
+            if not self.__previous_cube_update_displays_rendered[i]:
+                self.__previous_cube_update_displays[i].request_update_all_cubes()
+                self.__previous_cube_update_displays.pop(i)
+                self.__previous_cube_update_displays_rendered.pop(i)
+                offset += 1
+                for j in range(i, len(self.__previous_cube_update_displays)):
+                    self.__previous_cube_update_displays[j]._previous_cube_update_displays_idx = j
+
+            else:
+                self.__previous_cube_update_displays_rendered[i] = False
 
     def __render_displays(self, refresh: bool) -> None:
         while len(self.__displays) > 0:
-            display: MapDisplay
-            display = heappop(self.__displays)
-
-            display.render(refresh)
-            if self.__display_updates_cube:
-                self.__display_updates_cube = False
-                self.__cube_update_displays.append(display)
+            d: MapDisplay
+            d = heappop(self.__displays)
+            if d.updates_cubes:
+                self.__cube_update_displays.append(d)
+            d.render(refresh)
+                
 
     def __update_cubes(self, refresh: bool) -> None:
         def init_eager_refresh():
