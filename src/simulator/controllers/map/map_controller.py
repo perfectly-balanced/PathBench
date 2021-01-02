@@ -8,9 +8,6 @@ from simulator.controllers.map.map_picker import MapPicker
 from simulator.controllers.map.camera_controller import CameraController
 from simulator.services.event_manager.events.take_map_screenshot_event import TakeMapScreenshotEvent
 from simulator.services.event_manager.events.state_running_event import StateRunningEvent
-from simulator.services.event_manager.events.state_terminated_event import StateTerminatedEvent
-from simulator.services.event_manager.events.state_done_event import StateDoneEvent
-from simulator.services.event_manager.events.event import Event
 
 import math
 from typing import Optional
@@ -28,19 +25,22 @@ class MapController(Controller, DirectObject):
         self.__camera = CameraController(self._services, self._model, origin=map_view.world)
         self.__position_updating_enabled = True
 
-        def agent_position_update(task):
+        def do_agent_position_update():
             # allow external updates of position when algorithm not running
             if self.__position_updating_enabled and self._services.settings.get_agent_position:
                 p = self._services.settings.get_agent_position()
                 if p != self._services.algorithm.map.agent.position:
                     self._model.move(p)
+
+        def agent_position_update(task):
+            do_agent_position_update()
             return task.cont
-                
+
         self._services.graphics.window.taskMgr.add(agent_position_update, 'agent_position_update')
 
         def left_click():
             if self._services.settings.get_agent_position:
-                return # agent is externally set, cannot be set by visualiser
+                return  # agent is externally set, cannot be set by visualiser
 
             p = self.__picker.pos
             if p != None:
@@ -52,6 +52,7 @@ class MapController(Controller, DirectObject):
         def right_click():
             p = self.__picker.pos
             if p != None:
+                self.__position_updating_enabled = True
                 self._services.debug.write("Moved goal to: " + str(p), DebugLevel.MEDIUM)
                 if self._services.algorithm.map.size.n_dim == 2:
                     p = Point(p[0], p[1])
@@ -59,8 +60,10 @@ class MapController(Controller, DirectObject):
 
         def set_view(i):
             self._services.state.view_idx = i
-        
+
         def compute_trace():
+            do_agent_position_update()
+            self.__position_updating_enabled = False
             self._services.ev_manager.broadcast(StateRunningEvent())
             self._model.compute_trace()
 
@@ -116,12 +119,6 @@ class MapController(Controller, DirectObject):
                 pass
 
         self.accept("h", grow_map)
-
-    def notify(self, event: Event) -> None:
-        if isinstance(event, StateRunningEvent):
-            self.__position_updating_enabled = False
-        elif isinstance(event, StateTerminatedEvent) or isinstance(event, StateDoneEvent):
-            self.__position_updating_enabled = True
 
     def destroy(self) -> None:
         self.ignore_all()
