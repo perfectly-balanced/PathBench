@@ -1,5 +1,6 @@
 import Xlib.display
 import numpy as np
+import cv2 as cv
 
 import atexit
 import subprocess
@@ -20,6 +21,7 @@ from utils import make_src_modules_importable, handle_display_args, launch_proce
 make_src_modules_importable()
 
 from utility.constants import SRC_PATH, DATA_PATH, TEST_DATA_PATH  # noqa: E402
+from simulator.services.resources.directory import Directory  # noqa: E402
 
 g_restore_resources: bool = False
 
@@ -104,7 +106,7 @@ def restore_resources() -> None:
 
 
 def wait_for(rel_img: str, delay: float = 0.5, max_it: int = 30, confidence: float = 0.5) -> None:
-    import pyautogui
+    import pyautogui  # cannot be done globally due to $DISPLAY madness
 
     img = os.path.join(TEST_DATA_PATH, rel_img)
     for _ in range(max_it):
@@ -123,18 +125,32 @@ def mse(img_a, img_b) -> float:
     err /= float(img_a.shape[0] * img_a.shape[1])
     return err
 
-def compare_images(img_a_path, img_b_path, threshold: float = 30) -> None:
+def compare_images(img_a_path, img_b_path, threshold: float = 30, delay: float = 0.8, max_it: int = 10) -> None:
+    def read(path) -> np.ndarray:
+        # saving 4K images can take a while, therefore it's
+        # likely the read will fail due to partially images
+
+        path = os.path.join(TEST_DATA_PATH, path)
+        for _ in range(max_it):
+            data = cv.imread(path)
+            if data is not None:
+                return data
+            time.sleep(delay)
+        assert data, "unable to load image"
+
     # load images
-    img_a = cv.imread(os.path.join(TEST_DATA_PATH, img_a_path))
-    img_b = cv.imread(os.path.join(TEST_DATA_PATH, img_b_path))
+    img_a = read(img_a_path)
+    img_b = read(img_b_path)
 
     # check difference
-    mse = mse(img_a, img_b)
-    assert mse < threshold, mse
+    diff = mse(img_a, img_b)
+    assert diff < threshold, diff
 
 def take_screenshot(ref_path: str = None, threshold: float = 30, delay: float = 0.8, max_it: int = 30) -> str:
+    import pyautogui  # cannot be done globally due to $DISPLAY madness
+
     # get screenshot file path
-    metadata: Dict[str, any] = Directory._unpickle("metadata", DATA_PATH + "screenshots/")
+    metadata: Dict[str, any] = Directory._unpickle("metadata", DATA_PATH + "/screenshots/")
     if metadata is None:
         metadata = {
             "next_index": 0,
@@ -142,7 +158,7 @@ def take_screenshot(ref_path: str = None, threshold: float = 30, delay: float = 
     file_path = os.path.join(os.path.join(DATA_PATH, "screenshots"), "screenshot_{}.png".format(metadata["next_index"]))
 
     for _ in range(max_it):
-        # take screenshot, doesn't matter 
+        # take screenshot, doesn't matter
         # if we take multiple ones
         pyautogui.press('o')
 

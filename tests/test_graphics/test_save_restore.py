@@ -97,7 +97,7 @@ def graphics_test() -> None:
     pyautogui.click(x, y)
     time.sleep(0.5)
 
-    transparent_not_restored_1 = take_screenshot()
+    transparent_restored_1 = take_screenshot()
 
     # check if all states are working
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'three.png'), confidence=0.9)
