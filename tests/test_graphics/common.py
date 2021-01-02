@@ -171,7 +171,6 @@ def take_screenshot(ref_path: str = None, threshold: float = 30, delay: float = 
 
         if ref_path is not None:
             try:
-                assert False
                 compare_images(file_path, ref_path)
             except AssertionError:
                 if t + 1 == max_tries:

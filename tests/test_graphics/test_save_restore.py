@@ -60,9 +60,11 @@ def graphics_test() -> None:
     time.sleep(0.5)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'colour_1.png'), confidence=0.8)
     pyautogui.click(x, y)
-
+    time.sleep(0.5)
+    
     transparent_1 = take_screenshot()
 
+    time.sleep(0.5)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'save.png'), confidence=0.8)
     pyautogui.click(x, y)
     time.sleep(0.5)
