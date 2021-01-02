@@ -1,23 +1,25 @@
 from direct.showbase.ShowBase import ShowBase
-from simulator.services.services import Services
 from direct.gui.OnscreenText import OnscreenText
 from panda3d.core import TextNode
+
+from typing import Any
+
+from simulator.services.services import Services
 from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
-from structures import DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 from simulator.services.event_manager.events.state_initialising_event import StateInitialisingEvent
 from simulator.services.event_manager.events.state_running_event import StateRunningEvent
 from simulator.services.event_manager.events.state_initialised_event import StateInitialisedEvent
 from simulator.services.event_manager.events.state_done_event import StateDoneEvent
 from simulator.services.event_manager.events.state_terminated_event import StateTerminatedEvent
 from simulator.services.event_manager.events.state_entity_update_event import StateEntityUpdateEvent
-
+from structures import DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 
 class DebugOverlay():
     __services: Services
     __base: ShowBase
 
-    def __init__(self, services: Services):
+    def __init__(self, services: Services) -> None:
         self.__services = services
         self.__base = self.__services.graphics.window
         self.__labels = ["Map:", "Goal:", "Agent:", "Algorithm:", "State:"]
@@ -45,12 +47,12 @@ class DebugOverlay():
         self.__services.ev_manager.register_listener(self)
         self.__text_colour = self.__services.state.add_colour("debug overlay", WHITE)
 
-    def set_text_colour(self, colour):
+    def set_text_colour(self, colour: Colour) -> None:
         for i in range(0, 5):
             self.__debug_labels[i].setFg(colour)
             self.__debug_var[i].setFg(colour)
 
-    def set_text(self, i, text):
+    def set_text(self, i: int, text: Any) -> None:
         self.__debug_var[i].setText(str(text))
 
     def notify(self, event: Event) -> None:

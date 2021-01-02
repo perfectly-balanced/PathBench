@@ -105,7 +105,7 @@ def restore_resources() -> None:
     subprocess.check_call(cmd)
 
 
-def wait_for(rel_img: str, delay: float = 0.5, max_it: int = 30, confidence: float = 0.5) -> None:
+def wait_for(rel_img: str, delay: float = 0.5, max_it: int = 30, confidence: float = 0.5, return_delay: float = 0.1) -> None:
     import pyautogui  # cannot be done globally due to $DISPLAY madness
 
     img = os.path.join(TEST_DATA_PATH, rel_img)
@@ -113,6 +113,7 @@ def wait_for(rel_img: str, delay: float = 0.5, max_it: int = 30, confidence: flo
         time.sleep(delay)
         try:
             if pyautogui.locateCenterOnScreen(img, confidence=confidence) is not None:
+                time.sleep(return_delay)
                 return
         except pyautogui.PyAutoGUIException:
             continue
