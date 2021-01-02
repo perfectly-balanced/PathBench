@@ -165,4 +165,4 @@ class WayPointNavigation(Algorithm):
         if isinstance(self._get_grid(), RosMap):
             self._get_grid().publish_wp(m.agent.position)
         self.total_steps += 1
-        self.key_frame()
+        self.key_frame(True)

@@ -28,7 +28,7 @@ from simulator.simulator import Simulator  # noqa: E402
 from structures import Size, Point  # noqa: E402
 
 import utility.math as m  # noqa: E402
-
+from utility.misc import flatten  # noqa: E402
 
 class Ros:
     INFLATE = 3
@@ -41,7 +41,8 @@ class Ros:
         self._ros_size = None
         self._ros_res = None
         self._agent = None
-        self._scale = 1
+        self._scale_width = 1
+        self._scale_height = 1
 
         rospy.init_node("pb3d", log_level=rospy.INFO)
         rospy.Subscriber("/map", OccupancyGrid, self._set_slam)
@@ -54,25 +55,25 @@ class Ros:
         map_info = msg.info
         raw_grid = msg.data
 
-        if self._ros_size is None:
-            self._ros_size = Size(map_info.width, map_info.height)
-            self._ros_res = map_info.resolution
-            self._ros_origin = [map_info.origin.position.x, map_info.origin.position.y]
+        self._ros_size = Size(map_info.width, map_info.height)
+        self._ros_res = map_info.resolution
+        self._ros_origin = [map_info.origin.position.x, map_info.origin.position.y]
 
-        grid = np.empty(self._ros_size, dtype=np.float32)
+        grid = np.empty(self._ros_size[::-1], dtype=np.float32)
 
         for i in range(len(raw_grid)):
             col = i % self._ros_size.width
             row = int((i - col) / self._ros_size.width)
-            grid[col, self._ros_size.height - row - 1] = raw_grid[i]
+            grid[row, col] = raw_grid[i]
 
-        if self.MAX_SIZE is not None and (self.MAX_SIZE < self._ros_size.height or self.MAX_SIZE < self._ros_size.width):
-            self._scale = self.MAX_SIZE / self._ros_size.height
-            if (self.MAX_SIZE / self._ros_size.width) < self._scale:
-                self._scale = self.MAX_SIZE / self._ros_size.width
-            grid = cv.resize(grid, None, fx=self._scale, fy=self._scale, interpolation=cv.INTER_AREA)
+        if self.MAX_SIZE is not None:
+            self._scale_width = self.MAX_SIZE / self._ros_size.width
+            self._scale_height = self.MAX_SIZE / self._ros_size.height
+            grid = cv.resize(grid, None, fx=self._scale_width, fy=self._scale_height, interpolation=cv.INTER_AREA)
 
-        self._grid = grid
+        grid.resize((self.MAX_SIZE, self.MAX_SIZE))
+        if flatten(grid, -1):
+            self._grid = grid
 
         if self._sim is not None:
             self._sim.services.algorithm.map.request_update()
@@ -216,16 +217,17 @@ class Ros:
         converts from meters coordinates to grid coordinates.
         If `scaled`, convert to PathBench's OGM size, otherwise use ROS's size.
         '''
+        
+        scale_width = self._scale_width if scaled else 1
+        scale_height = self._scale_height if scaled else 1
 
         grid_pos = [pos[0] - self._ros_origin[0], pos[1] - self._ros_origin[1]]
-        grid_pos = [int(round(grid_pos[0] / self._ros_res)),
-                    int(round(grid_pos[1] / self._ros_res))]
-        grid_pos[1] = self._ros_size.height - grid_pos[1] - 1
+        grid_pos = [grid_pos[0] / self._ros_res,
+                    grid_pos[1] / self._ros_res]
+        grid_pos[0] = int(round(scale_width * (grid_pos[0])))
+        grid_pos[1] = int(round(scale_height * (grid_pos[1])))
 
-        if scaled:
-            grid_pos = [int(round(p * self._scale)) for p in grid_pos]
-
-        return Point(*grid_pos)
+        return Point(*reversed(grid_pos))
 
     def _grid_to_world(self, pos, scaled: bool = True):
         '''
@@ -235,9 +237,9 @@ class Ros:
         '''
 
         if scaled:
-            pos = [(p / self._scale) for p in pos]
+            pos = (pos[0] / self._scale_height, pos[1] / self._scale_width)
 
-        world_pos = [pos[0], self._ros_size.height - pos[1] - 1]
+        world_pos = [pos[1], pos[0]]
         world_pos = [world_pos[0] * self._ros_res + self._ros_res * 0.5,
                      world_pos[1] * self._ros_res + self._ros_res * 0.5]
         world_pos = [world_pos[0] + self._ros_origin[0],
