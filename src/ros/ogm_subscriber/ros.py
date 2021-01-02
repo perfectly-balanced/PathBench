@@ -23,7 +23,6 @@ from simulator.services.debug import DebugLevel  # noqa: E402
 from simulator.services.services import Services  # noqa: E402
 from simulator.simulator import Simulator  # noqa: E402
 from structures import Size, Point  # noqa: E402
-from maps import Maps  # noqa: E402
 
 class Ros:
     _resolution: Optional[float]

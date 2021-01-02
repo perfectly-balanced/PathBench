@@ -9,7 +9,7 @@ from algorithms.configuration.entities.obstacle import Obstacle
 from algorithms.configuration.entities.trace import Trace
 from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.maps.sparse_map import SparseMap
-from maps import Maps
+from maps.maps import Maps
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
 from structures import Size, Point

@@ -37,8 +37,9 @@ class OccupancyGridMap(DenseMap):
                  traversable_threshold: Optional[Real] = None,
                  unmapped_value: Optional[Real] = None,
                  services: Services = None,
-                 mutable: bool = True) -> None:
-        super().__init__(services=services, mutable=mutable)
+                 mutable: bool = True,
+                 name: Optional[str] = None) -> None:
+        super().__init__(services=services, mutable=mutable, name=name)
         self.agent = agent
         self.goal = goal
         self.weight_grid = None
@@ -200,7 +201,8 @@ class OccupancyGridMap(DenseMap):
         mp = self.__class__(agent=copy.deepcopy(self.agent),
                             goal=copy.deepcopy(self.goal),
                             services=self.services,
-                            mutable=self.mutable)
+                            mutable=self.mutable,
+                            name=copy.deepcopy(self.name))
         mp.size = copy.deepcopy(self.size)
         mp.traversable_threshold = copy.deepcopy(self.traversable_threshold)
         mp.weight_grid = copy.deepcopy(self.weight_grid)

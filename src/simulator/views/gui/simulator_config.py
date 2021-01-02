@@ -5,7 +5,7 @@ from direct.showbase.DirectObject import DirectObject
 
 import numpy as np
 
-from typing import Tuple, Union, List, Any, Dict, Callable
+from typing import Tuple, Union, List, Any, Dict, Callable, Type
 import traceback
 from direct.gui.OnscreenText import OnscreenText
 
@@ -21,39 +21,15 @@ from simulator.views.gui.common import WINDOW_BG_COLOUR, WIDGET_BG_COLOUR
 from simulator.views.gui.window import Window
 from simulator.views.gui.simulator_config_state import SimulatorConfigState
 
-from maps import Maps
 from algorithms.configuration.configuration import Configuration
 from algorithms.algorithm_manager import AlgorithmManager
+from maps.map_manager import MapManager
+from algorithms.configuration.maps.map import Map
 
 class SimulatorConfig(DirectObject):
     __services: Services
     __base: ShowBase
     __window: Window
-
-    __maps = {
-        "Uniform Random Fill": ("uniform_random_fill_10/0", True),
-        "Uniform Random Fill 3D": ("uniform_random_fill_10_3d/0_3d", True),
-        "Block": ("block_map_10/6", True),
-        "Block 3D": ("block_map_10_3d/6_3d", True),
-        "House": ("house_10/6", True),
-        "House 3D": ("house_10_3d/6_3d", True),
-        "Long Wall": (Maps.grid_map_one_obstacle1, True),
-        "Labyrinth": (Maps.grid_map_labyrinth, True),
-        "3D Cube": (Maps.grid_map_3d_example, True),
-        "vin test 8x8": (Maps.grid_map_small_one_obstacle2, True),
-        "vin test 8x8 -2": (Maps.grid_map_small_one_obstacle, True),
-        "vin test 8x8 -3": (Maps.grid_map_small_one_obstacle3, True),
-        "vin test 16x16 -1": (Maps.grid_map_complex_obstacle, True),
-        "vin test 16x16 -2": (Maps.grid_map_complex_obstacle2, True),
-        "vin test 28x28 -1": (Maps.grid_map_28x28vin, True),
-        "Small Obstacle": (Maps.grid_map_one_obstacle.convert_to_dense_map(), True),
-        "Occupancy Grid 2D": (Maps.ogm_2d, False),
-        "Occupancy Grid 3D": (Maps.ogm_3d, False),
-        "SLAM Map 1": ("map10", False),
-        "SLAM Map 1 (compressed)": ("map11", True),
-        "SLAM Map 2": ("map14", False),
-        "SLAM Map 3": ("map12", False),
-    }
 
     __animations = {
         "None": (0, 0),
@@ -74,6 +50,7 @@ class SimulatorConfig(DirectObject):
                       "- orbit around the map\n\n c, v - toggle Simulator Configuration / View Editor"
 
         self.__algorithms = self.__services.settings.algorithms
+        self.__maps = self.__services.settings.maps
 
         self.__map_keys = list(self.__maps.keys())
         self.__algorithm_keys = list(self.__algorithms.keys())
@@ -220,7 +197,7 @@ class SimulatorConfig(DirectObject):
         self.__maps_option = DirectOptionMenu(text="options",
                                               scale=0.14,
                                               parent=self.__window.frame,
-                                              initialitem=self.__map_keys.index("Labyrinth"),
+                                              initialitem=self.__map_keys.index("Labyrinth") if "Labyrinth" in self.__map_keys else 0,
                                               items=self.__map_keys,
                                               pos=(-0.65, 0.4, 0.),
                                               highlightColor=(0.65, 0.65, 0.65, 1),
@@ -321,18 +298,21 @@ class SimulatorConfig(DirectObject):
             for e in self.__entries:
                 e['focus'] = False
 
+    def __get_map_data(self):
+        name = self.__maps_option.get()
+        data = self.__maps[name]
+
+        if isinstance(data[0], str):
+            data = (self.__services.resources.maps_dir.load(data[0]), data[1])
+            self.__maps[name] = data
+
+        assert isinstance(data[0], Map), "Map failed to load"
+        return data
+
     def __update_simulator_callback(self) -> None:
-        mp = self.__maps[self.__maps_option.get()]
+        mp = self.__get_map_data()
         algo = self.__algorithms[self.__algorithms_option.get()]
         ani = self.__animations[self.__animations_option.get()]
-
-        # load up map if necessary
-        # occurs when initial map
-        # is a string.
-        if isinstance(mp[0], str):
-            i = self.__maps_option.get()
-            self.__maps[i] = (self.__services.resources.maps_dir.load(mp[0]), self.__maps[i][1])
-            mp[0] = self.__maps[i][0]
 
         # update state
         self.__state.mp = self.__maps_option.get()
@@ -359,13 +339,14 @@ class SimulatorConfig(DirectObject):
 
         # launch simulation
         config = self.__services.settings
-
-        config.map_name = self.__maps_option.get()
         config.algorithm_name = self.__algorithms_option.get()
+        old_map_name = config.map_name
+        config.map_name = self.__maps_option.get()
 
-        refresh_map = (self.__state.agent != mp[0].agent.position) or \
-                      (self.__state.goal != mp[0].goal.position) or \
-                      (mp[0] != config.simulator_initial_map)
+        refresh_map = (old_map_name != config.map_name) or \
+                      (mp[0] != config.simulator_initial_map) or \
+                      (self.__state.agent != mp[0].agent.position) or \
+                      (self.__state.goal != mp[0].goal.position)
 
         if refresh_map:
             mp[0].move(mp[0].agent, self.__state.agent, True)
@@ -383,13 +364,7 @@ class SimulatorConfig(DirectObject):
         self.__services.ev_manager.post(ResetEvent())
 
     def __use_default_map_positions(self, *discard) -> None:
-        m = self.__maps[self.__maps_option.get()][0]
-
-        # load up map if necessary
-        if isinstance(m, str):
-            i = self.__maps_option.get()
-            self.__maps[i] = (self.__services.resources.maps_dir.load(m), self.__maps[i][1])
-            m = self.__maps[i][0]
+        m = self.__get_map_data()[0]
 
         self.__state.agent = m.agent.position
         self.__state.goal = m.goal.position

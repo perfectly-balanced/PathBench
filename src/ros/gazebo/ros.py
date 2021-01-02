@@ -19,7 +19,6 @@ from algorithms.configuration.entities.goal import Goal  # noqa: E402
 from algorithms.configuration.maps.dense_map import DenseMap  # noqa: E402
 from algorithms.configuration.maps.ros_map import RosMap  # noqa: E402
 
-from maps import Maps  # noqa: E402
 from simulator.services.debug import DebugLevel  # noqa: E402
 from simulator.services.services import Services  # noqa: E402
 from simulator.simulator import Simulator  # noqa: E402

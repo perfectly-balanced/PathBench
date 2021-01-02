@@ -1,5 +1,6 @@
 from algorithms.algorithm import Algorithm
 from utility.compatibility import HAS_OMPL
+from utility.misc import static_class
 
 from typing import Optional, List, Type, Dict, Any, Tuple
 import importlib.util
@@ -74,11 +75,6 @@ if HAS_OMPL:
     from algorithms.classic.sample_based.ompl_sbl import OMPL_SBL
     from algorithms.classic.sample_based.ompl_stride import OMPL_STRIDE
     from algorithms.classic.sample_based.ompl_qrrt import OMPL_QRRT
-
-def static_class(cls):
-    if getattr(cls, "_static_init_", None):
-        cls._static_init_()
-    return cls
 
 @static_class
 class AlgorithmManager():

@@ -22,9 +22,9 @@ class SparseMap(Map):
 
     DIST_TOLERANCE = 0.0001
 
-    def __init__(self, size: Size, agent: Agent, obstacles: List[Obstacle], goal: Goal, services: Services = None, mutable: bool = False) \
+    def __init__(self, size: Size, agent: Agent, obstacles: List[Obstacle], goal: Goal, services: Services = None, mutable: bool = False, name: Optional[str] = None) \
             -> None:
-        super().__init__(size, services, mutable)
+        super().__init__(size, services, mutable, name)
         self.agent = agent
         self.obstacles = obstacles
         self.goal = goal
@@ -118,8 +118,13 @@ class SparseMap(Map):
         return copy.deepcopy(self)
 
     def __deepcopy__(self, memo: Dict) -> 'SparseMap':
-        dense_map = SparseMap(self.size, copy.deepcopy(self.agent),
-                              copy.deepcopy(self.obstacles), copy.deepcopy(self.goal), self.services)
+        dense_map = SparseMap(self.size,
+                              copy.deepcopy(self.agent),
+                              copy.deepcopy(self.obstacles),
+                              copy.deepcopy(self.goal),
+                              self.services,
+                              self.mutable,
+                              copy.deepcopy(self.name))
         dense_map.trace = copy.deepcopy(self.trace)
         return dense_map
 
