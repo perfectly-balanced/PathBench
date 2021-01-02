@@ -339,13 +339,14 @@ class SimulatorConfig(DirectObject):
 
         # launch simulation
         config = self.__services.settings
-
-        config.map_name = self.__maps_option.get()
         config.algorithm_name = self.__algorithms_option.get()
+        old_map_name = config.map_name
+        config.map_name = self.__maps_option.get()
 
-        refresh_map = (self.__state.agent != mp[0].agent.position) or \
-                      (self.__state.goal != mp[0].goal.position) or \
-                      (mp[0] != config.simulator_initial_map)
+        refresh_map = (old_map_name != config.map_name) or \
+                      (mp[0] != config.simulator_initial_map) or \
+                      (self.__state.agent != mp[0].agent.position) or \
+                      (self.__state.goal != mp[0].goal.position)
 
         if refresh_map:
             mp[0].move(mp[0].agent, self.__state.agent, True)
