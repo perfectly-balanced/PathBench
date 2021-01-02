@@ -19,6 +19,5 @@ class NumbersMapDisplay(MapDisplay):
         if self.grid is None:
             return False
 
-        if self.services.settings.simulator_grid_display:
-            for index in np.ndindex(*(self.grid.shape)):
-                self.get_renderer_view().render_text(Point(*index), str(round(self.grid[index], 1)))
+        for index in np.ndindex(*(self.grid.shape)):
+            self.get_renderer_view().render_text(Point(*index), str(round(self.grid[index], 1)))

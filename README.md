@@ -202,7 +202,6 @@ user defined Map components), Point, Size, Progress (progress bar), Timer, MapPr
 | load_simulator                                 	| bool                             	| If the simulator should be loaded                                                                        	|
 | clear_cache                                    	| bool                             	| If the cache should be deleted after the simulator is finished                                           	|
 | simulator_graphics                             	| bool                             	| If graphics should be used or not; evaluation is always done without graphics                            	|
-| simulator_grid_display                         	| bool                             	| The map can be visualised as a plain image or a grid; the window size is defined based on the choice     	|
 | simulator_initial_map                          	| Map                              	| The map used in AlgorithmRunner service                                                                  	|
 | simulator_algorithm_type                       	| Type[Algorithm]                  	| The algorithm type used in AlgorithmRunner service                                                       	|
 | simulator_algorithm_parameters                 	| Tuple[List[Any], Dict[str, Any]] 	| The algorithm parametrs in the form of *args and **kwargs which are used in AlgorithmRunner service      	|

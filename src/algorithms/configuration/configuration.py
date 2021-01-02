@@ -11,7 +11,6 @@ from simulator.services.debug import DebugLevel
 from structures import Point
 
 class Configuration:
-    simulator_grid_display: bool
     simulator_initial_map: Optional[Union[str, Map]]
     simulator_algorithm_type: Optional[Type[Algorithm]]
     simulator_testing_type: Optional[Type[BasicTesting]]
@@ -52,6 +51,9 @@ class Configuration:
     trainer_custom_config: Optional[Dict[str, Any]]
     trainer_pre_process_data_only: bool
 
+    # Visualiser
+    visualiser_simulator_config: bool
+
     # Misc
     analyzer: bool
     algorithms: Dict[str, Tuple[Type[Algorithm], Type[BasicTesting], Tuple[List[Any], Dict[str, Any]]]]
@@ -64,7 +66,6 @@ class Configuration:
 
     def __init__(self) -> None:
         # Simulator settings
-        self.simulator_grid_display = False
         self.simulator_initial_map = None
         self.simulator_testing_type = None
         self.simulator_algorithm_type = None
@@ -135,3 +136,6 @@ class Configuration:
 
         # Cache
         self.clear_cache = False
+
+        # Visualiser
+        self.visualiser_simulator_config = True

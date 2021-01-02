@@ -182,21 +182,29 @@ class Ros:
         config.simulator_key_frame_speed = 0.16
         config.simulator_key_frame_skip = 20
         config.get_agent_position = lambda: self._world_to_grid([self._agent.pose.position.x, self._agent.pose.position.y])
+        config.visualiser_simulator_config = False
 
         # algorithm
-        config.simulator_algorithm_type = WayPointNavigation  # AStarTesting # WayPointNavigation
-        config.simulator_algorithm_parameters = ([],
-                                                 {"global_kernel": (CombinedOnlineLSTM, ([], {})),
-                                                  "global_kernel_max_it": 30})
-        config.simulator_testing_type = WayPointNavigationTesting  # AStar # WayPointNavigationTesting  # BasicTesting
+        config.algorithms = {"Global Way-point LSTM": (WayPointNavigation,
+                                                       WayPointNavigationTesting,
+                                                       ([],
+                                                        {"global_kernel": (CombinedOnlineLSTM, ([], {})),
+                                                         "global_kernel_max_it": 30}))}
+        config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = list(config.algorithms.values())[0]
+        config.algorithm_name = list(config.algorithms.keys())[0]
 
         # map
-        config.simulator_initial_map = RosMap(Agent(agent_pos, radius=self.INFLATE),
-                                              Goal(Point(0, 0)),
-                                              self._get_grid,
-                                              traversable_threshold=50,
-                                              unmapped_value=-1,
-                                              wp_publish=self._send_way_point)
+        mp = RosMap(Agent(agent_pos, radius=self.INFLATE),
+                    Goal(Point(0, 0)),
+                    self._get_grid,
+                    traversable_threshold=50,
+                    unmapped_value=-1,
+                    wp_publish=self._send_way_point,
+                    name="ROS Map")
+
+        config.maps = {mp.name: mp}
+        config.simulator_initial_map = list(config.maps.values())[0]
+        config.map_name = list(config.maps.keys())[0]
 
         s = Services(config)
         s.algorithm.map.request_update()

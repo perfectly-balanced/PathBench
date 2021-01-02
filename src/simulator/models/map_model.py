@@ -38,7 +38,7 @@ class MapModel(Model):
         self.cv = Condition()
         self.processing_key_frame = False
         self.frame_timer = Timer()
-        self.speed = 1 if self._services.settings.simulator_grid_display else 20
+        self.speed = 1
 
         self._services.algorithm.set_root()
 

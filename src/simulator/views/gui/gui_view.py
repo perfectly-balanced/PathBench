@@ -18,5 +18,7 @@ class GuiView(View):
 
         self.__mouse1_press_callback = []
         self.__vs = ViewEditor(self._services, self.__mouse1_press_callback)
-        self.__sc = SimulatorConfig(self._services, self.__mouse1_press_callback)
         self.__do = DebugOverlay(self._services)
+
+        if self._services.settings.visualiser_simulator_config:
+            self.__sc = SimulatorConfig(self._services, self.__mouse1_press_callback)

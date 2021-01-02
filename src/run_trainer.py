@@ -57,7 +57,7 @@ config = type(Configuration)
 
 config = Configuration()
 
-maps = MapManager.maps
+maps = MapManager.builtins
 
 # LSTM Bagging is referred to as CombinedOnlineLSTM, it is used as a global kernel for LWP
 
@@ -137,7 +137,7 @@ mp = maps[chosen_map]
 # Simulator
 config.load_simulator = sim_start
 config.simulator_graphics = False
-config.simulator_initial_map, config.simulator_grid_display = mp
+config.simulator_initial_map = mp
 config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = algo
 config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani
 config.simulator_write_debug_level = debug
