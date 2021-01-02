@@ -103,11 +103,11 @@ def restore_resources() -> None:
     subprocess.check_call(cmd)
 
 
-def wait_for(rel_img: str, delay: float = 0.5, max_attempts: int = 30, confidence: float = 0.5) -> None:
+def wait_for(rel_img: str, delay: float = 0.5, max_it: int = 30, confidence: float = 0.5) -> None:
     import pyautogui
 
     img = os.path.join(TEST_DATA_PATH, rel_img)
-    for _ in range(max_attempts):
+    for _ in range(max_it):
         time.sleep(delay)
         try:
             if pyautogui.locateCenterOnScreen(img, confidence=confidence) is not None:
@@ -123,8 +123,36 @@ def mse(img_a, img_b) -> float:
     err /= float(img_a.shape[0] * img_a.shape[1])
     return err
 
+def compare_images(img_a_path, img_b_path, threshold: float = 30) -> None:
+    # load images
+    img_a = cv.imread(os.path.join(TEST_DATA_PATH, img_a_path))
+    img_b = cv.imread(os.path.join(TEST_DATA_PATH, img_b_path))
 
-def screenshot_saved(file_num):
-    while True:
-        if file_num < len(glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))):
+    # check difference
+    mse = mse(img_a, img_b)
+    assert mse < threshold, mse
+
+def take_screenshot(ref_path: str = None, threshold: float = 30, delay: float = 0.8, max_it: int = 30) -> str:
+    # get screenshot file path
+    metadata: Dict[str, any] = Directory._unpickle("metadata", DATA_PATH + "screenshots/")
+    if metadata is None:
+        metadata = {
+            "next_index": 0,
+        }
+    file_path = os.path.join(os.path.join(DATA_PATH, "screenshots"), "screenshot_{}.png".format(metadata["next_index"]))
+
+    for _ in range(max_it):
+        # take screenshot, doesn't matter 
+        # if we take multiple ones
+        pyautogui.press('o')
+
+        time.sleep(delay)
+
+        # check if screenshot was taken (& saved)
+        if os.path.exists(file_path):
             break
+
+    if ref_path is not None:
+        compare_images(file_path, ref_path)
+
+    return file_path

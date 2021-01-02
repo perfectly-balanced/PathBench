@@ -5,9 +5,9 @@ import cv2 as cv
 import unittest
 
 if __name__ == "__main__":
-    from common import init, destroy, mse, wait_for, screenshot_saved
+    from common import init, destroy, mse, wait_for, take_screenshot
 else:
-    from .common import init, destroy, mse, wait_for, screenshot_saved
+    from .common import init, destroy, mse, wait_for, take_screenshot
 
 
 def graphics_test() -> None:
@@ -47,24 +47,7 @@ def graphics_test() -> None:
     pyautogui.press('t')
     wait_for('done.png')
 
-    # take texture ss
-    file_num = len(glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png')))
-    pyautogui.press('o')
-    screenshot_saved(file_num)
-
-    # get latest screenshot
-    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
-    transparent_1 = max(list_of_ss, key=os.path.getctime)
-
-    time.sleep(2)
-
-    # compare the new screenshot with the expected one
-    expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "potential_field_2d.png"))
-    transparent_1 = cv.imread(transparent_1)
-
-    THRESHOLD = 30
-    mse_1 = mse(expected_transparent_1, transparent_1)
-    assert mse_1 < THRESHOLD, mse_1
+    take_screenshot("potential_field_2d.png")
 
 
 class GraphicsTestCase(unittest.TestCase):

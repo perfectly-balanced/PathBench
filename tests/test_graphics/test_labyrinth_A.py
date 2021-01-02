@@ -5,9 +5,9 @@ import cv2 as cv
 import unittest
 
 if __name__ == "__main__":
-    from common import init, destroy, mse, wait_for, screenshot_saved
+    from common import init, destroy, mse, wait_for, take_screenshot
 else:
-    from .common import init, destroy, mse, wait_for, screenshot_saved
+    from .common import init, destroy, mse, wait_for, take_screenshot
 
 
 def graphics_test() -> None:
@@ -49,10 +49,7 @@ def graphics_test() -> None:
     pyautogui.press('t')
     wait_for('done.png')
 
-    # take texture ss
-    file_num = len(glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png')))
-    pyautogui.press('o')
-    screenshot_saved(file_num)
+    take_screenshot("labyrinth_A_1.png", threshold=350)
 
     wait_for('traversables_new.png')
 
@@ -60,34 +57,7 @@ def graphics_test() -> None:
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
     pyautogui.click(x - 125, y)
 
-    # get the latest taken screenshot
-    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
-    transparent_1 = max(list_of_ss, key=os.path.getctime)
-
-    # take the second texture ss
-    pyautogui.press('o')
-    screenshot_saved(file_num+1)
-
-    # get latest screenshot
-    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
-    transparent_2 = max(list_of_ss, key=os.path.getctime)
-
-    time.sleep(2)
-    # compare the 2 new screenshots with the expected ones
-    expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "labyrinth_A_1.png"))
-    expected_transparent_2 = cv.imread(os.path.join(TEST_DATA_PATH, "labyrinth_A_2.png"))
-    transparent_1 = cv.imread(transparent_1)
-    transparent_2 = cv.imread(transparent_2)
-
-    print(mse(expected_transparent_1, transparent_1))
-    print(mse(expected_transparent_2, transparent_2))
-
-    # Small error allowed for the top screen high res ss, usually very close to 0
-    THRESHOLD = 300
-    mse_1 = mse(expected_transparent_1, transparent_1)
-    mse_2 = mse(expected_transparent_2, transparent_2)
-    assert mse_1 < THRESHOLD, mse_1
-    assert mse_2 < THRESHOLD, mse_2
+    take_screenshot("labyrinth_A_2.png", threshold=350)
 
 
 class GraphicsTestCase(unittest.TestCase):

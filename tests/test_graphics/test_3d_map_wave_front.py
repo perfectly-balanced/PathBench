@@ -5,9 +5,9 @@ import cv2 as cv
 import unittest
 
 if __name__ == "__main__":
-    from common import init, destroy, mse, wait_for, screenshot_saved
+    from common import init, destroy, mse, wait_for, take_screenshot
 else:
-    from .common import init, destroy, mse, wait_for, screenshot_saved
+    from .common import init, destroy, mse, wait_for, take_screenshot
 
 
 def graphics_test() -> None:
@@ -61,26 +61,7 @@ def graphics_test() -> None:
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'colour_2.png'), confidence=0.8)
     pyautogui.click(x, y)
 
-    # take ss
-    file_num = len(glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png')))
-    pyautogui.press('o')
-    screenshot_saved(file_num)
-
-    # get latest screenshot
-    list_of_ss = glob.glob(os.path.join(DATA_PATH, 'screenshots/*.png'))
-    transparent_1 = max(list_of_ss, key=os.path.getctime)
-    time.sleep(1)
-
-    # compare the screenshot with the expected one
-    expected_transparent_1 = cv.imread(os.path.join(TEST_DATA_PATH, "wave_front_3d.png"))
-    transparent_1 = cv.imread(transparent_1)
-
-    print(mse(expected_transparent_1, transparent_1))
-
-    # Some error allowed due to RRT running differently sometimes
-    THRESHOLD = 30
-    mse_1 = mse(expected_transparent_1, transparent_1)
-    assert mse_1 < THRESHOLD, mse_1
+    take_screenshot("wave_front_3d.png")
 
 
 class GraphicsTestCase(unittest.TestCase):
