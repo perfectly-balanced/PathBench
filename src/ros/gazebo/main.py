@@ -25,7 +25,7 @@ def run() -> bool:
 
     atexit.register(kill_processes)
 
-    this_dir = os.path.dirname(__file__)
+    this_dir = os.path.dirname(os.path.abspath(__file__))
 
     os.environ["TURTLEBOT3_MODEL"] = args.model
 
@@ -34,17 +34,19 @@ def run() -> bool:
         time.sleep(2)
 
         if args.headless:
-            launch_process(['roslaunch', '{}/turtlebot3_gmapping.launch'.format(this_dir), 'param_file:={}/turtlebot3_gmapping.yaml'.format(this_dir)])
-            launch_process(['roslaunch', '{}/turtlebot3_house_no_x.launch'.format(this_dir)])
+            launch_process(['roslaunch', '{}/launch/turtlebot3_gmapping.launch'.format(this_dir), 'param_file:={}/param/turtlebot3_gmapping.yaml'.format(this_dir)])
+            launch_process(['roslaunch', '{}/launch/turtlebot3_house_no_x.launch'.format(this_dir)])
         else:
-            launch_process(['roslaunch', 'turtlebot3_slam', 'turtlebot3_gmapping.launch'.format(this_dir), 'param_file:={}/turtlebot3_gmapping.yaml'.format(this_dir)])
+            launch_process(['roslaunch', 'turtlebot3_slam', 'turtlebot3_gmapping.launch'.format(this_dir), 'param_file:={}/param/turtlebot3_gmapping.yaml'.format(this_dir)])
             launch_process(['roslaunch', 'turtlebot3_gazebo', 'turtlebot3_house.launch'])
-        
+
         if args.rviz:
-            # alternative -> launch_process(['roslaunch', 'turtlebot3_gazebo', 'turtlebot3_gazebo_rviz.launch'])
-            launch_process(['roslaunch', 'turtlebot3_navigation', 'turtlebot3_navigation.launch'])
+            # alternative methods of loading rviz up
+            # launch_process(['roslaunch', 'turtlebot3_gazebo', 'turtlebot3_gazebo_rviz.launch'])
+            # launch_process(['roslaunch', 'turtlebot3_navigation', 'turtlebot3_navigation.launch'])
+            launch_process(['roslaunch', '{}/launch/turtlebot3_agent.launch'.format(this_dir), 'open_rviz:=true', 'rviz_file:={}/rviz/turtlebot3_model.rviz'.format(this_dir)])
         else:
-            launch_process(['roslaunch', '{}/turtlebot3_agent.launch'.format(this_dir)])
+            launch_process(['roslaunch', '{}/launch/turtlebot3_agent.launch'.format(this_dir), 'open_rviz:=false'])
 
         if args.run_path_bench != args.run_external_ros_nodes:
             while True:
@@ -52,7 +54,9 @@ def run() -> bool:
 
     if args.run_path_bench == args.run_external_ros_nodes or args.run_path_bench:
         subprocess.check_call([sys.executable, "{}/ros.py".format(this_dir)])
+
     return True
+
 
 if __name__ == '__main__':
     res = run()
