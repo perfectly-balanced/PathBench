@@ -8,6 +8,9 @@ from simulator.controllers.map.map_picker import MapPicker
 from simulator.controllers.map.camera_controller import CameraController
 from simulator.services.event_manager.events.take_map_screenshot_event import TakeMapScreenshotEvent
 from simulator.services.event_manager.events.state_running_event import StateRunningEvent
+from simulator.services.event_manager.events.state_terminated_event import StateTerminatedEvent
+from simulator.services.event_manager.events.state_done_event import StateDoneEvent
+from simulator.services.event_manager.events.event import Event
 
 import math
 from typing import Optional
@@ -25,12 +28,15 @@ class MapController(Controller, DirectObject):
         self.__camera = CameraController(self._services, self._model, origin=map_view.world)
         self.__position_updating_enabled = True
 
-        def agent_position_update():
+        def agent_position_update(task):
             # allow external updates of position when algorithm not running
-            if self.__position_updating_enabled:
+            if self.__position_updating_enabled and self._services.settings.get_agent_position:
                 p = self._services.settings.get_agent_position()
                 if p != self._services.algorithm.map.agent.position:
                     self._model.move(p)
+            return task.cont
+                
+        self._services.graphics.window.taskMgr.add(agent_position_update, 'agent_position_update')
 
         def left_click():
             if self._services.settings.get_agent_position:
@@ -110,6 +116,12 @@ class MapController(Controller, DirectObject):
                 pass
 
         self.accept("h", grow_map)
+
+    def notify(self, event: Event) -> None:
+        if isinstance(event, StateRunningEvent):
+            self.__position_updating_enabled = False
+        elif isinstance(event, StateTerminatedEvent) or isinstance(event, StateDoneEvent):
+            self.__position_updating_enabled = True
 
     def destroy(self) -> None:
         self.ignore_all()
