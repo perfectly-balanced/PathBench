@@ -46,7 +46,6 @@ def graphics_test() -> None:
 
     pyautogui.press('t')
     wait_for('done.png')
-
     take_screenshot("potential_field_2d.png")
 
 

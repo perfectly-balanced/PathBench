@@ -105,7 +105,7 @@ def restore_resources() -> None:
     subprocess.check_call(cmd)
 
 
-def wait_for(rel_img: str, delay: float = 0.5, max_it: int = 30, confidence: float = 0.5, return_delay: float = 0.1) -> None:
+def wait_for(rel_img: str, delay: float = 0.5, max_it: int = 30, confidence: float = 0.5) -> None:
     import pyautogui  # cannot be done globally due to $DISPLAY madness
 
     img = os.path.join(TEST_DATA_PATH, rel_img)
@@ -113,7 +113,6 @@ def wait_for(rel_img: str, delay: float = 0.5, max_it: int = 30, confidence: flo
         time.sleep(delay)
         try:
             if pyautogui.locateCenterOnScreen(img, confidence=confidence) is not None:
-                time.sleep(return_delay)
                 return
         except pyautogui.PyAutoGUIException:
             continue
@@ -147,29 +146,37 @@ def compare_images(img_a_path, img_b_path, threshold: float = 30, delay: float =
     diff = mse(img_a, img_b)
     assert diff < threshold, diff
 
-def take_screenshot(ref_path: str = None, threshold: float = 30, delay: float = 0.8, max_it: int = 30) -> str:
+def take_screenshot(ref_path: str = None, threshold: float = 30, delay: float = 0.8, max_it: int = 30, max_tries: int = 3) -> str:
     import pyautogui  # cannot be done globally due to $DISPLAY madness
 
-    # get screenshot file path
-    metadata: Dict[str, any] = Directory._unpickle("metadata", DATA_PATH + "/screenshots/")
-    if metadata is None:
-        metadata = {
-            "next_index": 0,
-        }
-    file_path = os.path.join(os.path.join(DATA_PATH, "screenshots"), "screenshot_{}.png".format(metadata["next_index"]))
+    for t in range(max_tries):
+        # get screenshot file path
+        metadata: Dict[str, any] = Directory._unpickle("metadata", DATA_PATH + "/screenshots/")
+        if metadata is None:
+            metadata = {
+                "next_index": 0,
+            }
+        file_path = os.path.join(os.path.join(DATA_PATH, "screenshots"), "screenshot_{}.png".format(metadata["next_index"]))
 
-    for _ in range(max_it):
-        # take screenshot, doesn't matter
-        # if we take multiple ones
-        pyautogui.press('o')
+        for _ in range(max_it):
+            # take screenshot, doesn't matter
+            # if we take multiple ones
+            pyautogui.press('o')
 
-        time.sleep(delay)
+            time.sleep(delay)
 
-        # check if screenshot was taken (& saved)
-        if os.path.exists(file_path):
-            break
+            # check if screenshot was taken (& saved)
+            if os.path.exists(file_path):
+                break
 
-    if ref_path is not None:
-        compare_images(file_path, ref_path)
+        if ref_path is not None:
+            try:
+                assert False
+                compare_images(file_path, ref_path)
+            except AssertionError:
+                if t + 1 == max_tries:
+                    raise
+                else:
+                    continue
 
-    return file_path
+        return file_path

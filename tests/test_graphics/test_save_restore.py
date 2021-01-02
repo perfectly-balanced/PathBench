@@ -95,7 +95,7 @@ def graphics_test() -> None:
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'one.png'), confidence=0.7)
     pyautogui.click(x, y)
-    time.sleep(0.5)
+    time.sleep(2)
 
     transparent_restored_1 = take_screenshot()
 
