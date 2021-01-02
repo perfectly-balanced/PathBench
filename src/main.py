@@ -1,5 +1,6 @@
 from algorithms.configuration.configuration import Configuration
 from algorithms.algorithm_manager import AlgorithmManager
+from maps.map_manager import MapManager
 from algorithms.lstm.trainer import Trainer
 from analyzer.analyzer import Analyzer
 from generator.generator import Generator
@@ -151,7 +152,7 @@ def configure_common(config, args) -> bool:
         print("Available algorithms:")
         for key in AlgorithmManager.builtins.keys():
             print(f"  {key}")
-        print("Or specify your own file with a class that inherits from Algorithm")
+        print("Or specify your own file that contains a class that inherits from Algorithm")
         sys.exit(0)
 
     if args.algorithms:
@@ -162,7 +163,7 @@ def configure_common(config, args) -> bool:
             valid_str = ",".join('"' + a + '"' for a in AlgorithmManager.builtins.keys())
             print(f"Invalid algorithm(s) specified: {invalid_str}", file=sys.stderr)
             print(f"Available algorithms: {valid_str}", file=sys.stderr)
-            print("Or specify your own file with a class that inherits from Algorithm", file=sys.stderr)
+            print("Or specify your own file that contains a class that inherits from Algorithm", file=sys.stderr)
             return False
 
         algorithms = list(flatten(algorithms, depth=1))
@@ -178,6 +179,46 @@ def configure_common(config, args) -> bool:
             algorithms.update(AlgorithmManager.builtins)
 
         config.algorithms = algorithms
+
+    if args.list_maps:
+        print("Available maps:")
+        for key in MapManager.builtins.keys():
+            print(f"  {key}")
+        print("Can also specify a custom map,")
+        print("  (1) cached map stored in Maps")
+        print("  (2) external file that contains a global variable with type that inherits from Map")
+        sys.exit(0)
+
+    if args.maps:
+        maps = MapManager.load_all(args.maps)
+        if not all(maps):
+            invalid_maps = [args.maps[i] for i in range(len(maps)) if not maps[i]]
+            invalid_str = ",".join('"' + a + '"' for a in invalid_maps)
+            valid_str = ",".join('"' + a + '"' for a in MapManager.builtins.keys())
+            print(f"Invalid map(s) specified: {invalid_str}", file=sys.stderr)
+            print(f"Available maps: {valid_str}", file=sys.stderr)
+            print("Can also specify a custom map,", file=sys.stderr)
+            print("  (1) cached map stored in Maps", file=sys.stderr)
+            print("  (2) external file that contains a global variable with type that inherits from Map", file=sys.stderr)
+            return False
+
+        maps = list(flatten(maps, depth=1))
+
+        # name uniqueness
+        names = [a[0] for a in maps]
+        if len(set(names)) != len(names):
+            print("Name conflict detected in custom map list:", names, file=sys.stderr)
+            return False
+
+        maps = dict(maps)
+        if args.include_default_builtin_maps or args.include_all_builtin_maps:
+            maps.update(MapManager.builtins)
+        if args.include_all_builtin_maps:
+            maps.update(MapManager.cached_builtins)
+
+        config.maps = maps
+    elif args.include_all_builtin_maps:
+        config.maps.update(MapManager.cached_builtins)
 
     if args.deterministic:
         random.seed(args.std_random_seed)
@@ -225,8 +266,16 @@ def main() -> bool:
     parser.add_argument("--dims", type=int, help="[generator|analyzer] number of dimensions", default=3)
 
     parser.add_argument("--algorithms", help="[visualiser|analyzer] algorithms to load (either built-in algorithm name or module file path)", nargs="+")
-    parser.add_argument("--include-builtin-algorithms", action='store_true', help="include all builtin algorithms even when a custom list is provided via '--algorithms'")
+    parser.add_argument("--include-builtin-algorithms", action='store_true',
+                        help="[visualiser|analyzer] include all builtin algorithms even when a custom list is provided via '--algorithms'")
     parser.add_argument("--list-algorithms", action="store_true", help="[visualiser|analyzer] output list of available built-in algorithms")
+
+    parser.add_argument("--maps", help="[visualiser|analyzer|trainer] maps to load (either built-in map name or module file path)", nargs="+")
+    parser.add_argument("--include-all-builtin-maps", action='store_true',
+                        help="[visualiser|analyzer|trainer] include all builtin maps (includes all cached maps) even when a custom list is provided via '--maps'")
+    parser.add_argument("--include-default-builtin-maps", action='store_true',
+                        help="[visualiser|analyzer|trainer] include default builtin maps (does not include all cached maps) even when a custom list is provided via '--maps'")
+    parser.add_argument("--list-maps", action="store_true", help="[visualiser|analyzer|trainer] output list of available built-in maps")
 
     parser.add_argument("--deterministic", action='store_true', help="use pre-defined random seeds for deterministic exeuction")
     parser.add_argument("--std-random-seed", type=int, default=0, help="'random' module random number generator seed")

@@ -112,6 +112,9 @@ class Configuration:
         from algorithms.algorithm_manager import AlgorithmManager
         self.algorithms = copy.deepcopy(AlgorithmManager.builtins)
 
+        from maps.map_manager import MapManager
+        self.maps = copy.deepcopy(MapManager.builtins)
+
         self.map_name = None
         self.algorithm_name = None
 

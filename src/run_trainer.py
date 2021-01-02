@@ -4,7 +4,7 @@ from typing import Tuple, Callable, Type, List, Optional, Dict, Any, Union
 from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.maps.map import Map
-from map_manager import MapManager
+from maps.map_manager import MapManager
 from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule, OnlineLSTM
 from algorithms.lstm.ML_model import MLModel
 from simulator.services.debug import DebugLevel

@@ -28,7 +28,7 @@ class DenseMap(Map):
     # The transpose flag is set to true as a default for the initialization, as that is
     # how we are storing internally, but it will be set to false when we are simply translating from sparsemap
     # When we create more map views, we should set it to false
-    def __init__(self, grid: Optional[List] = None, services: Services = None, transpose: bool = True, mutable: bool = False) -> None:
+    def __init__(self, grid: Optional[List] = None, services: Services = None, transpose: bool = True, mutable: bool = False, name: Optional[str] = None) -> None:
         self.grid = None
 
         arr_grid = None
@@ -37,9 +37,9 @@ class DenseMap(Map):
             if arr_grid.dtype == object:
                 raise ValueError("Cannot create DenseMap grid from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes)")
 
-            super().__init__(Size(*([0]*arr_grid.ndim)), services, mutable)
+            super().__init__(Size(*([0]*arr_grid.ndim)), services, mutable, name)
         else:
-            super().__init__(services=services, mutable=mutable)
+            super().__init__(services=services, mutable=mutable, name=name)
             return
 
         # Doesn't work with non-uniform grids
@@ -186,6 +186,7 @@ class DenseMap(Map):
 
     def __deepcopy__(self, memo: Dict) -> 'DenseMap':
         dense_map = self.__class__(copy.deepcopy(self.grid), services=self.services, transpose=False)
+        dense_map.name = copy.deepcopy(self.name)
         dense_map.trace = copy.deepcopy(self.trace)
         dense_map.agent = copy.deepcopy(self.agent)
         dense_map.goal = copy.deepcopy(self.goal)

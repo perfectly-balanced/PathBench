@@ -30,6 +30,7 @@ class Map:
     EXTENDED_WALL_ID: int = 4
     UNMAPPED_ID: int = 5
 
+    name: Optional[str]
     agent: Agent
     goal: Goal
     obstacles: List[Obstacle]
@@ -93,7 +94,7 @@ class Map:
         self.DIRECT_POINTS_MOVE_VECTOR: List[Point] = \
             list(map(lambda x: Point(*x), ALL_DIRECT_POINTS_DIMENSIONS))
 
-    def __init__(self, size: Size = None, services: Services = None, mutable: bool = False) -> None:
+    def __init__(self, size: Size = None, services: Services = None, mutable: bool = False, name: Optional[str] = None) -> None:
         """
         :param size: The map size
         :param services: The simulator services
@@ -106,6 +107,7 @@ class Map:
         self._size = None
         self.size = size
         self.__mutable = mutable
+        self.name = name
 
     def get_obstacle_bound(self, obstacle_start_point: Point, visited: Optional[Set[Point]] = None) -> Set[Point]:
         """

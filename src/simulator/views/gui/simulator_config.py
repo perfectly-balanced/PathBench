@@ -23,15 +23,13 @@ from simulator.views.gui.simulator_config_state import SimulatorConfigState
 
 from algorithms.configuration.configuration import Configuration
 from algorithms.algorithm_manager import AlgorithmManager
-from map_manager import MapManager
+from maps.map_manager import MapManager
 from algorithms.configuration.maps.map import Map
 
 class SimulatorConfig(DirectObject):
     __services: Services
     __base: ShowBase
     __window: Window
-
-    __maps = MapManager.maps
 
     __animations = {
         "None": (0, 0),
@@ -52,6 +50,7 @@ class SimulatorConfig(DirectObject):
                       "- orbit around the map\n\n c, v - toggle Simulator Configuration / View Editor"
 
         self.__algorithms = self.__services.settings.algorithms
+        self.__maps = self.__services.settings.maps
 
         self.__map_keys = list(self.__maps.keys())
         self.__algorithm_keys = list(self.__algorithms.keys())
@@ -198,7 +197,7 @@ class SimulatorConfig(DirectObject):
         self.__maps_option = DirectOptionMenu(text="options",
                                               scale=0.14,
                                               parent=self.__window.frame,
-                                              initialitem=self.__map_keys.index("Labyrinth"),
+                                              initialitem=self.__map_keys.index("Labyrinth") if "Labyrinth" in self.__map_keys else 0,
                                               items=self.__map_keys,
                                               pos=(-0.65, 0.4, 0.),
                                               highlightColor=(0.65, 0.65, 0.65, 1),
@@ -299,12 +298,21 @@ class SimulatorConfig(DirectObject):
             for e in self.__entries:
                 e['focus'] = False
 
+    def __get_map_data(self):
+        name = self.__maps_option.get()
+        data = self.__maps[name]
+
+        if isinstance(data[0], str):
+            data = (self.__services.resources.maps_dir.load(data[0]), data[1])
+            self.__maps[name] = data
+
+        assert isinstance(data[0], Map), "Map failed to load"
+        return data
+
     def __update_simulator_callback(self) -> None:
-        mp = MapManager(self.__services).load(self.__maps_option.get())[0]
+        mp = self.__get_map_data()
         algo = self.__algorithms[self.__algorithms_option.get()]
         ani = self.__animations[self.__animations_option.get()]
-
-        assert isinstance(mp[0], Map), "MapManager did not return loaded map"
 
         # update state
         self.__state.mp = self.__maps_option.get()
@@ -355,9 +363,7 @@ class SimulatorConfig(DirectObject):
         self.__services.ev_manager.post(ResetEvent())
 
     def __use_default_map_positions(self, *discard) -> None:
-        m = MapManager(self.__services).load(self.__maps_option.get())[0][0]
-
-        assert isinstance(m, Map), "MapManager did not return loaded map"
+        m = self.__get_map_data()[0]
 
         self.__state.agent = m.agent.position
         self.__state.goal = m.goal.position

@@ -57,3 +57,8 @@ def array_shape(a) -> Tuple[int, ...]:
         return (len(a), *array_shape(a[0]))
     else:
         return (len(a),)
+
+def static_class(cls):
+    if getattr(cls, "_static_init_", None):
+        cls._static_init_()
+    return cls
