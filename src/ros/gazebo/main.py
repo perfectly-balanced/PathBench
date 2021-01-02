@@ -14,7 +14,8 @@ def run() -> bool:
     parser = argparse.ArgumentParser(prog="main.py",
                                      description="PathBench ROS 2D Real-time Extension",
                                      formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument("--headless", action="store_true", help="run ROS nodes (e.g. gazebo) headlessly")
+    parser.add_argument("--headless", action="store_true", help="run the gazebo world headlessly")
+    parser.add_argument("--rviz", action="store_true", help="run rviz")
     parser.add_argument("-m", "--model", choices=['burger', 'waffle', 'waffle_pi'], default="burger", help="turtlebot3 model")
 
     args = parser.parse_args()
@@ -32,12 +33,16 @@ def run() -> bool:
     if args.headless:
         launch_process(['roslaunch', '{}/turtlebot3_gmapping.launch'.format(this_dir), 'param_file:={}/turtlebot3_gmapping.yaml'.format(this_dir)])
         launch_process(['roslaunch', '{}/turtlebot3_house_no_x.launch'.format(this_dir)])
-        launch_process(['roslaunch', '{}/turtlebot3_agent.launch'.format(this_dir)])
     else:
         launch_process(['roslaunch', 'turtlebot3_slam', 'turtlebot3_gmapping.launch'.format(this_dir), 'param_file:={}/turtlebot3_gmapping.yaml'.format(this_dir)])
-        launch_process(['roslaunch', 'turtlebot3_gazebo', 'turtlebot3_gazebo_rviz.launch'])
         launch_process(['roslaunch', 'turtlebot3_gazebo', 'turtlebot3_house.launch'])
     
+    if args.rviz:
+        # alternative -> launch_process(['roslaunch', 'turtlebot3_gazebo', 'turtlebot3_gazebo_rviz.launch'])
+        launch_process(['roslaunch', 'turtlebot3_navigation', 'turtlebot3_navigation.launch'])
+    else:
+        launch_process(['roslaunch', '{}/turtlebot3_agent.launch'.format(this_dir)])
+
     subprocess.check_call([sys.executable, "{}/ros.py".format(this_dir)])
     return True
 
