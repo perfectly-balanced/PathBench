@@ -8,6 +8,8 @@ from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule
 from algorithms.lstm.ML_model import MLModel
 from simulator.services.debug import DebugLevel
 
+from structures import Point
+
 class Configuration:
     simulator_grid_display: bool
     simulator_initial_map: Optional[Union[str, Map]]
@@ -53,6 +55,7 @@ class Configuration:
     # Misc
     analyzer: bool
     algorithms: Dict[str, Tuple[Type[Algorithm], Type[BasicTesting], Tuple[List[Any], Dict[str, Any]]]]
+    get_agent_position: Callable[[], Point] 
     load_simulator: bool
     clear_cache: bool
     num_dim: int
@@ -111,6 +114,15 @@ class Configuration:
         # Common
         from algorithms.algorithm_manager import AlgorithmManager
         self.algorithms = copy.deepcopy(AlgorithmManager.builtins)
+        
+        # Method that returns an externally determined agent position
+        # When not None, this prevents any changes by the UI. This method
+        # will be called at every frame when algorithm isn't running,
+        # appropriately moving the agent position. If agent position
+        # changes this will reset the previous run view. For ROS, it
+        # is therefore ideal to continue sending necessary velocity
+        # commands to maintain agent position.
+        self.get_agent_position = None
 
         from maps.map_manager import MapManager
         self.maps = copy.deepcopy(MapManager.builtins)

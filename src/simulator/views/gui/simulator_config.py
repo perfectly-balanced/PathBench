@@ -194,6 +194,14 @@ class SimulatorConfig(DirectObject):
             e.bind(DGG.B1PRESS, self.__entry_mouse_click_callback)
             self.accept("mouse1", self.__entry_mouse_click_callback)
 
+        self.__agent_disable_overlay = DirectButton(parent=self.__window.frame,
+                                                    frameColor=TRANSPARENT,
+                                                    borderWidth=(0.0, 0.0),
+                                                    frameSize=(-0.6, 1.4, -0.2, 0.2),
+                                                    pos=(-0.24, 0.4, -1.5),
+                                                    suppressMouse=True)
+        self.__agent_disable_overlay.hide()
+
         self.__maps_option = DirectOptionMenu(text="options",
                                               scale=0.14,
                                               parent=self.__window.frame,
@@ -235,6 +243,7 @@ class SimulatorConfig(DirectObject):
                                         borderWidth=(0.25, 0.15),
                                         frameSize=(-0.5, 0.92, -0.54, 0.54),
                                         scale=(0.50, 3.1, 0.25))
+
         self.btn_update = DirectButton(
             text="Update",
             text_fg=(0.3, 0.3, 0.3, 1.0),
@@ -371,17 +380,28 @@ class SimulatorConfig(DirectObject):
         self.__update_position_entries()
 
     def __update_position_entries(self) -> None:
-        def update_entries(entries, pos):
+        def update_entries(entries, pos, mutable=True):
+            dim = pos.n_dim
+            if not mutable:
+                pos = ['-' for _ in range(dim)]
+
             entries[0].enterText(str(pos[0]))
             entries[1].enterText(str(pos[1]))
-            if pos.n_dim == 3:
+            if dim == 3:
                 entries[2].enterText(str(pos[2]))
                 entries[2].show()
             else:
                 entries[2].hide()
 
-        update_entries(self.__entries[:3], self.__state.agent)
+        # agent may be externally set
+        agent_mutable = (not self.__services.settings.get_agent_position)
+        update_entries(self.__entries[:3], self.__state.agent, mutable=agent_mutable)
         update_entries(self.__entries[3:], self.__state.goal)
+
+        if agent_mutable:
+            self.__agent_disable_overlay.hide()
+        else:
+            self.__agent_disable_overlay.show()
 
         # user has performed an action such as pressing a
         # button, therefore all entries should lose focus

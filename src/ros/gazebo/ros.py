@@ -181,6 +181,7 @@ class Ros:
         config.simulator_write_debug_level = DebugLevel.LOW
         config.simulator_key_frame_speed = 0.16
         config.simulator_key_frame_skip = 20
+        config.get_agent_position = lambda: self._world_to_grid([self._agent.pose.position.x, self._agent.pose.position.y])
 
         # algorithm
         config.simulator_algorithm_type = WayPointNavigation  # AStarTesting # WayPointNavigation
