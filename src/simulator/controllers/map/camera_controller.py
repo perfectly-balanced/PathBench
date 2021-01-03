@@ -35,10 +35,6 @@ class CameraController(Controller, DirectObject):
         self.dist = 10.0
 
         self.key_map = {
-            "up1": 0,
-            "down1": 0,
-            "left1": 0,
-            "right1": 0,
             "left": 0,
             "right": 0,
             "up": 0,
@@ -47,28 +43,12 @@ class CameraController(Controller, DirectObject):
             "wheeldown": 0
         }
 
-        self.speed_l = 4
-        self.speed_r = 4
-        self.speed_u = 4
-        self.speed_d = 4
         self.angle = 0
 
         # EVENTS #
 
         # disables the default camera behaviour
         self.__base.disable_mouse()
-
-        # Use the arrow keys to move left, right, up and down
-        self.accept('arrow_left', self.update_key_map, ["left1", 1])
-        self.accept('arrow_left-up', self.update_key_map, ["left1", 0])
-        self.accept('arrow_right', self.update_key_map, ["right1", 1])
-        self.accept('arrow_right-up', self.update_key_map, ["right1", 0])
-        self.accept('arrow_up', self.update_key_map, ["up1", 1])
-        self.accept('arrow_up-up', self.update_key_map, ["up1", 0])
-        self.accept('arrow_down', self.update_key_map, ["down1", 1])
-        self.accept('arrow_down-up', self.update_key_map, ["down1", 0])
-
-        # self.accept('i', lambda :self.show_cam_pos())
 
         # Setup down events for arrow keys : rotating camera latitude and longitude
         self.accept("a", self.update_key_map, ["left", 1])
@@ -85,8 +65,6 @@ class CameraController(Controller, DirectObject):
         self.accept("wheel_down", self.update_key_map, ["wheeldown", 1])
 
         self.__task = self.__base.taskMgr.add(self.move_orbital_camera_task, "move_orbital_camera_task")
-
-        #self.__base.taskMgr.add(self.update, "update")
 
     def update_key_map(self, key: str, state: int) -> None:
         self.key_map[key] = state
