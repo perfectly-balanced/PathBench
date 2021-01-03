@@ -28,11 +28,9 @@ class CombinedOnlineLSTM(Algorithm):
 
         if not kernel_names:
             self.kernel_names = [
-                "tile_by_tile_training_house_10_model",
-                "tile_by_tile_training_house_100_model",
                 "tile_by_tile_training_house_1000_model",
-                "tile_by_tile_training_uniform_random_fill_1000_model",
                 "tile_by_tile_training_uniform_random_fill_3000_block_map_3000_house_3000_model",
+                "tile_by_tile_training_uniform_random_fill_30000_block_map_30000_house_30000_model",
             ]
 
         self._max_it = max_it
