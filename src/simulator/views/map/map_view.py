@@ -465,7 +465,7 @@ class MapView(View):
 
     def cube_center(self, p: Point) -> Point:
         x, y, z = self.to_point3(p)
-        return Point(x + 0.5, y + 0.5, z - 0.5 if self.map.dim == 3 else z)
+        return Point(x + 0.5, y + 0.5, z - 0.5 if self.map.dim == 3 else z + 0.15)
 
     def push_root(self, np: Optional[NodePath] = None) -> NodePath:
         if np is None:

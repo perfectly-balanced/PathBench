@@ -25,7 +25,7 @@ class OnlineLSTMMapDisplay(MapDisplay):
         self.bearing_colour = self._services.state.add_colour("bearing", Colour(1, 0, 1)) if bearing_colour is None else bearing_colour
 
     def render(self, *discarded) -> None:
-        self._services.graphics.renderer.push_line_thickness(8)
+        self._services.graphics.renderer.push_line_thickness(50)
 
         features = MapProcessing.extract_features(self._map, [
             "distance_to_goal_normalized",

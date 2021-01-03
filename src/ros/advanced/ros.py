@@ -32,9 +32,10 @@ from utility.argparse import add_configuration_flags  # noqa: E402
 from utility.threading import Lock  # noqa: E402
 
 class Ros:
-    INFLATE: int = 3  # radius of agent for extended walls. Note, this currently isn't supported with dynamic maps due to time constraints (parameter is ignored).
+    INFLATE: int = 2  # radius of agent for extended walls.
     INIT_MAP_SIZE: int = 128  # maximum map size for the first received map (this determines the scaling factor for all subsequent map updates).
     MAP_SIZE: int = 256  # the overall map size, can be as big as you like. Note, the initial map fragment will be located at the center of this 'big' map.
+    TRAVERSABLE_THRESHOLD: int = 30  # weight grid values above this value are considered to be obstacles
 
     _sim: Optional[Simulator]  # simulator
     _grid: Optional[NDArray[(MAP_SIZE, MAP_SIZE), np.float32]]  # weight grid, shape (width, height), weight bounds: (0, 100), unmapped: -1
@@ -104,10 +105,23 @@ class Ros:
                 if i >= 0 and j >= 0 and i < raw_grid.shape[1] and j < raw_grid.shape[0]:
                     grid[i - start[0]][j - start[1]] = raw_grid[j][i]
 
+        # hacky work-around for not having extended walls implemented. Here we manually
+        # extend the walls, by placing obstacles (works just as well, but should still
+        # ideally implement extended walls).
+        INVALID_VALUE = -2
+        grid_walls_extended = np.full(self._size, INVALID_VALUE)
+        for idx in np.ndindex(grid_walls_extended.shape):
+            if grid_walls_extended[idx] == INVALID_VALUE:
+                grid_walls_extended[idx] = grid[idx]
+                if grid[idx] > self.TRAVERSABLE_THRESHOLD:
+                    for i in range(-self.INFLATE, self.INFLATE+1):
+                        for j in range(-self.INFLATE, self.INFLATE+1):
+                            grid_walls_extended[(idx[0]+i, idx[1]+j)] = grid[idx]
+
         # make new grid accessible.
         # Note, it's up to the user / algorithm to request a map update for thread
         # safety, e.g. via `self._sim.services.algorithm.map.request_update()`.
-        self.grid = grid
+        self.grid = grid_walls_extended
 
     @property
     def grid(self) -> str:
@@ -229,7 +243,7 @@ class Ros:
         Map update was requested.
         """
         pass
-    
+
     def _world_to_grid(self, world_pos: Point, origin: Optional[Point] = None) -> Point:
         """
         Converts from meters coordinates to PathBench's grid coordinates (`self.grid`).
@@ -291,7 +305,7 @@ class Ros:
         mp = RosMap(agent,
                     goal,
                     lambda: self.grid,
-                    traversable_threshold=30,
+                    traversable_threshold=self.TRAVERSABLE_THRESHOLD,
                     unmapped_value=-1,
                     wp_publish=self._send_way_point,
                     update_requested=self._map_update_requested,
