@@ -24,8 +24,8 @@ def graphics_test() -> None:
     wait_for('initialised.png')
 
     # make obstacles transparent for a better ss comparison
-    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'obstacles.png'), confidence=0.55)
-    pyautogui.click(x - 110, y)
+    x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'obstacles_new.png'), confidence=0.75)
+    pyautogui.click(x - 115, y)
 
     # run algo
     pyautogui.press('t')
