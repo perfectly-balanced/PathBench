@@ -73,7 +73,7 @@ class Configuration:
         self.simulator_graphics = False
         self.simulator_key_frame_speed = 0
         self.simulator_key_frame_skip = 0
-        self.simulator_write_debug_level = DebugLevel.NONE
+        self.simulator_write_debug_level = DebugLevel.LOW
 
         # Generator
         self.generator = False

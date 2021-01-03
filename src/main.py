@@ -8,27 +8,22 @@ from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
 from simulator.simulator import Simulator
 from utility.misc import flatten
+from utility.argparse import add_configuration_flags
 
 import copy
 import sys
 import os
 import argparse
-import re
-
-from panda3d.core import load_prc_file_data
-from screeninfo import get_monitors
-import torch
-import numpy as np
-import random
+from typing import List, Callable
 
 class MainRunner:
     main_services: Services
 
-    def __init__(self, configuration: Configuration):
+    def __init__(self, configuration: Configuration) -> None:
         self.main_services: Services = Services(configuration)
         self.run = self.main_services.debug.debug_func(DebugLevel.BASIC)(self.run)
 
-    def run(self):
+    def run(self) -> None:
         if self.main_services.settings.generator:
             Generator.main(self)
         if self.main_services.settings.trainer:
@@ -42,13 +37,13 @@ class MainRunner:
         if self.main_services.settings.clear_cache:
             self.main_services.resources.cache_dir.clear()
 
-def arg_valid(attr, args):
+def arg_valid(attr: str, args: argparse.Namespace) -> bool:
     if not getattr(args, attr):
         print("Invalid argument, {} is not enabled".format(attr), file=sys.stderr)
         return False
     return True
 
-def configure_generator(config, args) -> bool:
+def configure_generator(config: Configuration, args: argparse.Namespace) -> bool:
     if args.generator:
         config.generator = True
 
@@ -76,109 +71,34 @@ def configure_generator(config, args) -> bool:
 
     return True
 
-def configure_analyzer(config, args) -> bool:
+def configure_analyzer(config: Configuration, args: argparse.Namespace) -> bool:
     if args.analyzer:
         config.analyzer = True
 
     return True
 
-def configure_trainer(config, args) -> bool:
+def configure_trainer(config: Configuration, args: argparse.Namespace) -> bool:
     if args.trainer:
         config.trainer = True
 
     return True
 
-def configure_visualiser(config, args) -> bool:
+def configure_visualiser(config: Configuration, args: argparse.Namespace) -> bool:
     if args.visualiser:
         config.load_simulator = True
         config.simulator_graphics = True
 
-    if args.visualiser_flags is not None:
-        if not arg_valid("visualiser", args):
-            return False
-
-        integral_pair_re = re.compile("\s*\(\s*[0-9]+\s*,\s*[0-9]+\s*\)\s*")
-        naked_integral_pair_re = re.compile("\s*[0-9]+\s*[0-9]+\s*")
-
-        data = ""
-
-        def use_display_resolution():
-            nonlocal data
-
-            for m in get_monitors():
-                data += "win-size {} {}\n".format(m.width, m.height)
-                break
-
-        for f in args.visualiser_flags:
-            if f.strip().lower() == "windowed-fullscreen":
-                use_display_resolution()
-                data += "win-origin 0 0\n"
-                data += "undecorated true\n"
-                continue
-
-            n, v = f.split("=")
-            n = n.strip().lower()
-            v = v.strip().lower()
-            if v in ("true", "1", "yes"):
-                data += "{} true\n".format(n)
-            elif v in ("false", "0", "no"):
-                data += "{} false\n".format(n)
-            elif integral_pair_re.match(v) is not None:
-                v = re.sub('{\s+}|\(|\)', '', v)
-                v1, v2 = v.split(',')
-                data += "{} {} {}\n".format(n, v1, v2)
-            elif naked_integral_pair_re.match(v) is not None:
-                v = v.strip()
-                v = re.sub('\s+', ',', v)
-                v1, v2 = v.split(',')
-                data += "{} {} {}\n".format(n, v1, v2)
-            else:
-                data += "{} {}".format(n, v)
-
-        if "fullscreen true" in data and "win-size" not in data:
-            use_display_resolution()
-
-        load_prc_file_data('', data)
+    if args.visualiser_flags is not None and not arg_valid("visualiser", args):
+        return False
 
     return True
 
-def configure_common(config, args) -> bool:
+def configure_common(config: Configuration, args: argparse.Namespace) -> bool:
     # for generator & analyzer
     config.num_dim = args.dims
 
-    config.simulator_write_debug_level = getattr(DebugLevel, args.debug)
-
-    if args.list_algorithms:
-        print("Available algorithms:")
-        for key in AlgorithmManager.builtins.keys():
-            print(f"  {key}")
-        print("Or specify your own file that contains a class that inherits from Algorithm")
-        sys.exit(0)
-
-    if args.algorithms:
-        algorithms = AlgorithmManager.load_all(args.algorithms)
-        if not all(algorithms):
-            invalid_algorithms = [args.algorithms[i] for i in range(len(algorithms)) if not algorithms[i]]
-            invalid_str = ",".join('"' + a + '"' for a in invalid_algorithms)
-            valid_str = ",".join('"' + a + '"' for a in AlgorithmManager.builtins.keys())
-            print(f"Invalid algorithm(s) specified: {invalid_str}", file=sys.stderr)
-            print(f"Available algorithms: {valid_str}", file=sys.stderr)
-            print("Or specify your own file that contains a class that inherits from Algorithm", file=sys.stderr)
-            return False
-
-        algorithms = list(flatten(algorithms, depth=1))
-
-        # name uniqueness
-        names = [a[0] for a in algorithms]
-        if len(set(names)) != len(names):
-            print("Name conflict detected in custom algorithm list:", names, file=sys.stderr)
-            return False
-
-        algorithms = dict(algorithms)
-        if args.include_builtin_algorithms:
-            algorithms.update(AlgorithmManager.builtins)
-
-        config.algorithms = algorithms
+    if args.include_builtin_algorithms:
+        config.algorithms.update(AlgorithmManager.builtins)
 
     if args.list_maps:
         print("Available maps:")
@@ -220,15 +140,14 @@ def configure_common(config, args) -> bool:
     elif args.include_all_builtin_maps:
         config.maps.update(MapManager.cached_builtins)
 
-    if args.deterministic:
-        random.seed(args.std_random_seed)
-        torch.manual_seed(args.torch_random_seed)
-        np.random.seed(args.numpy_random_seed)
-
     return True
 
-def configure_and_run(args):
+def configure_and_run(args: argparse.Namespace, configurers: List[Callable[[Configuration, argparse.Namespace], bool]]):
     config = Configuration()
+
+    for c in configurers:
+        if not c(config, args):
+            return False
 
     if not configure_common(config, args) or \
        not configure_generator(config, args) or \
@@ -246,6 +165,8 @@ def main() -> bool:
                                      description="PathBench runner",
                                      formatter_class=argparse.RawTextHelpFormatter)
 
+    configurers: List[Callable[[Configuration, argparse.Namespace], bool]] = []
+
     # Run arguments
     parser.add_argument("-v", "--visualiser", action='store_true', help="run visualiser (simulator with graphics)")
     parser.add_argument("-g", "--generator", action='store_true', help="run generator")
@@ -253,8 +174,7 @@ def main() -> bool:
     parser.add_argument("-a", "--analyzer", action='store_true', help="run analyzer")
 
     # Visualiser arguments
-    parser.add_argument("-V", dest="visualiser_flags", metavar="VISUALISER_FLAG", action='append',
-                        help="[visualiser] options (overrides Panda3D's default Config.prc - see https://docs.panda3d.org/1.10/python/programming/configuration/configuring-panda3d#configuring-panda3d [windowed-fullscreen is an additional custom boolean flag])")
+    configurers.append(add_configuration_flags(parser, visualiser_flags=True, help_prefix="[visualiser] "))
 
     # Generator arguments
     parser.add_argument("--room-size", nargs=2, type=int, help="[generator] min/max room size, in format \"min max\"")
@@ -265,10 +185,9 @@ def main() -> bool:
     # Miscellaneous
     parser.add_argument("--dims", type=int, help="[generator|analyzer] number of dimensions", default=3)
 
-    parser.add_argument("--algorithms", help="[visualiser|analyzer] algorithms to load (either built-in algorithm name or module file path)", nargs="+")
+    configurers.append(add_configuration_flags(parser, algorithms_flags=True, multiple_algorithms_specifiable=True, help_prefix="[visualiser|analyzer] "))
     parser.add_argument("--include-builtin-algorithms", action='store_true',
                         help="[visualiser|analyzer] include all builtin algorithms even when a custom list is provided via '--algorithms'")
-    parser.add_argument("--list-algorithms", action="store_true", help="[visualiser|analyzer] output list of available built-in algorithms")
 
     parser.add_argument("--maps", help="[visualiser|analyzer|trainer] maps to load (either built-in map name or module file path)", nargs="+")
     parser.add_argument("--include-all-builtin-maps", action='store_true',
@@ -277,16 +196,11 @@ def main() -> bool:
                         help="[visualiser|analyzer|trainer] include default builtin maps (does not include all cached maps) even when a custom list is provided via '--maps'")
     parser.add_argument("--list-maps", action="store_true", help="[visualiser|analyzer|trainer] output list of available built-in maps")
 
-    parser.add_argument("--deterministic", action='store_true', help="use pre-defined random seeds for deterministic exeuction")
-    parser.add_argument("--std-random-seed", type=int, default=0, help="'random' module random number generator seed")
-    parser.add_argument("--numpy-random-seed", type=int, default=0, help="'numpy' module random number generator seed")
-    parser.add_argument("--torch-random-seed", type=int, default=0, help="'torch' module random number generator seed")
-
-    parser.add_argument("-d", "--debug", choices=['NONE', 'BASIC', 'LOW', 'MEDIUM', 'HIGH'], default='LOW', help="debug level when running, default is low")
+    configurers.append(add_configuration_flags(parser, deterministic_flags=True, debug_flag=True))
 
     args = parser.parse_args()
     print("args:{}".format(args))
-    return configure_and_run(args)
+    return configure_and_run(args, configurers)
 
 
 if __name__ == "__main__":

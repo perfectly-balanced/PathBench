@@ -1,5 +1,6 @@
 import os
 import sys
+import argparse
 from typing import Optional
 
 from nptyping import NDArray
@@ -7,8 +8,8 @@ import numpy as np
 import cv2 as cv
 
 import rospy
-from nav_msgs.msg import OccupancyGrid, Odometry, PoseWithCovariance
-from geometry_msgs.msg import Twist
+from nav_msgs.msg import OccupancyGrid, Odometry
+from geometry_msgs.msg import Twist, PoseWithCovariance
 
 # Add PathBench/src to system path for module imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -27,6 +28,7 @@ from structures import Size, Point  # noqa: E402
 
 import utility.math as m  # noqa: E402
 from utility.misc import flatten  # noqa: E402
+from utility.argparse import add_configuration_flags  # noqa: E402
 
 class Ros:
     INFLATE: int = 3  # radius of agent for extended walls. Note, this currently isn't supported with dynamic maps due to time constraints (parameter is ignored).
@@ -34,7 +36,7 @@ class Ros:
     MAP_SIZE: int = 256  # the overall map size, can be as big as you like. Note, the initial map fragment will be located at the center of this 'big' map.
 
     _sim: Optional[Simulator]  # simulator
-    _grid: Optional[NDArray[(Ros.MAP_SIZE, Ros.MAP_SIZE), np.float32]]  # weight grid, shape (width, height), weight bounds: (0, 100), unmapped: -1
+    _grid: Optional[NDArray[(MAP_SIZE, MAP_SIZE), np.float32]]  # weight grid, shape (width, height), weight bounds: (0, 100), unmapped: -1
     _size: Optional[Size]  # size of the 'big' map (MAP_SIZE, MAP_SIZE).
     _res: Optional[float]  # map resolution (determined by initial map fragment).
     _scale: Optional[float]  # scale factor from raw map fragment to PathBench OGM grid (same factor for both x and y-axis)
@@ -102,7 +104,7 @@ class Ros:
         # safety, e.g. via `self._sim.services.algorithm.map.request_update()`.
         self._grid = grid  # reference assignment is atomic in python (no need for locks)
 
-    def _get_grid(self) -> NDArray[(Ros.MAP_SIZE, Ros.MAP_SIZE), np.float32]:
+    def _get_grid(self) -> NDArray[(MAP_SIZE, MAP_SIZE), np.float32]:
         return self._grid
 
     def _set_agent_pos(self, msg: Odometry) -> None:
@@ -192,7 +194,7 @@ class Ros:
         """
         pass
 
-    def _setup_sim(self) -> Simulator:
+    def _setup_sim(self, config: Optional[Configuration] = None, goal: Optional[Point] = None) -> Simulator:
         """
         Sets up the simulator (e.g. algorithm and map configuration).
         """
@@ -201,24 +203,23 @@ class Ros:
             rospy.loginfo("Waiting for grid or agent to initialise...")
             rospy.sleep(0.5)
 
-        config = Configuration()
+        if config is None:
+            config = Configuration()
 
         # general
         config.simulator_graphics = True
-        config.simulator_write_debug_level = DebugLevel.LOW
         config.simulator_key_frame_speed = 0.16
         config.simulator_key_frame_skip = 20
         config.get_agent_position = lambda: self._world_to_grid(Point(self._agent.pose.position.x, self._agent.pose.position.y))
         config.visualiser_simulator_config = False  # hide the simulator config window
 
         # algorithm
-        algorithm_name = "Global Way-point LSTM"
-        config.algorithms = AlgorithmManager.builtins
-        config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = config.algorithms[algorithm_name]
-        config.algorithm_name = algorithm_name
+        if config.algorithm_name is None:
+            config.algorithm_name = "Global Way-point LSTM"
+            config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = config.algorithms[config.algorithm_name]
 
         # map
-        goal = Goal(Point(0, 0))
+        goal = Goal(Point(0, 0) if goal is None else goal)
         agent = Agent(self._world_to_grid(Point(self._agent.pose.position.x, self._agent.pose.position.y)),
                       radius=self.INFLATE)
 
@@ -270,16 +271,47 @@ class Ros:
 
         return world_pos
 
-    def start(self) -> None:
+    def start(self, config: Optional[Configuration] = None, goal: Optional[Point] = None) -> None:
         """
         Start the simulator.
         """
 
         rospy.loginfo("Starting simulator")
-        self._sim = self._setup_sim()
+        self._sim = self._setup_sim(config, goal)
         self._sim.start()
 
 
-if __name__ == "__main__":
+def main() -> bool:
+    parser = argparse.ArgumentParser(prog="ros.py",
+                                     description="PathBench ROS extension runner",
+                                     formatter_class=argparse.RawTextHelpFormatter)
+    
+    configurers: List[Callable[[Configuration, argparse.Namespace], bool]] = []
+    configurers.append(add_configuration_flags(parser, visualiser_flags=True, algorithms_flags=True, multiple_algorithms_specifiable=False))
+
+    parser.add_argument("-g", "--goal", nargs=2, type=int, help="goal position \"x y\"")
+
+    args = parser.parse_args()
+    print("args:{}".format(args))
+
+    config = Configuration()
+
+    for c in configurers:
+        if not c(config, args):
+            return False
+    
+    if args.algorithm:
+        config.algorithm_name = list(config.maps.keys())[0]
+        config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = config.algorithms[config.algorithm_name]
+    
+    goal = Point(*args.goal) if args.goal else None
+
     ros = Ros()
-    ros.start()
+    ros.start(config, goal)
+
+    return True
+
+if __name__ == "__main__":
+    ret = main()
+    exit_code = 0 if ret else 1
+    sys.exit(exit_code)
