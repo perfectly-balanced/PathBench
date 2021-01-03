@@ -1,7 +1,5 @@
 import time
 import os
-import glob
-import cv2 as cv
 import unittest
 
 if __name__ == "__main__":

@@ -1,13 +1,11 @@
 import time
 import os
-import glob
-import cv2 as cv
 import unittest
 
 if __name__ == "__main__":
-    from common import init, destroy, mse, wait_for, take_screenshot
+    from common import init, destroy, wait_for, take_screenshot
 else:
-    from .common import init, destroy, mse, wait_for, take_screenshot
+    from .common import init, destroy, wait_for, take_screenshot
 
 
 def graphics_test() -> None:
