@@ -12,6 +12,7 @@ import sys
 from algorithms.configuration.configuration import Configuration
 from algorithms.algorithm_manager import AlgorithmManager
 from simulator.services.debug import DebugLevel
+from utility.misc import flatten
 
 def add_configuration_flags(parser: argparse.ArgumentParser,
                             help_prefix: str = "",

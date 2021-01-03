@@ -29,6 +29,7 @@ from structures import Size, Point  # noqa: E402
 import utility.math as m  # noqa: E402
 from utility.misc import flatten  # noqa: E402
 from utility.argparse import add_configuration_flags  # noqa: E402
+from utility.threading import Lock  # noqa: E402
 
 class Ros:
     INFLATE: int = 3  # radius of agent for extended walls. Note, this currently isn't supported with dynamic maps due to time constraints (parameter is ignored).
@@ -41,6 +42,8 @@ class Ros:
     _res: Optional[float]  # map resolution (determined by initial map fragment).
     _scale: Optional[float]  # scale factor from raw map fragment to PathBench OGM grid (same factor for both x and y-axis)
     _agent: Optional[PoseWithCovariance]  # latest agent pose data
+    _agent_lock: Lock
+    _grid_lock: Lock
 
     def __init__(self) -> None:
         self._grid = None
@@ -50,11 +53,13 @@ class Ros:
         self._res = None
         self._scale = None
         self._agent = None
+        self._agent_lock = Lock()
+        self._grid_lock = Lock()
 
         # initialise ROS node
         rospy.init_node("path_bench", log_level=rospy.INFO)
         rospy.Subscriber("/map", OccupancyGrid, self._set_slam)
-        rospy.Subscriber('/odom', Odometry, self._set_agent_pos)
+        rospy.Subscriber('/odom', Odometry, self._update_agent)
         self.pubs = {
             "vel": rospy.Publisher("/cmd_vel", Twist, queue_size=10),  # velocity
         }
@@ -102,13 +107,44 @@ class Ros:
         # make new grid accessible.
         # Note, it's up to the user / algorithm to request a map update for thread
         # safety, e.g. via `self._sim.services.algorithm.map.request_update()`.
-        self._grid = grid  # reference assignment is atomic in python (no need for locks)
+        self.grid = grid
 
-    def _get_grid(self) -> NDArray[(MAP_SIZE, MAP_SIZE), np.float32]:
-        return self._grid
+    @property
+    def grid(self) -> str:
+        return 'grid'
 
-    def _set_agent_pos(self, msg: Odometry) -> None:
-        self._agent = msg.pose
+    @grid.setter
+    def grid(self, value: NDArray[(MAP_SIZE, MAP_SIZE), np.float32]) -> None:
+        self._grid_lock.acquire()
+        self._grid = value
+        self._grid_lock.release()
+
+    @grid.getter
+    def grid(self) -> Optional[NDArray[(MAP_SIZE, MAP_SIZE), np.float32]]:
+        self._grid_lock.acquire()
+        grid = self._grid
+        self._grid_lock.release()
+        return grid
+
+    def _update_agent(self, msg: Odometry) -> None:
+        self.agent = msg.pose
+
+    @property
+    def agent(self) -> str:
+        return 'agent'
+
+    @agent.setter
+    def agent(self, value: PoseWithCovariance) -> None:
+        self._agent_lock.acquire()
+        self._agent = value
+        self._agent_lock.release()
+
+    @agent.getter
+    def agent(self) -> Optional[PoseWithCovariance]:
+        self._agent_lock.acquire()
+        agent = self._agent
+        self._agent_lock.release()
+        return agent
 
     @staticmethod
     def unit_vector(v):
@@ -137,8 +173,8 @@ class Ros:
         rospy.loginfo("Sending waypoint: {}".format(wp))
 
         for _ in range(max_it):
-            agent_pos = np.array([self._agent.pose.position.x, self._agent.pose.position.y])
-            q_agent_orientation = self._agent.pose.orientation
+            agent_pos = np.array([self.agent.pose.position.x, self.agent.pose.position.y])
+            q_agent_orientation = self.agent.pose.orientation
             q_agent_orientation = [q_agent_orientation.x, q_agent_orientation.y,
                                    q_agent_orientation.z, q_agent_orientation.w]
             agent_rot = m.euler_from_quaternion(q_agent_orientation, axes='sxyz')[0]
@@ -199,8 +235,8 @@ class Ros:
         Sets up the simulator (e.g. algorithm and map configuration).
         """
 
-        while self._grid is None or self._agent is None:
-            rospy.loginfo("Waiting for grid or agent to initialise...")
+        while self.grid is None or self.agent is None:
+            rospy.loginfo("Waiting for grid and agent to initialise...")
             rospy.sleep(0.5)
 
         if config is None:
@@ -210,7 +246,7 @@ class Ros:
         config.simulator_graphics = True
         config.simulator_key_frame_speed = 0.16
         config.simulator_key_frame_skip = 20
-        config.get_agent_position = lambda: self._world_to_grid(Point(self._agent.pose.position.x, self._agent.pose.position.y))
+        config.get_agent_position = lambda: self._world_to_grid(Point(self.agent.pose.position.x, self.agent.pose.position.y))
         config.visualiser_simulator_config = False  # hide the simulator config window
 
         # algorithm
@@ -220,12 +256,12 @@ class Ros:
 
         # map
         goal = Goal(Point(0, 0) if goal is None else goal)
-        agent = Agent(self._world_to_grid(Point(self._agent.pose.position.x, self._agent.pose.position.y)),
+        agent = Agent(self._world_to_grid(Point(self.agent.pose.position.x, self.agent.pose.position.y)),
                       radius=self.INFLATE)
 
         mp = RosMap(agent,
                     goal,
-                    self._get_grid,
+                    lambda: self.grid,
                     traversable_threshold=30,
                     unmapped_value=-1,
                     wp_publish=self._send_way_point,
@@ -244,7 +280,7 @@ class Ros:
 
     def _world_to_grid(self, world_pos: Point, origin: Optional[Point] = None) -> Point:
         """
-        Converts from meters coordinates to PathBench's grid coordinates (`self._grid`).
+        Converts from meters coordinates to PathBench's grid coordinates (`self.grid`).
         """
 
         # bottom-left corner of the grid to convert to
@@ -261,7 +297,7 @@ class Ros:
 
     def _grid_to_world(self, grid_pos: Point) -> Point:
         """
-        Converts PathBench's grid coordinates (`self._grid`) to meters coordinates.
+        Converts PathBench's grid coordinates (`self.grid`) to meters coordinates.
         """
 
         world_pos = grid_pos
@@ -283,9 +319,9 @@ class Ros:
 
 def main() -> bool:
     parser = argparse.ArgumentParser(prog="ros.py",
-                                     description="PathBench ROS extension runner",
+                                     description="PathBench 2D ROS extension runner",
                                      formatter_class=argparse.RawTextHelpFormatter)
-    
+
     configurers: List[Callable[[Configuration, argparse.Namespace], bool]] = []
     configurers.append(add_configuration_flags(parser, visualiser_flags=True, algorithms_flags=True, multiple_algorithms_specifiable=False))
 
@@ -299,17 +335,18 @@ def main() -> bool:
     for c in configurers:
         if not c(config, args):
             return False
-    
+
     if args.algorithm:
-        config.algorithm_name = list(config.maps.keys())[0]
+        config.algorithm_name = list(config.algorithms.keys())[0]
         config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = config.algorithms[config.algorithm_name]
-    
+
     goal = Point(*args.goal) if args.goal else None
 
     ros = Ros()
     ros.start(config, goal)
 
     return True
+
 
 if __name__ == "__main__":
     ret = main()
