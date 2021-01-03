@@ -39,11 +39,11 @@ def run() -> bool:
         time.sleep(2)
 
         if args.headless:
-            launch_process(['roslaunch', '{}/launch/turtlebot3_gmapping.launch'.format(this_dir), 'param_file:={}/param/turtlebot3_gmapping.yaml'.format(args.gmapping_param_file)])
+            launch_process(['roslaunch', '{}/launch/turtlebot3_gmapping.launch'.format(this_dir), 'param_file:={}'.format(args.gmapping_param_file)])
             launch_process(['roslaunch', '{}/launch/turtlebot3_house_no_x.launch'.format(this_dir)])
         else:
             launch_process(['roslaunch', 'turtlebot3_slam', 'turtlebot3_gmapping.launch'.format(this_dir),
-                            'param_file:={}/param/turtlebot3_gmapping.yaml'.format(args.gmapping_param_file)])
+                            'param_file:={}'.format(args.gmapping_param_file)])
             launch_process(['roslaunch', 'turtlebot3_gazebo', 'turtlebot3_house.launch'])
 
         if args.rviz:
