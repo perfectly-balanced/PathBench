@@ -119,14 +119,15 @@ class WayPointNavigation(Algorithm):
             new_freq: int = history_frequency.get(self.way_points[-1], 0) + 1
             history_frequency[self.way_points[-1]] = new_freq
 
+            self.__update_map(local_kernel_algo, global_kernel_algo)
+            self.key_frame(True)
+
             # fail safe
             if new_freq >= stuck_threshold:
                 break
 
             if self._get_grid().is_goal_reached(self.way_points[-1]):
                 break
-
-            self.key_frame()
 
         self.__is_local_anim = True
 
@@ -165,4 +166,4 @@ class WayPointNavigation(Algorithm):
         if isinstance(self._get_grid(), RosMap):
             self._get_grid().publish_wp(m.agent.position)
         self.total_steps += 1
-        self.key_frame()
+        self.key_frame(True)

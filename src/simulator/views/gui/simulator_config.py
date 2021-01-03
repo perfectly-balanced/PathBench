@@ -194,6 +194,14 @@ class SimulatorConfig(DirectObject):
             e.bind(DGG.B1PRESS, self.__entry_mouse_click_callback)
             self.accept("mouse1", self.__entry_mouse_click_callback)
 
+        self.__agent_disable_overlay = DirectButton(parent=self.__window.frame,
+                                                    frameColor=TRANSPARENT,
+                                                    borderWidth=(0.0, 0.0),
+                                                    frameSize=(-0.6, 1.4, -0.2, 0.2),
+                                                    pos=(-0.24, 0.4, -1.5),
+                                                    suppressMouse=True)
+        self.__agent_disable_overlay.hide()
+
         self.__maps_option = DirectOptionMenu(text="options",
                                               scale=0.14,
                                               parent=self.__window.frame,
@@ -235,6 +243,7 @@ class SimulatorConfig(DirectObject):
                                         borderWidth=(0.25, 0.15),
                                         frameSize=(-0.5, 0.92, -0.54, 0.54),
                                         scale=(0.50, 3.1, 0.25))
+
         self.btn_update = DirectButton(
             text="Update",
             text_fg=(0.3, 0.3, 0.3, 1.0),
@@ -298,19 +307,21 @@ class SimulatorConfig(DirectObject):
             for e in self.__entries:
                 e['focus'] = False
 
-    def __get_map_data(self):
+    def __get_map(self) -> Map:
         name = self.__maps_option.get()
         data = self.__maps[name]
 
-        if isinstance(data[0], str):
-            data = (self.__services.resources.maps_dir.load(data[0]), data[1])
+        if isinstance(data, str):
+            data = self.__services.resources.maps_dir.load(data)
             self.__maps[name] = data
 
-        assert isinstance(data[0], Map), "Map failed to load"
+        assert isinstance(data, Map), "Map failed to load"
         return data
 
     def __update_simulator_callback(self) -> None:
-        mp = self.__get_map_data()
+        agent_mutable = (not self.__services.settings.get_agent_position)
+
+        mp = self.__get_map()
         algo = self.__algorithms[self.__algorithms_option.get()]
         ani = self.__animations[self.__animations_option.get()]
 
@@ -328,10 +339,11 @@ class SimulatorConfig(DirectObject):
                 except:
                     vs.append(default[i])
             p = Point(*vs)
-            return p if mp[0].is_agent_valid_pos(p) else default
+            return p if mp.is_agent_valid_pos(p) else default
 
-        self.__state.agent = deduce_pos(mp[0].agent.position, self.__entries[:3])
-        self.__state.goal = deduce_pos(mp[0].goal.position, self.__entries[3:])
+        if agent_mutable:
+            self.__state.agent = deduce_pos(mp.agent.position, self.__entries[:3])
+        self.__state.goal = deduce_pos(mp.goal.position, self.__entries[3:])
         self.__update_position_entries()  # update if user-provided point was invalid
 
         # save state
@@ -344,15 +356,16 @@ class SimulatorConfig(DirectObject):
         config.map_name = self.__maps_option.get()
 
         refresh_map = (old_map_name != config.map_name) or \
-                      (mp[0] != config.simulator_initial_map) or \
-                      (self.__state.agent != mp[0].agent.position) or \
-                      (self.__state.goal != mp[0].goal.position)
+                      (mp != config.simulator_initial_map) or \
+                      (agent_mutable and self.__state.agent != mp.agent.position) or \
+                      (self.__state.goal != mp.goal.position)
 
         if refresh_map:
-            mp[0].move(mp[0].agent, self.__state.agent, True)
-            mp[0].move(mp[0].goal, self.__state.goal, True)
+            if agent_mutable:
+                mp.move(mp.agent, self.__state.agent, True)
+            mp.move(mp.goal, self.__state.goal, True)
 
-        config.simulator_initial_map, config.simulator_grid_display = mp
+        config.simulator_initial_map = mp
         config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = algo
         config.simulator_key_frame_speed, config.simulator_key_frame_skip = ani
         self.__services.reinit(refresh_map=refresh_map)
@@ -364,24 +377,35 @@ class SimulatorConfig(DirectObject):
         self.__services.ev_manager.post(ResetEvent())
 
     def __use_default_map_positions(self, *discard) -> None:
-        m = self.__get_map_data()[0]
+        m = self.__get_map()
 
         self.__state.agent = m.agent.position
         self.__state.goal = m.goal.position
         self.__update_position_entries()
 
     def __update_position_entries(self) -> None:
-        def update_entries(entries, pos):
+        def update_entries(entries, pos, mutable=True):
+            dim = pos.n_dim
+            if not mutable:
+                pos = ['-' for _ in range(dim)]
+
             entries[0].enterText(str(pos[0]))
             entries[1].enterText(str(pos[1]))
-            if pos.n_dim == 3:
+            if dim == 3:
                 entries[2].enterText(str(pos[2]))
                 entries[2].show()
             else:
                 entries[2].hide()
 
-        update_entries(self.__entries[:3], self.__state.agent)
+        # agent may be externally set
+        agent_mutable = (not self.__services.settings.get_agent_position)
+        update_entries(self.__entries[:3], self.__state.agent, mutable=agent_mutable)
         update_entries(self.__entries[3:], self.__state.goal)
+
+        if agent_mutable:
+            self.__agent_disable_overlay.hide()
+        else:
+            self.__agent_disable_overlay.show()
 
         # user has performed an action such as pressing a
         # button, therefore all entries should lose focus

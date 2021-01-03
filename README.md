@@ -116,8 +116,13 @@ training data.
 Analyzer. The final section manages the statistical measures used in the practical assessment of
 the algorithms. Custom metrics can be defined as well as graphical displays for visual interpretations.
 
-**ROS Real-time Extension**. The extension provides real-time support for visualisation, coordination
+**ROS Real-time Extension**
+
+This extension provides real-time support for visualisation, coordination
 and interaction with a physical robot.
+
+- For a basic demonstration of interacting with `RosMap` see [here](src/ros/basic/README.md).
+- For the fully functional 2D ROS Real-time Extension see [here](src/ros/advanced/README.md).
 
 **Example Real Trajectory**
 <br />
@@ -202,7 +207,6 @@ user defined Map components), Point, Size, Progress (progress bar), Timer, MapPr
 | load_simulator                                 	| bool                             	| If the simulator should be loaded                                                                        	|
 | clear_cache                                    	| bool                             	| If the cache should be deleted after the simulator is finished                                           	|
 | simulator_graphics                             	| bool                             	| If graphics should be used or not; evaluation is always done without graphics                            	|
-| simulator_grid_display                         	| bool                             	| The map can be visualised as a plain image or a grid; the window size is defined based on the choice     	|
 | simulator_initial_map                          	| Map                              	| The map used in AlgorithmRunner service                                                                  	|
 | simulator_algorithm_type                       	| Type[Algorithm]                  	| The algorithm type used in AlgorithmRunner service                                                       	|
 | simulator_algorithm_parameters                 	| Tuple[List[Any], Dict[str, Any]] 	| The algorithm parametrs in the form of *args and **kwargs which are used in AlgorithmRunner service      	|

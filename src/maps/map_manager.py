@@ -17,7 +17,7 @@ from utility.misc import static_class
 
 @static_class
 class MapManager():
-    MetaData = Tuple[Union[Map, str], bool]
+    MetaData = Union[Map, str]
 
     cached_builtins: Dict[str, MetaData]
     builtins: Dict[str, MetaData]
@@ -30,36 +30,36 @@ class MapManager():
             if name.startswith("_"):
                 continue
             
-            v = getattr(Maps, name)
-            if not isinstance(v, Map):
+            mp = getattr(Maps, name)
+            if not isinstance(mp, Map):
                 continue
             
-            display_name = v.name if v.name else name
-            cls.cached_builtins[display_name] = (v, True)
+            display_name = mp.name if mp.name else name
+            cls.cached_builtins[display_name] = mp
         
         cls.builtins = {
-            "Uniform Random Fill": ("uniform_random_fill_10/0", True),
-            "Uniform Random Fill 3D": ("uniform_random_fill_10_3d/0_3d", True),
-            "Block": ("block_map_10/6", True),
-            "Block 3D": ("block_map_10_3d/6_3d", True),
-            "House": ("house_10/6", True),
-            "House 3D": ("house_10_3d/6_3d", True),
-            Maps.grid_map_one_obstacle1.name: (Maps.grid_map_one_obstacle1, True),
-            Maps.grid_map_labyrinth.name: (Maps.grid_map_labyrinth, True),
-            Maps.grid_map_3d_example.name: (Maps.grid_map_3d_example, True),
-            Maps.grid_map_small_one_obstacle2.name: (Maps.grid_map_small_one_obstacle2, True),
-            Maps.grid_map_small_one_obstacle.name: (Maps.grid_map_small_one_obstacle, True),
-            Maps.grid_map_small_one_obstacle3.name: (Maps.grid_map_small_one_obstacle3, True),
-            Maps.grid_map_complex_obstacle.name: (Maps.grid_map_complex_obstacle, True),
-            Maps.grid_map_complex_obstacle2.name: (Maps.grid_map_complex_obstacle2, True),
-            Maps.grid_map_28x28vin.name: (Maps.grid_map_28x28vin, True),
-            "Small Obstacle": (Maps.grid_map_one_obstacle.convert_to_dense_map(), True),
-            Maps.ogm_2d.name: (Maps.ogm_2d, False),
-            Maps.ogm_3d.name: (Maps.ogm_3d, False),
-            "SLAM Map 1": ("map10", False),
-            "SLAM Map 1 (compressed)": ("map11", True),
-            "SLAM Map 2": ("map14", False),
-            "SLAM Map 3": ("map12", False),
+            "Uniform Random Fill": "uniform_random_fill_10/0",
+            "Uniform Random Fill 3D": "uniform_random_fill_10_3d/0_3d",
+            "Block": "block_map_10/6",
+            "Block 3D": "block_map_10_3d/6_3d",
+            "House": "house_10/6",
+            "House 3D": "house_10_3d/6_3d",
+            Maps.grid_map_one_obstacle1.name: Maps.grid_map_one_obstacle1,
+            Maps.grid_map_labyrinth.name: Maps.grid_map_labyrinth,
+            Maps.grid_map_3d_example.name: Maps.grid_map_3d_example,
+            Maps.grid_map_small_one_obstacle2.name: Maps.grid_map_small_one_obstacle2,
+            Maps.grid_map_small_one_obstacle.name: Maps.grid_map_small_one_obstacle,
+            Maps.grid_map_small_one_obstacle3.name: Maps.grid_map_small_one_obstacle3,
+            Maps.grid_map_complex_obstacle.name: Maps.grid_map_complex_obstacle,
+            Maps.grid_map_complex_obstacle2.name: Maps.grid_map_complex_obstacle2,
+            Maps.grid_map_28x28vin.name: Maps.grid_map_28x28vin,
+            "Small Obstacle": Maps.grid_map_one_obstacle.convert_to_dense_map(),
+            Maps.ogm_2d.name: Maps.ogm_2d,
+            Maps.ogm_3d.name: Maps.ogm_3d,
+            "SLAM Map 1": "map10",
+            "SLAM Map 1 (compressed)": "map11",
+            "SLAM Map 2": "map14",
+            "SLAM Map 3": "map12",
         }
 
     def load_all(ids: List[str]) -> List[List[Tuple[str, MetaData]]]:
@@ -108,7 +108,7 @@ class MapManager():
                     continue
 
                 display_name = mp.name if mp.name else os.path.basename(path) + " ({})".format(name)
-                maps.append((display_name, (mp, True)))
+                maps.append((display_name, mp))
             return maps
         except:
             msg = "Failed to load map from file '{}', reason:\n{}".format(path, traceback.format_exc())

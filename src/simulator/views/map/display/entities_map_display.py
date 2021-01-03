@@ -32,6 +32,8 @@ class EntitiesMapDisplay(MapDisplay):
 
         self.__cube_colours = {}
 
+        self.updates_cubes = True
+
     def render(self, *discarded) -> None:
         rv = self.get_renderer_view()
 
@@ -40,7 +42,6 @@ class EntitiesMapDisplay(MapDisplay):
         self.__cube_colours.clear()
 
         p3 = rv.to_point3
-        rv.display_updates_cube()
 
         self.__cube_colours[p3(self._map.agent)] = self.__agent_colour()
         self.__cube_colours[p3(self._map.goal)] = self.__goal_colour()
@@ -57,3 +58,8 @@ class EntitiesMapDisplay(MapDisplay):
     def update_cube(self, p: Point) -> None:
         if p in self.__cube_colours:
             self.get_renderer_view().colour_cube(self.__cube_colours[p])
+    
+    def request_update_all_cubes(self) -> None:
+        rv = self.get_renderer_view()
+        for p in self.__cube_colours:
+            rv.cube_requires_update(p)

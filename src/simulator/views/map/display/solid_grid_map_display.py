@@ -37,9 +37,9 @@ class SolidGridMapDisplay(MapDisplay):
 
         self.offset = Point(*([0]*self.grid.ndim)) if offset is None else offset
 
-    def render(self, *discarded) -> None:
-        self._root_view.display_updates_cube()
+        self.updates_cubes = True
 
+    def render(self, *discarded) -> None:
         c = self.colour()
         refresh = c != self.__deduced_colour
         self.__deduced_colour = c
@@ -65,3 +65,9 @@ class SolidGridMapDisplay(MapDisplay):
         p = Point(*p.values[:self.grid.ndim]) - self.offset
         if p.values < self.grid.shape and self.comparator(self.grid[p.values]):
             self._root_view.colour_cube(self.__deduced_colour)
+
+    def request_update_all_cubes(self) -> None:
+        rv = self.get_renderer_view()
+        for idx in np.ndindex(self.grid.shape):
+            if self.comparator(self.grid[idx]):
+                rv.cube_requires_update(Point(*idx))

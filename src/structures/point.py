@@ -1,4 +1,4 @@
-from typing import Union, Tuple, Callable
+from typing import Union, Tuple, Callable, Any
 
 import torch
 import copy
@@ -67,17 +67,17 @@ class Point(torch.Tensor):
         assert len(list(inp.size())) == 1
         return Point(*[int(torch.round(inp[i])) for i in range(list(inp.size())[0])])
 
-    def __add__(self, other: 'Point') -> 'Point':
-        return Point(*np.add(self.__values, other.__values))
+    def __add__(self, other: Any) -> 'Point':
+        return Point(*np.add(self.__values, other.__values if type(other) is Point else other))
 
-    def __sub__(self, other: 'Point') -> 'Point':
-        return Point(*np.subtract(self.__values, other.__values))
+    def __sub__(self, other: Any) -> 'Point':
+        return Point(*np.subtract(self.__values, other.__values if type(other) is Point else other))
 
-    def __mul__(self, other: 'Point') -> 'Point':
-        return Point(*np.multiply(self.__values, other.__values))
+    def __mul__(self, other: Any) -> 'Point':
+        return Point(*np.multiply(self.__values, other.__values if type(other) is Point else other))
 
-    def __truediv__(self, other: 'Point') -> 'Point':
-        return Point(*np.divide(self.__values, other.__values))
+    def __truediv__(self, other: Any) -> 'Point':
+        return Point(*np.divide(self.__values, other.__values if type(other) is Point else other))
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, Point) and (self.__values == other.__values)

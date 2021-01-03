@@ -8,8 +8,9 @@ from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule
 from algorithms.lstm.ML_model import MLModel
 from simulator.services.debug import DebugLevel
 
+from structures import Point
+
 class Configuration:
-    simulator_grid_display: bool
     simulator_initial_map: Optional[Union[str, Map]]
     simulator_algorithm_type: Optional[Type[Algorithm]]
     simulator_testing_type: Optional[Type[BasicTesting]]
@@ -50,9 +51,13 @@ class Configuration:
     trainer_custom_config: Optional[Dict[str, Any]]
     trainer_pre_process_data_only: bool
 
+    # Visualiser
+    visualiser_simulator_config: bool
+
     # Misc
     analyzer: bool
     algorithms: Dict[str, Tuple[Type[Algorithm], Type[BasicTesting], Tuple[List[Any], Dict[str, Any]]]]
+    get_agent_position: Callable[[], Point] 
     load_simulator: bool
     clear_cache: bool
     num_dim: int
@@ -61,7 +66,6 @@ class Configuration:
 
     def __init__(self) -> None:
         # Simulator settings
-        self.simulator_grid_display = False
         self.simulator_initial_map = None
         self.simulator_testing_type = None
         self.simulator_algorithm_type = None
@@ -69,7 +73,7 @@ class Configuration:
         self.simulator_graphics = False
         self.simulator_key_frame_speed = 0
         self.simulator_key_frame_skip = 0
-        self.simulator_write_debug_level = DebugLevel.NONE
+        self.simulator_write_debug_level = DebugLevel.LOW
 
         # Generator
         self.generator = False
@@ -111,6 +115,13 @@ class Configuration:
         # Common
         from algorithms.algorithm_manager import AlgorithmManager
         self.algorithms = copy.deepcopy(AlgorithmManager.builtins)
+        
+        # Method that returns an externally determined agent position
+        # When not None, this prevents any changes by the UI. This method
+        # will be called at every frame when algorithm isn't running and
+        # no post-run algorithm graphics is shown (e.g. after moving the
+        # goal position or immediately before restarting the algorithm).
+        self.get_agent_position = None
 
         from maps.map_manager import MapManager
         self.maps = copy.deepcopy(MapManager.builtins)
@@ -123,3 +134,6 @@ class Configuration:
 
         # Cache
         self.clear_cache = False
+
+        # Visualiser
+        self.visualiser_simulator_config = True
