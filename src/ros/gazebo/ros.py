@@ -1,21 +1,19 @@
 import os
 import sys
+from typing import Optional
 
+from nptyping import NDArray
 import numpy as np
 import cv2 as cv
 
 import rospy
-from nav_msgs.msg import OccupancyGrid, Odometry
+from nav_msgs.msg import OccupancyGrid, Odometry, PoseWithCovariance
 from geometry_msgs.msg import Twist
 
 # Add PathBench/src to system path for module imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from algorithms.classic.graph_based.a_star import AStar  # noqa: E402
-from algorithms.classic.testing.a_star_testing import AStarTesting  # noqa: E402
-from algorithms.classic.testing.way_point_navigation_testing import WayPointNavigationTesting  # noqa: E402
-from algorithms.lstm.a_star_waypoint import WayPointNavigation  # noqa: E402
-from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM  # noqa: E402
+from algorithms.algorithm_manager import AlgorithmManager  # noqa: E402
 from algorithms.configuration.configuration import Configuration  # noqa: E402
 from algorithms.configuration.entities.agent import Agent  # noqa: E402
 from algorithms.configuration.entities.goal import Goal  # noqa: E402
@@ -31,70 +29,83 @@ import utility.math as m  # noqa: E402
 from utility.misc import flatten  # noqa: E402
 
 class Ros:
-    INFLATE = 3
-    START_MAP_MAX_SIZE = 128
-    MAP_SIZE = 256
+    INFLATE: int = 3  # radius of agent for extended walls. Note, this currently isn't supported with dynamic maps due to time constraints (parameter is ignored).
+    INIT_MAP_SIZE: int = 128  # maximum map size for the first received map (this determines the scaling factor for all subsequent map updates).
+    MAP_SIZE: int = 256  # the overall map size, can be as big as you like. Note, the initial map fragment will be located at the center of this 'big' map.
 
-    def __init__(self):
+    _sim: Optional[Simulator]  # simulator
+    _grid: Optional[NDArray[(Ros.MAP_SIZE, Ros.MAP_SIZE), np.float32]]  # weight grid, shape (width, height), weight bounds: (0, 100), unmapped: -1
+    _size: Optional[Size]  # size of the 'big' map (MAP_SIZE, MAP_SIZE).
+    _res: Optional[float]  # map resolution (determined by initial map fragment).
+    _scale: Optional[float]  # scale factor from raw map fragment to PathBench OGM grid (same factor for both x and y-axis)
+    _agent: Optional[PoseWithCovariance]  # latest agent pose data
+
+    def __init__(self) -> None:
         self._grid = None
         self._sim = None
         self._origin = None
         self._size = None
         self._res = None
-        self._agent = None
         self._scale = None
+        self._agent = None
 
-        rospy.init_node("pb3d", log_level=rospy.INFO)
+        # initialise ROS node
+        rospy.init_node("path_bench", log_level=rospy.INFO)
         rospy.Subscriber("/map", OccupancyGrid, self._set_slam)
         rospy.Subscriber('/odom', Odometry, self._set_agent_pos)
         self.pubs = {
             "vel": rospy.Publisher("/cmd_vel", Twist, queue_size=10),  # velocity
         }
 
-    def _set_slam(self, msg):
+    def _set_slam(self, msg: OccupancyGrid) -> None:
         map_info = msg.info
         grid_data = msg.data
 
-        if self._size is None:
+        if self._size is None:  # init #
             self._size = Size(self.MAP_SIZE, self.MAP_SIZE)
             self._res = map_info.resolution
-            self._scale = self.START_MAP_MAX_SIZE / map_info.height
-            if (self.START_MAP_MAX_SIZE / map_info.width) < self._scale:
-                self._scale = self.START_MAP_MAX_SIZE / map_info.width
 
-            # set the origin to the big map origin, use the current map origin with
-            # negative grid position to retrieve the big map's origin in world coordinates
-            self._origin = [map_info.origin.position.x, map_info.origin.position.y]
-            start_map_size_scaled = Size(int(round(self._scale * map_info.width)), int(round(self._scale * map_info.height)))
-            map_origin = Point(-(self.MAP_SIZE - start_map_size_scaled.width) // 2, -(self.MAP_SIZE - start_map_size_scaled.height) // 2)
-            self._origin = self._grid_to_world(map_origin)
+            self._scale = self.INIT_MAP_SIZE / map_info.height
+            if (self.INIT_MAP_SIZE / map_info.width) < self._scale:
+                self._scale = self.INIT_MAP_SIZE / map_info.width
 
+        # convert raw grid data into a matrix for future processing (compression)
         raw_grid = np.empty((map_info.height, map_info.width), dtype=np.float32)
-
         for i in range(len(grid_data)):
             col = i % map_info.width
             row = int((i - col) / map_info.width)
             raw_grid[row, col] = grid_data[i]
 
+        # compress the map to a suitable size (maintains aspect ratio)
         raw_grid = cv.resize(raw_grid, None, fx=self._scale, fy=self._scale, interpolation=cv.INTER_AREA)
 
-        # get position of original origin in new map
-        start = self._world_to_grid(self._origin, origin=[map_info.origin.position.x, map_info.origin.position.y])
+        if self._origin is None:  # init #
+            # set the origin to the big map origin, use the raw grid origin with
+            # negative grid position to retrieve the big map's origin in world coordinates
+            self._origin = Point(map_info.origin.position.x, map_info.origin.position.y)
+            init_map_size = Size(*raw_grid.shape[::-1])
+            map_origin_pos = Point((init_map_size.width - self._size.width) // 2, (init_map_size.height - self._size.height) // 2)
+            self._origin = self._grid_to_world(map_origin_pos)
 
-        # take an offsetted, cropped view of the raw grid
+        # get position of big map origin in current raw map
+        start = self._world_to_grid(self._origin, origin=Point(map_info.origin.position.x, map_info.origin.position.y))
+
+        # take an offsetted, potentially cropped view of the current raw map
         grid = np.full(self._size, -1)
         for i in range(start[0], start[0] + self._size.width):
             for j in range(start[1], start[1] + self._size.height):
                 if i >= 0 and j >= 0 and i < raw_grid.shape[1] and j < raw_grid.shape[0]:
                     grid[i - start[0]][j - start[1]] = raw_grid[j][i]
 
-        # make new grid accessible. Note, it's up to the algorithm to request a map update for thread safety.
-        self._grid = grid
+        # make new grid accessible.
+        # Note, it's up to the user / algorithm to request a map update for thread
+        # safety, e.g. via `self._sim.services.algorithm.map.request_update()`.
+        self._grid = grid  # reference assignment is atomic in python (no need for locks)
 
-    def _get_grid(self):
+    def _get_grid(self) -> NDArray[(Ros.MAP_SIZE, Ros.MAP_SIZE), np.float32]:
         return self._grid
 
-    def _set_agent_pos(self, msg):
+    def _set_agent_pos(self, msg: Odometry) -> None:
         self._agent = msg.pose
 
     @staticmethod
@@ -107,7 +118,11 @@ class Ros:
         v2 = unit_vector(v2)
         return np.arccos(np.clip(np.dot(v1, v2), -1.0, 1.0))
 
-    def _send_way_point(self, wp):
+    def _send_way_point(self, wp: Point) -> None:
+        """
+        Sends velocity commands to get the robot to move to the given way point.
+        """
+
         goal_tresh = 0.1
         angle_tresh = 0.1
         sleep = 0.01
@@ -116,7 +131,6 @@ class Ros:
         forward_multiplier = 0.5
         found = False
 
-        grid_wp = wp
         wp = np.array(self._grid_to_world(wp))
         rospy.loginfo("Sending waypoint: {}".format(wp))
 
@@ -154,10 +168,11 @@ class Ros:
 
         rospy.loginfo("Waypoint found: {}".format(found))
 
-    def _send_vel_msg(self, vel=None, rot=None):
-        '''
-        send velocity 
-        '''
+    def _send_vel_msg(self, vel=None, rot=None) -> None:
+        """
+        Send velocity.
+        """
+
         if not vel:
             vel = 0
         if not rot:
@@ -171,12 +186,20 @@ class Ros:
         vel_msg.angular.x, vel_msg.angular.y, vel_msg.angular.z = rot
         self.pubs["vel"].publish(vel_msg)
 
-    def _setup_sim(self) -> Simulator:
-        while self._grid is None or self._agent is None:
-            print("Sleep...")
-            rospy.sleep(0.5)
+    def _map_update_requested(self) -> None:
+        """
+        Map update was requested.
+        """
+        pass
 
-        agent_pos = self._world_to_grid([self._agent.pose.position.x, self._agent.pose.position.y])
+    def _setup_sim(self) -> Simulator:
+        """
+        Sets up the simulator (e.g. algorithm and map configuration).
+        """
+
+        while self._grid is None or self._agent is None:
+            rospy.loginfo("Waiting for grid or agent to initialise...")
+            rospy.sleep(0.5)
 
         config = Configuration()
 
@@ -185,74 +208,76 @@ class Ros:
         config.simulator_write_debug_level = DebugLevel.LOW
         config.simulator_key_frame_speed = 0.16
         config.simulator_key_frame_skip = 20
-        config.get_agent_position = lambda: self._world_to_grid([self._agent.pose.position.x, self._agent.pose.position.y])
-        config.visualiser_simulator_config = False
+        config.get_agent_position = lambda: self._world_to_grid(Point(self._agent.pose.position.x, self._agent.pose.position.y))
+        config.visualiser_simulator_config = False  # hide the simulator config window
 
         # algorithm
-        config.algorithms = {"Global Way-point LSTM": (WayPointNavigation,
-                                                       WayPointNavigationTesting,
-                                                       ([],
-                                                        {"global_kernel": (CombinedOnlineLSTM, ([], {})),
-                                                         "global_kernel_max_it": 30}))}
-        config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = list(config.algorithms.values())[0]
-        config.algorithm_name = list(config.algorithms.keys())[0]
+        algorithm_name = "Global Way-point LSTM"
+        config.algorithms = AlgorithmManager.builtins
+        config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = config.algorithms[algorithm_name]
+        config.algorithm_name = algorithm_name
 
         # map
-        mp = RosMap(Agent(agent_pos, radius=self.INFLATE),
-                    Goal(Point(0, 0)),
+        goal = Goal(Point(0, 0))
+        agent = Agent(self._world_to_grid(Point(self._agent.pose.position.x, self._agent.pose.position.y)),
+                      radius=self.INFLATE)
+
+        mp = RosMap(agent,
+                    goal,
                     self._get_grid,
-                    traversable_threshold=50,
+                    traversable_threshold=30,
                     unmapped_value=-1,
                     wp_publish=self._send_way_point,
+                    update_requested=self._map_update_requested,
                     name="ROS Map")
 
         config.maps = {mp.name: mp}
         config.simulator_initial_map = list(config.maps.values())[0]
         config.map_name = list(config.maps.keys())[0]
 
+        # create the simulator
         s = Services(config)
         s.algorithm.map.request_update()
         sim = Simulator(s)
         return sim
 
-    def _world_to_grid(self, pos, origin=None):
-        '''
-        converts from meters coordinates to grid coordinates.
-        If `scaled`, convert to PathBench's OGM size, otherwise use ROS's size.
-        '''
+    def _world_to_grid(self, world_pos: Point, origin: Optional[Point] = None) -> Point:
+        """
+        Converts from meters coordinates to PathBench's grid coordinates (`self._grid`).
+        """
 
+        # bottom-left corner of the grid to convert to
         if origin is None:
             origin = self._origin
 
-        grid_pos = [pos[0] - origin[0], pos[1] - origin[1]]
-        grid_pos = [x / self._res for x in grid_pos]
-        grid_pos[0] = int(round(self._scale * grid_pos[0]))
-        grid_pos[1] = int(round(self._scale * grid_pos[1]))
+        grid_pos = world_pos
+        grid_pos = grid_pos - origin
+        grid_pos = grid_pos / self._res
+        grid_pos = grid_pos * self._scale
+        grid_pos = Point(*np.rint(grid_pos.values))
 
-        return Point(*grid_pos)
+        return grid_pos
 
-    def _grid_to_world(self, pos):
-        '''
-        converts grid coordinates to meters coordinates.
-        If `scaled`, assume grid coordinates are relative to 
-        PathBench's OGM size, otherwise assume ROS's size.
-        '''
+    def _grid_to_world(self, grid_pos: Point) -> Point:
+        """
+        Converts PathBench's grid coordinates (`self._grid`) to meters coordinates.
+        """
 
-        world_pos = pos
-        world_pos = [p / self._scale for p in world_pos]
-        world_pos = [p * self._res for p in world_pos]
-        world_pos = [world_pos[0] + self._origin[0],
-                     world_pos[1] + self._origin[1]]
+        world_pos = grid_pos
+        world_pos = world_pos / self._scale
+        world_pos = world_pos * self._res
+        world_pos = world_pos + self._origin
 
         return world_pos
 
-    def _find_goal(self):
-        rospy.loginfo("Starting Simulator")
+    def start(self) -> None:
+        """
+        Start the simulator.
+        """
+
+        rospy.loginfo("Starting simulator")
         self._sim = self._setup_sim()
         self._sim.start()
-
-    def start(self):
-        self._find_goal()
 
 
 if __name__ == "__main__":
