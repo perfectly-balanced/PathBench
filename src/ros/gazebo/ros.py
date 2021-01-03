@@ -53,7 +53,7 @@ class Ros:
 
     def _set_slam(self, msg):
         map_info = msg.info
-        raw_grid = msg.data
+        grid_data = msg.data
 
         if self._size is None:
             self._size = Size(self.MAP_SIZE, self.MAP_SIZE)
@@ -62,37 +62,34 @@ class Ros:
             if (self.START_MAP_MAX_SIZE / map_info.width) < self._scale:
                 self._scale = self.START_MAP_MAX_SIZE / map_info.width
 
-            # set the origin to the big map origin, use the current map origin with 
+            # set the origin to the big map origin, use the current map origin with
             # negative grid position to retrieve the big map's origin in world coordinates
             self._origin = [map_info.origin.position.x, map_info.origin.position.y]
             start_map_size_scaled = Size(int(round(self._scale * map_info.width)), int(round(self._scale * map_info.height)))
             map_origin = Point(-(self.MAP_SIZE - start_map_size_scaled.width) // 2, -(self.MAP_SIZE - start_map_size_scaled.height) // 2)
             self._origin = self._grid_to_world(map_origin)
 
-        grid = np.empty((map_info.height, map_info.width), dtype=np.float32)
+        raw_grid = np.empty((map_info.height, map_info.width), dtype=np.float32)
 
-        for i in range(len(raw_grid)):
+        for i in range(len(grid_data)):
             col = i % map_info.width
             row = int((i - col) / map_info.width)
-            grid[row, col] = raw_grid[i]
-        
-        grid = cv.resize(grid, None, fx=self._scale, fy=self._scale, interpolation=cv.INTER_AREA)
+            raw_grid[row, col] = grid_data[i]
+
+        raw_grid = cv.resize(raw_grid, None, fx=self._scale, fy=self._scale, interpolation=cv.INTER_AREA)
 
         # get position of original origin in new map
         start = self._world_to_grid(self._origin, origin=[map_info.origin.position.x, map_info.origin.position.y])
 
         # take an offsetted, cropped view of the raw grid
-        grid2 = np.full(self._size, -1)
+        grid = np.full(self._size, -1)
         for i in range(start[0], start[0] + self._size.width):
             for j in range(start[1], start[1] + self._size.height):
-                if i >= 0 and j >= 0 and i < grid.shape[1] and j < grid.shape[0]:
-                    grid2[i - start[0]][j - start[1]] = grid[j][i]
-        grid = grid2
-        if flatten(grid, -1):
-            self._grid = grid
+                if i >= 0 and j >= 0 and i < raw_grid.shape[1] and j < raw_grid.shape[0]:
+                    grid[i - start[0]][j - start[1]] = raw_grid[j][i]
 
-        if self._sim is not None:
-            self._sim.services.algorithm.map.request_update()
+        # make new grid accessible. Note, it's up to the algorithm to request a map update for thread safety.
+        self._grid = grid
 
     def _get_grid(self):
         return self._grid
@@ -122,8 +119,6 @@ class Ros:
         grid_wp = wp
         wp = np.array(self._grid_to_world(wp))
         rospy.loginfo("Sending waypoint: {}".format(wp))
-        print(self._world_to_grid([self._agent.pose.position.x, self._agent.pose.position.y]), grid_wp)
-        print([self._agent.pose.position.x, self._agent.pose.position.y], wp)
 
         for _ in range(max_it):
             agent_pos = np.array([self._agent.pose.position.x, self._agent.pose.position.y])
@@ -137,14 +132,9 @@ class Ros:
             angle_left = np.sign(goal_rot - agent_rot) * (np.abs(goal_rot - agent_rot) % np.pi)
             dist_left = np.linalg.norm(goal_dir)
 
-            # print()
-            # print("Position: {}, Agent Angle: {}".format(agent_pos, agent_rot))
-            # print("Angle Left: {}, Dist Left: {}".format(angle_left, dist_left))
-
             # rotate
             if not np.abs(angle_left) < angle_tresh:
                 rot_speed = np.clip(angle_left * rot_multiplier, -1, 1)
-                # print("Rotating with speed: {}".format(rot_speed))
                 self._send_vel_msg(rot=rot_speed)
                 rospy.sleep(sleep)
                 continue
@@ -152,7 +142,6 @@ class Ros:
             # go forward
             if not dist_left < goal_tresh:
                 forward_speed = np.clip(dist_left * forward_multiplier, 0, 0.5)
-                #print("Moving with speed: {}".format(forward_speed))
                 self._send_vel_msg(vel=forward_speed)
                 rospy.sleep(sleep)
                 continue
@@ -226,12 +215,12 @@ class Ros:
         sim = Simulator(s)
         return sim
 
-    def _world_to_grid(self, pos, origin = None):
+    def _world_to_grid(self, pos, origin=None):
         '''
         converts from meters coordinates to grid coordinates.
         If `scaled`, convert to PathBench's OGM size, otherwise use ROS's size.
         '''
-        
+
         if origin is None:
             origin = self._origin
 
