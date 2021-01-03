@@ -32,7 +32,8 @@ from utility.misc import flatten  # noqa: E402
 
 class Ros:
     INFLATE = 3
-    MAX_SIZE = 128
+    START_MAP_MAX_SIZE = 128
+    MAP_SIZE = 256
 
     def __init__(self):
         self._grid = None
@@ -41,8 +42,7 @@ class Ros:
         self._size = None
         self._res = None
         self._agent = None
-        self._scale_width = None
-        self._scale_height = None
+        self._scale = None
 
         rospy.init_node("pb3d", log_level=rospy.INFO)
         rospy.Subscriber("/map", OccupancyGrid, self._set_slam)
@@ -56,9 +56,18 @@ class Ros:
         raw_grid = msg.data
 
         if self._size is None:
-            self._size = Size(map_info.width, map_info.height)
+            self._size = Size(self.MAP_SIZE, self.MAP_SIZE)
             self._res = map_info.resolution
+            self._scale = self.START_MAP_MAX_SIZE / map_info.height
+            if (self.START_MAP_MAX_SIZE / map_info.width) < self._scale:
+                self._scale = self.START_MAP_MAX_SIZE / map_info.width
+
+            # set the origin to the big map origin, use the current map origin with 
+            # negative grid position to retrieve the big map's origin in world coordinates
             self._origin = [map_info.origin.position.x, map_info.origin.position.y]
+            start_map_size_scaled = Size(int(round(self._scale * map_info.width)), int(round(self._scale * map_info.height)))
+            map_origin = Point(-(self.MAP_SIZE - start_map_size_scaled.width) // 2, -(self.MAP_SIZE - start_map_size_scaled.height) // 2)
+            self._origin = self._grid_to_world(map_origin)
 
         grid = np.empty((map_info.height, map_info.width), dtype=np.float32)
 
@@ -66,20 +75,17 @@ class Ros:
             col = i % map_info.width
             row = int((i - col) / map_info.width)
             grid[row, col] = raw_grid[i]
-
-        if self._scale_width is None or self._scale_height is None:
-            self._scale_width = 1 # self.MAX_SIZE / self._size.width
-            self._scale_height = 1 # self.MAX_SIZE / self._size.height
-            # grid = cv.resize(grid, None, fx=self._scale_width, fy=self._scale_height, interpolation=cv.INTER_AREA)
+        
+        grid = cv.resize(grid, None, fx=self._scale, fy=self._scale, interpolation=cv.INTER_AREA)
 
         # get position of original origin in new map
         start = self._world_to_grid(self._origin, origin=[map_info.origin.position.x, map_info.origin.position.y])
 
-        # crop raw grid
+        # take an offsetted, cropped view of the raw grid
         grid2 = np.full(self._size, -1)
         for i in range(start[0], start[0] + self._size.width):
             for j in range(start[1], start[1] + self._size.height):
-                if i >= 0 and j >= 0 and i < map_info.width and j < map_info.height:
+                if i >= 0 and j >= 0 and i < grid.shape[1] and j < grid.shape[0]:
                     grid2[i - start[0]][j - start[1]] = grid[j][i]
         grid = grid2
         if flatten(grid, -1):
@@ -220,7 +226,7 @@ class Ros:
         sim = Simulator(s)
         return sim
 
-    def _world_to_grid(self, pos, origin = None, scaled: bool = True):
+    def _world_to_grid(self, pos, origin = None):
         '''
         converts from meters coordinates to grid coordinates.
         If `scaled`, convert to PathBench's OGM size, otherwise use ROS's size.
@@ -228,30 +234,24 @@ class Ros:
         
         if origin is None:
             origin = self._origin
-        
-        scale_width = self._scale_width if scaled else 1
-        scale_height = self._scale_height if scaled else 1
 
         grid_pos = [pos[0] - origin[0], pos[1] - origin[1]]
         grid_pos = [x / self._res for x in grid_pos]
-        grid_pos[0] = int(round(scale_width * (grid_pos[0])))
-        grid_pos[1] = int(round(scale_height * (grid_pos[1])))
+        grid_pos[0] = int(round(self._scale * grid_pos[0]))
+        grid_pos[1] = int(round(self._scale * grid_pos[1]))
 
         return Point(*grid_pos)
 
-    def _grid_to_world(self, pos, scaled: bool = True):
+    def _grid_to_world(self, pos):
         '''
         converts grid coordinates to meters coordinates.
         If `scaled`, assume grid coordinates are relative to 
         PathBench's OGM size, otherwise assume ROS's size.
         '''
 
-        if scaled:
-            pos = (pos[0] / self._scale_height, pos[1] / self._scale_width)
-
         world_pos = pos
-        world_pos = [world_pos[0] * self._res,
-                     world_pos[1] * self._res]
+        world_pos = [p / self._scale for p in world_pos]
+        world_pos = [p * self._res for p in world_pos]
         world_pos = [world_pos[0] + self._origin[0],
                      world_pos[1] + self._origin[1]]
 
