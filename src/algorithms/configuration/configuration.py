@@ -118,11 +118,9 @@ class Configuration:
         
         # Method that returns an externally determined agent position
         # When not None, this prevents any changes by the UI. This method
-        # will be called at every frame when algorithm isn't running,
-        # appropriately moving the agent position. If agent position
-        # changes this will reset the previous run view. For ROS, it
-        # is therefore ideal to continue sending necessary velocity
-        # commands to maintain agent position.
+        # will be called at every frame when algorithm isn't running and
+        # no post-run algorithm graphics is shown (e.g. after moving the
+        # goal position or immediately before restarting the algorithm).
         self.get_agent_position = None
 
         from maps.map_manager import MapManager
