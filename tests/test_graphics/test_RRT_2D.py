@@ -34,7 +34,8 @@ def graphics_test() -> None:
 class GraphicsTestCase(unittest.TestCase):
     def test(self):
         try:
-            init()
+            this_dir = os.path.dirname(os.path.abspath(__file__))
+            init(visualiser_args=['--maps', '{}/RRT_test_map_2D.py'.format(this_dir)])
             graphics_test()
         finally:
             destroy()

@@ -26,7 +26,7 @@ from simulator.services.resources.directory import Directory  # noqa: E402
 g_restore_resources: bool = False
 
 
-def setup(args) -> None:
+def setup(args: argparse.Namespace, visualiser_args: List[str]) -> None:
     global g_restore_resources
 
     atexit.register(destroy)
@@ -46,17 +46,16 @@ def setup(args) -> None:
     pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ['DISPLAY'])
 
     if not args.no_launch_visualiser:
-        launch_process(
-            [sys.executable, os.path.join(SRC_PATH, 'main.py'), '-d', args.debug, '-v', '-Vwindowed-fullscreen',
-             '-Vaudio-library-name=null', '--deterministic'],
-            on_kill=lambda _: pyautogui.press('esc'))
+        launch_process([sys.executable, os.path.join(SRC_PATH, 'main.py'), '-d', args.debug, '-v', '-Vwindowed-fullscreen',
+                        '-Vaudio-library-name=null', '--deterministic'] + visualiser_args,
+                        on_kill=lambda _: pyautogui.press('esc'))
 
         pyautogui.moveTo(1, 1)
         wait_for('update.png')
 
 
 def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool = False,
-         no_rm_config_file: bool = False) -> None:
+         no_rm_config_file: bool = False, visualiser_args: List[str] = []) -> None:
     parser = argparse.ArgumentParser(prog="common.py",
                                      description="PathBench individual test initialiser",
                                      formatter_class=argparse.RawTextHelpFormatter)
@@ -80,10 +79,10 @@ def init(no_restore_resources_at_exit: bool = False, no_launch_visualiser: bool 
     if no_rm_config_file:
         sys.argv.append("--no-rm-config-file")
 
-    args = parser.parse_known_args()[0]
+    args, rem_args = parser.parse_known_args()
     print("args:{}".format(args))
 
-    setup(args)
+    setup(args, visualiser_args + rem_args)
 
 
 def destroy() -> None:
@@ -120,12 +119,12 @@ def wait_for(rel_img: str, delay: float = 0.5, max_it: int = 30, confidence: flo
 
 
 # Lower values better
-def mse(img_a, img_b) -> float:
+def mse(img_a: np.ndarray, img_b: np.ndarray) -> float:
     err = np.sum((img_a.astype("float") - img_b.astype("float")) ** 2)
     err /= float(img_a.shape[0] * img_a.shape[1])
     return err
 
-def compare_images(img_a_path, img_b_path, threshold: float = 30, delay: float = 0.8, max_it: int = 10) -> None:
+def compare_images(img_a_path: str, img_b_path: str, threshold: float = 30, delay: float = 0.8, max_it: int = 10) -> None:
     def read(path) -> np.ndarray:
         # saving 4K images can take a while, therefore it's
         # likely the read will fail due to partially images
@@ -171,7 +170,7 @@ def take_screenshot(ref_path: str = None, threshold: float = 30, delay: float = 
 
         if ref_path is not None:
             try:
-                compare_images(file_path, ref_path)
+                compare_images(file_path, ref_path, threshold)
             except AssertionError:
                 if t + 1 == max_tries:
                     raise
