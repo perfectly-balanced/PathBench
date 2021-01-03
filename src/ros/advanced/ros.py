@@ -229,6 +229,35 @@ class Ros:
         Map update was requested.
         """
         pass
+    
+    def _world_to_grid(self, world_pos: Point, origin: Optional[Point] = None) -> Point:
+        """
+        Converts from meters coordinates to PathBench's grid coordinates (`self.grid`).
+        """
+
+        # bottom-left corner of the grid to convert to
+        if origin is None:
+            origin = self._origin
+
+        grid_pos = world_pos
+        grid_pos = grid_pos - origin
+        grid_pos = grid_pos / self._res
+        grid_pos = grid_pos * self._scale
+        grid_pos = Point(*np.rint(grid_pos.values))
+
+        return grid_pos
+
+    def _grid_to_world(self, grid_pos: Point) -> Point:
+        """
+        Converts PathBench's grid coordinates (`self.grid`) to meters coordinates.
+        """
+
+        world_pos = grid_pos
+        world_pos = world_pos / self._scale
+        world_pos = world_pos * self._res
+        world_pos = world_pos + self._origin
+
+        return world_pos
 
     def _setup_sim(self, config: Optional[Configuration] = None, goal: Optional[Point] = None) -> Simulator:
         """
@@ -277,35 +306,6 @@ class Ros:
         s.algorithm.map.request_update()
         sim = Simulator(s)
         return sim
-
-    def _world_to_grid(self, world_pos: Point, origin: Optional[Point] = None) -> Point:
-        """
-        Converts from meters coordinates to PathBench's grid coordinates (`self.grid`).
-        """
-
-        # bottom-left corner of the grid to convert to
-        if origin is None:
-            origin = self._origin
-
-        grid_pos = world_pos
-        grid_pos = grid_pos - origin
-        grid_pos = grid_pos / self._res
-        grid_pos = grid_pos * self._scale
-        grid_pos = Point(*np.rint(grid_pos.values))
-
-        return grid_pos
-
-    def _grid_to_world(self, grid_pos: Point) -> Point:
-        """
-        Converts PathBench's grid coordinates (`self.grid`) to meters coordinates.
-        """
-
-        world_pos = grid_pos
-        world_pos = world_pos / self._scale
-        world_pos = world_pos * self._res
-        world_pos = world_pos + self._origin
-
-        return world_pos
 
     def start(self, config: Optional[Configuration] = None, goal: Optional[Point] = None) -> None:
         """

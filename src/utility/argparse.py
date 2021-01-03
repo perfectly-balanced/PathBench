@@ -123,7 +123,7 @@ def configure_algorithms_flags(config: Configuration, args: argparse.Namespace) 
             print(f"  {key}")
         print("Or specify your own file that contains a class that inherits from Algorithm")
         sys.exit(0)
-    
+
     d = vars(args)
     if "algorithm" in d and d["algorithm"]:
         in_algorithms = [d["algorithm"]]
@@ -154,5 +154,5 @@ def configure_algorithms_flags(config: Configuration, args: argparse.Namespace) 
 
         algorithms = dict(algorithms)
         config.algorithms = algorithms
-    
+
     return True

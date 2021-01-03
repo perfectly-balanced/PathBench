@@ -116,8 +116,13 @@ training data.
 Analyzer. The final section manages the statistical measures used in the practical assessment of
 the algorithms. Custom metrics can be defined as well as graphical displays for visual interpretations.
 
-**ROS Real-time Extension**. The extension provides real-time support for visualisation, coordination
+**ROS Real-time Extension**
+
+This extension provides real-time support for visualisation, coordination
 and interaction with a physical robot.
+
+- For a basic demonstration of interacting with `RosMap` see [here](src/ros/basic/README.md).
+- For the fully functional 2D ROS Real-time Extension see [here](src/ros/advanced/README.md).
 
 **Example Real Trajectory**
 <br />
