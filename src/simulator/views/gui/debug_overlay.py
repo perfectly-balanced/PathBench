@@ -30,21 +30,21 @@ class DebugOverlay():
         self.__debug_labels = []
         for i in range(0, 5):
             l = OnscreenText(text=self.__labels[i],
-                             parent=self.__base.aspect2d,
-                             pos=(-1.35, 0.92 - i * 0.05),
+                             parent=self.__base.render2d,
+                             pos=(-0.865, 0.92 - i * 0.05),
                              mayChange=True,
                              align=TextNode.ARight,
-                             scale=0.03)
+                             scale=(0.02, 0.029, 0.73))
             self.__debug_labels.append(l)
 
         self.__debug_var = []
         for i in range(0, 5):
             v = OnscreenText(text="-",
-                             parent=self.__base.aspect2d,
-                             pos=(-1.3, 0.92 - i * 0.05),
+                             parent=self.__base.render2d,
+                             pos=(-0.855, 0.92 - i * 0.05),
                              mayChange=True,
                              align=TextNode.ALeft,
-                             scale=0.03)
+                             scale=(0.02, 0.029, 0.73))
             self.__debug_var.append(v)
 
         self.__services.ev_manager.register_listener(self)
