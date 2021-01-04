@@ -36,7 +36,7 @@ Note, the main script can be run from any working directory as PathBench doesn't
 | c 	                | Toggle visibility of simulator config window                          |
 | v 	                | Toggle visibility of view editor window                               |
 | m                 	| Toggle map between Sparse and Dense                               	|
-| i                     | Toggle visibility of debug overlay
+| i                     | Toggle visibility of debug overlay                                    |
 
 Note, screenshots are placed in `data/screenshots`.
 
