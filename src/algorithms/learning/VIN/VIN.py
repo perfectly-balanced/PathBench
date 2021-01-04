@@ -116,6 +116,7 @@ class VINAlgorithm(Algorithm):
                 pred_traj[j, 0] = nr
                 pred_traj[j, 1] = nc
                 self.move_agent(Point(nr, nc))
+                self.key_frame(True)
                 if nr == goal[0] and nc == goal[1]:
                     # We hit goal so fill remaining steps
                     pred_traj[j + 1:, 0] = nr
@@ -124,8 +125,9 @@ class VINAlgorithm(Algorithm):
             # Plot optimal and predicted path (also start, end)
             if pred_traj[-1, 0] == goal[0] and pred_traj[-1, 1] == goal[1]:
                 self.move_agent(self._get_grid().goal.position)
+                self.key_frame(True)
                 return
-            self.key_frame()
+            self.key_frame(True)
 
     def load_VIN(self, size):
         if size in self.cached_models: return self.cached_models[size]
