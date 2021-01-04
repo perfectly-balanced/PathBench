@@ -39,7 +39,8 @@ class CameraController(Controller, DirectObject):
             "up": 0,
             "down": 0,
             "wheelup": 0,
-            "wheeldown": 0
+            "wheeldown": 0,
+            "top_view": 0
         }
 
         self.angle = 0
@@ -54,6 +55,7 @@ class CameraController(Controller, DirectObject):
         self.accept("d", self.update_key_map, ["right", 1])
         self.accept("w", self.update_key_map, ["up", 1])
         self.accept("s", self.update_key_map, ["down", 1])
+        self.accept("q", self.update_key_map, ["top_view", 1])
         self.accept("a-up", self.update_key_map, ["left", 0])
         self.accept("d-up", self.update_key_map, ["right", 0])
         self.accept("w-up", self.update_key_map, ["up", 0])
@@ -86,7 +88,10 @@ class CameraController(Controller, DirectObject):
         if self.key_map["wheeldown"] != 0:
             self.dist = self.dist / (1 + (self.zoom_per_sec - 1) * globalClock.getDt())
             self.update_key_map("wheeldown", 0)
-
+        if self.key_map["top_view"] != 0:
+            self.latitude_deg = -90
+            self.longitude_deg = 0
+            self.update_key_map("top_view", 0)
         if self.longitude_deg > 180.0:
             self.longitude_deg = self.longitude_deg - 360.0
         if self.longitude_deg < -180.0:
@@ -119,15 +124,6 @@ class CameraController(Controller, DirectObject):
 
         # End task
         return task.cont
-
-
-
-    # Displays position of the camera on the screen
-    def show_cam_pos(self):
-        x = self.__origin.getX()
-        y = self.__origin.getY()
-        z = self.__origin.getZ()
-        self.title = OnscreenText(text=str(x) + ":" + str(y) + ":" + str(z), style=1, fg=(1, 1, 0, 1), pos=(0, 0), scale=0.07)
 
     def destroy(self) -> None:
         self.ignore_all()
