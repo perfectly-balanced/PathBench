@@ -42,7 +42,7 @@ def graphics_test() -> None:
 
     # pick colors and other modifications of the map
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
-    pyautogui.click(x - 80, y)
+    pyautogui.click(x - 83, y)
     time.sleep(0.5)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'orange.png'), confidence=0.9)
     pyautogui.click(x, y)
@@ -59,9 +59,10 @@ def graphics_test() -> None:
     time.sleep(0.5)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'colour_1.png'), confidence=0.8)
     pyautogui.click(x, y)
-    time.sleep(2)
+    time.sleep(1.5)
 
     transparent_1 = take_screenshot()
+    time.sleep(1)
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'save.png'), confidence=0.7)
     pyautogui.click(x, y)
@@ -74,10 +75,13 @@ def graphics_test() -> None:
     transparent_2 = take_screenshot()
 
     # change colors
+    time.sleep(0.5)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
-    pyautogui.click(x - 80, y)
+    pyautogui.click(x - 85, y)
+    time.sleep(0.5)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'lime.png'), confidence=0.9)
     pyautogui.click(x, y)
+    time.sleep(0.5)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'trace.png'), confidence=0.8)
     pyautogui.click(x - 70, y)
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'lightblue.png'), confidence=0.7)
@@ -96,7 +100,7 @@ def graphics_test() -> None:
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'one.png'), confidence=0.7)
     pyautogui.click(x, y)
-    time.sleep(1.5)
+    time.sleep(2.5)
 
     transparent_restored_1 = take_screenshot()
 

@@ -124,7 +124,7 @@ def mse(img_a: np.ndarray, img_b: np.ndarray) -> float:
     err /= float(img_a.shape[0] * img_a.shape[1])
     return err
 
-def compare_images(img_a_path: str, img_b_path: str, threshold: float = 30, delay: float = 0.8, max_it: int = 10) -> None:
+def compare_images(img_a_path: str, img_b_path: str, threshold: float = 300, delay: float = 0.8, max_it: int = 10) -> None:
     def read(path) -> np.ndarray:
         # saving 4K images can take a while, therefore it's
         # likely the read will fail due to partially images
@@ -145,7 +145,7 @@ def compare_images(img_a_path: str, img_b_path: str, threshold: float = 30, dela
     diff = mse(img_a, img_b)
     assert diff < threshold, diff
 
-def take_screenshot(ref_path: str = None, threshold: float = 30, delay: float = 0.8, max_it: int = 30, max_tries: int = 3) -> str:
+def take_screenshot(ref_path: str = None, threshold: float = 300, delay: float = 0.8, max_it: int = 30, max_tries: int = 3) -> str:
     import pyautogui  # cannot be done globally due to $DISPLAY madness
 
     for t in range(max_tries):

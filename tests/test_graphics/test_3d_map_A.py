@@ -62,7 +62,7 @@ def graphics_test() -> None:
 
     x, y = pyautogui.locateCenterOnScreen(os.path.join(TEST_DATA_PATH, 'traversables_new.png'), confidence=0.5)
     pyautogui.click(x - 125, y)
-
+    time.sleep(0.6)
     take_screenshot("3d_A_1.png")
 
     wait_for('traversables_new.png')
