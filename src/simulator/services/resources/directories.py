@@ -13,7 +13,7 @@ from simulator.services.resources.directory import Directory
 from simulator.services.services import Services
 
 if TYPE_CHECKING:
-    from algorithms.lstm.ML_model import MLModel
+    from algorithms.learning.ML_model import MLModel
 
 
 class ModelSubdir(Directory):

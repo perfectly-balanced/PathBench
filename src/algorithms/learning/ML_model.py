@@ -12,7 +12,7 @@ from torch import Tensor
 from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence, pad_packed_sequence, pack_sequence, PackedSequence
 from torch.utils import data
 from torch.utils.data import DataLoader, TensorDataset, Dataset, Subset
-from algorithms.lstm.map_processing import MapProcessing
+from algorithms.learning.map_processing import MapProcessing
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
 
@@ -154,7 +154,7 @@ class PackedDataset(Dataset):
     lengths: torch.Tensor
 
     def __init__(self, seq: List[torch.Tensor]) -> None:
-        from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule
+        from algorithms.learning.LSTM_tile_by_tile import BasicLSTMModule
 
         ls = list(map(lambda el: el.shape[0], seq))
         self.perm = BasicLSTMModule.get_sort_by_lengths_indices(ls)

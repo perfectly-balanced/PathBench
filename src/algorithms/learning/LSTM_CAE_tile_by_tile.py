@@ -15,9 +15,9 @@ from torchvision import transforms, datasets
 
 from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.maps.map import Map
-from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule, OnlineLSTM
-from algorithms.lstm.ML_model import MLModel, EvaluationResults
-from algorithms.lstm.map_processing import MapProcessing
+from algorithms.learning.LSTM_tile_by_tile import BasicLSTMModule, OnlineLSTM
+from algorithms.learning.ML_model import MLModel, EvaluationResults
+from algorithms.learning.map_processing import MapProcessing
 from simulator.services.services import Services
 from utility.constants import DATA_PATH
 

@@ -3,8 +3,8 @@ from algorithms.classic.graph_based.a_star import AStar
 from simulator.simulator import Simulator
 from simulator.services.services import Services
 from simulator.services.debug import DebugLevel, Debug
-from algorithms.lstm.a_star_waypoint import WayPointNavigation
-from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
+from algorithms.learning.a_star_waypoint import WayPointNavigation
+from algorithms.learning.LSTM_tile_by_tile import OnlineLSTM
 from algorithms.configuration.maps.map import Map
 from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.configuration import Configuration

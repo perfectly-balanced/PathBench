@@ -5,7 +5,7 @@ from typing import List, Tuple, Optional, Set
 from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.maps.map import Map
-from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
+from algorithms.learning.LSTM_tile_by_tile import OnlineLSTM
 from simulator.services.algorithm_runner import AlgorithmRunner
 from simulator.services.services import Services
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay

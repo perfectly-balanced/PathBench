@@ -10,8 +10,8 @@ from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.entities.goal import Goal
 from algorithms.configuration.maps.map import Map
-from algorithms.lstm.ML_model import MLModel, SingleTensorDataset, PackedDataset
-from algorithms.lstm.map_processing import MapProcessing
+from algorithms.learning.ML_model import MLModel, SingleTensorDataset, PackedDataset
+from algorithms.learning.map_processing import MapProcessing
 from simulator.services.services import Services
 from simulator.views.map.display.entities_map_display import EntitiesMapDisplay
 from simulator.views.map.display.online_lstm_map_display import OnlineLSTMMapDisplay
