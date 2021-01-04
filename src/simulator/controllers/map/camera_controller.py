@@ -31,9 +31,8 @@ class CameraController(Controller, DirectObject):
         self.max_dist = 4000.0
         self.zoom_per_sec = 4
         self.longitude_deg = 0.0
-        self.latitude_deg = 0.0
+        self.latitude_deg = -25
         self.dist = 10.0
-
         self.key_map = {
             "left": 0,
             "right": 0,
