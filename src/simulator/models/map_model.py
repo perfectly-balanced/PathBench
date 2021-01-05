@@ -16,6 +16,7 @@ from simulator.services.event_manager.events.state_terminated_event import State
 from simulator.services.event_manager.events.state_entity_update_event import StateEntityUpdateEvent
 from typing import Callable
 
+
 class AlgorithmTerminated(Exception):
     pass
 
@@ -27,6 +28,7 @@ class MapModel(Model):
     frame_timer: Timer
     condition: Condition
     processing_key_frame: bool
+    should_reset: bool
 
     def __init__(self, services: Services) -> None:
         super().__init__(services)
@@ -37,10 +39,13 @@ class MapModel(Model):
         self.processing_key_frame = False
         self.frame_timer = Timer()
         self.speed = 1 if self._services.settings.simulator_grid_display else 20
+        self.should_reset = True
 
         self._services.algorithm.set_root()
 
     def move_forward(self, e) -> None:
+        self.reset()
+        self.should_reset = False
         if self._services.algorithm.map.size.n_dim == 3:
             p = Point(e.position.x, e.position.y + self.speed, e.position.z)
         else:
@@ -48,6 +53,8 @@ class MapModel(Model):
         self.move_valid_entity(e, p)
 
     def move_backwards(self, e) -> None:
+        self.reset()
+        self.should_reset = False
         if self._services.algorithm.map.size.n_dim == 3:
             p = Point(e.position.x, e.position.y - self.speed, e.position.z)
         else:
@@ -56,15 +63,21 @@ class MapModel(Model):
 
     def move_up(self, e) -> None:
         if self._services.algorithm.map.size.n_dim == 3:
+            self.reset()
+            self.should_reset = False
             p = Point(e.position.x, e.position.y, e.position.z + self.speed)
             self.move_valid_entity(e, p)
 
     def move_down(self, e) -> None:
         if self._services.algorithm.map.size.n_dim == 3:
+            self.reset()
+            self.should_reset = False
             p = Point(e.position.x, e.position.y, e.position.z - self.speed)
             self.move_valid_entity(e, p)
 
     def move_left(self, e) -> None:
+        self.reset()
+        self.should_reset = False
         if self._services.algorithm.map.size.n_dim == 3:
             p = Point(e.position.x - self.speed, e.position.y, e.position.z)
         else:
@@ -72,6 +85,8 @@ class MapModel(Model):
         self.move_valid_entity(e, p)
 
     def move_right(self, e) -> None:
+        self.reset()
+        self.should_reset = False
         if self._services.algorithm.map.size.n_dim == 3:
             p = Point(e.position.x + self.speed, e.position.y, e.position.z)
         else:
@@ -108,13 +123,15 @@ class MapModel(Model):
             if self.last_thread is None:
                 self._services.ev_manager.post(KeyFrameEvent(refresh=True))
 
-    def move(self, to: Callable[[], Point]) -> None:
-        self.reset()
+    def move(self, to: Point) -> None:
+        if self.should_reset:
+            self.reset()
         self._services.algorithm.map.move_agent(to, True)
         self._services.ev_manager.broadcast(StateEntityUpdateEvent())
 
-    def move_goal(self, to: Callable[[], Point]) -> None:
-        self.reset()
+    def move_goal(self, to: Point) -> None:
+        if self.should_reset:
+            self.reset()
         self._services.algorithm.map.move(self._services.algorithm.map.goal, to, True)
         self._services.ev_manager.broadcast(StateEntityUpdateEvent())
 
