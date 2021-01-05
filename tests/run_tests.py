@@ -19,7 +19,7 @@ def run() -> bool:
     parser.add_argument("--discovery-path", default=tests_path, help="recursively discovers tests using the specified file path")
     parser.add_argument("--discovery-pattern", default='test*.py', help="regex expression with discovered tests that have a matching file path being executed")
 
-    args = parser.parse_known_args()[0]
+    args, sys.argv = parser.parse_known_args()
     print("args:{}".format(args))
 
     loader: TestLoader = unittest.TestLoader()

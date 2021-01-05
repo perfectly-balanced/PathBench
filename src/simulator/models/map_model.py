@@ -14,8 +14,7 @@ from structures import Point
 from simulator.services.event_manager.events.state_done_event import StateDoneEvent
 from simulator.services.event_manager.events.state_terminated_event import StateTerminatedEvent
 from simulator.services.event_manager.events.state_entity_update_event import StateEntityUpdateEvent
-from simulator.services.event_manager.events.initialise_event import InitialiseEvent
-from simulator.services.event_manager.events.reinit_event import ReinitEvent
+from typing import Callable
 
 
 class AlgorithmTerminated(Exception):
@@ -42,21 +41,61 @@ class MapModel(Model):
 
         self._services.algorithm.set_root()
 
-    def move_up(self) -> None:
-        self.move(Point(self._services.algorithm.map.agent.position.x,
-                        self._services.algorithm.map.agent.position.y - self.speed))
+    def move_forward(self, e) -> None:
+        self.reset()
+        if self._services.algorithm.map.size.n_dim == 3:
+            p = Point(e.position.x, e.position.y + self.speed, e.position.z)
+        else:
+            p = Point(e.position.x, e.position.y + self.speed)
+        self.move_valid_entity(e, p)
 
-    def move_down(self) -> None:
-        self.move(Point(self._services.algorithm.map.agent.position.x,
-                        self._services.algorithm.map.agent.position.y + self.speed))
+    def move_backwards(self, e) -> None:
+        self.reset()
+        if self._services.algorithm.map.size.n_dim == 3:
+            p = Point(e.position.x, e.position.y - self.speed, e.position.z)
+        else:
+            p = Point(e.position.x, e.position.y - self.speed)
+        self.move_valid_entity(e, p)
 
-    def move_left(self):
-        self.move(Point(self._services.algorithm.map.agent.position.x - self.speed,
-                        self._services.algorithm.map.agent.position.y))
+    def move_up(self, e) -> None:
+        if self._services.algorithm.map.size.n_dim == 3:
+            self.reset()
+            p = Point(e.position.x, e.position.y, e.position.z + self.speed)
+            self.move_valid_entity(e, p)
 
-    def move_right(self) -> None:
-        self.move(Point(self._services.algorithm.map.agent.position.x + self.speed,
-                        self._services.algorithm.map.agent.position.y))
+    def move_down(self, e) -> None:
+        if self._services.algorithm.map.size.n_dim == 3:
+            self.reset()
+            p = Point(e.position.x, e.position.y, e.position.z - self.speed)
+            self.move_valid_entity(e, p)
+
+    def move_left(self, e) -> None:
+        self.reset()
+        if self._services.algorithm.map.size.n_dim == 3:
+            p = Point(e.position.x - self.speed, e.position.y, e.position.z)
+        else:
+            p = Point(e.position.x - self.speed, e.position.y)
+        self.move_valid_entity(e, p)
+
+    def move_right(self, e) -> None:
+        self.reset()
+        if self._services.algorithm.map.size.n_dim == 3:
+            p = Point(e.position.x + self.speed, e.position.y, e.position.z)
+        else:
+            p = Point(e.position.x + self.speed, e.position.y)
+        self.move_valid_entity(e, p)
+
+    def move_valid_entity(self, e, p) -> None:
+        if self._services.algorithm.map.is_agent_valid_pos(p):
+            if self.is_agent(e):
+                self.move(p, False)
+                self._services.debug.write("Moved agent to: " + str(p), DebugLevel.MEDIUM)
+            else:
+                self.move_goal(p, False)
+                self._services.debug.write("Moved goal to: " + str(p), DebugLevel.MEDIUM)
+
+    def is_agent(self, e) -> bool:
+        return e is self._services.algorithm.map.agent
 
     def reset(self) -> None:
         self.stop_algorithm()
@@ -76,13 +115,15 @@ class MapModel(Model):
             if self.last_thread is None:
                 self._services.ev_manager.post(KeyFrameEvent(refresh=True))
 
-    def move(self, to: Point) -> None:
-        self.reset()
+    def move(self, to: Point, should_reset: bool = True) -> None:
+        if should_reset:
+            self.reset()
         self._services.algorithm.map.move_agent(to, True)
         self._services.ev_manager.broadcast(StateEntityUpdateEvent())
 
-    def move_goal(self, to: Point) -> None:
-        self.reset()
+    def move_goal(self, to: Point, should_reset: bool = True) -> None:
+        if should_reset:
+            self.reset()
         self._services.algorithm.map.move(self._services.algorithm.map.goal, to, True)
         self._services.ev_manager.broadcast(StateEntityUpdateEvent())
 
@@ -116,7 +157,8 @@ class MapModel(Model):
             dt = self.frame_timer.stop()
             if self.requires_key_frame or (dt < MAX_FRAME_DT):
                 with self.cv:
-                    if cond_var_wait_for(self.cv, lambda: self.requires_key_frame or self.last_thread is None, timeout=(MAX_FRAME_DT - dt)):
+                    if cond_var_wait_for(self.cv, lambda: self.requires_key_frame or self.last_thread is None,
+                                         timeout=(MAX_FRAME_DT - dt)):
                         self.processing_key_frame = True
                         self._services.ev_manager.post(KeyFrameEvent())
                 self.frame_timer = Timer()
