@@ -8,7 +8,7 @@ import pandas.tests.extension
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.goal import Goal
 from algorithms.configuration.maps.map import Map
-from algorithms.lstm.map_processing import MapProcessing
+from algorithms.learning.map_processing import MapProcessing
 from simulator.services.services import Services
 from simulator.views.map.display.map_display import MapDisplay
 from structures import Point, Colour, DynamicColour, RED

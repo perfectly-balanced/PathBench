@@ -3,7 +3,7 @@ from typing import Dict, Any
 import numpy as np
 
 from algorithms.basic_testing import BasicTesting
-from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
+from algorithms.learning.combined_online_LSTM import CombinedOnlineLSTM
 from simulator.services.debug import DebugLevel
 
 

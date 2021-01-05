@@ -10,7 +10,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from natsort import natsorted
 
-from algorithms.lstm.LSTM_CAE_tile_by_tile import CAE
+from algorithms.learning.LSTM_CAE_tile_by_tile import CAE
 from algorithms.classic.graph_based.a_star import AStar
 from algorithms.classic.testing.a_star_testing import AStarTesting
 from algorithms.configuration.configuration import Configuration
@@ -18,7 +18,7 @@ from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.entity import Entity
 from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.maps.map import Map
-from algorithms.lstm.map_processing import MapProcessing
+from algorithms.learning.map_processing import MapProcessing
 from simulator.services.debug import DebugLevel
 from simulator.services.progress import Progress
 from simulator.services.resources.atlas import Atlas

@@ -30,9 +30,10 @@ from algorithms.classic.sample_based.rrt import RRT
 from algorithms.classic.sample_based.rrt_star import RRT_Star
 from algorithms.classic.sample_based.rrt_connect import RRT_Connect
 from algorithms.classic.graph_based.wavefront import Wavefront
-from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
-from algorithms.lstm.a_star_waypoint import WayPointNavigation
-from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
+from algorithms.learning.LSTM_tile_by_tile import OnlineLSTM
+from algorithms.learning.a_star_waypoint import WayPointNavigation
+from algorithms.learning.combined_online_LSTM import CombinedOnlineLSTM
+from algorithms.learning.VIN.VIN import VINAlgorithm
 
 if HAS_OMPL:
     from algorithms.classic.sample_based.ompl_rrt import OMPL_RRT
@@ -103,7 +104,8 @@ class AlgorithmManager():
             "Dijkstra": (Dijkstra, DijkstraTesting, ([], {})),
             "Bug1": (Bug1, BasicTesting, ([], {})),
             "Bug2": (Bug2, BasicTesting, ([], {})),
-            "Potential Field": (PotentialField, BasicTesting, ([], {}))
+            "Potential Field": (PotentialField, BasicTesting, ([], {})),
+            "VIN": (VINAlgorithm, BasicTesting, ([], {"load_name": "vin_pretrained"}))
         }
 
         if HAS_OMPL:

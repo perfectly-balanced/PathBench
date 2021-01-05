@@ -4,8 +4,8 @@ import copy
 from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.maps.map import Map
-from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule
-from algorithms.lstm.ML_model import MLModel
+from algorithms.learning.LSTM_tile_by_tile import BasicLSTMModule
+from algorithms.learning.ML_model import MLModel
 from simulator.services.debug import DebugLevel
 
 from structures import Point

@@ -8,7 +8,7 @@ from algorithms.basic_testing import BasicTesting
 from algorithms.classic.graph_based.a_star import AStar
 from algorithms.configuration.entities.goal import Goal
 from algorithms.configuration.entities.trace import Trace
-from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
+from algorithms.learning.LSTM_tile_by_tile import OnlineLSTM
 from simulator.services.algorithm_runner import AlgorithmRunner
 from simulator.services.services import Services
 from simulator.views.map.display.gradient_list_map_display import GradientListMapDisplay

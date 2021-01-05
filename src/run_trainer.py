@@ -5,8 +5,8 @@ from algorithms.algorithm import Algorithm
 from algorithms.basic_testing import BasicTesting
 from algorithms.configuration.maps.map import Map
 from maps.map_manager import MapManager
-from algorithms.lstm.LSTM_tile_by_tile import BasicLSTMModule, OnlineLSTM
-from algorithms.lstm.ML_model import MLModel
+from algorithms.learning.LSTM_tile_by_tile import BasicLSTMModule, OnlineLSTM
+from algorithms.learning.ML_model import MLModel
 from simulator.services.debug import DebugLevel
 from analyzer.analyzer import Analyzer
 from generator.generator import Generator
@@ -27,10 +27,10 @@ from algorithms.classic.sample_based.rrt_star import RRT_Star
 from algorithms.classic.sample_based.rrt_connect import RRT_Connect
 from algorithms.classic.graph_based.wavefront import Wavefront
 from algorithms.configuration.configuration import Configuration
-from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
-from algorithms.lstm.a_star_waypoint import WayPointNavigation
-from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
-from algorithms.lstm.LSTM_CAE_tile_by_tile import CAE, LSTMCAEModel
+from algorithms.learning.LSTM_tile_by_tile import OnlineLSTM
+from algorithms.learning.a_star_waypoint import WayPointNavigation
+from algorithms.learning.combined_online_LSTM import CombinedOnlineLSTM
+from algorithms.learning.LSTM_CAE_tile_by_tile import CAE, LSTMCAEModel
 
 
 # planner testing

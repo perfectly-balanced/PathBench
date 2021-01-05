@@ -7,8 +7,8 @@ from algorithms.classic.graph_based.a_star import AStar
 from algorithms.classic.testing.combined_online_lstm_testing import CombinedOnlineLSTMTesting
 from algorithms.configuration.maps.map import Map
 from algorithms.configuration.maps.ros_map import RosMap
-from algorithms.lstm.LSTM_tile_by_tile import OnlineLSTM
-from algorithms.lstm.combined_online_LSTM import CombinedOnlineLSTM
+from algorithms.learning.LSTM_tile_by_tile import OnlineLSTM
+from algorithms.learning.combined_online_LSTM import CombinedOnlineLSTM
 from simulator.services.algorithm_runner import AlgorithmRunner
 from simulator.services.services import Services
 from simulator.views.map.display.map_display import MapDisplay

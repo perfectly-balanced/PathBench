@@ -10,7 +10,7 @@ import torch
 from torch import nn
 
 from algorithms.basic_testing import BasicTesting
-from algorithms.lstm.online_lstm import BasicLSTMModule, OnlineLSTM
+from algorithms.learning.online_lstm import BasicLSTMModule, OnlineLSTM
 from simulator.services.services import Services
 
 
