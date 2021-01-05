@@ -115,13 +115,13 @@ class MapModel(Model):
             if self.last_thread is None:
                 self._services.ev_manager.post(KeyFrameEvent(refresh=True))
 
-    def move(self, to: Point, should_reset: bool) -> None:
+    def move(self, to: Point, should_reset: bool = True) -> None:
         if should_reset:
             self.reset()
         self._services.algorithm.map.move_agent(to, True)
         self._services.ev_manager.broadcast(StateEntityUpdateEvent())
 
-    def move_goal(self, to: Point, should_reset: bool) -> None:
+    def move_goal(self, to: Point, should_reset: bool = True) -> None:
         if should_reset:
             self.reset()
         self._services.algorithm.map.move(self._services.algorithm.map.goal, to, True)
