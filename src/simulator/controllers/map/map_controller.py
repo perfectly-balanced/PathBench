@@ -54,6 +54,7 @@ class MapController(Controller, DirectObject):
         self.accept("o", lambda: self._services.ev_manager.post(TakeMapScreenshotEvent()))
         self.accept("t", compute_trace)
 
+        # Moves agent and goal entities with keys
         self.accept("arrow_right", self._model.move_right, [self._services.algorithm.map.agent])
         self.accept("arrow_right-repeat", self._model.move_right, [self._services.algorithm.map.agent])
         self.accept("alt-arrow_right", self._model.move_right, [self._services.algorithm.map.goal])

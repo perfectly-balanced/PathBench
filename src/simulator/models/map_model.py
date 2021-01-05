@@ -14,9 +14,7 @@ from structures import Point
 from simulator.services.event_manager.events.state_done_event import StateDoneEvent
 from simulator.services.event_manager.events.state_terminated_event import StateTerminatedEvent
 from simulator.services.event_manager.events.state_entity_update_event import StateEntityUpdateEvent
-from simulator.services.event_manager.events.initialise_event import InitialiseEvent
-from simulator.services.event_manager.events.reinit_event import ReinitEvent
-
+from typing import Callable
 
 class AlgorithmTerminated(Exception):
     pass
@@ -81,7 +79,7 @@ class MapModel(Model):
         self.move_valid_entity(e, p)
 
     def move_valid_entity(self, e, p) -> None:
-        if not self._services.algorithm.map.is_out_of_bounds_pos(p):
+        if self._services.algorithm.map.is_agent_valid_pos(p):
             if self.is_agent(e):
                 self.move(p)
                 self._services.debug.write("Moved agent to: " + str(p), DebugLevel.MEDIUM)
@@ -110,12 +108,12 @@ class MapModel(Model):
             if self.last_thread is None:
                 self._services.ev_manager.post(KeyFrameEvent(refresh=True))
 
-    def move(self, to: Point) -> None:
+    def move(self, to: Callable[[], Point]) -> None:
         self.reset()
         self._services.algorithm.map.move_agent(to, True)
         self._services.ev_manager.broadcast(StateEntityUpdateEvent())
 
-    def move_goal(self, to: Point) -> None:
+    def move_goal(self, to: Callable[[], Point]) -> None:
         self.reset()
         self._services.algorithm.map.move(self._services.algorithm.map.goal, to, True)
         self._services.ev_manager.broadcast(StateEntityUpdateEvent())
