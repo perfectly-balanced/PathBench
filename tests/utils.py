@@ -40,6 +40,11 @@ def handle_display_args(args) -> None:
             time.sleep(0.2)
             if os.path.exists("/var/tmp/Xvfb_screen0"):
                 break
+        
+        print("DISPLAY", os.environ['DISPLAY'], file=sys.stderr)
+    else:
+        print("NO DISPLAY", file=sys.stderr)
+
 
     if args.view_display:
         display = os.environ['DISPLAY'] if args.view_display == "auto" else args.view_display
