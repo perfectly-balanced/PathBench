@@ -45,9 +45,12 @@ def setup(args) -> None:
     # enforce correct display being used
     pyautogui._pyautogui_x11._display = Xlib.display.Display(os.environ['DISPLAY'])
 
+    # Fall back to sys executable if no env variable to specify how to run with codecov
+    executable_name = os.environ.get("CODECOV_EXEC", sys.executable)
+
     if not args.no_launch_visualiser:
         launch_process(
-            [sys.executable, os.path.join(SRC_PATH, 'main.py'), '-d', args.debug, '-v', '-Vwindowed-fullscreen',
+            [executable_name, os.path.join(SRC_PATH, 'main.py'), '-d', args.debug, '-v', '-Vwindowed-fullscreen',
              '-Vaudio-library-name=null', '--deterministic'],
             on_kill=lambda _: pyautogui.press('esc'))
 

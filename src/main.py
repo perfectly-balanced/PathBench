@@ -1,3 +1,12 @@
+# Compatibility for running with codecov
+
+# The following path correction fixes a bug where codecov doesn't
+# run the file with the same `sys.path` as the python executable would.
+# It can't be put into `utility` as we can't import anything relatively until it's fixed.
+import sys, os
+if not sys.path[0].endswith("src"):
+    sys.path[0] = os.path.join(sys.path[0], "src")
+
 from algorithms.configuration.configuration import Configuration
 from algorithms.algorithm_manager import AlgorithmManager
 from maps.map_manager import MapManager
