@@ -7,6 +7,7 @@ from typing import Any
 from simulator.services.services import Services
 from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.colour_update_event import ColourUpdateEvent
+from simulator.services.event_manager.events.toggle_debug_overlay_event import ToggleDebugOverlayEvent
 from simulator.services.event_manager.events.state_initialising_event import StateInitialisingEvent
 from simulator.services.event_manager.events.state_running_event import StateRunningEvent
 from simulator.services.event_manager.events.state_initialised_event import StateInitialisedEvent
@@ -18,30 +19,32 @@ from structures import DynamicColour, Colour, TRANSPARENT, WHITE, BLACK
 class DebugOverlay():
     __services: Services
     __base: ShowBase
+    __visible: bool
 
     def __init__(self, services: Services) -> None:
         self.__services = services
         self.__base = self.__services.graphics.window
         self.__labels = ["Map:", "Goal:", "Agent:", "Algorithm:", "State:"]
+        self.__visible = True
 
         self.__debug_labels = []
         for i in range(0, 5):
             l = OnscreenText(text=self.__labels[i],
-                             parent=self.__base.aspect2d,
-                             pos=(-1.35, 0.92 - i * 0.05),
+                             parent=self.__base.render2d,
+                             pos=(-0.865, 0.92 - i * 0.05),
                              mayChange=True,
                              align=TextNode.ARight,
-                             scale=0.03)
+                             scale=(0.02, 0.029, 0.73))
             self.__debug_labels.append(l)
 
         self.__debug_var = []
         for i in range(0, 5):
             v = OnscreenText(text="-",
-                             parent=self.__base.aspect2d,
-                             pos=(-1.3, 0.92 - i * 0.05),
+                             parent=self.__base.render2d,
+                             pos=(-0.855, 0.92 - i * 0.05),
                              mayChange=True,
                              align=TextNode.ALeft,
-                             scale=0.03)
+                             scale=(0.02, 0.029, 0.73))
             self.__debug_var.append(v)
 
         self.__services.ev_manager.register_listener(self)
@@ -59,6 +62,17 @@ class DebugOverlay():
 
     def set_text(self, i: int, text: Any) -> None:
         self.__debug_var[i].setText(str(text))
+
+    def toggle_visible(self):
+        if self.__visible:
+            for i in range(0, 5):
+                self.__debug_labels[i].hide()
+                self.__debug_var[i].hide()
+        else:
+            for i in range(0, 5):
+                self.__debug_labels[i].show()
+                self.__debug_var[i].show()
+        self.__visible = not self.__visible
 
     def notify(self, event: Event) -> None:
         if isinstance(event, StateInitialisedEvent):
@@ -83,3 +97,5 @@ class DebugOverlay():
         elif isinstance(event, ColourUpdateEvent):
             if event.colour.name == self.__text_colour.name:
                 self.set_text_colour(self.__text_colour())
+        elif isinstance(event, ToggleDebugOverlayEvent):
+            self.toggle_visible()

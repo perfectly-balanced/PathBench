@@ -44,10 +44,11 @@ class SimulatorConfig(DirectObject):
         self.__base = self.__services.graphics.window
         self.__text = " t - find the path between the agent and goal\n\n" \
                       " mouse click - moves agent to mouse location \n\n mouse right click - moves goal to" \
-                      " mouse location\n\n x - toggle trace animation (animations required)\n\n" \
-                      " m - toggle map between Sparse and Dense\n\n o - take a default screenshot of " \
-                      "the map\n\n p - take a custom screenshot of the scene\n\n w, a, s, d " \
-                      "- orbit around the map\n\n c, v - toggle Simulator Configuration / View Editor"
+                      " mouse location\n\n arrow keys, PgUp, PgDn - move agent / goal (Alt down)\n\n x - toggle trace" \
+                      " animation (animations required)\n\n m - toggle map between Sparse and Dense\n\n o - take a " \
+                      "default screenshot of the map\n\n p - take a custom screenshot of the scene\n\n w, a, s, d " \
+                      "- orbit around the map\n\n q - top view of the map\n\n c, v - toggle Simulator Configuration /" \
+                      " View Editor\n\n i - toggle Debug Overlay"
 
         self.__algorithms = self.__services.settings.algorithms
         self.__maps = self.__services.settings.maps
@@ -60,7 +61,7 @@ class SimulatorConfig(DirectObject):
                                borderWidth=(0.0, 0.0),
                                frameColor=WINDOW_BG_COLOUR,
                                pos=(-1, 0.5, 0.5),
-                               frameSize=(-1.7, 1.3, -5.15, 0.85)
+                               frameSize=(-1.7, 1.3, -5.68, 0.85)
                                )
         # spacer #
         DirectFrame(parent=self.__window.frame,

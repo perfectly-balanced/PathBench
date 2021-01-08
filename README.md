@@ -27,7 +27,8 @@ Note, the main script can be run from any working directory as PathBench doesn't
 |-------------------	|-------------------------------------------------------------------	|
 | escape            	| Exit the simulator                                                	|
 | mouse left click  	| Moves agent to mouse location                                     	|
-| mouse right click 	| Moves goal to mouse location                                      	|
+| mouse right click 	| Moves goal to mouse location                                          |                    
+| arrow keys, PgUp, PgDn| Move agent/goal (when Alt down) along the X-Y-Z plane                 |                             	                                                                                
 | w a s d               | Rotate orbital camera around map                                      |
 | t                 	| Find the path between the agent and goal                            	|
 | x                 	| Pause/Resume path finding (animations required)                      	|
@@ -36,6 +37,7 @@ Note, the main script can be run from any working directory as PathBench doesn't
 | c 	                | Toggle visibility of simulator config window                          |
 | v 	                | Toggle visibility of view editor window                               |
 | m                 	| Toggle map between Sparse and Dense                               	|
+| i                     | Toggle visibility of debug overlay                                    |
 
 Note, screenshots are placed in `data/screenshots`.
 
