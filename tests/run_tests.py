@@ -1,5 +1,12 @@
-import sys
-import os
+# Compatibility for running with codecov
+
+# The following path correction fixes a bug where codecov doesn't
+# run the file with the same `sys.path` as the python executable would.
+# It can't be put into `utility` as we can't import anything relatively until it's fixed.
+import sys, os
+if not sys.path[0].endswith("tests"):
+    sys.path[0] = os.path.join(sys.path[0], "tests")
+
 import argparse
 import atexit
 import unittest
