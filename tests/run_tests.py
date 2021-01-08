@@ -15,7 +15,7 @@ def run() -> bool:
     make_src_modules_importable()
 
     tests_path = os.path.dirname(os.path.abspath(__file__))
-    
+
     parser = argparse.ArgumentParser(prog="run_tests.py",
                                      description="PathBench test runner",
                                      formatter_class=argparse.RawTextHelpFormatter)
@@ -30,6 +30,7 @@ def run() -> bool:
     testRunner: TextTestRunner = unittest.TextTestRunner()
     res: TestResult = testRunner.run(tests)
     return (len(res.errors) == 0 and len(res.failures) == 0)
+
 
 if __name__ == '__main__':
     res = run()

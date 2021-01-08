@@ -4,7 +4,7 @@ import os
 # Compatibility for running with codecov, add 'PathBench/src' to system path for module imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from algorithms.configuration.configuration import Configuration  # npqa: E402
+from algorithms.configuration.configuration import Configuration  # noqa: E402
 from algorithms.algorithm_manager import AlgorithmManager  # noqa: E402
 from maps.map_manager import MapManager  # noqa: E402
 from algorithms.lstm.trainer import Trainer  # noqa: E402
