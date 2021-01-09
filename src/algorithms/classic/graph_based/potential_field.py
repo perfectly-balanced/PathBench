@@ -51,18 +51,17 @@ class PotentialField(Algorithm):
 
     def calc_potential_field(self, grid: Map):
         # calc each potential
-        pmap = np.zeros(grid.size, dtype=np.float32)
-
         for index in np.ndindex(*grid.size):
             ug = self.calc_attractive_potential(index, grid.goal.position)
             uo = self.calc_repulsive_potential(index, grid.obstacles, rr=(grid.agent.radius))
 
             uf = ug + uo
-            pmap[index] = uf
             point = Point(*index)
             self.pmapheat.append((point, uf))
 
-        return pmap
+            self.step_grid[index] = uf
+            if index[-1] == grid.size[-1] - 1:
+                self.key_frame(ignore_key_frame_skip=True)
 
     def calc_attractive_potential(self, pos, goal):
         return 0.5 * self.KP * np.linalg.norm(np.array(pos) - np.array(goal))
@@ -96,16 +95,12 @@ class PotentialField(Algorithm):
         return np.ravel_multi_index(p.values, self._get_grid().size)
 
     def potential_field_planning(self, grid):
-        # calc potential field
-        pmap = self.calc_potential_field(grid)
-        for idx in np.ndindex(pmap.shape):
-            self.step_grid[idx] = pmap[idx]
-        self.key_frame(ignore_key_frame_skip=True)
+        self.calc_potential_field(grid)
 
         nums = []
-        for idx in np.ndindex(pmap.shape):
-            if pmap[idx] < 1000000:
-                nums.append(pmap[idx])
+        for idx in np.ndindex(self.step_grid.shape):
+            if self.step_grid[idx] < 1000000:
+                nums.append(self.step_grid[idx])
         self.pmapnew = set(nums)
 
         # search path
@@ -133,13 +128,13 @@ class PotentialField(Algorithm):
                 setInf = False
 
                 for i in range(len(ins)):
-                    if ins[i] < 0 or ins[i] >= len(pmap[tuple(([0] * i))]):
+                    if ins[i] < 0 or ins[i] >= len(self.step_grid[tuple(([0] * i))]):
                         setInf = True
                         break
                 if setInf:
                     p = float("inf")
                 else:
-                    p = pmap[tuple(ins)]
+                    p = self.step_grid[tuple(ins)]
 
                 point = tuple(ins)
                 # find which neighbour has the largest potential value (so can move there)
