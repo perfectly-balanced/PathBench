@@ -85,21 +85,36 @@ xwud -in /var/tmp/Xvfb_screen0
 **Simulator**
 
 This section is responsible for environment interactions and algorithm visualisation.
-It provides custom collision detection systems and a graphics framework for rendering the internal
-state of the algorithms. Additionally, the platform provides a ROS real-time extension for interacting with a real-world
-robot through PathBench.
+It provides custom collision detection systems and a graphics framework (Panda3D) for rendering the internal
+state of the algorithms in 2D or 3D. In PathBench3D, a simulation can be run headlessly or with graphics.
 <br />
-<img src="./readme_files/screenshot_51.png" width="130"/>
-<img src="./readme_files/screenshot_43.png" width="130"/>
-<img src="./readme_files/screenshot_49.png" width="130"/>
-<img src="./readme_files/screenshot_44.png" width="130"/>
-<img src="./readme_files/screenshot_50.png" width="130"/>
+<img src="./readme_files/screenshot_157.png" width="130"/>
+<img src="./readme_files/screenshot_152.png" width="130"/>
+<img src="./readme_files/A*_labyrinth.png" width="130"/>
+<img src="./readme_files/screenshot_194.png" width="126"/>
+<br />
+<img src="./readme_files/screenshot_160.png" width="190"/>
+<img src="./readme_files/screenshot_167.png" width="190"/>
+<img src="./readme_files/screenshot_159.png" width="190"/>
 
-The simulator has a custom GUI that can be used to modify the master launch configuration.
 
+The GUI main window consists of several components - a Simulator Configuration, View Editor and a Debug Overlay.
 <p class="aligncenter">
-    <img src="./readme_files/config.png" alt="PathBench Simulator Configuration" width="400" align="middle" />
+    <img src="./readme_files/visualiser_full.png" alt="PathBench Main Window" width="450" align="center" />
 </p>
+
+The Simulator Configuration window is used to make a selection between different maps and algorithms to analyse, 
+set goal and start positions and change animation settings. A map is then initialised on pressing "Update".
+
+
+The View Editor window is used to customise the map, e.g. change colors of entities or set transparency level. Those 
+modifications could also be saved as one of the six states using the "Save" button, and the changes can be 
+reverted at any point using "Restore". The 1-6 state buttons provide the freedom to easily toggle between different
+custom states.
+
+
+The Debug Overlay at the top left of the main window provides information about the selected map and algorithm, 
+the entity positions, and the current state of the simulator (Initialising, Initialised, Running, Done, Terminated).
 
 To run and use the simulator see [Quick Start](#quick-start).
 
