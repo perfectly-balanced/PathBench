@@ -500,7 +500,8 @@ class Generator:
         return DenseMap(grid)
 
     def generate_maps(self, nr_of_samples: int, dimensions: Size, gen_type: str, fill_range: List[float],
-                      nr_of_obstacle_range: List[int], min_map_range: List[int], max_map_range: List[int], num_dim: int = 2, json_save: bool = False) -> List[Map]:
+                      nr_of_obstacle_range: List[int], min_map_range: List[int], max_map_range: List[int], \
+                      num_dim: int = 2, json_save: bool = False, point_cloud: bool = False) -> List[Map]:
         if gen_type not in Generator.AVAILABLE_GENERATION_METHODS:
             raise Exception("Generation type {} does not exist in {}".format(gen_type, self.AVAILABLE_GENERATION_METHODS))
 
@@ -542,20 +543,39 @@ class Generator:
                     min_room_size=Size(*([min_map_size] * dimensions.n_dim)),
                     max_room_size=Size(*([max_map_size] * dimensions.n_dim)),
                 )
+
+            if point_cloud:
+                assert num_dim == 3, "Point cloud representation is only compatible with 3 dimensions"
+                mp = mp.convert_to_sparse_map()
+                map_as_dict = {
+                    "type": "SparseMap",
+                    "version": 1,
+                    "size": mp.size.values,
+                    "goal": [*mp.goal.position.values],
+                    "agent": [*mp.agent.position.values],
+                    "obstacles": [o.position.values for o in mp.obstacles]
+                }
+            else:
+                map_as_dict = {
+                    "type": "DenseMap",
+                    "version": 1,
+                    "goal": [*mp.goal.position.values],
+                    "agent": [*mp.agent.position.values],
+                    "grid": mp.grid.tolist()
+                }    
+
             atlas.append(mp)
             maps.append(mp)
             progress_bar.step()
 
-            map_as_dict = {
-                "type": "DenseMap",
-                "version": 1,
-                "goal": [*mp.goal.position.values],
-                "agent": [*mp.agent.position.values],
-                "grid": mp.grid.tolist()
-            }
-            dimensions_path = '_3d' if num_dim == 3 else ''
+            if point_cloud:
+                added_path = '_pc'
+            elif dimensions == 3:
+                added_path = '_3d'
+            else:
+                added_path = ''
             if json_save:
-                with open(self.__services.resources.maps_dir._full_path() + atlas_name + dimensions_path + '/' + str(_) + dimensions_path + '.json', 'w') as outfile:
+                with open(self.__services.resources.maps_dir._full_path() + atlas_name + added_path + '/' + str(_) + added_path + '.json', 'w') as outfile:
                     json.dump(map_as_dict, outfile)
                     self.__services.debug.write("Dumping JSON: " + str(_) + "\n", DebugLevel.LOW)
 
@@ -708,7 +728,10 @@ class Generator:
             if feature_list:
                 seq_features = MapProcessing.get_sequential_features(testing.map, feature_list)
                 for q in range(len(t[i]["features"])):
-                    t[i]["features"][q].update(seq_features[q])
+                    x = t[i]["features"]
+                    y = x[q]
+                    y.update(seq_features[q])
+                    #t[i]["features"][q].update(seq_features[q])
 
             if label_list:
                 seq_labels = MapProcessing.get_sequential_labels(testing.map, label_list)
@@ -768,7 +791,7 @@ class Generator:
     @staticmethod
     def main(m: 'MainRunner') -> None:
         generator: Generator = Generator(m.main_services)
-        settings = m.main_services.settings
+        settings = m.main_services.settings            
 
         if settings.generator_modify:
             generator.modify_map(*settings.generator_modify())
@@ -782,22 +805,26 @@ class Generator:
         if not settings.generator_house_expo:
             if settings.generator_size == 8:  # Fill rate and nr obstacle range (1,2) is for unifrom random fill (0.1,0.2)
                 maps = generator.generate_maps(settings.generator_nr_of_examples, Size(*([8] * settings.num_dim)),
-                                               settings.generator_gen_type, fill_rate, [1, 2], min_room, max_room, num_dim=settings.num_dim, json_save=True)
+                                               settings.generator_gen_type, fill_rate, [1, 2], min_room, max_room, 
+                                               num_dim=settings.num_dim, json_save=True, point_cloud=settings.point_cloud)
 
             elif settings.generator_size == 16:
                 maps = generator.generate_maps(settings.generator_nr_of_examples, Size(*([16] * settings.num_dim)),
-                                               settings.generator_gen_type, fill_rate, [2, 4], min_room, max_room, num_dim=settings.num_dim, json_save=True)
+                                               settings.generator_gen_type, fill_rate, [2, 4], min_room, max_room,
+                                               num_dim=settings.num_dim, json_save=True, point_cloud=settings.generate_point_cloud)
 
             elif settings.generator_size == 28:
                 maps = generator.generate_maps(settings.generator_nr_of_examples, Size(*([28] * settings.num_dim)),
-                                               settings.generator_gen_type, fill_rate, [1, 4], min_room, max_room, num_dim=settings.num_dim, json_save=True)
+                                               settings.generator_gen_type, fill_rate, [1, 4], min_room, max_room,
+                                               num_dim=settings.num_dim, json_save=True, point_cloud=settings.generate_point_cloud)
 
             else:
-                maps = generator.generate_maps(settings.generator_nr_of_examples, Size(*([64] * settings.num_dim)),
-                                               settings.generator_gen_type, fill_rate, [1, 6], min_room, max_room, num_dim=settings.num_dim, json_save=False)
-
+                maps = generator.generate_maps(settings.generator_nr_of_examples, Size(*([128] * settings.num_dim)),
+                                               settings.generator_gen_type, fill_rate, [1, 6], min_room, max_room,
+                                               num_dim=settings.num_dim, json_save=True, point_cloud=settings.generate_point_cloud)
             # This will display 5 of the maps generated
             if settings.generator_show_gen_sample:
+                assert not settings.generate_point_cloud
                 if settings.generator_nr_of_examples > 0:
                     # show sample
                     for i in range(5):

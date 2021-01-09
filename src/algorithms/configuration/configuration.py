@@ -77,6 +77,7 @@ class Configuration:
 
         # Generator
         self.generator = False
+        self.generate_point_cloud = False
         self.generator_labelling_atlases = ['block_map_100']
         self.generator_nr_of_examples = 100
         self.generator_gen_type = "block_map"
@@ -136,4 +137,4 @@ class Configuration:
         self.clear_cache = False
 
         # Visualiser
-        self.visualiser_simulator_config = True
+        self.visualiser_simulator_config = False

@@ -1,6 +1,11 @@
 from panda3d.core import Geom, GeomNode, NodePath, AntialiasAttrib, GeomVertexFormat, GeomVertexData, GeomPoints
+from utility.constants import DATA_PATH
+from simulator.services.resources.directory import Directory
+from algorithms.configuration.maps.sparse_map import SparseMap
 
 import numpy as np
+
+mp = Directory._unjson('0_pc.json', DATA_PATH + '/maps/block_map_1_pc/')
 
 class PointCloud():
     name: str
@@ -60,7 +65,7 @@ class PointCloud():
             elif vertices.strides[0] == 16:
                 vformat = GeomVertexFormat.get_v3c4()
             else:
-                raise ValueError('Incompatible point clout format: {},{}'.format(vertices.dtype, vertices.shape))
+                raise ValueError('Incompatible point cloud format: {},{}'.format(vertices.dtype, vertices.shape))
 
             vdata = GeomVertexData('vdata', vformat, Geom.UHDynamic)
             vdata.unclean_set_num_rows(len(vertices))
@@ -99,16 +104,16 @@ if __name__ == "__main__":
     app = ShowBase()
     cloud = PointCloud()
 
-    NUM_POINTS = 400000
-
+    #these values need to be normalized depending on the view that you decide to use. For some points to come into sight in the current display, you can divide all the points by 128
+    vertices = np.array([o.position for o in mp.obstacles] + [mp.agent.position] + [mp.goal.position], dtype=np.float32)
     def loop(task):
-        vertices = np.random.randn(NUM_POINTS, 3).astype(np.float32)
-        colours = np.ones((NUM_POINTS, 4), np.float32)
-        colours[:, :3] = np.clip(np.abs(vertices), 0, 3) / 3
+        colours = np.ones((len(mp.obstacles) + 2, 4), np.float32)
         cloud.update(vertices, colours)
         return task.again
 
     cloud.node_path.reparent_to(app.render)
+
     cloud.node_path.set_pos((0, 20, 0))
+
     app.taskMgr.doMethodLater(0.16, loop, "loop")
     app.run()

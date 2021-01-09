@@ -9,6 +9,11 @@ import dill as pickle  # used to pickle lambdas
 from typing import BinaryIO, Callable, Any
 
 from algorithms.configuration.maps.dense_map import DenseMap
+from algorithms.configuration.maps.sparse_map import SparseMap
+from algorithms.configuration.entities.agent import Agent
+from algorithms.configuration.entities.obstacle import Obstacle
+from algorithms.configuration.entities.goal import Goal
+from structures import Size
 
 from simulator.services.debug import DebugLevel
 from simulator.services.service import Service
@@ -100,6 +105,8 @@ class Directory(Service):
 
         if dic['type'] == "DenseMap" and dic['version'] <= 1:
             return DenseMap(dic['grid'])
+        elif dic['type'] == 'SparseMap' and dic['version'] <= 1:
+            return SparseMap(size=Size(*dic['size']), agent=Agent(dic['agent']), obstacles=[Obstacle(o) for o in dic['obstacles']], goal=Goal(dic['goal']))
 
         return None
 

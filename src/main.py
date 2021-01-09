@@ -62,7 +62,7 @@ def configure_generator(config: Configuration, args: argparse.Namespace) -> bool
     if args.generator_type:
         if not arg_valid("generator", args):
             return False
-        config.generator_gen_type = args.generator_gen_type
+        config.generator_gen_type = args.generator_type
 
     if args.num_maps:
         if not arg_valid("generator", args):
