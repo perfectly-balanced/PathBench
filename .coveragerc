@@ -6,3 +6,4 @@ include =
   src/maps/*
   src/simulator/*
   src/structures/*
+  src/algorithms/configuration/*
