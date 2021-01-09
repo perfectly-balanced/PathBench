@@ -21,14 +21,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Fix local runner
-      run: |
-        # Hack to get setup-python to work on act
-        # (see https://github.com/nektos/act/issues/251)
-        if [ ! -f "/etc/lsb-release" ] ; then
-          echo "DISTRIB_RELEASE=18.04" > /etc/lsb-release
-        fi
-        apt update && apt install -y sudo
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
