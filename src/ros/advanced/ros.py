@@ -34,7 +34,7 @@ from utility.threading import Lock  # noqa: E402
 class Ros:
     INFLATE: int = 2  # radius of agent for extended walls.
     INIT_MAP_SIZE: int = 128  # maximum map size for the first received map (this determines the scaling factor for all subsequent map updates).
-    MAP_SIZE: int = 256  # the overall map size, can be as big as you like. Note, the initial map fragment will be located at the center of this 'big' map.
+    MAP_SIZE: int = 512  # the overall map size, can be as big as you like. Note, the initial map fragment will be located at the center of this 'big' map.
     TRAVERSABLE_THRESHOLD: int = 30  # weight grid values above this value are considered to be obstacles
 
     _sim: Optional[Simulator]  # simulator

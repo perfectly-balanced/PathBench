@@ -112,33 +112,33 @@ class FlatMap(MapData):
         self._add_colour(MapData.TRACE)
         self._add_colour(MapData.GOAL)
 
+        init_tex_data = array.array('B')
+        for _ in range(self.block_size * self.square_size * self.block_size * self.square_size):
+            init_tex_data.append(0)
+        self.__init_tex_data = init_tex_data.tobytes()
+
         self.squares = [None for _ in range(self.num_blocks_x * self.num_blocks_y)]
         self.square_meshes = self.squares.copy()
         self.textures = self.squares.copy()
-        for y in range(self.num_blocks_y):
-            for x in range(self.num_blocks_x):
-                idx = y * self.num_blocks_x + x
-
-                mesh = self.square_meshes[idx] = SquareMesh(self.block_size, self.block_size, self.depth)
-                np = self.squares[idx] = self.root.attach_new_node(mesh.geom_node)
-                np.set_pos((x * self.block_size, y * self.block_size, 0))
-
-                tex = self.textures[idx] = Texture(self.name + "_texture")
-                tex.setup_2d_texture(self.texture_w, self.texture_h, Texture.T_unsigned_byte, Texture.F_rgba8)
-                np.set_texture(tex)
-                tex.set_wrap_u(Texture.WM_clamp)
-                tex.set_wrap_v(Texture.WM_clamp)
-
-        for y in range(self.num_blocks_y * self.block_size):
-            for x in range(self.num_blocks_x * self.block_size):
-                if y >= self.logical_h or x >= self.logical_w:
-                    self.render_square((x, y), TRANSPARENT, TRANSPARENT)
-
         self.render_obstacles()
 
     @property
     def dim(self) -> int:
         return 2
+    
+    def __add_block(self, x: int, y: int) -> None:
+        idx = y * self.num_blocks_x + x
+
+        mesh = self.square_meshes[idx] = SquareMesh(self.block_size, self.block_size, self.depth)
+        np = self.squares[idx] = self.root.attach_new_node(mesh.geom_node)
+        np.set_pos((x * self.block_size, y * self.block_size, 0))
+
+        tex = self.textures[idx] = Texture(self.name + "_texture")
+        tex.setup_2d_texture(self.texture_w, self.texture_h, Texture.T_unsigned_byte, Texture.F_rgba8)
+        tex.modify_ram_image().set_subdata(0, len(self.__init_tex_data), self.__init_tex_data)
+        np.set_texture(tex)
+        tex.set_wrap_u(Texture.WM_clamp)
+        tex.set_wrap_v(Texture.WM_clamp)
 
     def __create_lines(self, c: Colour, wfc: Colour) -> Tuple[bytes, bytes, bytes]:
         def conv(f): return int(round(f * 255))
@@ -199,7 +199,13 @@ class FlatMap(MapData):
         # find corresponding block texture & offset points accordingly
         block_x_idx = px // self.block_size
         block_y_idx = py // self.block_size
-        img = self.textures[block_y_idx * self.num_blocks_x + block_x_idx].modify_ram_image()
+        tex = self.textures[block_y_idx * self.num_blocks_x + block_x_idx]
+        if tex is None:
+            if c == TRANSPARENT and wfc == TRANSPARENT:
+                return
+            self.__add_block(block_x_idx, block_y_idx)
+            tex = self.textures[block_y_idx * self.num_blocks_x + block_x_idx]
+        img = tex.modify_ram_image()
         px = px % self.block_size
         py = py % self.block_size
 
