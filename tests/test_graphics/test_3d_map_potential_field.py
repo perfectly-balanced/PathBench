@@ -51,7 +51,7 @@ def graphics_test() -> None:
 
     # run algo
     pyautogui.press('t')
-    wait_for('done.png')
+    wait_for('done.png', confidence=0.8)
     take_screenshot("potential_field_3d.png")
 
 
