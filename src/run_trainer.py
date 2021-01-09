@@ -106,7 +106,11 @@ labelling = {
         "direction_to_goal_normalized",
         "agent_goal_angle"], ['next_position_index'], [], []],
     CAE: [[], [], ['global_map'], ['global_map']],
-    LSTMCAEModel: [[], [], ['global_map'], ['global_map']],
+    LSTMCAEModel: [[
+        "distance_to_goal_normalized",
+        "raycast_8_normalized",
+        "direction_to_goal_normalized",
+        "agent_goal_angle"], ['next_position_index'], ['global_map'], ['global_map']],
     CombinedOnlineLSTM: [[], [], ['global_map'], ['global_map']]
 
 }
@@ -117,7 +121,7 @@ chosen_map = 'House'
 algo = algorithms['A*']  # Choose which planner
 ani = animations['Fast']  # Choose animation speed
 debug = debug['High']  # Choose debug level
-training_algo = BasicLSTMModule  # Chooses the algorithm to train, either CAE, BasicLSTMModule,LSTMCAEModel
+training_algo = LSTMCAEModel # Chooses the algorithm to train, either CAE, BasicLSTMModule,LSTMCAEModel
 nbr_ex = args.num_maps  # Number of maps generated
 show_sample_map = False  # shows 5 samples
 gen_start = True
@@ -181,7 +185,7 @@ config.trainer_model = training_algo  # Either BasicLSTMModule or CAE or LSTMCAE
 config.trainer_custom_config = None
 
 config.trainer_pre_process_data_only = False
-config.trainer_bypass_and_replace_pre_processed_cache = False
+config.trainer_bypass_and_replace_pre_processed_cache = True
 
 # Analyzer
 config.analyzer = analyzer_start

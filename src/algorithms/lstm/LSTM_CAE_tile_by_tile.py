@@ -323,6 +323,8 @@ class LSTMCAEModel(BasicLSTMModule):
         # augment data with encoder result
         x_concat = self.__combine_features(x, inputs[1][0])
         out = self.forward(x_concat, x_len, perm).view(-1, 8)
+        if len(y_sorted) != len(out):
+            y_sorted = torch.tensor(y_sorted.tolist() + [0]).to(self._services.torch.device)
         l: torch.Tensor = self.config["loss"](out, y_sorted)
         return l, out, y_sorted
 
@@ -346,7 +348,7 @@ class LSTMCAEModel(BasicLSTMModule):
         inp_len = torch.Tensor([1])
         res = self.forward(inp, inp_len)
         _, mov_idx = torch.max(res.squeeze(), 0)
-        return Map.EIGHT_POINTS_MOVE_VECTOR[mov_idx].to_tensor()
+        return mp.ALL_POINTS_MOVE_VECTOR[mov_idx].to_tensor()
 
     @staticmethod
     def get_config() -> Dict[str, Any]:
@@ -362,6 +364,9 @@ class LSTMCAEModel(BasicLSTMModule):
             ],
             "data_labels": [
                 "next_position_index",
+            ],
+            "data_single_labels": [
+                "global_map"
             ],
             "custom_encoder": None,  # "caelstm_section_cae_training_uniform_random_fill_10000_block_map_10000_house_10000_model",
             "save_name": "caelstm_section_lstm",
