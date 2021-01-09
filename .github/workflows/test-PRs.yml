@@ -42,4 +42,4 @@ jobs:
       run: |
         CODECOV_EXEC="coverage run -p"
         $CODECOV_EXEC tests/run_tests.py --spawn-display
-        bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }} -e PYTHON
+        bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }} -e PYTHON -f '.coverage.*'
