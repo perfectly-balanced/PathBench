@@ -19,14 +19,13 @@ class PersistentState():
     all_services: WeakSet
     file_name: str
 
-    types: Dict[str, Any]
+    __types: Dict[str, Any]
     __objects: List[PersistentStateObject]
-
     __save_task: Optional['Task']
 
-    def __init__(self, services: Services, types: List[Tuple[Type[Any], Optional[str]]] = [], file_name=".pathbench.json"):
+    def __init__(self, services: Services, types: List[Tuple[Type[Any], Optional[str]]] = [], file_name: str = ".pathbench.json"):
         self.file_name = file_name
-        self.types = {t[0].__name__: t for t in types}
+        self.__types = {t[0].__name__: t for t in types}
 
         self.all_services = WeakSet([services])
         self.__objects = []
@@ -49,7 +48,7 @@ class PersistentState():
                     jdata = json.load(f)
                     jobjs = jdata["objects"]
                     for jo in jobjs:
-                        cls, attr = self.types[jo["type"]]
+                        cls, attr = self.__types[jo["type"]]
                         o = cls(self)
                         if attr:
                             setattr(self, attr, o)
@@ -63,7 +62,7 @@ class PersistentState():
             self.root_services.debug.write("'{}' not found, falling back to default state data".format(self.file_name), DebugLevel.BASIC)
         
         do_save: bool = False
-        for name, (cls, attr) in self.types.items():
+        for name, (cls, attr) in self.__types.items():
             if not attr:
                 continue
             
