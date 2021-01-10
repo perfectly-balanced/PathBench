@@ -47,6 +47,7 @@ def setup(args: argparse.Namespace, visualiser_args: List[str]) -> None:
 
     # Fall back to sys executable if no env variable to specify how to run with codecov
     executable_name = os.environ.get("CODECOV_EXEC", sys.executable)
+    print(f"Using executable {executable_name}")
 
     if not args.no_launch_visualiser:
         launch_process([executable_name, os.path.join(SRC_PATH, 'main.py'), '-d', args.debug, '-v', '-Vwindowed-fullscreen',
