@@ -9,7 +9,7 @@ from utility.misc import exclude_from_dict
 from utility.compatibility import Final
 
 from weakref import WeakSet
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Type, Tuple
 import json
 import os
 import copy
@@ -24,9 +24,9 @@ class PersistentState():
 
     __save_task: Optional['Task']
 
-    def __init__(self, services: Services, types={}, file_name=".pathbench.json"):
+    def __init__(self, services: Services, types: List[Tuple[Type[Any], Optional[str]]] = [], file_name=".pathbench.json"):
         self.file_name = file_name
-        self.types = {o.__name__: o for o in types}
+        self.types = {t[0].__name__: t for t in types}
 
         self.all_services = WeakSet([services])
         self.__objects = []
@@ -41,10 +41,6 @@ class PersistentState():
     def root_services(self) -> Services:
         return next(iter(self.all_services))
 
-    def __try_cache_object_access(self, obj: PersistentStateObject) -> None:
-        if type(obj).__name__ == 'PersistentStateViews':
-            self.__views = obj
-
     def load(self) -> None:
         if os.path.isfile(self.file_name):
             self.root_services.debug.write("Loading state from '{}'".format(self.file_name), DebugLevel.BASIC)
@@ -53,8 +49,10 @@ class PersistentState():
                     jdata = json.load(f)
                     jobjs = jdata["objects"]
                     for jo in jobjs:
-                        o = self.types[jo["type"]](self)
-                        self.__try_cache_object_access(o)
+                        cls, attr = self.types[jo["type"]]
+                        o = cls(self)
+                        if attr:
+                            setattr(self, attr, o)
                         o._from_json(jo["data"])
                         self.__objects.append(o)
                 except:
@@ -65,16 +63,20 @@ class PersistentState():
             self.root_services.debug.write("'{}' not found, falling back to default state data".format(self.file_name), DebugLevel.BASIC)
         
         do_save: bool = False
-        for t in self.types.keys():
+        for name, (cls, attr) in self.types.items():
+            if not attr:
+                continue
+            
             found: bool = False
             for o in self.objects:
-                if type(o).__name__ == t:
+                if type(o).__name__ == name:
                     found = True
                     do_save = True
                     break
+            
             if not found:
-                o = self.types[t](self)
-                self.__try_cache_object_access(o)
+                o = cls(self)
+                setattr(self, attr, o)
                 self.__objects.append(o)
         if do_save:
             self.save()
@@ -117,7 +119,3 @@ class PersistentState():
     @property
     def objects(self) -> List[PersistentStateObject]:
         return self.__objects.copy()
-
-    @property
-    def views(self) -> 'PersistentStateViews':
-        return self.__views

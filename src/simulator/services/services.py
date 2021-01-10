@@ -56,7 +56,7 @@ class Services:
         # persistent state is shared across all active services
         global _g_persistent_state
         if _g_persistent_state is None:
-            _g_persistent_state = PersistentState(self, types=[PersistentStateViews, SimulatorConfigState])
+            _g_persistent_state = PersistentState(self, types=[(PersistentStateViews, 'views'), (SimulatorConfigState, None)])
             self.__state = _g_persistent_state
         else:
             self.__state = _g_persistent_state

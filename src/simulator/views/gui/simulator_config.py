@@ -285,7 +285,7 @@ class SimulatorConfig(DirectObject):
                 return
         new_state = self.__state is None
         if new_state:
-            self.__state = SimulatorConfigState()
+            self.__state = SimulatorConfigState(self.__services.state)
         self.__state.mp = self.__maps_option.get()
         self.__state.algo = self.__algorithms_option.get()
         self.__state.ani = self.__animations_option.get()
