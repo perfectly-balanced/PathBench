@@ -23,8 +23,8 @@ class GraphMapDisplay(MapDisplay):
         super().__init__(services, z_index=250, custom_map=custom_map)
         self.__graph = graph
 
-        self.edge_colour = self._services.state.add_colour("graph edge", RED)
-        self.node_colour = self._services.state.add_colour("graph node", RED)
+        self.edge_colour = self._services.state.views.add_colour("graph edge", RED)
+        self.node_colour = self._services.state.views.add_colour("graph node", RED)
 
         self.__deduced_edge_colour = self.edge_colour()
         self.__deduced_node_colour = self.node_colour()

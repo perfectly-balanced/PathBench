@@ -90,7 +90,7 @@ class MapData(ABC):
     def _add_colour(self, name: str, default_colour: Optional[Colour] = None, default_visible: bool = True, invoke_callback: bool = True, callback: Optional[Callable[[DynamicColour], None]] = None) -> DynamicColour:
         if default_colour is None:
             default_colour = MapData._DEFAULTS[name]
-        dc = self._services.state.add_colour(name, default_colour, default_visible)
+        dc = self._services.state.views.add_colour(name, default_colour, default_visible)
         if callback is None:
             return dc
         if name not in self.__colour_callbacks:

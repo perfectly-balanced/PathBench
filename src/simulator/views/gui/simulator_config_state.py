@@ -1,4 +1,4 @@
-from simulator.services.persistent_state import PersistentStateObject
+from simulator.services.persistent_state.persistent_state_object import PersistentStateObject
 from structures import Point
 
 from typing import Dict, Any

@@ -48,7 +48,7 @@ class DebugOverlay():
             self.__debug_var.append(v)
 
         self.__services.ev_manager.register_listener(self)
-        self.__text_colour = self.__services.state.add_colour("debug overlay", WHITE)
+        self.__text_colour = self.__services.state.views.add_colour("debug overlay", WHITE)
 
         if self.__services.settings.map_name:
             self.set_text(0, self.__services.settings.map_name)

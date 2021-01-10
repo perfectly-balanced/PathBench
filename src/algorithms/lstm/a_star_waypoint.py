@@ -67,8 +67,8 @@ class WayPointNavigation(Algorithm):
             if not self.__is_local_anim and self.__global_kernel_anim:
                 ret += self.__global_kernel_anim.instance.set_display_info()
 
-        visited_colour = self._services.state.add_colour("visited", Colour(0.19, 0.19, 0.2, 0.8))
-        waypoint_colour = self._services.state.add_colour("waypoint", Colour(0, 1, 1))
+        visited_colour = self._services.state.views.add_colour("visited", Colour(0.19, 0.19, 0.2, 0.8))
+        waypoint_colour = self._services.state.views.add_colour("waypoint", Colour(0, 1, 1))
 
         ret.append(SolidIterableMapDisplay(self._services, self.display_info_data[0], visited_colour, z_index=70))
         ret.append(SolidIterableMapDisplay(self._services, self.display_info_data[1], visited_colour, z_index=65))

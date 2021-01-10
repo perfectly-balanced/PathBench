@@ -59,7 +59,7 @@ class MapController(Controller, DirectObject):
                 self._model.move_goal(p)
 
         def set_view(i):
-            self._services.state.view_idx = i
+            self._services.state.views.view_idx = i
 
         def compute_trace():
             do_agent_position_update()

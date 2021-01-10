@@ -38,8 +38,8 @@ class PotentialField(Algorithm):
 
         self.step_grid = gen_grid(self._services, np.full(self._get_grid().size, 0, dtype=np.float32))
 
-        self.step_grid_min_colour = self._services.state.add_colour("step min", BLUE.with_alpha(0))
-        self.step_grid_max_colour = self._services.state.add_colour("step max", BLUE)
+        self.step_grid_min_colour = self._services.state.views.add_colour("step min", BLUE.with_alpha(0))
+        self.step_grid_max_colour = self._services.state.views.add_colour("step max", BLUE)
 
         self.__map_displays = [GradientGridMapDisplay(self._services, self.step_grid, min_colour=self.step_grid_min_colour, max_colour=self.step_grid_max_colour)]
 

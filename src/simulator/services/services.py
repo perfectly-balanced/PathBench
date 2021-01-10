@@ -43,9 +43,10 @@ class Services:
         from simulator.services.graphics.graphics_manager import GraphicsManager
         from simulator.services.algorithm_runner import AlgorithmRunner
         from simulator.services.resources.resources import Resources
-        from simulator.services.persistent_state import PersistentState
+        from simulator.services.persistent_state.persistent_state import PersistentState
         from simulator.services.torch import Torch
 
+        from simulator.services.persistent_state.persistent_state_views import PersistentStateViews
         from simulator.views.gui.simulator_config_state import SimulatorConfigState
 
         self.__settings = config
@@ -55,7 +56,7 @@ class Services:
         # persistent state is shared across all active services
         global _g_persistent_state
         if _g_persistent_state is None:
-            _g_persistent_state = PersistentState(self, types=[SimulatorConfigState])
+            _g_persistent_state = PersistentState(self, types=[(PersistentStateViews, 'views'), (SimulatorConfigState, None)])
             self.__state = _g_persistent_state
         else:
             self.__state = _g_persistent_state
