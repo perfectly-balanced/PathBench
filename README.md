@@ -21,7 +21,7 @@ Optional dependency is `ompl` with installation not covered here. There are some
 ```bash
 python3 src/main.py -v
 ```
-Note, the main script can be run from any working directory as PathBench doesn't use relative paths internally.
+Note, the main script can be run from any working directory as PathBench does not use relative paths internally.
 
 | Key               	| Action                                                            	|
 |-------------------	|-------------------------------------------------------------------	|
@@ -89,20 +89,15 @@ It provides custom collision detection systems and a graphics framework (Panda3D
 state of the algorithms in 2D or 3D. In PathBench3D, a simulation can be run headlessly or with graphics.
 <br />
 <img src="./readme_files/potential_field_2d.png" width="130"/>
-<img src="./readme_files/RRT_long_wall.png" width="130"/>
 <img src="./readme_files/RRT_star_long_wall.png" width="130"/>
-<img src="./readme_files/screenshot_180.png" width="130"/>
-<img src="./readme_files/RRT_labyrinth.png" width="134" height="132"/>
-<img src="./readme_files/A_2D.png" width="130"/>
+<img src="./readme_files/screenshot_180.png" width="130" height="130"/>
+<img src="./readme_files/A_2D.png" width="130" height="129"/>
+<img src="./readme_files/RRT_labyrinth.png" width="134" height="133"/>
 <br />
-<img src="./readme_files/screenshot_160.png" width="190"/>
-<img src="./readme_files/screenshot_177.png" width="188" height="194"/>
-<img src="./readme_files/screenshot_167.png" width="190"/>
-<img src="./readme_files/screenshot_172.png" width="200"/>
-<img src="./readme_files/screenshot_159.png" width="190"/>
-
-
-
+<img src="./readme_files/screenshot_185.png" width="200" height="200"/>
+<img src="./readme_files/screenshot_159.png" width="210" height="195"/>
+<img src="./readme_files/A_3D_cube.png" width="163" height="154"/>
+<img src="./readme_files/screenshot_177.png" width="182" height="196"/>
 
 
 The GUI main window consists of several components - a Simulator Configuration, View Editor and a Debug Overlay.
@@ -170,7 +165,7 @@ and interaction with a physical robot.
 
 **Platform Architecture**
 
-<img src="./readme_files/architecture_overview.jpg" width="750"/>
+<img src="./readme_files/architecture_full.jpg" width="750"/>
 
 **Infrasturcture**
 
