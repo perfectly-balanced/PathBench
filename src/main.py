@@ -68,6 +68,13 @@ def configure_generator(config: Configuration, args: argparse.Namespace) -> bool
         if not arg_valid("generator", args):
             return False
         config.generator_nr_of_examples = args.num_maps
+    
+    if args.map_size:
+        if not arg_valid("generator", args):
+            return False
+        config.generator_size = args.map_size
+    
+    config.generate_point_cloud = args.point_cloud
 
     return True
 
@@ -181,6 +188,8 @@ def main() -> bool:
     parser.add_argument("--fill-rate", nargs=2, type=float, help="[generator] min/max fill rate in random fill rooms")
     parser.add_argument("--generator-type", choices=list(Generator.AVAILABLE_GENERATION_METHODS), help="[generator] generator type")
     parser.add_argument("--num-maps", type=int, help="[generator] number of maps to generate")
+    parser.add_argument("--point-cloud", action='store_true', help="generates the map in SparseMap format, for point cloud representation")
+    parser.add_argument("--map-size", type=int, default=64, help="the map size generated")
 
     # Miscellaneous
     parser.add_argument("--dims", type=int, help="[generator|analyzer] number of dimensions", default=3)

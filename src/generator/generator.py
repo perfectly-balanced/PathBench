@@ -329,7 +329,6 @@ class Generator:
                 is_vertical_split = int(np.random.randint(0, len(dim)))
 
             if all([dim[i] <= max_room_size[i] for i in range(len(dim))]):
-                # do we want a 50-50 chance here? (or should 2 be len(dim)?)
                 if int(np.random.randint(0, 2)) == 0:
                     __place_room(grid, dim, top_left_corner)
                     return
@@ -535,7 +534,7 @@ class Generator:
                     fill_rate,
                     np.random.randint(nr_of_obstacle_range[0], nr_of_obstacle_range[1])
                 )
-            else:  # house map
+            elif gen_type == "house":  # house map
                 min_map_size = int(np.random.randint(min_map_range[0], min_map_range[1]))
                 max_map_size = int(np.random.randint(max_map_range[0], max_map_range[1]))
                 mp: Map = self.__generate_random_house(
@@ -543,6 +542,8 @@ class Generator:
                     min_room_size=Size(*([min_map_size] * dimensions.n_dim)),
                     max_room_size=Size(*([max_map_size] * dimensions.n_dim)),
                 )
+            else:
+                raise NotImplementedError
 
             if point_cloud:
                 assert num_dim == 3, "Point cloud representation is only compatible with 3 dimensions"
@@ -797,7 +798,7 @@ class Generator:
             generator.modify_map(*settings.generator_modify())
 
         fill_rate = [settings.generator_obstacle_fill_min, settings.generator_obstacle_fill_max]
-        min_room_size = max(settings.generator_min_room_size, settings.generator_size)
+        min_room_size = min(settings.generator_min_room_size, settings.generator_size)
         max_room_size = min(settings.generator_max_room_size, settings.generator_size)
         min_room = [min_room_size, min_room_size + 1]
         max_room = [max_room_size, max_room_size + 1]
@@ -818,8 +819,12 @@ class Generator:
                                                settings.generator_gen_type, fill_rate, [1, 4], min_room, max_room,
                                                num_dim=settings.num_dim, json_save=True, point_cloud=settings.generate_point_cloud)
 
+            elif settings.generator_size == 64:
+                maps = generator.generate_maps(settings.generator_nr_of_examples, Size(*([64] * settings.num_dim)),
+                                               settings.generator_gen_type, fill_rate, [1, 6], min_room, max_room,
+                                               num_dim=settings.num_dim, json_save=True, point_cloud=settings.generate_point_cloud)
             else:
-                maps = generator.generate_maps(settings.generator_nr_of_examples, Size(*([128] * settings.num_dim)),
+                maps = generator.generate_maps(settings.generator_nr_of_examples, Size(*([settings.generator_size] *settings.num_dim)),
                                                settings.generator_gen_type, fill_rate, [1, 6], min_room, max_room,
                                                num_dim=settings.num_dim, json_save=True, point_cloud=settings.generate_point_cloud)
             # This will display 5 of the maps generated

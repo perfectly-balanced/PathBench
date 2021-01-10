@@ -5,7 +5,7 @@ from algorithms.configuration.maps.sparse_map import SparseMap
 
 import numpy as np
 
-mp = Directory._unjson('0_pc.json', DATA_PATH + '/maps/block_map_1_pc/')
+mp = Directory._unjson('4_pc.json', DATA_PATH + '/maps/block_map_5_pc/')
 
 class PointCloud():
     name: str
@@ -105,9 +105,18 @@ if __name__ == "__main__":
     cloud = PointCloud()
 
     #these values need to be normalized depending on the view that you decide to use. For some points to come into sight in the current display, you can divide all the points by 128
-    vertices = np.array([o.position for o in mp.obstacles] + [mp.agent.position] + [mp.goal.position], dtype=np.float32)
+    positions = [o.position for o in mp.obstacles] + [mp.agent.position] + [mp.goal.position]
+    for index in np.ndindex(3, 3, 3):
+        positions += [np.add(mp.agent.position, list(index))]
+        positions += [np.add(mp.goal.position, list(index))]
+    vertices = np.array(positions, dtype=np.float32)
+    vertices = vertices - 64
+    vertices = vertices / 16
     def loop(task):
-        colours = np.ones((len(mp.obstacles) + 2, 4), np.float32)
+        colours = np.ones((len(mp.obstacles) + 56, 4), np.float32)
+        colours[:-56, 1:3] = 0
+        colours[-56::2, :2] = 0
+        colours[-55::2, 0], colours[-55::2, 2] = 0, 0 
         cloud.update(vertices, colours)
         return task.again
 

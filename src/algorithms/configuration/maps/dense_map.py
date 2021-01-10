@@ -46,8 +46,6 @@ class DenseMap(Map):
         self.set_grid(arr_grid, transpose)
 
     def set_grid(self, grid: np.array, transpose) -> None:
-        # We transpose here to not worry about flipping coordinates later on
-        # Please take care I'm not sure why everythng works but it does atm
         self.grid = np.transpose(grid) if transpose else grid
 
         self.size = Size(*self.grid.shape)
