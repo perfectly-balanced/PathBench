@@ -19,7 +19,7 @@ class PersistentState():
     all_services: WeakSet
     file_name: str
 
-    __types: Dict[str, Any]
+    __types: Dict[str, Tuple[Type[Any], Optional[str]]]
     __objects: List[PersistentStateObject]
     __save_task: Optional['Task']
 
