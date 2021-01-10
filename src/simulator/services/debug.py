@@ -4,10 +4,9 @@ from enum import Enum
 from functools import wraps
 from typing import Any, Callable, Dict, List
 
-from simulator.services.progress import Progress
 from simulator.services.service import Service
-from simulator.services.timer import Timer
-
+from utility.progress import Progress
+from utility.timer import Timer
 
 class DebugLevel(Enum):
     """

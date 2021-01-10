@@ -6,6 +6,7 @@ import time
 import numpy as np
 from structures.heap import Heap
 
+from utility.timer import Timer
 from utility.threading import Condition, cond_var_wait_for
 from algorithms.configuration.entities.agent import Agent
 from algorithms.configuration.entities.trace import Trace
@@ -15,7 +16,6 @@ from algorithms.configuration.maps.map import Map
 from algorithms.configuration.maps.sparse_map import SparseMap
 from simulator.services.debug import DebugLevel
 from simulator.services.services import Services
-from simulator.services.timer import Timer
 from simulator.views.map.display.map_display import MapDisplay
 from structures import Size, Point
 

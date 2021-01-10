@@ -1,5 +1,6 @@
 import time
 
+from utility.timer import Timer
 from utility.threading import Thread, Condition, cond_var_wait_for
 from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.maps.sparse_map import SparseMap
@@ -9,7 +10,6 @@ from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.reset_event import ResetEvent
 from simulator.services.event_manager.events.key_frame_event import KeyFrameEvent
 from simulator.services.services import Services
-from simulator.services.timer import Timer
 from structures import Point
 from simulator.services.event_manager.events.state_done_event import StateDoneEvent
 from simulator.services.event_manager.events.state_terminated_event import StateTerminatedEvent

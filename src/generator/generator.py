@@ -20,13 +20,13 @@ from algorithms.configuration.maps.dense_map import DenseMap
 from algorithms.configuration.maps.map import Map
 from algorithms.lstm.map_processing import MapProcessing
 from simulator.services.debug import DebugLevel
-from simulator.services.progress import Progress
 from simulator.services.resources.atlas import Atlas
 from simulator.services.services import Services
-from simulator.services.timer import Timer
 from simulator.simulator import Simulator
 from structures import Point, Size
 from utility.constants import DATA_PATH
+from utility.progress import Progress
+from utility.timer import Timer
 
 if TYPE_CHECKING:
     from main import MainRunner

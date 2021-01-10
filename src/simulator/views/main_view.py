@@ -4,9 +4,9 @@ from simulator.models.model import Model
 from simulator.services.debug import DebugLevel
 from simulator.services.event_manager.events.event import Event
 from simulator.services.services import Services
-from simulator.services.timer import Timer
 from simulator.services.event_manager.events.quit_event import QuitEvent
 from simulator.views.view import View
+from utility.timer import Timer
 
 
 class MainView(View):
