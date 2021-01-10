@@ -3,7 +3,7 @@ from structures import DynamicColour
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from simulator.services.persistent_state import PersistentStateView
+    from simulator.services.persistent_state.persistent_state_view import PersistentStateView
 
 class ColourUpdateEvent(Event):
     __colour: DynamicColour

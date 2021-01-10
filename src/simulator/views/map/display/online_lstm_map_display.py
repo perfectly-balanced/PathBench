@@ -21,8 +21,8 @@ class OnlineLSTMMapDisplay(MapDisplay):
     def __init__(self, services: Services, ray_colour: Optional[DynamicColour] = None, bearing_colour: Optional[DynamicColour] = None, custom_map: Map = None):
         super().__init__(services, z_index=250, custom_map=custom_map)
 
-        self.ray_colour = self._services.state.add_colour("ray", RED) if ray_colour is None else ray_colour
-        self.bearing_colour = self._services.state.add_colour("bearing", Colour(1, 0, 1)) if bearing_colour is None else bearing_colour
+        self.ray_colour = self._services.state.views.add_colour("ray", RED) if ray_colour is None else ray_colour
+        self.bearing_colour = self._services.state.views.add_colour("bearing", Colour(1, 0, 1)) if bearing_colour is None else bearing_colour
 
     def render(self, *discarded) -> None:
         self._services.graphics.renderer.push_line_thickness(50)

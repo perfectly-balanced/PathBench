@@ -10,7 +10,7 @@ from structures import Colour, WHITE, BLACK, TRANSPARENT
 from utility.constants import GUI_DATA_PATH
 
 from simulator.services.services import Services
-from simulator.services.persistent_state import PersistentState
+from simulator.services.persistent_state.persistent_state_views import PersistentStateViews
 from simulator.services.event_manager.events.event import Event
 from simulator.services.event_manager.events.new_colour_event import NewColourEvent
 from simulator.services.event_manager.events.toggle_view_event import ToggleViewEvent
@@ -745,7 +745,7 @@ class ViewEditor():
 
         # Creating view selectors
         self.__view_selectors = []
-        for i in range(0, PersistentState.MAX_VIEWS):
+        for i in range(0, PersistentStateViews.MAX_VIEWS):
             num = os.path.join(GUI_DATA_PATH, str(i + 1) + ".png")
 
             self.__view_selectors.append(DirectButton(image=num,
@@ -760,8 +760,8 @@ class ViewEditor():
         self.__reset()
 
     def __reset(self) -> None:
-        self.__services.state.restore_effective_view()
-        ps_colours = self.__services.state.effective_view.colours
+        self.__services.state.views.restore_effective_view()
+        ps_colours = self.__services.state.views.effective_view.colours
 
         for e in self.__elems:
             e.destroy()
@@ -781,13 +781,13 @@ class ViewEditor():
         self.__select_cv(self.__elems[0] if self.__elems else None)
 
     def __save(self) -> None:
-        self.__services.state.apply_effective_view()
+        self.__services.state.views.apply_effective_view()
 
     def __update_visibility(self, name: str, visible: bool) -> None:
-        self.__services.state.effective_view.colours[name].visible = visible
+        self.__services.state.views.effective_view.colours[name].visible = visible
 
     def __update_colour(self, name: str, colour: Colour) -> None:
-        self.__services.state.effective_view.colours[name].colour = colour
+        self.__services.state.views.effective_view.colours[name].colour = colour
 
     def __colour_picker_callback(self, colour: Colour) -> None:
         self.__window.focus()
@@ -807,7 +807,7 @@ class ViewEditor():
             self.__colour_picker.colour = e.colour
 
     def notify(self, event: Event) -> None:
-        if isinstance(event, NewColourEvent) or self.__services.state.view_idx != self.__cur_view_idx:
+        if isinstance(event, NewColourEvent) or self.__services.state.views.view_idx != self.__cur_view_idx:
             self.__reset()
         elif isinstance(event, ToggleViewEvent):
             self.__window.toggle_visible()
@@ -818,9 +818,9 @@ class ViewEditor():
 
     @view_idx.setter
     def view_idx(self, idx: int) -> None:
-        self.__services.state.view_idx = idx
+        self.__services.state.views.view_idx = idx
         self.__reset()
 
     @view_idx.getter
     def view_idx(self) -> int:
-        return self.__services.state.view_idx
+        return self.__services.state.views.view_idx

@@ -51,7 +51,7 @@ class CombinedOnlineLSTM(Algorithm):
                 EntitiesMapDisplay(self._services, custom_map=self.__active_kernel.map),
             ]
 
-        trace_colour = self._services.state.add_colour("trace", Colour(0, 0.9, 0))
+        trace_colour = self._services.state.views.add_colour("trace", Colour(0, 0.9, 0))
 
         return super().set_display_info() + [
             *active_kernel_displays,

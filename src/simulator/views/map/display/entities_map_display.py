@@ -26,9 +26,9 @@ class EntitiesMapDisplay(MapDisplay):
     def __init__(self, services: Services, z_index=100, custom_map: Map = None) -> None:
         super().__init__(services, z_index=z_index, custom_map=custom_map)
 
-        self.__agent_colour = self._services.state.effective_view.colours[VoxelMap.AGENT]
-        self.__trace_colour = self._services.state.effective_view.colours[VoxelMap.TRACE]
-        self.__goal_colour = self._services.state.effective_view.colours[VoxelMap.GOAL]
+        self.__agent_colour = self._services.state.views.effective_view.colours[VoxelMap.AGENT]
+        self.__trace_colour = self._services.state.views.effective_view.colours[VoxelMap.TRACE]
+        self.__goal_colour = self._services.state.views.effective_view.colours[VoxelMap.GOAL]
 
         self.__cube_colours = {}
 

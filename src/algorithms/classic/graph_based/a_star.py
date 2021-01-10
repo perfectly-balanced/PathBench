@@ -50,9 +50,9 @@ class AStar(Algorithm):
 
         self.mem = AStar.InternalMemory(self._services)
 
-        self.pq_colour_max = self._services.state.add_colour("explored max", BLUE)
-        self.pq_colour_min = self._services.state.add_colour("explored min", Colour(0.27, 0.33, 0.35, 0.2))
-        self.visited_colour = self._services.state.add_colour("visited", Colour(0.19, 0.19, 0.2, 0.8))
+        self.pq_colour_max = self._services.state.views.add_colour("explored max", BLUE)
+        self.pq_colour_min = self._services.state.views.add_colour("explored min", Colour(0.27, 0.33, 0.35, 0.2))
+        self.visited_colour = self._services.state.views.add_colour("visited", Colour(0.19, 0.19, 0.2, 0.8))
 
         self.__map_displays = [SolidIterableMapDisplay(self._services, self.mem.visited, self.visited_colour, z_index=50),
                                GradientListMapDisplay(self._services, self.mem.priority_queue, min_colour=self.pq_colour_min,

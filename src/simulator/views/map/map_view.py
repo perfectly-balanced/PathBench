@@ -116,21 +116,21 @@ class MapView(View):
 
         if extended_walls:
             grid = TrackedGrid(self.map.data, copy=False)
-            dc = self._services.state.add_colour("extended wall", Colour(0.5).with_a(0.5))
+            dc = self._services.state.views.add_colour("extended wall", Colour(0.5).with_a(0.5))
             self.__persistent_displays.append(SolidGridMapDisplay(self._services, grid, dc, z_index=0, comparator=lambda x: bool(x & MapData.EXTENDED_WALL_MASK)))
             self.__extended_walls_display = self.__persistent_displays[-1]
 
         if hasattr(self._services.algorithm.map, "weight_grid"):
             mp = self._services.algorithm.map
             wg = TrackedGrid(mp.weight_grid, copy=False)
-            dc_min = self._services.state.add_colour("min occupancy", BLACK.with_a(0))
-            dc_max = self._services.state.add_colour("max occupancy", BLACK)
+            dc_min = self._services.state.views.add_colour("min occupancy", BLACK.with_a(0))
+            dc_max = self._services.state.views.add_colour("max occupancy", BLACK)
             display = GradientGridMapDisplay(self._services, wg, min_colour=dc_min, max_colour=dc_max, value_bounds=(0.1, mp.traversable_threshold))
             self.__persistent_displays.append(display)
             self.__weight_grid_display = self.__persistent_displays[-1]
 
-        self.__deduced_traversables_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
-        self.__deduced_traversables_wf_colour = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
+        self.__deduced_traversables_colour = self._services.state.views.effective_view.colours[MapData.TRAVERSABLES]()
+        self.__deduced_traversables_wf_colour = self._services.state.views.effective_view.colours[MapData.TRAVERSABLES_WF]()
 
         self.__sphere_scale = 0.2
         """
@@ -356,14 +356,14 @@ class MapView(View):
             for p in np.ndindex(self.map.data.shape):
                 self.__cube_modified[p] = bool(self.map.data[p] & MapData.TRAVERSABLE_MASK)
 
-        c = self._services.state.effective_view.colours[MapData.TRAVERSABLES]()
+        c = self._services.state.views.effective_view.colours[MapData.TRAVERSABLES]()
         if c != self.__deduced_traversables_colour:
             init_eager_refresh()
         self.__deduced_traversables_colour = c
 
         if self.map.dim == 2:
             wfc = self.map.traversables_wf_dc()
-            wfc = self._services.state.effective_view.colours[MapData.TRAVERSABLES_WF]()
+            wfc = self._services.state.views.effective_view.colours[MapData.TRAVERSABLES_WF]()
             if wfc != self.__deduced_traversables_wf_colour:
                 init_eager_refresh()
             self.__deduced_traversables_wf_colour = wfc
