@@ -62,7 +62,7 @@ sudo apt-get install x11vnc xvfb xtightvncviewer
 
 1. Running an **individual** graphics test (labyrinth with A* in this case):
 ```bash
-python3 tests/test_algorithm/test_configuration/test_graphics/test_labyrinth_A.py --spawn-display --view-display
+python3 tests/test_graphics/test_labyrinth_A.py --spawn-display --view-display
 ```
 
 2. Running **all** tests:
