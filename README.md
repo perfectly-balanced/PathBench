@@ -109,7 +109,7 @@ The Simulator Configuration window is used to make a selection between different
 set goal and start positions and change animation settings. A map is then initialised on pressing "Update".
 
 
-The View Editor window is used to customise the map, e.g. change colors of entities or set transparency level. Those 
+The View Editor window is used to customise the map, e.g. change colours of entities or set transparency level. Those 
 modifications could also be saved as one of the six states using the "Save" button, and the changes can be 
 reverted at any point using "Restore". The 1-6 state buttons provide the freedom to easily toggle between different
 custom states.
@@ -167,7 +167,7 @@ and interaction with a physical robot.
 
 <img src="./readme_files/architecture_full.jpg" width="750"/>
 
-**Infrasturcture**
+**Infrastructure**
 
 The MainRunner component is the main entry point of the platform and it coordinates all other
 sections. The MainRunner takes a master Configuration component as input which represents
