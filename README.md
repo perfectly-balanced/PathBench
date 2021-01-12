@@ -1,7 +1,7 @@
 # PathBench: Benchmarking Platform for Classic and Learned Path Planning Algorithms
 [![coverage report](https://codecov.io/gh/perfectly-balanced/PathBench/coverage.svg?branch=master)](https://codecov.io/gh/perfectly-balanced/PathBench/?branch=master)
 
-PathBench is a motion planning platform used to develop, assess, compare and visualise the performance and behaviour of both classic and machine learning-based robot path planners in a two (2D) or three-dimensional (3D) space.
+PathBench is a motion planning platform used to develop, assess, compare and visualise the performance and behaviour of both classic and machine learning-based robot path planners in a two- or three-dimensional space.
 
 ## Quick Start
 
@@ -15,20 +15,21 @@ The following installation and run instructions have been used for running PathB
 pip3 install -r requirements.txt
 ```
 
-Optional dependency is `ompl` with installation not covered here. There are some extra dependencies needed for testing, and are detailed [here](#testing).
+Optional dependency is `ompl` with installation not covered here, although installation is detected automatically if both `ompl` and its Python bindings are installed.
+There are some extra dependencies needed for testing, and are detailed [here](#testing).
 
 ### Simulator Visualiser Usage
 ```bash
 python3 src/main.py -v
 ```
-Note, the main script can be run from any working directory as PathBench does not use relative paths internally.
+Note, the main script can be run from any working directory as PathBench does not use relative paths internally, however this document will specify commands as if run from the root directory for clarity.
 
 | Key               	| Action                                                            	|
 |-------------------	|-------------------------------------------------------------------	|
 | escape            	| Exit the simulator                                                	|
 | mouse left click  	| Moves agent to mouse location                                     	|
 | mouse right click 	| Moves goal to mouse location                                          |                    
-| arrow keys, PgUp, PgDn| Move agent/goal (when Alt down) along the X-Y-Z plane                 |                             	                                                                                
+| arrow keys, PgUp, PgDn| Move agent (goal when Alt down) along the X-Y-Z plane                 |
 | w a s d               | Rotate orbital camera around map                                      |
 | t                 	| Find the path between the agent and goal                            	|
 | x                 	| Pause/Resume path finding (animations required)                      	|
@@ -51,6 +52,7 @@ python3 src/main.py --generator --num-maps 100 --generator-type house --dims 3
 # Run analyzer
 python3 src/main.py --analyzer --algorithms "A*" Dijkstra VIN --include-all-builtin-maps
 ```
+Note `A*` is in quotes to prevent glob expansion by the shell.
 
 You can specify multiple components to be run in order: for example, running the trainer and then visualising the resulting trained ML algorithm:
 ```bash
@@ -208,7 +210,7 @@ This shows a screenshot of the ROS extension running with Gazebo emulating a rea
 
 The MainRunner component is the main entry point of the platform and it coordinates all other
 sections. The MainRunner takes a master Configuration component as input which represents
-the main inflexion point of the platform. It describes which section (Simulator, Generator,
+the main inflexion point of the platform. It describes which section(s) (Simulator, Generator,
 Trainer, Analyser) should be used and how.
 
 The Services component is a bag of Service components which is injected into all platform classes
@@ -231,7 +233,7 @@ The Debug component is a printing service which augments printing messages with 
 decorators such as time-stamp and routes the messages to a specified IO stream or standard out.
 It also provides a range of debugging/printing modes: None (no information), Basic (only basic
 information), Low (somewhat verbose), Medium (quite verbose), High (all information).
-The RenderingEngine component is a wrapper around the pygame library and all rendering is
+The RenderingEngine component is a wrapper around the Panda3D library and all rendering is
 routed through it.
 
 The Torch service is not an actual wrapper around pytorch, but instead it defines some constants
@@ -245,13 +247,15 @@ can be converted to internal 2D maps), Algorithms (stores trained machine learni
 Data (stores training data for machine learning models). The main serialisation tool is dill which is
 a wrapper around pickle with lambda serialisation capabilities, but JSON support has been added, and
 this should be preferred when possible. Custom serialisation is also allowed
-such as tensor serialisation provided by pytorch or image saving by pygame.
+such as tensor serialisation provided by pytorch.
 
 The AlgorithmRunner manages the algorithm session which contains the Algorithm, BasicTesting
 and Map. The AlgorithmRunner launches a separate daemon thread that is controlled
 by a condition variable. When writing an Algorithm, special key frames can be defined
 (e.g. when the trace is produced) to create animations. Key frames release the synchronisation
 variable for a brief period and then acquire it again, thus querying new rendering jobs.
+Animation is done automatically by monitoring of the trace and display components returned by
+`set_display_info()`, with the visualiser updated during the keyframe call.
 
 The Utilities section provides a series of helper methods and classes: Maps (holds in-memory
 user defined Map components), Point, Size, Progress (progress bar), Timer, MapProcessing
