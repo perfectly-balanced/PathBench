@@ -233,8 +233,6 @@ The Debug component is a printing service which augments printing messages with 
 decorators such as time-stamp and routes the messages to a specified IO stream or standard out.
 It also provides a range of debugging/printing modes: None (no information), Basic (only basic
 information), Low (somewhat verbose), Medium (quite verbose), High (all information).
-The RenderingEngine component is a wrapper around the Panda3D library and all rendering is
-routed through it.
 
 The Torch service is not an actual wrapper around pytorch, but instead it defines some constants
 such as the initial random seed and the training device (CPU/CUDA).
