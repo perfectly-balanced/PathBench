@@ -1,7 +1,7 @@
 # PathBench: Benchmarking Platform for Classic and Learned Path Planning Algorithms
 [![coverage report](https://codecov.io/gh/perfectly-balanced/PathBench/coverage.svg?branch=master)](https://codecov.io/gh/perfectly-balanced/PathBench/?branch=master)
 
-PathBench is a motion planning platform used to develop, assess, compare and visualise the performance and behaviour of both classic and machine learning-based robot path planners in a two (2D) or three-dimensional (3D) space.
+PathBench is a motion planning platform used to develop, assess, compare and visualise the performance and behaviour of both classic and machine learning-based robot path planners in a two- or three-dimensional space.
 
 ## Quick Start
 
@@ -15,20 +15,21 @@ The following installation and run instructions have been used for running PathB
 pip3 install -r requirements.txt
 ```
 
-Optional dependency is `ompl` with installation not covered here. There are some extra dependencies needed for testing, and are detailed [here](#testing).
+Optional dependency is `ompl` with installation not covered here, although installation is detected automatically if both `ompl` and its Python bindings are installed.
+There are some extra dependencies needed for testing, and are detailed [here](#testing).
 
 ### Simulator Visualiser Usage
 ```bash
 python3 src/main.py -v
 ```
-Note, the main script can be run from any working directory as PathBench doesn't use relative paths internally.
+Note, the main script can be run from any working directory as PathBench does not use relative paths internally, however this document will specify commands as if run from the root directory for clarity.
 
 | Key               	| Action                                                            	|
 |-------------------	|-------------------------------------------------------------------	|
 | escape            	| Exit the simulator                                                	|
 | mouse left click  	| Moves agent to mouse location                                     	|
 | mouse right click 	| Moves goal to mouse location                                          |                    
-| arrow keys, PgUp, PgDn| Move agent/goal (when Alt down) along the X-Y-Z plane                 |                             	                                                                                
+| arrow keys, PgUp, PgDn| Move agent (goal when Alt down) along the X-Y-Z plane                 |
 | w a s d               | Rotate orbital camera around map                                      |
 | t                 	| Find the path between the agent and goal                            	|
 | x                 	| Pause/Resume path finding (animations required)                      	|
@@ -39,7 +40,31 @@ Note, the main script can be run from any working directory as PathBench doesn't
 | m                 	| Toggle map between Sparse and Dense                               	|
 | i                     | Toggle visibility of debug overlay                                    |
 
-Note, screenshots are placed in `data/screenshots`.
+Note, screenshots are placed in `data/screenshots/`.
+
+### Other components
+Example usage:
+```bash
+# Run trainer
+python3 src/run_trainer.py --num_maps 10000 --full-train --model LSTM
+# Run generator
+python3 src/main.py --generator --num-maps 100 --generator-type house --dims 3
+# Run analyzer
+python3 src/main.py --analyzer --algorithms "A*" Dijkstra VIN --include-all-builtin-maps
+```
+Note `A*` is in quotes to prevent glob expansion by the shell.
+
+You can specify multiple components to be run in order: for example, running the trainer and then visualising the resulting trained ML algorithm:
+```bash
+python3 src/main.py --trainer --visualiser
+```
+
+### More Options
+Run 
+```bash
+python3 src/main.py --help
+```
+to get a full list of all available options for each of the generator, analyser, trainer, and visualiser.
 
 ## Testing
 
@@ -62,7 +87,7 @@ sudo apt-get install x11vnc xvfb xtightvncviewer
 
 1. Running an **individual** graphics test (labyrinth with A* in this case):
 ```bash
-python3 tests/test_algorithm/test_configuration/test_graphics/test_labyrinth_A.py --spawn-display --view-display
+python3 tests/test_graphics/test_labyrinth_A.py --spawn-display --view-display
 ```
 
 2. Running **all** tests:
@@ -82,43 +107,84 @@ xwud -in /var/tmp/Xvfb_screen0
 
 ## PathBench
 
-**Simulator**
+### **Simulator**
 
 This section is responsible for environment interactions and algorithm visualisation.
-It provides custom collision detection systems and a graphics framework for rendering the internal
-state of the algorithms. Additionally, the platform provides a ROS real-time extension for interacting with a real-world
-robot through PathBench.
+It provides custom collision detection systems and a graphics framework (Panda3D) for rendering the internal
+state of the algorithms in 2D or 3D. In PathBench3D, a simulation can be run headlessly or with graphics.
 <br />
-<img src="./readme_files/screenshot_51.png" width="130"/>
-<img src="./readme_files/screenshot_43.png" width="130"/>
-<img src="./readme_files/screenshot_49.png" width="130"/>
-<img src="./readme_files/screenshot_44.png" width="130"/>
-<img src="./readme_files/screenshot_50.png" width="130"/>
+<img src="./readme_files/potential_field_2d.png" width="130"/>
+<img src="./readme_files/RRT_star_long_wall.png" width="130"/>
+<img src="./readme_files/screenshot_180.png" width="130" height="130"/>
+<img src="./readme_files/A_2D.png" width="130" height="129"/>
+<img src="./readme_files/RRT_labyrinth.png" width="134" height="133"/>
+<br />
+<img src="./readme_files/screenshot_185.png" width="200" height="200"/>
+<img src="./readme_files/screenshot_159.png" width="210" height="195"/>
+<img src="./readme_files/A_3D_cube.png" width="163" height="154"/>
+<img src="./readme_files/screenshot_177.png" width="182" height="196"/>
 
-The simulator has a custom GUI that can be used to modify the master launch configuration.
 
+The GUI main window consists of several components - a Simulator Configuration, View Editor and a Debug Overlay.
 <p class="aligncenter">
-    <img src="./readme_files/config.png" alt="PathBench Simulator Configuration" width="400" align="middle" />
+    <img src="./readme_files/visualiser_full.png" alt="PathBench Main Window" width="450" align="center" />
 </p>
+
+The Simulator Configuration window is used to make a selection between different maps and algorithms to analyse, 
+set goal and start positions and change animation settings. A map is then initialised on pressing "Update".
+
+
+The View Editor window is used to customise the map, e.g. change colours of entities or set transparency level. Those 
+modifications could also be saved as one of the six states using the "Save" button, and the changes can be 
+reverted at any point using "Restore". The 1-6 state buttons provide the freedom to easily toggle between different
+custom states.
+
+
+The Debug Overlay at the top left of the main window provides information about the selected map and algorithm, 
+the entity positions, and the current state of the simulator (Initialising, Initialised, Running, Done, Terminated).
 
 To run and use the simulator see [Quick Start](#quick-start).
 
 <br />
 
-**Trainer**
+### **Generator**
 This section is responsible for generating and labelling the training data used to train
 the Machine Learning models.
 
-**Generator**
+It has several options to change the generation algorithm and vary hyperparameters to that algorithm, as well as specifying number of dimensions and size of the maps. They are saved to a directory corresponding to `data/maps/[algorithm]_[number](_3D)/[0..number].json`, and can then be used for training, analysing, or for use in the visualiser.
+
+### **Trainer**
 This section is a class wrapper over the third party Machine Learning libraries. It
 provides a generic training pipeline based on the holdout method and standardised access to the
-training data.
+training data. It is a wrapper over the Pytorch python package for machine learning and provides a generic training pipeline for path planning models based on the holdout method and standardized access to the training data generated by the Generator.
 
-**Analyzer**
-Analyzer. The final section manages the statistical measures used in the practical assessment of
+Each learned model in PathBench3D (LSTM, CAE, Combined LSTM+CAE and also VIN) inherits from the `MLModel` class, which trains its models using a standard holdout method. The models are trained on the data labels generated by the Generator class, using data received from the A* algorithm. Each model contains metadata about what labels it needs. For example, LSTM trains on raycast information and angle to the goal, whereas VIN just uses the map and path. 
+
+### **Analyzer**
+The final section manages the statistical measures used in the practical assessment of
 the algorithms. Custom metrics can be defined as well as graphical displays for visual interpretations.
 
-**ROS Real-time Extension**
+The current metrics are:
+ - Average Path Deviation
+ - Success Rate
+ - Average Time
+ - Average Steps
+ - Average Distance
+ - Average Distance from Goal
+ - Average Original Distance from Goal
+ - Average Trajectory Smoothness
+ - Average Obstacle Clearance
+ - Average Search Space
+ - Maximum Memory
+
+ These are saved to `pbtest.csv`, and plotted on bar charts and violin plots using `matplotlib` as below: 
+
+ <img src="./readme_files/analyzer_results1.png" width=750>
+
+ <img src="./readme_files/analyzer_results3.png" width=750>
+
+
+### **ROS Real-time Extension**
 
 This extension provides real-time support for visualisation, coordination
 and interaction with a physical robot.
@@ -126,42 +192,32 @@ and interaction with a physical robot.
 - For a basic demonstration of interacting with `RosMap` see [here](src/ros/basic/README.md).
 - For the fully functional 2D ROS Real-time Extension see [here](src/ros/advanced/README.md).
 
-**Example Real Trajectory**
-<br />
-<img src="./readme_files/start_ann.JPG" width="130"/>
+**Example Trajectory**
+</br>
+<img src="./readme_files/gazebo_ros.png" width="750">
 
-**Trajectory Start**
-<br />
-<img src="./readme_files/start_2.JPG" width="130"/>
-<img src="./readme_files/start_2.png" width="130"/>
-<img src="./readme_files/start_3.png" width="130"/>
+This shows a screenshot of the ROS extension running with Gazebo emulating a real robot (turtlebot3).
 
-**Trajectory Finish**
-<br />
-<img src="./readme_files/final.JPG" width="130"/>
-<img src="./readme_files/final_2.png" width="130"/>
-<img src="./readme_files/final_3.png" width="130"/>
-
-**Architecture High Overiew**
+### **Architecture High Overiew**
 
 <img src="./readme_files/sim_high_overview.png" width="300"/>
 
-**Platform Architecture**
+### **Platform Architecture**
 
-<img src="./readme_files/simulator_architecture.png" width="600"/>
+<img src="./readme_files/architecture_full.jpg" width="750"/>
 
-**Infrasturcture**
+### **Infrastructure**
 
 The MainRunner component is the main entry point of the platform and it coordinates all other
 sections. The MainRunner takes a master Configuration component as input which represents
-the main inflexion point of the platform. It describes which section (Simulator, Generator,
+the main inflexion point of the platform. It describes which section(s) (Simulator, Generator,
 Trainer, Analyser) should be used and how.
 
 The Services component is a bag of Service components which is injected into all platform classes
-in order to maintain global access to the core libraries1. A Service component is created for most
-external libraries to encapsulate their APIs and provide useful helper functions2. Moreover, by
+in order to maintain global access to the core libraries. A Service component is created for most
+external libraries to encapsulate their APIs and provide useful helper functions. Moreover, by
 making use of the Adapter Pattern we can easily switch third party libraries, if needed, and the
-code becomes more test friendly. Finnaly, the Services container can be mocked together with all
+code becomes more test friendly. Finally, the Services container can be mocked together with all
 its Service components, thus avoiding rendering, file writing and useless printing.
 
 The Simulator was build by following the Model-View-Controller (MVC) pattern. The
@@ -177,63 +233,30 @@ The Debug component is a printing service which augments printing messages with 
 decorators such as time-stamp and routes the messages to a specified IO stream or standard out.
 It also provides a range of debugging/printing modes: None (no information), Basic (only basic
 information), Low (somewhat verbose), Medium (quite verbose), High (all information).
-The RenderingEngine component is a wrapper around the pygame library and all rendering is
-routed through it.
 
 The Torch service is not an actual wrapper around pytorch, but instead it defines some constants
 such as the initial random seed and the training device (CPU/CUDA).
 
 The Resources service is the persistent storage system. It is a container of Directory components
 which represent an interface over the actual filesystem directories. It provides safe interaction with
-the filesystem and a range of utility directories: Cache (temporary storage used for speeding second
+the filesystem and a range of utility directories: Cache (temporary storage used for speeding up second
 runs), Screenshots, Maps (stores all user defined and generated maps), Images (stores images which
-can be converted to internal maps), Algorithms (stores trained machine learning models), Training
+can be converted to internal 2D maps), Algorithms (stores trained machine learning models), Training
 Data (stores training data for machine learning models). The main serialisation tool is dill which is
-a wrapper around pickle with lambda serialisation capabilities, but custom serialisation is allowed
-such as tensor serialisation provided by pytorch or image saving by pygame.
+a wrapper around pickle with lambda serialisation capabilities, but JSON support has been added, and
+this should be preferred when possible. Custom serialisation is also allowed
+such as tensor serialisation provided by pytorch.
 
 The AlgorithmRunner manages the algorithm session which contains the Algorithm, BasicTesting
 and Map. The AlgorithmRunner launches a separate daemon thread that is controlled
 by a condition variable. When writing an Algorithm, special key frames can be defined
 (e.g. when the trace is produced) to create animations. Key frames release the synchronisation
 variable for a brief period and then acquire it again, thus querying new rendering jobs.
+Animation is done automatically by monitoring of the trace and display components returned by
+`set_display_info()`, with the visualiser updated during the keyframe call.
 
 The Utilities section provides a series of helper methods and classes: Maps (holds in-memory
 user defined Map components), Point, Size, Progress (progress bar), Timer, MapProcessing
 (feature extractor used mainly in ML sections).
-
-**Master Load Configuration**
-
-| Configuration Field                            	| Type                             	| Description                                                                                              	|
-|------------------------------------------------	|----------------------------------	|----------------------------------------------------------------------------------------------------------	|
-| load_simulator                                 	| bool                             	| If the simulator should be loaded                                                                        	|
-| clear_cache                                    	| bool                             	| If the cache should be deleted after the simulator is finished                                           	|
-| simulator_graphics                             	| bool                             	| If graphics should be used or not; evaluation is always done without graphics                            	|
-| simulator_initial_map                          	| Map                              	| The map used in AlgorithmRunner service                                                                  	|
-| simulator_algorithm_type                       	| Type[Algorithm]                  	| The algorithm type used in AlgorithmRunner service                                                       	|
-| simulator_algorithm_parameters                 	| Tuple[List[Any], Dict[str, Any]] 	| The algorithm parametrs in the form of *args and **kwargs which are used in AlgorithmRunner service      	|
-| simulator_testing_type                         	| Type[BasicTesting]               	| The testing type used in AlgorithmRunner service                                                         	|
-| simulator_key_frame_speed                      	| int                              	| The refresh rate interval during each key frame; a value of 0 disables the key frames                    	|
-| simulator_key_frame_skip                       	| int                              	| How many key frames are skipped at a time; used to speed up the animation when frames per second are low 	|
-| simulator_write_debug_level                    	| DebugLevel                       	| The debugging level (None, Basic, Low, Medium, High)                                                     	|
-| generator                                      	| bool                             	| If the generator should be loaded                                                                        	|
-| generator_gen_type                             	| str                              	| Generation type; can choose between "uniform_random_fill", "block_map" and "house"                       	|
-| generator_nr_of_examples                       	| int                              	| How many maps should be generated; 0 does not trigger generation                                         	|
-| generator_labelling_atlases                    	| List[str]                        	| Which Map Atlases should be converted to training data                                                   	|
-| generator_labelling_features                   	| List[str]                        	| Which sequential features should be extracted for training conversion                                    	|
-| generator_labelling_labels                     	| List[str]                        	| Which sequential labels should be extracted for training conversion                                      	|
-| generator_single_labelling_features            	| List[str]                        	| Which single features should be extracted for training conversion                                        	|
-| generator_single_labelling_labels              	| List[str]                        	| Which single labels should be extracted for training conversion                                          	|
-| generator_aug_labelling_features               	| List[str]                        	| Which sequential features should be augmented for training data defined by generator_labelling_atlases   	|
-| generator_aug_labelling_labels                 	| List[str]                        	| Which sequential labels should be augmented for training data defined by generator_labelling_atlases     	|
-| generator_aug_single_labelling_features        	| List[str]                        	| Which single features should be augmented for training data defined by generator_labelling_atlases       	|
-| generator_aug_single_labelling_labels          	| List[str]                        	| Which single labels should be augmented for training data defined by generator_labelling_atlases         	|
-| generator_modify                               	| Callable[[Map], Map]             	| Modifies the given map using the custom function                                                         	|
-| trainer                                        	| bool                             	| If the trainer should be loaded                                                                          	|
-| trainer_model                                  	| Type[MLModel]                    	| The model which will be trained                                                                          	|
-| trainer_custom_config                          	| Dict[str, Any]                   	| If a custom configuration should augment the MLModel configuration                                       	|
-| trainer_pre_process_data_only                  	| bool                             	| If the trainer should only pre-process data and save it; it does not overwrite cache                     	|
-| trainer_bypass_and_replace_pre_processed_cache 	| bool                             	| If pre-processed data cache should be bypassed and re-computed                                           	|
-
 
 <!-- [Overleaf link](https://www.overleaf.com/project/5c006f75ebc04119dbfb3c90)-->
