@@ -5,7 +5,7 @@ PathBench is a motion planning platform used to develop, assess, compare and vis
 
 ## Quick Start
 
-**Python 3.8.5** officially supported, though older versions should work for the most part.
+**Python 3.8.5** officially supported, though older (and newer) versions should work for the most part.
 
 The following installation and run instructions have been used for running PathBench on **Ubuntu 18 and 20**.
 
@@ -111,7 +111,7 @@ xwud -in /var/tmp/Xvfb_screen0
 
 This section is responsible for environment interactions and algorithm visualisation.
 It provides custom collision detection systems and a graphics framework (Panda3D) for rendering the internal
-state of the algorithms in 2D or 3D. In PathBench3D, a simulation can be run headlessly or with graphics.
+state of the algorithms in 2D or 3D. In PathBench, a simulation can be run headlessly or with graphics.
 <br />
 <img src="./readme_files/potential_field_2d.png" width="130"/>
 <img src="./readme_files/RRT_star_long_wall.png" width="130"/>
