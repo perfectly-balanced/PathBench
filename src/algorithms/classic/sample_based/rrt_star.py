@@ -7,7 +7,8 @@ from algorithms.classic.sample_based.core.sample_based_algorithm import SampleBa
 from algorithms.basic_testing import BasicTesting
 from simulator.services.services import Services
 from structures import Point
-
+from algorithms.configuration.maps.ros_map import RosMap
+from algorithms.configuration.maps.map import Map
 from algorithms.classic.sample_based.core.vertex import Vertex
 from algorithms.classic.sample_based.core.graph import gen_forest, Forest
 
@@ -127,6 +128,10 @@ class RRT_Star(SampleBasedAlgorithm):
 
             if self._get_grid().is_agent_in_goal_radius(agent_pos=q_new.position):
                 self._extract_path(q_new)
+                if isinstance(self._get_grid(), RosMap):
+                    #sends waypoint for ros extension
+                    grid: Map = self._get_grid()
+                    self._get_grid().publish_wp(grid.agent.position)
                 break
 
             self.key_frame()

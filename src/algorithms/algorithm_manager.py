@@ -86,14 +86,12 @@ class AlgorithmManager():
     def _static_init_(cls):
         cls.builtins = {
             "A*": (AStar, AStarTesting, ([], {})),
-            "Global Way-point LSTM": (WayPointNavigation, WayPointNavigationTesting, (
-                [], {"global_kernel": (CombinedOnlineLSTM, ([], {})), "global_kernel_max_it": 100})),
+            "WPN":(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 10, "global_kernel": (CombinedOnlineLSTM, ([], {}))})),
+            "WPN-view":(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}))})),
+            "WPN-map": (WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}))})),
             "LSTM Bagging": (CombinedOnlineLSTM, CombinedOnlineLSTMTesting, ([], {})),
-            "CAE Online LSTM": (
-                OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_cae_training_house_100_model"})),
-            "Online LSTM": (OnlineLSTM, BasicTesting, (
-                [],
-                {"load_name": "tile_by_tile_training_uniform_random_fill_30000_block_map_30000_house_30000_model"})),
+            "Map Module (CAE) ": (OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model"})),
+            "View Module (Online LSTM)": (OnlineLSTM, BasicTesting, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"})),
             "SPRM": (SPRM, BasicTesting, ([], {})),
             "RT": (RT, BasicTesting, ([], {})),
             "RRT": (RRT, BasicTesting, ([], {})),

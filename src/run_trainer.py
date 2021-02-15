@@ -47,7 +47,7 @@ parser = argparse.ArgumentParser(prog="run_trainer.py",
                                  description="PathBench trainer runner",
                                  formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('-n', '--num_maps', type=int, default=100, help="number of maps to generate for the trainer")
-parser.add_argument('-m', '--model', choices=['LSTM'], default='LSTM', help="model to train")
+parser.add_argument('-m', '--model', choices=['OnlineLSTM', "CAE", "LSTMCAEModel"], default='LSTM', help="model to train")
 parser.add_argument('-f', '--full_train', action='store_true', help='set this to train from scratch')
 
 args = parser.parse_args()
@@ -106,10 +106,21 @@ labelling = {
         "direction_to_goal_normalized",
         "agent_goal_angle"], ['next_position_index'], [], []],
     CAE: [[], [], ['global_map'], ['global_map']],
-    LSTMCAEModel: [[], [], ['global_map'], ['global_map']],
-    CombinedOnlineLSTM: [[], [], ['global_map'], ['global_map']]
+    LSTMCAEModel: [[
+        "raycast_8_normalized",
+        "distance_to_goal_normalized",
+        "direction_to_goal_normalized",
+        "agent_goal_angle"], ['next_position_index'], ['global_map'], ['global_map']],
+    CombinedOnlineLSTM: [[], [], ['global_map'], []]
 
 }
+
+trained_alg = {
+    "OnlineLSTM": BasicLSTMModule,
+    "CAE": CAE,
+    "LSTMCAEModel": LSTMCAEModel,
+}
+
 
 
 # Input hyperparametres here
@@ -117,7 +128,7 @@ chosen_map = 'House'
 algo = algorithms['A*']  # Choose which planner
 ani = animations['Fast']  # Choose animation speed
 debug = debug['High']  # Choose debug level
-training_algo = BasicLSTMModule  # Chooses the algorithm to train, either CAE, BasicLSTMModule,LSTMCAEModel
+training_algo = trained_alg[args.model]  # Chooses the algorithm to train, either CAE, BasicLSTMModule,LSTMCAEModel
 nbr_ex = args.num_maps  # Number of maps generated
 show_sample_map = False  # shows 5 samples
 gen_start = True
