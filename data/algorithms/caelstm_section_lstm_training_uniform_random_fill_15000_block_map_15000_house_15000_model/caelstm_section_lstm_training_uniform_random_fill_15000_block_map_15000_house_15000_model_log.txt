@@ -1,0 +1,153 @@
+[2021-02-16 07:39:56] - Starting holdout training: {
+	data_features: ['raycast_8_normalized', 'distance_to_goal_normalized', 'direction_to_goal_normalized', 'agent_goal_angle'],
+	data_labels: ['next_position_index'],
+	data_single_features: ['global_map'],
+	data_single_labels: [],
+	epochs: 25,
+	loss: CrossEntropyLoss(),
+	optimizer: <function LSTMCAEModel.get_config.<locals>.<lambda> at 0x2b9842a95700>,
+	validation_ratio: 0.2,
+	test_ratio: 0.2,
+	save_name: caelstm_section_lstm,
+	training_data: ['training_uniform_random_fill_15000_block_map_15000_house_15000'],
+	batch_size: 50,
+	custom_encoder: None,
+	num_layers: 2,
+	lstm_input_size: 112,
+	lstm_output_size: 8,
+}
+
+[2021-02-16 07:39:56] - Starting data pre processing
+[2021-02-16 07:39:56] - Cache miss, starting new training data pre processing
+[2021-02-16 07:39:56] - Loading data: training_uniform_random_fill_15000_block_map_15000_house_15000
+[2021-02-16 07:49:41] - Picking features
+[2021-02-16 07:52:22] - Cache hit, training data loaded from cache
+[2021-02-16 07:52:22] - Finished data pre processing 
+
+[2021-02-16 07:52:22] - Training: <class 'algorithms.lstm.LSTM_CAE_tile_by_tile.LSTMCAEModel'>
+[2021-02-16 07:52:53] - Training 	 Epoch: 0 	 Loss: 0.052440 	 Accuracy 0.77 	 Precision: 0.76 	 Recall: 0.80 	 F1: 0.77
+[2021-02-16 07:52:57] - Validation 	 Epoch: 0 	 Loss: 0.147058 	 Accuracy 0.76 	 Precision: 0.75 	 Recall: 0.74 	 F1: 0.73
+
+[2021-02-16 07:53:14] - Training 	 Epoch: 1 	 Loss: 0.042770 	 Accuracy 0.81 	 Precision: 0.79 	 Recall: 0.82 	 F1: 0.80
+[2021-02-16 07:53:17] - Validation 	 Epoch: 1 	 Loss: 0.122957 	 Accuracy 0.81 	 Precision: 0.82 	 Recall: 0.79 	 F1: 0.80
+
+[2021-02-16 07:53:42] - Training 	 Epoch: 2 	 Loss: 0.040543 	 Accuracy 0.82 	 Precision: 0.81 	 Recall: 0.84 	 F1: 0.82
+[2021-02-16 07:53:46] - Validation 	 Epoch: 2 	 Loss: 0.116869 	 Accuracy 0.82 	 Precision: 0.83 	 Recall: 0.79 	 F1: 0.80
+
+[2021-02-16 07:54:13] - Training 	 Epoch: 3 	 Loss: 0.041144 	 Accuracy 0.83 	 Precision: 0.82 	 Recall: 0.84 	 F1: 0.82
+[2021-02-16 07:54:16] - Validation 	 Epoch: 3 	 Loss: 0.114586 	 Accuracy 0.82 	 Precision: 0.82 	 Recall: 0.80 	 F1: 0.80
+
+[2021-02-16 07:54:31] - Training 	 Epoch: 4 	 Loss: 0.037334 	 Accuracy 0.85 	 Precision: 0.83 	 Recall: 0.86 	 F1: 0.84
+[2021-02-16 07:54:36] - Validation 	 Epoch: 4 	 Loss: 0.098577 	 Accuracy 0.84 	 Precision: 0.85 	 Recall: 0.82 	 F1: 0.83
+
+[2021-02-16 07:55:00] - Training 	 Epoch: 5 	 Loss: 0.034333 	 Accuracy 0.85 	 Precision: 0.84 	 Recall: 0.86 	 F1: 0.84
+[2021-02-16 07:55:05] - Validation 	 Epoch: 5 	 Loss: 0.087144 	 Accuracy 0.87 	 Precision: 0.87 	 Recall: 0.85 	 F1: 0.86
+
+[2021-02-16 07:55:26] - Training 	 Epoch: 6 	 Loss: 0.031641 	 Accuracy 0.87 	 Precision: 0.85 	 Recall: 0.87 	 F1: 0.85
+[2021-02-16 07:55:29] - Validation 	 Epoch: 6 	 Loss: 0.079858 	 Accuracy 0.88 	 Precision: 0.89 	 Recall: 0.87 	 F1: 0.88
+
+[2021-02-16 07:55:47] - Training 	 Epoch: 7 	 Loss: 0.030906 	 Accuracy 0.87 	 Precision: 0.85 	 Recall: 0.87 	 F1: 0.86
+[2021-02-16 07:55:50] - Validation 	 Epoch: 7 	 Loss: 0.076617 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.88 	 F1: 0.88
+
+[2021-02-16 07:56:07] - Training 	 Epoch: 8 	 Loss: 0.030549 	 Accuracy 0.87 	 Precision: 0.86 	 Recall: 0.88 	 F1: 0.86
+[2021-02-16 07:56:10] - Validation 	 Epoch: 8 	 Loss: 0.076097 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.88 	 F1: 0.88
+
+[2021-02-16 07:56:37] - Training 	 Epoch: 9 	 Loss: 0.029802 	 Accuracy 0.88 	 Precision: 0.86 	 Recall: 0.88 	 F1: 0.86
+[2021-02-16 07:56:42] - Validation 	 Epoch: 9 	 Loss: 0.076858 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.87 	 F1: 0.88
+
+[2021-02-16 07:57:11] - Training 	 Epoch: 10 	 Loss: 0.029095 	 Accuracy 0.88 	 Precision: 0.86 	 Recall: 0.88 	 F1: 0.87
+[2021-02-16 07:57:14] - Validation 	 Epoch: 10 	 Loss: 0.076524 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.88 	 F1: 0.88
+
+[2021-02-16 07:57:30] - Training 	 Epoch: 11 	 Loss: 0.028395 	 Accuracy 0.88 	 Precision: 0.87 	 Recall: 0.88 	 F1: 0.87
+[2021-02-16 07:57:34] - Validation 	 Epoch: 11 	 Loss: 0.075373 	 Accuracy 0.89 	 Precision: 0.90 	 Recall: 0.88 	 F1: 0.89
+
+[2021-02-16 07:57:50] - Training 	 Epoch: 12 	 Loss: 0.028364 	 Accuracy 0.88 	 Precision: 0.87 	 Recall: 0.88 	 F1: 0.87
+[2021-02-16 07:57:55] - Validation 	 Epoch: 12 	 Loss: 0.074192 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.88 	 F1: 0.89
+
+[2021-02-16 07:58:19] - Training 	 Epoch: 13 	 Loss: 0.028810 	 Accuracy 0.88 	 Precision: 0.87 	 Recall: 0.88 	 F1: 0.87
+[2021-02-16 07:58:24] - Validation 	 Epoch: 13 	 Loss: 0.073702 	 Accuracy 0.89 	 Precision: 0.89 	 Recall: 0.88 	 F1: 0.88
+
+[2021-02-16 07:58:51] - Training 	 Epoch: 14 	 Loss: 0.027348 	 Accuracy 0.88 	 Precision: 0.87 	 Recall: 0.89 	 F1: 0.87
+[2021-02-16 07:58:56] - Validation 	 Epoch: 14 	 Loss: 0.072912 	 Accuracy 0.89 	 Precision: 0.90 	 Recall: 0.88 	 F1: 0.89
+
+[2021-02-16 07:59:13] - Training 	 Epoch: 15 	 Loss: 0.025917 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+[2021-02-16 07:59:16] - Validation 	 Epoch: 15 	 Loss: 0.069937 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.89 	 F1: 0.89
+
+[2021-02-16 07:59:33] - Training 	 Epoch: 16 	 Loss: 0.026474 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+[2021-02-16 07:59:36] - Validation 	 Epoch: 16 	 Loss: 0.069658 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.88 	 F1: 0.89
+
+[2021-02-16 08:00:00] - Training 	 Epoch: 17 	 Loss: 0.027426 	 Accuracy 0.89 	 Precision: 0.87 	 Recall: 0.89 	 F1: 0.88
+[2021-02-16 08:00:04] - Validation 	 Epoch: 17 	 Loss: 0.068330 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.89 	 F1: 0.89
+
+[2021-02-16 08:00:21] - Training 	 Epoch: 18 	 Loss: 0.026933 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+[2021-02-16 08:00:24] - Validation 	 Epoch: 18 	 Loss: 0.066179 	 Accuracy 0.90 	 Precision: 0.91 	 Recall: 0.89 	 F1: 0.90
+
+[2021-02-16 08:00:50] - Training 	 Epoch: 19 	 Loss: 0.026927 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+[2021-02-16 08:00:54] - Validation 	 Epoch: 19 	 Loss: 0.064643 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.90 	 F1: 0.90
+
+[2021-02-16 08:01:19] - Training 	 Epoch: 20 	 Loss: 0.027244 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.90 	 F1: 0.88
+[2021-02-16 08:01:23] - Validation 	 Epoch: 20 	 Loss: 0.064915 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.90 	 F1: 0.90
+
+[2021-02-16 08:01:51] - Training 	 Epoch: 21 	 Loss: 0.027097 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+[2021-02-16 08:01:56] - Validation 	 Epoch: 21 	 Loss: 0.065823 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.90 	 F1: 0.90
+
+[2021-02-16 08:02:19] - Training 	 Epoch: 22 	 Loss: 0.025131 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.90 	 F1: 0.88
+[2021-02-16 08:02:24] - Validation 	 Epoch: 22 	 Loss: 0.066009 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.90 	 F1: 0.90
+
+[2021-02-16 08:02:48] - Training 	 Epoch: 23 	 Loss: 0.026198 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+[2021-02-16 08:02:53] - Validation 	 Epoch: 23 	 Loss: 0.066206 	 Accuracy 0.90 	 Precision: 0.90 	 Recall: 0.89 	 F1: 0.90
+
+[2021-02-16 08:03:09] - Training 	 Epoch: 24 	 Loss: 0.024962 	 Accuracy 0.89 	 Precision: 0.88 	 Recall: 0.89 	 F1: 0.88
+[2021-02-16 08:03:14] - Validation 	 Epoch: 24 	 Loss: 0.064135 	 Accuracy 0.91 	 Precision: 0.91 	 Recall: 0.90 	 F1: 0.91
+
+
+[2021-02-16 08:03:14] - Evaluation: <class 'algorithms.lstm.LSTM_CAE_tile_by_tile.LSTMCAEModel'>
+[2021-02-16 08:03:18] - Evaluation 	 Epoch: 0 	 Loss: 0.076558 	 Accuracy 0.90 	 Precision: 0.89 	 Recall: 0.88 	 F1: 0.89
+
+[2021-02-16 08:03:18] - Saved model as caelstm_section_lstm_training_uniform_random_fill_15000_block_map_15000_house_15000_model
+[2021-02-16 08:03:18] - Model: LSTMCAEModel(
+  (_normalisation_layer1): BatchNorm1d(112, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (_lstm_layer): LSTM(112, 8, num_layers=2, batch_first=True)
+  (_normalisation_layer2): BatchNorm1d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (_fc): Linear(in_features=8, out_features=8, bias=True)
+  (_LSTMCAEModel__encoder): CAE(
+    (encoder): CAEEncoder(
+      (conv1): Conv2d(1, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(64, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(32, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn3): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv4): Conv2d(16, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (bn4): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (latent_linear): Linear(in_features=128, out_features=100, bias=True)
+      (bn_latent): BatchNorm1d(100, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (decoder): CAEDecoder(
+      (latent_linear): Linear(in_features=100, out_features=128, bias=True)
+      (bn_latent): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (deconv1): ConvTranspose2d(8, 16, kernel_size=(2, 2), stride=(2, 2))
+      (bn1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (deconv2): ConvTranspose2d(16, 32, kernel_size=(2, 2), stride=(2, 2))
+      (bn2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (deconv3): ConvTranspose2d(32, 64, kernel_size=(2, 2), stride=(2, 2))
+      (bn3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (deconv4): ConvTranspose2d(64, 1, kernel_size=(2, 2), stride=(2, 2))
+      (bn4): BatchNorm2d(1, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+  )
+)
+[2021-02-16 08:03:18] - Model loss: 0.07655754685401917
+[2021-02-16 08:03:18] - Model accuracy: 0.8970309538850284
+[2021-02-16 08:03:18] - Model precision: 0.8940108046995251
+[2021-02-16 08:03:18] - Model recall: 0.8838751348385117
+[2021-02-16 08:03:18] - Model f1: 0.888241198954175
+[2021-02-16 08:03:18] - Model confusion matrix: 
+[[292   0   0   8   0   0   4   0]
+ [  3 198   2   0  14   1   0   2]
+ [  0   0 241   7   5   0   0   1]
+ [ 11   0  20 166   1   0   1   0]
+ [  0  13   5   2 104   1   0   0]
+ [  1   0   0   0   0 180   3  13]
+ [ 11   0   0   1   0   8 106   1]
+ [  0  13   0   0   1  10   0 133]]

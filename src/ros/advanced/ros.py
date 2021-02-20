@@ -294,7 +294,6 @@ class Ros:
 
         # algorithm
         if config.algorithm_name is None:
-            # config.algorithm_name = "WPN-view"
             config.algorithm_name = "WPN-view"
             config.simulator_algorithm_type, config.simulator_testing_type, config.simulator_algorithm_parameters = config.algorithms[config.algorithm_name]
 

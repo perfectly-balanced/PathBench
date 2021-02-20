@@ -124,9 +124,10 @@ class AStar(Algorithm):
         trace.reverse()
         for t in trace:
             self.move_agent(t)
+            if isinstance(self._get_grid(), RosMap):
+                self._get_grid().publish_wp(grid.agent.position)
             self.key_frame(ignore_key_frame_skip=True)
-        if isinstance(self._get_grid(), RosMap):
-            self._get_grid().publish_wp(grid.agent.position)
+        
 
 
     def get_back_trace(self, goal: Goal) -> List[Point]:
