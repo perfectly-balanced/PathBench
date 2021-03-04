@@ -71,9 +71,9 @@ class RRT_Star(SampleBasedAlgorithm):
         for p in path:
             self.move_agent(p.position)
             #sends waypoint for ros extension
-            if isinstance(self._get_grid(), RosMap):
-                grid: Map = self._get_grid()
-                self._get_grid().publish_wp(grid.agent.position)
+            grid: Map = self._get_grid()
+            if isinstance(grid, RosMap):
+                grid.publish_wp(grid.agent.position)
             self.key_frame(ignore_key_frame_skip=True)
 
     # Overridden Implementation #
