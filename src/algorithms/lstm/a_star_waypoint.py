@@ -163,7 +163,7 @@ class WayPointNavigation(Algorithm):
 
     def __replay(self, m: Map) -> None:
         self.move_agent(m.agent.position)
-        if isinstance(self._get_grid(), RosMap):
-            self._get_grid().publish_wp(m.agent.position)
+        # if isinstance(self._get_grid(), RosMap):
+        #     self._get_grid().publish_wp(m.agent.position)
         self.total_steps += 1
         self.key_frame(True)

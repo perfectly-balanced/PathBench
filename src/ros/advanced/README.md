@@ -24,7 +24,19 @@ python3 src/ros/advanced/main.py --headless --rviz
 
 For more information, run the following, noting that unrecognised arguments in `main.py` will be forwarded to `ros.py`.
 
+Example
+```bash
+python3 src/ros/advanced/main.py  --rviz --algorithm "A*" -m waffle
+```
+
 ```bash
 python3 src/ros/advanced/main.py --help
 python3 src/ros/advanced/ros.py --help
 ```
+
+There seems to be a common issue where Gazebo will hang then crash
+when opened through PathBench. A current fix is to perform
+```bash
+killall gzserver
+```
+

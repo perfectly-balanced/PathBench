@@ -7,7 +7,8 @@ from algorithms.classic.sample_based.core.sample_based_algorithm import SampleBa
 from algorithms.basic_testing import BasicTesting
 from simulator.services.services import Services
 from structures import Point
-
+from algorithms.configuration.maps.ros_map import RosMap
+from algorithms.configuration.maps.map import Map
 from algorithms.classic.sample_based.core.vertex import Vertex
 from algorithms.classic.sample_based.core.graph import gen_forest, Forest
 
@@ -69,6 +70,10 @@ class RRT_Star(SampleBasedAlgorithm):
 
         for p in path:
             self.move_agent(p.position)
+            #sends waypoint for ros extension
+            grid: Map = self._get_grid()
+            if isinstance(grid, RosMap):
+                grid.publish_wp(grid.agent.position)
             self.key_frame(ignore_key_frame_skip=True)
 
     # Overridden Implementation #

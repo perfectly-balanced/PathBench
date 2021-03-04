@@ -59,10 +59,10 @@ def configure_generator(config: Configuration, args: argparse.Namespace) -> bool
         config.generator_obstacle_fill_min = args.fill_rate[0]
         config.generator_obstacle_fill_max = args.fill_rate[1]
 
-    if args.generator_type:
+    if args.generatortype:
         if not arg_valid("generator", args):
             return False
-        config.generator_gen_type = args.generator_gen_type
+        config.generator_gen_type = args.generatortype
 
     if args.num_maps:
         if not arg_valid("generator", args):
@@ -179,7 +179,7 @@ def main() -> bool:
     # Generator arguments
     parser.add_argument("--room-size", nargs=2, type=int, help="[generator] min/max room size, in format \"min max\"")
     parser.add_argument("--fill-rate", nargs=2, type=float, help="[generator] min/max fill rate in random fill rooms")
-    parser.add_argument("--generator-type", choices=list(Generator.AVAILABLE_GENERATION_METHODS), help="[generator] generator type")
+    parser.add_argument("--generatortype", choices=list(Generator.AVAILABLE_GENERATION_METHODS), help="[generator] generator type")
     parser.add_argument("--num-maps", type=int, help="[generator] number of maps to generate")
 
     # Miscellaneous

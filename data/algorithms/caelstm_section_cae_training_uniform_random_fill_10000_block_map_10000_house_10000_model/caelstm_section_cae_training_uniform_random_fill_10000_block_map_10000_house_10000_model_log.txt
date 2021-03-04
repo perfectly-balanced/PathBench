@@ -1,0 +1,360 @@
+[2021-01-13 01:29:37] - Starting holdout training: {
+	data_features: [],
+	data_labels: [],
+	data_single_features: ['global_map'],
+	data_single_labels: ['global_map'],
+	epochs: 100,
+	loss: L1Loss(),
+	optimizer: <function CAE.get_config.<locals>.<lambda> at 0x2b8ef66f9c10>,
+	validation_ratio: 0.2,
+	test_ratio: 0.2,
+	save_name: caelstm_section_cae,
+	training_data: ['training_uniform_random_fill_10000_block_map_10000_house_10000'],
+	batch_size: 50,
+	use_mnist_instead: False,
+	mnist_size: None,
+	with_skip_connections: True,
+	in_dim: [64, 64],
+	latent_dim: 100,
+}
+
+[2021-01-13 01:29:37] - Starting data pre processing
+[2021-01-13 01:29:37] - Cache miss, starting new training data pre processing
+[2021-01-13 01:29:37] - Loading data: training_uniform_random_fill_10000_block_map_10000_house_10000
+[2021-01-13 01:30:33] - Picking features
+[2021-01-13 01:30:39] - Cache hit, training data loaded from cache
+[2021-01-13 01:30:39] - Finished data pre processing 
+
+[2021-01-13 01:30:39] - Training: <class 'algorithms.lstm.LSTM_CAE_tile_by_tile.CAE'>
+[2021-01-13 01:30:49] - Training 	 Epoch: 0 	 Loss: 0.004487
+[2021-01-13 01:30:50] - Validation 	 Epoch: 0 	 Loss: 0.010095
+
+[2021-01-13 01:30:56] - Training 	 Epoch: 1 	 Loss: 0.001609
+[2021-01-13 01:30:57] - Validation 	 Epoch: 1 	 Loss: 0.003619
+
+[2021-01-13 01:31:04] - Training 	 Epoch: 2 	 Loss: 0.000847
+[2021-01-13 01:31:05] - Validation 	 Epoch: 2 	 Loss: 0.001929
+
+[2021-01-13 01:31:13] - Training 	 Epoch: 3 	 Loss: 0.000537
+[2021-01-13 01:31:14] - Validation 	 Epoch: 3 	 Loss: 0.001232
+
+[2021-01-13 01:31:20] - Training 	 Epoch: 4 	 Loss: 0.000372
+[2021-01-13 01:31:22] - Validation 	 Epoch: 4 	 Loss: 0.000824
+
+[2021-01-13 01:31:29] - Training 	 Epoch: 5 	 Loss: 0.000273
+[2021-01-13 01:31:30] - Validation 	 Epoch: 5 	 Loss: 0.000603
+
+[2021-01-13 01:31:37] - Training 	 Epoch: 6 	 Loss: 0.000208
+[2021-01-13 01:31:38] - Validation 	 Epoch: 6 	 Loss: 0.000458
+
+[2021-01-13 01:31:45] - Training 	 Epoch: 7 	 Loss: 0.000163
+[2021-01-13 01:31:46] - Validation 	 Epoch: 7 	 Loss: 0.000355
+
+[2021-01-13 01:31:53] - Training 	 Epoch: 8 	 Loss: 0.000130
+[2021-01-13 01:31:54] - Validation 	 Epoch: 8 	 Loss: 0.000283
+
+[2021-01-13 01:32:01] - Training 	 Epoch: 9 	 Loss: 0.000106
+[2021-01-13 01:32:02] - Validation 	 Epoch: 9 	 Loss: 0.000225
+
+[2021-01-13 01:32:09] - Training 	 Epoch: 10 	 Loss: 0.000087
+[2021-01-13 01:32:10] - Validation 	 Epoch: 10 	 Loss: 0.000185
+
+[2021-01-13 01:32:15] - Training 	 Epoch: 11 	 Loss: 0.000072
+[2021-01-13 01:32:16] - Validation 	 Epoch: 11 	 Loss: 0.000153
+
+[2021-01-13 01:32:22] - Training 	 Epoch: 12 	 Loss: 0.000060
+[2021-01-13 01:32:23] - Validation 	 Epoch: 12 	 Loss: 0.000128
+
+[2021-01-13 01:32:30] - Training 	 Epoch: 13 	 Loss: 0.000051
+[2021-01-13 01:32:31] - Validation 	 Epoch: 13 	 Loss: 0.000106
+
+[2021-01-13 01:32:38] - Training 	 Epoch: 14 	 Loss: 0.000043
+[2021-01-13 01:32:40] - Validation 	 Epoch: 14 	 Loss: 0.000090
+
+[2021-01-13 01:32:47] - Training 	 Epoch: 15 	 Loss: 0.000037
+[2021-01-13 01:32:48] - Validation 	 Epoch: 15 	 Loss: 0.000076
+
+[2021-01-13 01:32:54] - Training 	 Epoch: 16 	 Loss: 0.000031
+[2021-01-13 01:32:55] - Validation 	 Epoch: 16 	 Loss: 0.000065
+
+[2021-01-13 01:33:02] - Training 	 Epoch: 17 	 Loss: 0.000027
+[2021-01-13 01:33:03] - Validation 	 Epoch: 17 	 Loss: 0.000055
+
+[2021-01-13 01:33:10] - Training 	 Epoch: 18 	 Loss: 0.000023
+[2021-01-13 01:33:11] - Validation 	 Epoch: 18 	 Loss: 0.000047
+
+[2021-01-13 01:33:18] - Training 	 Epoch: 19 	 Loss: 0.000020
+[2021-01-13 01:33:19] - Validation 	 Epoch: 19 	 Loss: 0.000041
+
+[2021-01-13 01:33:25] - Training 	 Epoch: 20 	 Loss: 0.000017
+[2021-01-13 01:33:26] - Validation 	 Epoch: 20 	 Loss: 0.000035
+
+[2021-01-13 01:33:31] - Training 	 Epoch: 21 	 Loss: 0.000015
+[2021-01-13 01:33:32] - Validation 	 Epoch: 21 	 Loss: 0.000030
+
+[2021-01-13 01:33:40] - Training 	 Epoch: 22 	 Loss: 0.000013
+[2021-01-13 01:33:41] - Validation 	 Epoch: 22 	 Loss: 0.000026
+
+[2021-01-13 01:33:48] - Training 	 Epoch: 23 	 Loss: 0.000011
+[2021-01-13 01:33:49] - Validation 	 Epoch: 23 	 Loss: 0.000022
+
+[2021-01-13 01:33:56] - Training 	 Epoch: 24 	 Loss: 0.000010
+[2021-01-13 01:33:57] - Validation 	 Epoch: 24 	 Loss: 0.000019
+
+[2021-01-13 01:34:03] - Training 	 Epoch: 25 	 Loss: 0.000008
+[2021-01-13 01:34:04] - Validation 	 Epoch: 25 	 Loss: 0.000017
+
+[2021-01-13 01:34:12] - Training 	 Epoch: 26 	 Loss: 0.000007
+[2021-01-13 01:34:13] - Validation 	 Epoch: 26 	 Loss: 0.000015
+
+[2021-01-13 01:34:20] - Training 	 Epoch: 27 	 Loss: 0.000006
+[2021-01-13 01:34:21] - Validation 	 Epoch: 27 	 Loss: 0.000013
+
+[2021-01-13 01:34:27] - Training 	 Epoch: 28 	 Loss: 0.000006
+[2021-01-13 01:34:28] - Validation 	 Epoch: 28 	 Loss: 0.000011
+
+[2021-01-13 01:34:36] - Training 	 Epoch: 29 	 Loss: 0.000005
+[2021-01-13 01:34:37] - Validation 	 Epoch: 29 	 Loss: 0.000009
+
+[2021-01-13 01:34:44] - Training 	 Epoch: 30 	 Loss: 0.000004
+[2021-01-13 01:34:45] - Validation 	 Epoch: 30 	 Loss: 0.000008
+
+[2021-01-13 01:34:52] - Training 	 Epoch: 31 	 Loss: 0.000004
+[2021-01-13 01:34:53] - Validation 	 Epoch: 31 	 Loss: 0.000007
+
+[2021-01-13 01:35:00] - Training 	 Epoch: 32 	 Loss: 0.000003
+[2021-01-13 01:35:01] - Validation 	 Epoch: 32 	 Loss: 0.000006
+
+[2021-01-13 01:35:08] - Training 	 Epoch: 33 	 Loss: 0.000003
+[2021-01-13 01:35:09] - Validation 	 Epoch: 33 	 Loss: 0.000005
+
+[2021-01-13 01:35:15] - Training 	 Epoch: 34 	 Loss: 0.000002
+[2021-01-13 01:35:16] - Validation 	 Epoch: 34 	 Loss: 0.000005
+
+[2021-01-13 01:35:23] - Training 	 Epoch: 35 	 Loss: 0.000002
+[2021-01-13 01:35:24] - Validation 	 Epoch: 35 	 Loss: 0.000004
+
+[2021-01-13 01:35:31] - Training 	 Epoch: 36 	 Loss: 0.000002
+[2021-01-13 01:35:32] - Validation 	 Epoch: 36 	 Loss: 0.000004
+
+[2021-01-13 01:35:40] - Training 	 Epoch: 37 	 Loss: 0.000002
+[2021-01-13 01:35:41] - Validation 	 Epoch: 37 	 Loss: 0.000003
+
+[2021-01-13 01:35:48] - Training 	 Epoch: 38 	 Loss: 0.000001
+[2021-01-13 01:35:49] - Validation 	 Epoch: 38 	 Loss: 0.000003
+
+[2021-01-13 01:35:56] - Training 	 Epoch: 39 	 Loss: 0.000001
+[2021-01-13 01:35:57] - Validation 	 Epoch: 39 	 Loss: 0.000002
+
+[2021-01-13 01:36:04] - Training 	 Epoch: 40 	 Loss: 0.000001
+[2021-01-13 01:36:05] - Validation 	 Epoch: 40 	 Loss: 0.000002
+
+[2021-01-13 01:36:12] - Training 	 Epoch: 41 	 Loss: 0.000001
+[2021-01-13 01:36:13] - Validation 	 Epoch: 41 	 Loss: 0.000002
+
+[2021-01-13 01:36:18] - Training 	 Epoch: 42 	 Loss: 0.000001
+[2021-01-13 01:36:20] - Validation 	 Epoch: 42 	 Loss: 0.000002
+
+[2021-01-13 01:36:27] - Training 	 Epoch: 43 	 Loss: 0.000001
+[2021-01-13 01:36:28] - Validation 	 Epoch: 43 	 Loss: 0.000001
+
+[2021-01-13 01:36:35] - Training 	 Epoch: 44 	 Loss: 0.000001
+[2021-01-13 01:36:36] - Validation 	 Epoch: 44 	 Loss: 0.000001
+
+[2021-01-13 01:36:43] - Training 	 Epoch: 45 	 Loss: 0.000001
+[2021-01-13 01:36:44] - Validation 	 Epoch: 45 	 Loss: 0.000001
+
+[2021-01-13 01:36:51] - Training 	 Epoch: 46 	 Loss: 0.000000
+[2021-01-13 01:36:52] - Validation 	 Epoch: 46 	 Loss: 0.000001
+
+[2021-01-13 01:36:59] - Training 	 Epoch: 47 	 Loss: 0.000000
+[2021-01-13 01:37:00] - Validation 	 Epoch: 47 	 Loss: 0.000001
+
+[2021-01-13 01:37:05] - Training 	 Epoch: 48 	 Loss: 0.000000
+[2021-01-13 01:37:06] - Validation 	 Epoch: 48 	 Loss: 0.000001
+
+[2021-01-13 01:37:13] - Training 	 Epoch: 49 	 Loss: 0.000000
+[2021-01-13 01:37:14] - Validation 	 Epoch: 49 	 Loss: 0.000001
+
+[2021-01-13 01:37:20] - Training 	 Epoch: 50 	 Loss: 0.000000
+[2021-01-13 01:37:21] - Validation 	 Epoch: 50 	 Loss: 0.000001
+
+[2021-01-13 01:37:28] - Training 	 Epoch: 51 	 Loss: 0.000000
+[2021-01-13 01:37:29] - Validation 	 Epoch: 51 	 Loss: 0.000000
+
+[2021-01-13 01:37:36] - Training 	 Epoch: 52 	 Loss: 0.000000
+[2021-01-13 01:37:37] - Validation 	 Epoch: 52 	 Loss: 0.000000
+
+[2021-01-13 01:37:45] - Training 	 Epoch: 53 	 Loss: 0.000000
+[2021-01-13 01:37:46] - Validation 	 Epoch: 53 	 Loss: 0.000000
+
+[2021-01-13 01:37:53] - Training 	 Epoch: 54 	 Loss: 0.000000
+[2021-01-13 01:37:54] - Validation 	 Epoch: 54 	 Loss: 0.000000
+
+[2021-01-13 01:38:01] - Training 	 Epoch: 55 	 Loss: 0.000000
+[2021-01-13 01:38:02] - Validation 	 Epoch: 55 	 Loss: 0.000000
+
+[2021-01-13 01:38:10] - Training 	 Epoch: 56 	 Loss: 0.000000
+[2021-01-13 01:38:11] - Validation 	 Epoch: 56 	 Loss: 0.000000
+
+[2021-01-13 01:38:18] - Training 	 Epoch: 57 	 Loss: 0.000000
+[2021-01-13 01:38:19] - Validation 	 Epoch: 57 	 Loss: 0.000000
+
+[2021-01-13 01:38:26] - Training 	 Epoch: 58 	 Loss: 0.000000
+[2021-01-13 01:38:27] - Validation 	 Epoch: 58 	 Loss: 0.000000
+
+[2021-01-13 01:38:35] - Training 	 Epoch: 59 	 Loss: 0.000000
+[2021-01-13 01:38:36] - Validation 	 Epoch: 59 	 Loss: 0.000000
+
+[2021-01-13 01:38:43] - Training 	 Epoch: 60 	 Loss: 0.000000
+[2021-01-13 01:38:44] - Validation 	 Epoch: 60 	 Loss: 0.000000
+
+[2021-01-13 01:38:52] - Training 	 Epoch: 61 	 Loss: 0.000000
+[2021-01-13 01:38:53] - Validation 	 Epoch: 61 	 Loss: 0.000000
+
+[2021-01-13 01:39:00] - Training 	 Epoch: 62 	 Loss: 0.000000
+[2021-01-13 01:39:01] - Validation 	 Epoch: 62 	 Loss: 0.000000
+
+[2021-01-13 01:39:08] - Training 	 Epoch: 63 	 Loss: 0.000000
+[2021-01-13 01:39:09] - Validation 	 Epoch: 63 	 Loss: 0.000000
+
+[2021-01-13 01:39:17] - Training 	 Epoch: 64 	 Loss: 0.000000
+[2021-01-13 01:39:18] - Validation 	 Epoch: 64 	 Loss: 0.000000
+
+[2021-01-13 01:39:25] - Training 	 Epoch: 65 	 Loss: 0.000000
+[2021-01-13 01:39:26] - Validation 	 Epoch: 65 	 Loss: 0.000000
+
+[2021-01-13 01:39:33] - Training 	 Epoch: 66 	 Loss: 0.000000
+[2021-01-13 01:39:34] - Validation 	 Epoch: 66 	 Loss: 0.000000
+
+[2021-01-13 01:39:41] - Training 	 Epoch: 67 	 Loss: 0.000000
+[2021-01-13 01:39:42] - Validation 	 Epoch: 67 	 Loss: 0.000000
+
+[2021-01-13 01:39:49] - Training 	 Epoch: 68 	 Loss: 0.000000
+[2021-01-13 01:39:50] - Validation 	 Epoch: 68 	 Loss: 0.000000
+
+[2021-01-13 01:39:58] - Training 	 Epoch: 69 	 Loss: 0.000000
+[2021-01-13 01:39:59] - Validation 	 Epoch: 69 	 Loss: 0.000000
+
+[2021-01-13 01:40:06] - Training 	 Epoch: 70 	 Loss: 0.000000
+[2021-01-13 01:40:07] - Validation 	 Epoch: 70 	 Loss: 0.000000
+
+[2021-01-13 01:40:13] - Training 	 Epoch: 71 	 Loss: 0.000001
+[2021-01-13 01:40:14] - Validation 	 Epoch: 71 	 Loss: 0.000001
+
+[2021-01-13 01:40:21] - Training 	 Epoch: 72 	 Loss: 0.000001
+[2021-01-13 01:40:23] - Validation 	 Epoch: 72 	 Loss: 0.000001
+
+[2021-01-13 01:40:29] - Training 	 Epoch: 73 	 Loss: 0.000001
+[2021-01-13 01:40:30] - Validation 	 Epoch: 73 	 Loss: 0.000001
+
+[2021-01-13 01:40:38] - Training 	 Epoch: 74 	 Loss: 0.000000
+[2021-01-13 01:40:39] - Validation 	 Epoch: 74 	 Loss: 0.000000
+
+[2021-01-13 01:40:46] - Training 	 Epoch: 75 	 Loss: 0.000000
+[2021-01-13 01:40:47] - Validation 	 Epoch: 75 	 Loss: 0.000000
+
+[2021-01-13 01:40:53] - Training 	 Epoch: 76 	 Loss: 0.000000
+[2021-01-13 01:40:54] - Validation 	 Epoch: 76 	 Loss: 0.000000
+
+[2021-01-13 01:41:00] - Training 	 Epoch: 77 	 Loss: 0.000000
+[2021-01-13 01:41:01] - Validation 	 Epoch: 77 	 Loss: 0.000000
+
+[2021-01-13 01:41:08] - Training 	 Epoch: 78 	 Loss: 0.000000
+[2021-01-13 01:41:09] - Validation 	 Epoch: 78 	 Loss: 0.000000
+
+[2021-01-13 01:41:16] - Training 	 Epoch: 79 	 Loss: 0.000000
+[2021-01-13 01:41:17] - Validation 	 Epoch: 79 	 Loss: 0.000000
+
+[2021-01-13 01:41:23] - Training 	 Epoch: 80 	 Loss: 0.000000
+[2021-01-13 01:41:24] - Validation 	 Epoch: 80 	 Loss: 0.000000
+
+[2021-01-13 01:41:32] - Training 	 Epoch: 81 	 Loss: 0.000000
+[2021-01-13 01:41:33] - Validation 	 Epoch: 81 	 Loss: 0.000000
+
+[2021-01-13 01:41:40] - Training 	 Epoch: 82 	 Loss: 0.000000
+[2021-01-13 01:41:41] - Validation 	 Epoch: 82 	 Loss: 0.000000
+
+[2021-01-13 01:41:48] - Training 	 Epoch: 83 	 Loss: 0.000000
+[2021-01-13 01:41:49] - Validation 	 Epoch: 83 	 Loss: 0.000000
+
+[2021-01-13 01:41:56] - Training 	 Epoch: 84 	 Loss: 0.000000
+[2021-01-13 01:41:57] - Validation 	 Epoch: 84 	 Loss: 0.000000
+
+[2021-01-13 01:42:05] - Training 	 Epoch: 85 	 Loss: 0.000000
+[2021-01-13 01:42:06] - Validation 	 Epoch: 85 	 Loss: 0.000000
+
+[2021-01-13 01:42:13] - Training 	 Epoch: 86 	 Loss: 0.000000
+[2021-01-13 01:42:14] - Validation 	 Epoch: 86 	 Loss: 0.000000
+
+[2021-01-13 01:42:21] - Training 	 Epoch: 87 	 Loss: 0.000000
+[2021-01-13 01:42:23] - Validation 	 Epoch: 87 	 Loss: 0.000000
+
+[2021-01-13 01:42:30] - Training 	 Epoch: 88 	 Loss: 0.000000
+[2021-01-13 01:42:31] - Validation 	 Epoch: 88 	 Loss: 0.000000
+
+[2021-01-13 01:42:38] - Training 	 Epoch: 89 	 Loss: 0.000000
+[2021-01-13 01:42:39] - Validation 	 Epoch: 89 	 Loss: 0.000000
+
+[2021-01-13 01:42:46] - Training 	 Epoch: 90 	 Loss: 0.000000
+[2021-01-13 01:42:47] - Validation 	 Epoch: 90 	 Loss: 0.000000
+
+[2021-01-13 01:42:55] - Training 	 Epoch: 91 	 Loss: 0.000000
+[2021-01-13 01:42:56] - Validation 	 Epoch: 91 	 Loss: 0.000000
+
+[2021-01-13 01:43:03] - Training 	 Epoch: 92 	 Loss: 0.000000
+[2021-01-13 01:43:04] - Validation 	 Epoch: 92 	 Loss: 0.000000
+
+[2021-01-13 01:43:12] - Training 	 Epoch: 93 	 Loss: 0.000000
+[2021-01-13 01:43:13] - Validation 	 Epoch: 93 	 Loss: 0.000000
+
+[2021-01-13 01:43:20] - Training 	 Epoch: 94 	 Loss: 0.000000
+[2021-01-13 01:43:21] - Validation 	 Epoch: 94 	 Loss: 0.000000
+
+[2021-01-13 01:43:28] - Training 	 Epoch: 95 	 Loss: 0.000000
+[2021-01-13 01:43:29] - Validation 	 Epoch: 95 	 Loss: 0.000000
+
+[2021-01-13 01:43:36] - Training 	 Epoch: 96 	 Loss: 0.000000
+[2021-01-13 01:43:37] - Validation 	 Epoch: 96 	 Loss: 0.000000
+
+[2021-01-13 01:43:43] - Training 	 Epoch: 97 	 Loss: 0.000000
+[2021-01-13 01:43:44] - Validation 	 Epoch: 97 	 Loss: 0.000000
+
+[2021-01-13 01:43:51] - Training 	 Epoch: 98 	 Loss: 0.000000
+[2021-01-13 01:43:52] - Validation 	 Epoch: 98 	 Loss: 0.000000
+
+[2021-01-13 01:44:00] - Training 	 Epoch: 99 	 Loss: 0.000000
+[2021-01-13 01:44:01] - Validation 	 Epoch: 99 	 Loss: 0.000000
+
+
+[2021-01-13 01:44:01] - Evaluation: <class 'algorithms.lstm.LSTM_CAE_tile_by_tile.CAE'>
+[2021-01-13 01:44:02] - Evaluation 	 Epoch: 0 	 Loss: 0.000000
+
+[2021-01-13 01:44:02] - Saved model as caelstm_section_cae_training_uniform_random_fill_10000_block_map_10000_house_10000_model
+[2021-01-13 01:44:02] - Model: CAE(
+  (encoder): CAEEncoder(
+    (conv1): Conv2d(1, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (bn1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (conv2): Conv2d(64, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (bn2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (conv3): Conv2d(32, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (bn3): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (conv4): Conv2d(16, 8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (bn4): BatchNorm2d(8, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (latent_linear): Linear(in_features=128, out_features=100, bias=True)
+    (bn_latent): BatchNorm1d(100, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (decoder): CAEDecoder(
+    (latent_linear): Linear(in_features=100, out_features=128, bias=True)
+    (bn_latent): BatchNorm1d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (deconv1): ConvTranspose2d(8, 16, kernel_size=(2, 2), stride=(2, 2))
+    (bn1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (deconv2): ConvTranspose2d(16, 32, kernel_size=(2, 2), stride=(2, 2))
+    (bn2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (deconv3): ConvTranspose2d(32, 64, kernel_size=(2, 2), stride=(2, 2))
+    (bn3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (deconv4): ConvTranspose2d(64, 1, kernel_size=(2, 2), stride=(2, 2))
+    (bn4): BatchNorm2d(1, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+)
+[2021-01-13 01:44:02] - Model loss: 3.386297464658128e-08
