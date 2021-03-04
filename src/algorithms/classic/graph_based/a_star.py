@@ -120,15 +120,13 @@ class AStar(Algorithm):
     def _follow_back_trace(self):
         grid: Map = self._get_grid()
         
-        trace: List[Point] = self.get_back_trace(self._get_grid().goal)
+        trace: List[Point] = self.get_back_trace(grid.goal)
         trace.reverse()
         for t in trace:
             self.move_agent(t)
-            if isinstance(self._get_grid(), RosMap):
-                self._get_grid().publish_wp(grid.agent.position)
+            if isinstance(grid, RosMap):
+                grid.publish_wp(grid.agent.position)
             self.key_frame(ignore_key_frame_skip=True)
-        
-
 
     def get_back_trace(self, goal: Goal) -> List[Point]:
         """
