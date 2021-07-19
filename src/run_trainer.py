@@ -1,4 +1,5 @@
-
+from algorithms.classic.graph_based.cgds import CGDS
+from algorithms.classic.testing.cgds_testing import CGDSTesting
 from main import MainRunner
 from typing import Tuple, Callable, Type, List, Optional, Dict, Any, Union
 from algorithms.algorithm import Algorithm
@@ -63,6 +64,7 @@ maps = MapManager.builtins
 
 algorithms = {
     "A*": (AStar, AStarTesting, ([], {})),
+    "Child-Generator-Deque-Search": (CGDS, CGDSTesting, ([], {})),
     "Global Way-point LSTM": (WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel": (CombinedOnlineLSTM, ([], {})), "global_kernel_max_it": 100})),
     "LSTM Bagging": (CombinedOnlineLSTM, CombinedOnlineLSTMTesting, ([], {})),
     "CAE Online LSTM": (OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"})),
