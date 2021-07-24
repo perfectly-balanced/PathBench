@@ -8,7 +8,10 @@ class Size(NamedTuple):
     width: int
     height: int
 
-class Point(NamedTuple, torch.Tensor):
+class _PointMetaClass(type(NamedTuple), type(torch.Tensor)):
+    pass
+
+class Point(NamedTuple, torch.Tensor, metaclass=_PointMetaClass):
     x: int
     y: int
 
