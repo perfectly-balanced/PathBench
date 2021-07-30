@@ -88,7 +88,6 @@ class AlgorithmManager():
     def _static_init_(cls):
         cls.builtins = {
             "A*": (AStar, AStarTesting, ([], {})),
-            "Child-Generator-Deque-Search": (CGDS, CGDSTesting, ([], {})),
             "WPN":(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 10, "global_kernel": (CombinedOnlineLSTM, ([], {}))})),
             "WPN-view":(WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "tile_by_tile_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}))})),
             "WPN-map": (WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel_max_it": 20, "global_kernel": (OnlineLSTM, ([], {"load_name": "caelstm_section_lstm_training_uniform_random_fill_10000_block_map_10000_house_10000_model"}))})),
@@ -104,6 +103,7 @@ class AlgorithmManager():
             "Dijkstra": (Dijkstra, DijkstraTesting, ([], {})),
             "Bug1": (Bug1, BasicTesting, ([], {})),
             "Bug2": (Bug2, BasicTesting, ([], {})),
+            "Child-Generator-Deque-Search": (CGDS, CGDSTesting, ([], {})),
             "Potential Field": (PotentialField, BasicTesting, ([], {}))
         }
 

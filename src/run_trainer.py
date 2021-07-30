@@ -64,7 +64,6 @@ maps = MapManager.builtins
 
 algorithms = {
     "A*": (AStar, AStarTesting, ([], {})),
-    "Child-Generator-Deque-Search": (CGDS, CGDSTesting, ([], {})),
     "Global Way-point LSTM": (WayPointNavigation, WayPointNavigationTesting, ([], {"global_kernel": (CombinedOnlineLSTM, ([], {})), "global_kernel_max_it": 100})),
     "LSTM Bagging": (CombinedOnlineLSTM, CombinedOnlineLSTMTesting, ([], {})),
     "CAE Online LSTM": (OnlineLSTM, BasicTesting, ([], {"load_name": "caelstm_section_lstm_training_block_map_10000_model"})),
@@ -78,6 +77,7 @@ algorithms = {
     "Dijkstra": (Dijkstra, DijkstraTesting, ([], {})),
     "Bug1": (Bug1, BasicTesting, ([], {})),
     "Bug2": (Bug2, BasicTesting, ([], {})),
+    "Child-Generator-Deque-Search": (CGDS, CGDSTesting, ([], {})),
 }
 
 animations = {
