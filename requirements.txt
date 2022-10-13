@@ -1,7 +1,7 @@
 torch
 numpy
 matplotlib
-nptyping
+nptyping==1.4.4
 panda3d
 pandas
 sklearn
